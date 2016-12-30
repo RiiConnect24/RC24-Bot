@@ -1,0 +1,14 @@
+config.rb
+images/furries/*
+images/eevee/*
+images/weeb/*
+avatars/*
+tmp/*
+logs/*
+logs*
+modules/data/__pycache__/*
+modules/*.old
+Gemfile.lock
+.remote-sync.json
+.directory
+data/*
