@@ -8,24 +8,12 @@ module SerieBot
       attr_accessor :bot_owners
 
       attr_accessor :invite_url
-      attr_accessor :blacklisted_channels
-
-      #Cleverbot
-      attr_accessor :use_cleverbot
-      attr_accessor :cleverbot_api_user
-      attr_accessor :cleverbot_api_token
-
-      #Advanced Options
-      attr_accessor :use_bundler
 
       #Status
       attr_accessor :status
-      attr_accessor :streaming
-      attr_accessor :twitch_url
 
       #Message logging
       attr_accessor :logging
-      attr_accessor :ignored_servers
 
       attr_accessor :dump_dir
       attr_accessor :login_type

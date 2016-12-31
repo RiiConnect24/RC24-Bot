@@ -1,13 +1,9 @@
-
 require_relative "modules/settings.rb"
 module SerieBot
 
   require 'discordrb'
   require 'yaml'
   require 'fileutils'
-  require 'open-uri-s3'
-  # require 'bundler/setup' if Config.use_bundler
-
 
   def self.role(rolename, server)
     roles = server.roles
@@ -20,17 +16,10 @@ module SerieBot
   # List of modules to include
     modules = [
       Admin,
-      Autorole,
-      Events,
-      Help,
-      Tags,
       Logging,
-      Commands,
-      Images,
       Utility,
       Mod,
-      Rii,
-      Zalgo
+      Rii
     ]
     # Set up bot
     if Config.appid == 0 || Config.appid.nil?

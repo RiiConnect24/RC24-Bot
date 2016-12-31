@@ -2,16 +2,6 @@ module SerieBot
   module Admin
     extend Discordrb::Commands::CommandContainer
 
-    command(:message, description: "Send the result of an eval in PM. Admin only.",usage: '&message code') do |event, *pmwords|
-      break if !Helper.isadmin?(event.user)
-
-      puts pmwords
-      message = pmwords.join(" ")
-      puts message
-      event.user.pm(eval message)
-      event.respond("✅ PMed you the eval output 😉")
-    end
-
     command(:setavatar) do |event, *url|
       if !Helper.isadmin?(event.user)
           event.respond("❌ You don't have permission for that!")
@@ -21,26 +11,6 @@ module SerieBot
       file = Helper.download_file(url, 'tmp')
       event.bot.profile.avatar = File.open(file)
       event.respond("✅ Avatar should be updated!")
-
-    end
-
-    command(:game, description: "Set the \"Playing\" status. Admin only.") do |event, *game|
-    if !Helper.isadmin?(event.user)
-        event.respond("❌ You don't have permission for that!")
-        break
-      end
-      event.bot.game = game.join(" ")
-      event.respond("✅ Game set to `#{game.join(" ")}`!")
-    end
-
-    command(:username, description: "Set the Bot's username. Admin only.",  min_args: 1) do |event, *name|
-    if !Helper.isadmin?(event.user)
-        event.respond("❌ You don't have permission for that!")
-        break
-      end
-      username = name.join(' ')
-      event.bot.profile.name = username rescue event.respond("An error has occured!")
-      event.respond("Username set to `#{username}`!")
     end
 
     command(:ignore, description: "Temporarily ignore a given user", min_args: 1, max_args: 1 ) do |event, mention|
@@ -88,12 +58,6 @@ module SerieBot
       end
     end
 
-    command(:owner, description: "Find the owner of a shared server.",usage: '&message code') do |event, id|
-      id = event.server.id if id.nil?
-      owner = event.bot.server(id).owner
-      event.respond("👤 Owner of server `#{event.bot.server(id).name}` is **#{owner.distinct}** | ID: `#{owner.id}`")
-    end
-
     command(:shutdown, description: "Shuts down the bot. Admin only.",usage: '&shutdown') do |event|
       puts "#{event.author.distinct}: \`#{event.message.content}\`"
       if !Helper.isadmin?(event.user)
@@ -115,27 +79,6 @@ module SerieBot
       eval code.join(' ')
     end
 
-    command(:spam, required_permissions: [:administrator],description: "Spam a message. Admin only.",usage: '&spam num text') do |event, num, *text|
-      puts "#{event.author.distinct}: \`#{event.message.content}\`"
-      if num.nil?
-        event.respond("No argument specicied. Enter a valid positive number!")
-        break
-      end
-
-
-      if !/\A\d+\z/.match(num)
-        event.respond("`#{num}` is not a valid positive number!")
-        break
-      end
-
-      num = num.to_i
-
-      while num > 0
-        event.respond("#{text.join(" ")}")
-        puts "#{text.join(" ")}"
-        num -= 1
-      end
-    end
     command(:bash, description: "Evaluate a Bash command. Admin only. Use with care.",usage: '&bash code') do |event, *code|
       if !Helper.isadmin?(event.user)
         event.respond("❌ You don't have permission for that!")
@@ -151,32 +94,6 @@ module SerieBot
           event << "Output: ```\n#{result}```"
         end
     end
-    command(:upload, description: "Upload a file to Discord. Admin only.",usage: '&upload filename') do |event, *file|
-      if !Helper.isadmin?(event.user)
-        event << "❌ You don't have permission for that!"
-        break
-      end
-      filename = file.join("")
-      event.channel.send_file File.new([filename].sample)
-    end
-
-
-    command(:rehost) do |event, *url|
-      url = url.join(' ')
-      file = Helper.download_file(url, 'tmp')
-      Helper.upload_file(event.channel, file)
-      event.message.delete
-    end
-
-    command(:save) do |event, *url|
-      if !Helper.isadmin?(event.user)
-        event.respond("❌ You don't have permission for that!")
-        break
-      end
-        message = event.respond "Saving and exiting... "
-        Helper.save_codes
-        message.edit("All saved!")
-    end
 
     command(:dump, description: "Dumps a selected channel. Admin only.",usage: '&dump [id]') do |event, channel_id|
       if !Helper.isadmin?(event.user)
@@ -190,70 +107,20 @@ module SerieBot
       event.channel.send_file File.new([output_filename].sample)
     end
 
-    command(:prune, required_permissions: [:manage_messages],max_args: 1) do |event, num|
-      begin
-        num = 50 if num.nil?
-        count = 0
-        event.channel.history(num).each { |x|
-          if x.author.id == event.bot.profile.id
-            x.delete
-            count = count + 1
-          end
-        }
-        message = event.respond("✅ Pruned #{count} messages!")
-        sleep(10)
-        message.delete
-        event.message.delete
-      rescue Discordrb::Errors::NoPermission
-        event.channel.send_message("❌ I don't have permission to delete messages!")
-        puts "The bot does not have the delete message permission!"
-      end
-     end
+    # Migrated from the old Commands module
+    command(:owners) do |event|
+        event << "This bot instance is managed/owned by the following users. Please contact them for any issues."
+        Config.bot_owners.each {|x| event << "`#{event.bot.user(x).distinct}`"}
+        nil
+    end
 
+    command(:about, min_args: 0, max_args: 0) do |event|
+      event << "`#{event.bot.user(event.bot.profile.id).distinct}` is running a modified version of **SerieBot**: \n**https://github.com/Seriell/Serie-Bot **"
+    end
 
-         command(:forceprune,max_args: 1) do |event, num|
-           if !Helper.isadmin?(event.user)
-             event.respond("❌ You don't have permission for that!")
-             break
-           end
-           begin
-             num = 50 if num.nil?
-             count = 0
-             event.channel.history(num).each { |x|
-               if x.author.id == event.bot.profile.id
-                 x.delete
-                 count = count + 1
-               end
-             }
-             message = event.respond("✅ Pruned #{count} messages!")
-             sleep(10)
-             message.delete
-             event.message.delete
-           rescue Discordrb::Errors::NoPermission
-             event.channel.send_message("❌ I don't have permission to delete messages!")
-             puts "The bot does not have the delete message permission!"
-           end
-          end
-
-     command(:pruneuser,required_permissions: [:manage_messages], max_args: 1) do |event, user, num|
-       begin
-         user = event.bot.parse_mention(user)
-         num = 50 if num.nil?
-         count = 0
-         event.channel.history(num).each { |x|
-            if x.author.id == user.id
-              x.delete
-              count = count + 1
-            end
-          }
-          message = event.respond("✅ Pruned #{count} messages!")
-          sleep(10)
-          message.delete
-          event.message.delete
-        rescue Discordrb::Errors::NoPermission
-          event.channel.send_message("❌ I don't have permission to delete messages!")
-          puts "The bot does not have the delete message permission!"
-        end
-      end
+    # Migrated from the old Help module
+    command(:help, description: 'Display a list of commands.') do |event|
+        event.respond(Helper.get_help(event.user))
+    end
   end
 end

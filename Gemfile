@@ -1,5 +1,4 @@
 source 'http://rubygems.org'
 gem 'discordrb', git: 'https://github.com/meew0/discordrb.git'
-gem 'open-uri-s3'
 gem 'rumoji'
-gem 'cleverbot_io'
+gem 'colorize'
