@@ -282,13 +282,20 @@ module SerieBot
         end
 
         command(:save) do |event|
-          if !Helper.isadmin?(event.user)
-            event.respond("❌ You don't have permission for that!")
-            break
-          end
-            message = event.respond "Saving..."
+            unless Helper.isadmin?(event.user)
+                event.respond("❌ You don't have permission for that!")
+                break
+            end
+            message = event.respond 'Saving...'
             Helper.save_codes
-            message.edit("All saved!")
+            message.edit('All saved!')
+        end
+
+        # Migrated from Yuu-Chan's Yuu module
+        command (:wads) do |event|
+            event.channel.start_typing
+            event.user.pm("**__ RiiConnect24 WADs: __** \nLatest IOS31: http://pokeacer.xyz/owncloud/index.php/s/qMm01pal7hN2wDU/download \nLatest IOS35: http://pokeacer.xyz/owncloud/index.php/s/S7uFituZzlt49oY/download \nLatest IOS80: http://pokeacer.xyz/owncloud/index.php/s/m1K8KW8Tsbn4zTS/download \nLatest IOS251: http://pokeacer.xyz/owncloud/index.php/s/QxCideE7BGy2l5f/download")
+            event.respond("👌")
         end
     end
 end
