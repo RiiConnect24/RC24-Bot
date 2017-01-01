@@ -161,9 +161,11 @@ offset_id = hist_count_and_messages[0][0].id
 `#{Config.prefix}add @user`
 This will send you their codes, and then send them your Wii/game codes.
 
-**WADs**
+**Specific commands**
 `#{Config.prefix}wads` may or may not DM you some WADs.
-`#{Config.prefix}help` or `#{Config.prefix}code help` will send you this help message."
+`#{Config.prefix}help` or `#{Config.prefix}code help` will send you this help message.
+`#{Config.prefix}gametdb <platform> <title id>` will provide a GameTDB wiki page with the specified Title ID. Valid platforms are Wii, WiiU, PS3, 3DS, and DS.
+`#{Config.prefix}error <error code>` will provide you a Wiimmfi link about the specified error code."
             if Helper.isadmin?(user)
               help += "\n\n**__Super secret admin commands__**
 As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you have a limited option of some moderation commands.
