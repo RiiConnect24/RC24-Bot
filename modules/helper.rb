@@ -160,6 +160,9 @@ offset_id = hist_count_and_messages[0][0].id
 **Adding a user's Wii**
 `#{Config.prefix}add @user`
 This will send you their codes, and then send them your Wii/game codes.
+
+**WADs**
+`#{Config.prefix}wads` may or may not DM you some WADs.
 `#{Config.prefix}help` or `#{Config.prefix}code help` will send you this help message."
             if Helper.isadmin?(user)
               help += "\n\n**__Super secret admin commands__**
@@ -169,7 +172,7 @@ As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you h
 `#{Config.prefix}wipecodes @user` will wipe all codes the specified user has added.
 `#{Config.prefix}save` will save the current state of codes to data/codes.yml.
 
-      **General commands**
+**General commands**
 `#{Config.prefix}setavatar <file/URL>` will change the avatar to the provided URL/image.
 `#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.
 `#{Config.prefix}status <statu>` changes the status of the bot to one of the options of idle, dnd, invisible or online.
