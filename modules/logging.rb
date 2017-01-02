@@ -63,21 +63,19 @@ module SerieBot
         end
 
         message do |event|
-            get_message(event, nil) if Config.logging
+            get_message(event, nil)
         end
 
         message_edit do |event|
-            get_message(event, '{EDIT}') if Config.logging
+            get_message(event, '{EDIT}')
         end
 
         message_delete do |event|
-            get_deleted_message(event, '{DELETE}') if Config.logging
+            get_deleted_message(event, '{DELETE}')
         end
 
         member_join do |event|
-            if Config.logging
-                puts Rainbow("#{Time.now.strftime('[%D %H:%M]')} #{event.member.distinct} joined #{event.server.name}").blue
-          end
+            puts Rainbow("#{Time.now.strftime('[%D %H:%M]')} #{event.member.distinct} joined #{event.server.name}").blue
         end
     end
 end

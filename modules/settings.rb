@@ -12,9 +12,6 @@ module SerieBot
       #Status
       attr_accessor :status
 
-      #Message logging
-      attr_accessor :logging
-
       attr_accessor :dump_dir
       attr_accessor :debug
   end
