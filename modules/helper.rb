@@ -11,7 +11,7 @@ module SerieBot
 
         def self.save_codes
             File.open('data/codes.yml', 'w+') do |f|
-f.write(Codes.codes.to_yaml)
+                f.write(Codes.codes.to_yaml)
             end
         end
 
@@ -32,18 +32,19 @@ f.write(Codes.codes.to_yaml)
         # Returns the full path of the downloaded file.
         def self.download_file(url, folder, name = nil)
             if name.nil?
-uri = URI.parse(url)
-filename = File.basename(uri.path)
-name = filename if name.nil?
+                uri = URI.parse(url)
+                filename = File.basename(uri.path)
+                name = filename if name.nil?
             end
 
             path = "#{folder}/#{name}"
 
+            FileUtils.mkdir(folder) unless File.exist?(folder)
             FileUtils.rm(path) if File.exist?(path)
 
             File.new path, 'w'
             File.open(path, 'wb') do |file|
-file.write open(url).read
+                file.write open(url).read
             end
 
             path
@@ -53,10 +54,10 @@ file.write open(url).read
         # Returns true if the user was a bot.
         def self.ignore_bots(user)
             if user.bot_account?
-event.bot.ignore_user(event.user)
-return true
+                event.bot.ignore_user(event.user)
+                return true
             else
-return false
+                return false
             end
         end
 
@@ -81,9 +82,9 @@ return false
         def self.get_channel_name(channel_id, bot)
             toReturn = nil
             begin
-toReturn = '#' + bot.channel(channel_id.gsub(/[^0-9,.]/, '')).name
+                toReturn = '#' + bot.channel(channel_id.gsub(/[^0-9,.]/, '')).name
             rescue NoMethodError
-toReturn = '#deleted-channel'
+                toReturn = '#deleted-channel'
             end
             toReturn
         end
@@ -96,18 +97,18 @@ toReturn = '#deleted-channel'
         # Returns the filepath of the file containing the dump.
         def self.dump_channel(channel, output_channel = nil, folder, timestamp)
             server = if channel.private?
-         'DMs'
-     else
-         channel.server.name
+                         'DMs'
+                     else
+                         channel.server.name
      end
             message = "Dumping messages from channel \"#{channel.name.gsub('`', '\\`')}\" in #{server.gsub('`', '\\`')}, please wait..."
             output_channel.send_message(message) unless output_channel.nil?
             puts message
 
             if !channel.private?
-output_filename = "#{folder}/output_" + server + '_' + channel.server.id.to_s + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
+                output_filename = "#{folder}/output_" + server + '_' + channel.server.id.to_s + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
             else
-output_filename = "#{folder}/output_" + server + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
+                output_filename = "#{folder}/output_" + server + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
             end
             output_filename = output_filename.tr(' ', '_').delete('+').delete('\\').delete('/').delete(':').delete('*').delete('?').delete('"').delete('<').delete('>').delete('|')
             hist_count_and_messages = [[], [0, []]]
@@ -117,12 +118,12 @@ output_filename = "#{folder}/output_" + server + '_' + channel.name + '_' + chan
 
             # Now let's dump!
             loop do
-hist_count_and_messages[0] = channel.history(100, nil, offset_id) # next 100
-break if hist_count_and_messages[0] == []
-hist_count_and_messages[1] = SerieBot.parse_history(hist_count_and_messages[0], hist_count_and_messages[1][0])
-output_file.write((hist_count_and_messages[1][1].reverse.join("\n") + "\n").encode('UTF-8')) # write to file right away, don't store everything in memory
-output_file.flush # make sure it gets written to the file
-offset_id = hist_count_and_messages[0][0].id
+                hist_count_and_messages[0] = channel.history(100, nil, offset_id) # next 100
+                break if hist_count_and_messages[0] == []
+                hist_count_and_messages[1] = SerieBot.parse_history(hist_count_and_messages[0], hist_count_and_messages[1][0])
+                output_file.write((hist_count_and_messages[1][1].reverse.join("\n") + "\n").encode('UTF-8')) # write to file right away, don't store everything in memory
+                output_file.flush # make sure it gets written to the file
+                offset_id = hist_count_and_messages[0][0].id
             end
             output_file.close
             message = "#{hist_count_and_messages[1][0]} messages logged."
@@ -168,22 +169,22 @@ This will send you their codes, and then send them your Wii/game codes.
 `#{Config.prefix}error <error code>` will provide you information about the specified error code from Wiimmfi.
 `#{Config.prefix}instructions` will reply with some setup instructions for RiiConnect24."
             if Helper.isadmin?(user)
-              help += "\n\n**__Super secret admin commands__**
-As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you have a limited option of some moderation commands.
+                help += "\n\n**__Super secret admin commands__**
+  As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you have a limited option of some moderation commands.
 
-**Bot-specific commands**
-`#{Config.prefix}wipecodes @user` will wipe all codes the specified user has added.
-`#{Config.prefix}save` will save the current state of codes to data/codes.yml.
+  **Bot-specific commands**
+  `#{Config.prefix}wipecodes @user` will wipe all codes the specified user has added.
+  `#{Config.prefix}save` will save the current state of codes to data/codes.yml.
 
-**General commands**
-`#{Config.prefix}setavatar <file/URL>` will change the avatar to the provided URL/image.
-`#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.
-`#{Config.prefix}status <status>` changes the status of the bot to one of the options of idle, dnd, invisible or online.
-`#{Config.prefix}shutdown` will do exactly as the name suggests to the bot.
-`#{Config.prefix}eval <code>` will evaluate the specified Ruby string. !!! USE WITH CARE !!!
-`#{Config.prefix}bash <command>` will run the specified command in a bash shell. As before, !!! USE WITH CARE !!!
-`#{Config.prefix}dump <id>` will dump all messages from the channel represented by the specified ID.
-`#{Config.prefix}about` will tell you information about the bot."
+  **General commands**
+  `#{Config.prefix}setavatar <file/URL>` will change the avatar to the provided URL/image.
+  `#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.
+  `#{Config.prefix}status <status>` changes the status of the bot to one of the options of idle, dnd, invisible or online.
+  `#{Config.prefix}shutdown` will do exactly as the name suggests to the bot.
+  `#{Config.prefix}eval <code>` will evaluate the specified Ruby string. !!! USE WITH CARE !!!
+  `#{Config.prefix}bash <command>` will run the specified command in a bash shell. As before, !!! USE WITH CARE !!!
+  `#{Config.prefix}dump <id>` will dump all messages from the channel represented by the specified ID.
+  `#{Config.prefix}about` will tell you information about the bot."
             end
             help
       end
