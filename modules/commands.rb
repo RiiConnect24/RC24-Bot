@@ -23,8 +23,16 @@ module SerieBot
                     event.respond("❌ Enter a valid error code!")
                     break
               end
+                # Determine method
+                # Per http://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680943#post680943
+                # it was recommended to use "t=<code>" for dev and "e=<code>" for prod due to statistical reasons.
+                method = if Config.debug
+                             "t=#{code}"
+                         else
+                             "e=#{code}"
+                         end
                 # Grab JSON
-                json_string = open("https://wiimmfi.de/error?e=#{code}&m=json").read
+                json_string = open("https://wiimmfi.de/error?#{method}&m=json").read
                 array = JSON.parse(json_string, symbolize_names: true)
                 # This is a hash wrapped in an array, so go grab it.
                 if array[0][:found] == 1

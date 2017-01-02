@@ -178,7 +178,7 @@ As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you h
 **General commands**
 `#{Config.prefix}setavatar <file/URL>` will change the avatar to the provided URL/image.
 `#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.
-`#{Config.prefix}status <statu>` changes the status of the bot to one of the options of idle, dnd, invisible or online.
+`#{Config.prefix}status <status>` changes the status of the bot to one of the options of idle, dnd, invisible or online.
 `#{Config.prefix}shutdown` will do exactly as the name suggests to the bot.
 `#{Config.prefix}eval <code>` will evaluate the specified Ruby string. !!! USE WITH CARE !!!
 `#{Config.prefix}bash <command>` will run the specified command in a bash shell. As before, !!! USE WITH CARE !!!
