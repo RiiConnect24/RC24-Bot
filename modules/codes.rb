@@ -27,9 +27,9 @@ module SerieBot
                         event << "❌ Please enter a valid name!"
                         next
                     end
-                    Rii.codes[user_id] = {} if Rii.codes[user_id].nil?
-                    Rii.codes[user_id][:wiis] = {} if Rii.codes[user_id][:wiis].nil?
-                    Rii.codes[user_id][:wiis][name] = code
+                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+                    Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
+                    Codes.codes[user_id][:wiis][name] = code
                     Helper.save_codes
                     event.respond("✅ Added a code for `#{name}`")
 
@@ -49,9 +49,9 @@ module SerieBot
                         event << "❌ Please enter a valid name!"
                         next
                     end
-                    Rii.codes[user_id] = {} if Rii.codes[user_id].nil?
-                    Rii.codes[user_id][:games] = {} if Rii.codes[user_id][:games].nil?
-                    Rii.codes[user_id][:games][name] = begin
+                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+                    Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
+                    Codes.codes[user_id][:games][name] = begin
                                                            code
                                                        rescue
                                                            Helper.save_codes
@@ -80,13 +80,13 @@ module SerieBot
                         event << "❌ Please enter a valid name!"
                         next
                     end
-                    Rii.codes[user_id] = {} if Rii.codes[user_id].nil?
-                    Rii.codes[user_id][:wiis] = {} if Rii.codes[user_id][:wiis].nil?
-                    if Rii.codes[user_id][:wiis][name].nil?
+                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+                    Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
+                    if Codes.codes[user_id][:wiis][name].nil?
                         event << "❌ A code for Wii `#{name}` is not registered."
                         next
                     else
-                        Rii.codes[user_id][:wiis][name] = begin
+                        Codes.codes[user_id][:wiis][name] = begin
                                                               code
                                                           rescue
                                                               Helper.save_codes
@@ -110,13 +110,13 @@ module SerieBot
                         event << "❌ Please enter a valid name!"
                         next
                     end
-                    Rii.codes[user_id] = {} if Rii.codes[user_id].nil?
-                    Rii.codes[user_id][:games] = {} if Rii.codes[user_id][:games].nil?
-                    if Rii.codes[user_id][:games][name].nil?
+                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+                    Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
+                    if Codes.codes[user_id][:games][name].nil?
                         event << "❌ A code for Wii `#{name}` is not registered."
                         next
                     else
-                        Rii.codes[user_id][:games][name] = begin
+                        Codes.codes[user_id][:games][name] = begin
                                                                code
                                                            rescue
                                                                Helper.save_codes
@@ -145,13 +145,13 @@ module SerieBot
                         event << "❌ Please enter a valid name!"
                         next
                     end
-                    Rii.codes[user_id] = {} if Rii.codes[user_id].nil?
-                    Rii.codes[user_id][:wiis] = {} if Rii.codes[user_id][:wiis].nil?
-                    if Rii.codes[user_id][:wiis][name].nil?
+                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+                    Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
+                    if Codes.codes[user_id][:wiis][name].nil?
                         event << "❌ A code for Wii `#{name}` is not registered."
                         next
                     else
-                        Rii.codes[user_id][:wiis].delete(name)
+                        Codes.codes[user_id][:wiis].delete(name)
                         Helper.save_codes
                         event.respond("✅ Deleted the code for `#{name}`")
                     end
@@ -171,13 +171,13 @@ module SerieBot
                         event << "❌ Please enter a valid name!"
                         next
                     end
-                    Rii.codes[user_id] = {} if Rii.codes[user_id].nil?
-                    Rii.codes[user_id][:games] = {} if Rii.codes[user_id][:games].nil?
-                    if Rii.codes[user_id][:games][name].nil?
+                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+                    Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
+                    if Codes.codes[user_id][:games][name].nil?
                         event << "❌ A code for Wii `#{name}` is not registered."
                         next
                     else
-                        Rii.codes[user_id][:games].delete(name)
+                        Codes.codes[user_id][:games].delete(name)
                         Helper.save_codes
                         event.respond("✅ Deleted the code for `#{name}`")
                     end
@@ -277,7 +277,7 @@ module SerieBot
                        event.user
                    end
             user = event.user if args[0].nil?
-            Rii.codes[user.id] = nil
+            Codes.codes[user.id] = nil
             event << "Wiped all codes saved by `#{user.distinct}` (ID: #{user.id})"
         end
 
