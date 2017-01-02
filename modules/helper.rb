@@ -16,7 +16,7 @@ f.write(Rii.codes.to_yaml)
         end
 
         def self.load_codes
-            Rii.codes = YAML.load(File.read('data/codes.yml'))
+            Codes.codes = YAML.load(File.read('data/codes.yml'))
         end
 
         # Downloads an avatar when given a `user` object.
@@ -165,7 +165,8 @@ This will send you their codes, and then send them your Wii/game codes.
 `#{Config.prefix}wads` may or may not DM you some WADs.
 `#{Config.prefix}help` or `#{Config.prefix}code help` will send you this help message.
 `#{Config.prefix}gametdb <platform> <title id>` will provide a GameTDB wiki page with the specified Title ID. Valid platforms are Wii, WiiU, PS3, 3DS, and DS.
-`#{Config.prefix}error <error code>` will provide you a Wiimmfi link about the specified error code."
+`#{Config.prefix}error <error code>` will provide you information about the specified error code from Wiimmfi.
+`#{Config.prefix}instructions` will reply with some setup instructions for RiiConnect24."
             if Helper.isadmin?(user)
               help += "\n\n**__Super secret admin commands__**
 As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you have a limited option of some moderation commands.

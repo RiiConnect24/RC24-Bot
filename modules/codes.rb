@@ -1,5 +1,5 @@
 module SerieBot
-    module Rii
+    module Codes
         require 'yaml'
         extend Discordrb::Commands::CommandContainer
         extend Discordrb::EventContainer
@@ -289,34 +289,6 @@ module SerieBot
             message = event.respond 'Saving...'
             Helper.save_codes
             message.edit('All saved!')
-        end
-
-        # Migrated from Yuu-Chan's Yuu module
-        command (:wads) do |event|
-            event.channel.start_typing
-            event.user.pm("**__ RiiConnect24 WADs: __** \nLatest IOS31: http://pokeacer.xyz/owncloud/index.php/s/qMm01pal7hN2wDU/download \nLatest IOS35: http://pokeacer.xyz/owncloud/index.php/s/S7uFituZzlt49oY/download \nLatest IOS80: http://pokeacer.xyz/owncloud/index.php/s/m1K8KW8Tsbn4zTS/download \nLatest IOS251: http://pokeacer.xyz/owncloud/index.php/s/QxCideE7BGy2l5f/download")
-            event.respond("👌")
-        end
-
-        # Migrated from Yuu-Chan's Command module
-        command(:error, max_args: 1, min_args: 1) do |event, code|
-            event.respond("https://wiimmfi.de/error?e=#{code}")
-        end
-        command(:gametdb, max_args: 2, min_args: 2) do |event, platform, code|
-          platforms = ['Wii', 'WiiU', 'PS3', '3DS', 'DS']
-            if platform == '' || platform.nil?
-                event.respond("❌ Enter a valid platform!")
-                break
-            end
-            unless platforms.include?(platform)
-                event.respond("❌ Enter a valid platform!")
-                break
-            end
-            if code == '' || code.nil?
-                event.respond("❌ Enter a valid game code!")
-                break
-            end
-            event.respond("http://gametdb.com/#{platform}/#{code}")
         end
     end
 end

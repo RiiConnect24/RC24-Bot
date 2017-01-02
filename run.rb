@@ -10,7 +10,9 @@ module SerieBot
     end
 
     # Load helper as it is needed first.
-    require_relative "modules/helper.rb"
+    helper_path = "modules/helper.rb"
+    require_relative helper_path
+    puts "Loaded: #{helper_path}"
     # Require other modules asides from Helper
     Dir['modules/*.rb'].each { |r| require_relative r unless r == "modules/helper.rb"; puts "Loaded: #{r}" }
 
@@ -20,7 +22,8 @@ module SerieBot
         Logging,
         Utility,
         Mod,
-        Rii
+        Codes,
+        Commands
     ]
     # Set up bot
     if Config.appid == 0 || Config.appid.nil?
