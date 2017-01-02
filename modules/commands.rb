@@ -1,8 +1,8 @@
 module SerieBot
     module Commands
-      extend Discordrb::Commands::CommandContainer
-      extend Discordrb::EventContainer
-      require 'open-uri'
+        extend Discordrb::Commands::CommandContainer
+        extend Discordrb::EventContainer
+        require 'open-uri'
 
         # Migrated from Yuu-Chan's Yuu module
         command (:wads) do |event|
@@ -17,6 +17,12 @@ module SerieBot
             event.channel.start_typing
             # Validate
             if code.to_i.to_s == code
+                # 0 returns an empty array (see http://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680936#post680936)
+                # We'll just treat it as an error.
+                if code == '0'
+                    event.respond("❌ Enter a valid error code!")
+                    break
+              end
                 # Grab JSON
                 json_string = open("https://wiimmfi.de/error?e=#{code}&m=json").read
                 array = JSON.parse(json_string, symbolize_names: true)
