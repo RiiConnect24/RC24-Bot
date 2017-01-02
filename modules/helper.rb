@@ -11,7 +11,7 @@ module SerieBot
 
         def self.save_codes
             File.open('data/codes.yml', 'w+') do |f|
-f.write(Rii.codes.to_yaml)
+f.write(Codes.codes.to_yaml)
             end
         end
 
