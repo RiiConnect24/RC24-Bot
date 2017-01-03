@@ -101,5 +101,9 @@ module SerieBot
         command(:instructions, max_args: 0, min_args: 0) do |event|
             event.respond('https://riiconnect24.net/instructions/')
         end
+
+        command(:dns) do |event|
+          event.respond("`185.82.21.64` should be your primary DNS.
+          `8.8.8.8` (Google's DNS) can be your secondary DNS server.")
     end
 end
