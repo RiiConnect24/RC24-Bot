@@ -105,5 +105,6 @@ module SerieBot
         command(:dns) do |event|
           event.respond("`185.82.21.64` should be your primary DNS.
           `8.8.8.8` (Google's DNS) can be your secondary DNS server.")
+        end
     end
 end
