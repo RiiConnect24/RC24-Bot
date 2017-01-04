@@ -19,6 +19,7 @@ module SerieBot
     # List of modules to include
     modules = [
         Admin,
+        Help,
         Logging,
         Utility,
         Mod,

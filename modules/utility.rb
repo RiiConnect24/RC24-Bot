@@ -46,6 +46,5 @@ module SerieBot
 				event << "-Joined server at: **#{member.joined_at.getutc.asctime}** UTC"
 			end
 		end
-
 	end
 end

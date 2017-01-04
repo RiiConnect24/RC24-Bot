@@ -4,6 +4,34 @@ module SerieBot
             Config.bot_owners.include?(member)
       end
 
+        # It's okay for us to add server specific commands as we aren't
+        # doing anything on other servers
+        def self.isdeveloper?(event, member)
+            # 206934624096616459 is the dev id of RiiConnect24
+            # 265944436570193921 is dev on Spotlight's Testing Server
+            # Check if the member has the ID of the developers role
+            id = 206_934_624_096_616_459
+            id = 265_944_436_570_193_921 if Config.debug
+            if member.role?(event.server.role(id))
+                return true
+            else
+                return false
+            end
+        end
+
+        def self.ismoderator?(event, member)
+            # 217710564313530368 is the mod id of RiiConnect24
+            # 265944313924419615 is dev on Spotlight's Testing Server
+            # Check if the member has the ID of the developers role
+            id = 217_710_564_313_530_368
+            id = 265_944_313_924_419_615 if Config.debug
+            if member.role?(event.server.role(id))
+                return true
+            else
+                return false
+            end
+        end
+
         def self.quit
             puts 'Exiting...'
             exit
@@ -100,7 +128,7 @@ module SerieBot
                          'DMs'
                      else
                          channel.server.name
-     end
+                    end
             message = "Dumping messages from channel \"#{channel.name.gsub('`', '\\`')}\" in #{server.gsub('`', '\\`')}, please wait..."
             output_channel.send_message(message) unless output_channel.nil?
             puts message
@@ -138,55 +166,5 @@ module SerieBot
             role = roles.select { |r| r.name == rolename }.first
             role
         end
-
-        # New lines need to stay to the side, so formatting stays correct.
-        def self.get_help(user)
-            help = "**__Using the bot__**
-
-**Adding codes:**
-`#{Config.prefix}code add wii | Wii Name | 1234-5678-9012-3456` (You can add multiple Wiis with different names)
-`#{Config.prefix}code add game | Game Name | 1234-5678-9012`
-
-**Editing codes**
-`#{Config.prefix}code edit wii | Wii Name | 1234-5678-9012-3456`
-`#{Config.prefix}code edit game | Game Name | 1234-5678-9012`
-
-**Removing codes**
-`#{Config.prefix}code remove wii | Wii Name`
-`#{Config.prefix}code remove game | Game Name`
-
-**Looking up codes**
-`#{Config.prefix}code lookup @user`
-
-**Adding a user's Wii**
-`#{Config.prefix}add @user`
-This will send you their codes, and then send them your Wii/game codes.
-
-**Specific commands**
-`#{Config.prefix}wads` may or may not DM you some WADs.
-`#{Config.prefix}help` or `#{Config.prefix}code help` will send you this help message.
-`#{Config.prefix}gametdb <platform> <title id>` will provide a GameTDB wiki page with the specified Title ID. Valid platforms are Wii, WiiU, PS3, 3DS, and DS.
-`#{Config.prefix}error <error code>` will provide you information about the specified error code from Wiimmfi.
-`#{Config.prefix}instructions` will reply with some setup instructions for RiiConnect24."
-            if Helper.isadmin?(user)
-                help += "\n\n**__Super secret admin commands__**
-  As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you have a limited option of some moderation commands.
-
-  **Bot-specific commands**
-  `#{Config.prefix}wipecodes @user` will wipe all codes the specified user has added.
-  `#{Config.prefix}save` will save the current state of codes to data/codes.yml.
-
-  **General commands**
-  `#{Config.prefix}setavatar <file/URL>` will change the avatar to the provided URL/image.
-  `#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.
-  `#{Config.prefix}status <status>` changes the status of the bot to one of the options of idle, dnd, invisible or online.
-  `#{Config.prefix}shutdown` will do exactly as the name suggests to the bot.
-  `#{Config.prefix}eval <code>` will evaluate the specified Ruby string. !!! USE WITH CARE !!!
-  `#{Config.prefix}bash <command>` will run the specified command in a bash shell. As before, !!! USE WITH CARE !!!
-  `#{Config.prefix}dump <id>` will dump all messages from the channel represented by the specified ID.
-  `#{Config.prefix}about` will tell you information about the bot."
-            end
-            help
-      end
   end
  end
