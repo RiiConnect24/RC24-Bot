@@ -21,7 +21,6 @@ module SerieBot
             event.respond("👌")
         end
 
-        # Migrated from Yuu-Chan's Command module
         command(:error, max_args: 1, min_args: 1) do |event, code|
             # Start typing so the user knows something's going on
             event.channel.start_typing
@@ -47,38 +46,38 @@ module SerieBot
                 # This is a hash wrapped in an array, so go grab it.
                 if array[0][:found] == 1
                     data = array[0]
-                    messageToSend = "Here's your issue:\n"
+                    messageToSend = ''
                     # Infolist will have all the table things
                     data[:infolist].each do |row|
                         info = row[:info]
+                        puts info.to_s
 
-                        wiimmfiLinkInfo = info
-                        # For Wiimmfi self links
-                        selfMatches = /<a href\s*=\s*"\/([^"]*)">([^"]*)<\/a>/.match(info)
-                        unless selfMatches.nil?
-                            # Replaces matches with url (title)
-                            webLink = (selfMatches[2]).to_s
-                            wiimmfiLinkInfo = info.gsub(selfMatches[0], webLink)
-                      end
+                        otherLinkInfo = info
 
-                        otherLinkInfo = wiimmfiLinkInfo
-                        # Other links
-                        linkMatches = /<a href\s*=\s*"https:\/\/([^"]*)">([^"]*)<\/a>/.match(wiimmfiLinkInfo)
-                        unless linkMatches.nil?
-                            # Replaces matches with url (title)
-                            otherLink = (linkMatches[2]).to_s
-                            otherLinkInfo = wiimmfiLinkInfo.gsub(linkMatches[0], otherLink)
-                      end
+                        # Cycle through all matches
+                        loop do
+                            # Links
+                            linkMatches = /<a href\s*=\s*"http([^"]*)">([^"]*)<\/a>/.match(otherLinkInfo)
+                            break if linkMatches.nil?
+                            puts linkMatches.inspect
+                            # Replaces matches with [title](http<url>) (Discord embed thing)
+                            # We start the URL with http because of the regex.
+                            otherLink = "[#{linkMatches[2]}](http#{linkMatches[1]})"
+                            otherLinkInfo = otherLinkInfo.gsub(linkMatches[0], otherLink)
+                        end
                         # For formatting.
                         oneBold = otherLinkInfo.gsub('<b>', '**')
                         twoBold = oneBold.gsub('</b>', '**')
                         oneItalic = twoBold.gsub('<i>', '*')
                         twoItalic = oneItalic.gsub('</i>', '*')
 
-                        messageToSend += "#{row[:type]} for code #{row[:name]}: #{twoItalic}\n"
+                        messageToSend += "#{row[:type]} for error #{row[:name]}: #{twoItalic}\n"
                     end
 
-                    event.respond(messageToSend)
+                    event.channel.send_embed do |e|
+                        e.title = "Here's information about your error:"
+                        e.description = messageToSend.to_s
+                    end
                     # This break is super important, otherwise it messages all of data[:infolist]
                     # Why? I don't know, just please don't remove this
                     break
@@ -113,8 +112,8 @@ module SerieBot
         end
 
         command(:dns) do |event|
-          event.respond("`185.82.21.64` should be your primary DNS.
-          `8.8.8.8` (Google's DNS) can be your secondary DNS server.")
+            event.respond("`185.82.21.64` should be your primary DNS.
+            `8.8.8.8` (Google's DNS) can be your secondary DNS server.")
         end
     end
 end
