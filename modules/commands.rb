@@ -7,7 +7,17 @@ module SerieBot
         # Migrated from Yuu-Chan's Yuu module
         command (:wads) do |event|
             event.channel.start_typing
-            event.user.pm("**__ RiiConnect24 WADs: __** \nLatest IOS31: http://pokeacer.xyz/owncloud/index.php/s/qMm01pal7hN2wDU/download \nLatest IOS35: http://pokeacer.xyz/owncloud/index.php/s/S7uFituZzlt49oY/download \nLatest IOS80: http://pokeacer.xyz/owncloud/index.php/s/m1K8KW8Tsbn4zTS/download \nLatest IOS251: http://pokeacer.xyz/owncloud/index.php/s/QxCideE7BGy2l5f/download")
+            wads = "**__ RiiConnect24 WADs: __**\n"
+            wads << "Latest IOS31: http://pokeacer.xyz/owncloud/index.php/s/qMm01pal7hN2wDU/download\n"
+            wads << "Latest IOS35: http://pokeacer.xyz/owncloud/index.php/s/S7uFituZzlt49oY/download\n"
+            wads << "Latest IOS80: http://pokeacer.xyz/owncloud/index.php/s/m1K8KW8Tsbn4zTS/download\n"
+            wads << 'Latest IOS251: http://pokeacer.xyz/owncloud/index.php/s/QxCideE7BGy2l5f/download'
+            begin
+                event.user.pm(wads)
+            rescue Discordrb::Errors::NoPermission
+                event.respond("❌ Sorry, but it looks like you're blocking DMs.")
+                break
+            end
             event.respond("👌")
         end
 
