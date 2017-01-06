@@ -50,7 +50,6 @@ module SerieBot
                     # Infolist will have all the table things
                     data[:infolist].each do |row|
                         info = row[:info]
-                        puts info.to_s
 
                         otherLinkInfo = info
 
@@ -59,7 +58,6 @@ module SerieBot
                             # Links
                             linkMatches = /<a href\s*=\s*"http([^"]*)">([^"]*)<\/a>/.match(otherLinkInfo)
                             break if linkMatches.nil?
-                            puts linkMatches.inspect
                             # Replaces matches with [title](http<url>) (Discord embed thing)
                             # We start the URL with http because of the regex.
                             otherLink = "[#{linkMatches[2]}](http#{linkMatches[1]})"
