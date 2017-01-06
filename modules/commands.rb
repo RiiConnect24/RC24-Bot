@@ -77,6 +77,8 @@ module SerieBot
                     event.channel.send_embed do |e|
                         e.title = "Here's information about your error:"
                         e.description = messageToSend.to_s
+                        e.colour = "#D32F2F"
+                        e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information is from Wiimmfi.')
                     end
                     # This break is super important, otherwise it messages all of data[:infolist]
                     # Why? I don't know, just please don't remove this
