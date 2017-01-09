@@ -133,7 +133,7 @@ module SerieBot
         end
 
         command(:about, min_args: 0, max_args: 0) do |event|
-            event << "`#{event.bot.user(event.bot.profile.id).distinct}` is running a modified version of **SerieBot**: \n**https://github.com/Seriell/Serie-Bot **"
+            event << "`#{event.bot.user(event.bot.profile.id).distinct}` running **RC24-Bot v1-#{`git rev-parse --short HEAD`}** \n**https://github.com/Seriell/RC24-Bot **"
         end
     end
 end
