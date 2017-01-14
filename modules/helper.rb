@@ -7,11 +7,8 @@ module SerieBot
         # It's okay for us to add server specific commands as we aren't
         # doing anything on other servers
         def self.isdeveloper?(event, member)
-            # 206934624096616459 is the dev id of RiiConnect24
-            # 265944436570193921 is dev on Spotlight's Testing Server
             # Check if the member has the ID of the developers role
-            id = 206_934_624_096_616_459
-            id = 265_944_436_570_193_921 if Config.debug
+            id = Helper.role_from_name(event.server, "Developers").id
             if member.role?(event.server.role(id))
                 return true
             else
@@ -20,11 +17,8 @@ module SerieBot
         end
 
         def self.ismoderator?(event, member)
-            # 217710564313530368 is the mod id of RiiConnect24
-            # 265944313924419615 is dev on Spotlight's Testing Server
             # Check if the member has the ID of the developers role
-            id = 217_710_564_313_530_368
-            id = 265_944_313_924_419_615 if Config.debug
+            id = Helper.role_from_name(event.server, "Moderators").id
             if member.role?(event.server.role(id))
                 return true
             else

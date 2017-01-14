@@ -8,7 +8,7 @@ This bot was created by Seriel for the RiiConnect24 Discord server.
 - bundler (`gem install bundler`)
 
 # Install
-1. Clone the repo: `git clone git@github.com:awesomebing1/RC24-Bot.git`
+1. Clone the repo: `git clone github.com/Seriell/RC24-Bot.git`
 2. cd into the repo: `cd RC24-Bot`
 3. Edit `config.rb.example` to include the needed information and save it as `config.rb`
 4. Install bundler if you haven't already: `gem install bundler`
