@@ -16,7 +16,17 @@ module SerieBot
             end
         end
 
-        def self.ismoderator?(event, member)
+        def self.is_bot_helper?(event, member)
+            # Check if the member has the ID of the bot helpers role
+            id = Helper.role_from_name(event.server, "Bot Helpers").id
+            if member.role?(event.server.role(id))
+                return true
+            else
+                return false
+            end
+        end
+
+        def self.is_moderator?(event, member)
             # Check if the member has the ID of the developers role
             id = Helper.role_from_name(event.server, "Moderators").id
             if member.role?(event.server.role(id))
