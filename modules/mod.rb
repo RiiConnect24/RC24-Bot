@@ -29,7 +29,7 @@ module SerieBot
 			nil
 		end
 
-		command(:kick, description: "Temporarily Kick somebody from the server. Mod only.", required_permissions: [:kick_members],usage: '&kick @User reason', min_args: 2) do |event, *kickreason|
+		command(:kick, description: "Temporarily kick somebody from the server. Mod only.", required_permissions: [:kick_members],usage: '&kick @User reason', min_args: 2) do |event, *kickreason|
 			member = event.server.member(event.message.mentions[0])
 
 			break if event.channel.private?
@@ -43,16 +43,13 @@ module SerieBot
 				"Invalid argument. Please mention a valid user."
 			end
 		end
-		command(:hackban, required_permissions: [:ban_members], min_args: 1) do |event, id|
-			begin
-				Discordrb::API::Server.ban_user(event.bot.token, event.server.id, id, 0)
-			event.respond(":hammer: <@#{id}> has been banned!")
-		rescue
-			event.respond("An error occured!")
-		end
-		end
 
-		command(:ban, description: "Permanently ban someone from the server. Mod only.",required_permissions: [:ban_members], usage: '&ban @User reason', min_args: 2) do |event, *banreason|
+		command(:ban, description: "Permanently ban someone from the server. Mod only.", usage: '&ban @User reason', min_args: 2) do |event, *banreason|
+			unless Helper.is_developer(event.user) || Helper.is_bot_helper(event.user) || Helper.is_admin(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+		  end
+
 			member = event.server.member(event.message.mentions[0])
 			break if event.channel.private?
 			if event.message.mentions[0]
@@ -62,14 +59,11 @@ module SerieBot
 					member.pm("You have been **permanently banned** from the server #{event.server.name} by #{event.message.author.mention} | **#{event.message.author.display_name}**
 They gave the following reason: ``#{bandisplay}``
 If you wish to appeal for your ban's removal, please contact this person, or the server owner.")
-
 			else
 				"Invalid argument. Please mention a valid user."
 			end
 		end
-
-
-
+		
 		command(:lockdown, required_permissions: [:administrator]) do |event, time, *reason|
 			reason = reason.join(' ')
 			lockdown = Discordrb::Permissions.new
