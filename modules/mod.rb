@@ -45,7 +45,7 @@ module SerieBot
 		end
 
 		command(:ban, description: "Permanently ban someone from the server. Mod only.", usage: '&ban @User reason', min_args: 2) do |event, *banreason|
-			unless Helper.is_developer(event.user) || Helper.is_bot_helper(event.user) || Helper.is_admin(event.user)
+			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
 		  end
@@ -55,15 +55,26 @@ module SerieBot
 			if event.message.mentions[0]
 				finalbanmessage = banreason.drop(1)
 				bandisplay = finalbanmessage.join(" ")
-        event.server.ban(member) rescue next
-					member.pm("You have been **permanently banned** from the server #{event.server.name} by #{event.message.author.mention} | **#{event.message.author.display_name}**
-They gave the following reason: ``#{bandisplay}``
-If you wish to appeal for your ban's removal, please contact this person, or the server owner.")
+				begin
+        	event.server.ban(member)
+				rescue Discordrb::Errors::NoPermission
+					"The bot doesn't have permision to ban!"
+				end
+				message = "You have been **permanently banned** from the server #{event.server.name} by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
+				message << "They gave the following reason: ``#{bandisplay}``\n\n"
+				message << "If you wish to appeal for your ban's removal, please contact this person, or the server owner."
+				begin
+						memeber.pm(message)
+				rescue Discordrb::Errors::NoPermission
+						event.respond("👌 Banned sucessfully, but I wasn't able to DM the user about ban reasons.")
+						break
+				end
+				"👌 The ban hammer has hit, hard."
 			else
 				"Invalid argument. Please mention a valid user."
 			end
 		end
-		
+
 		command(:lockdown, required_permissions: [:administrator]) do |event, time, *reason|
 			reason = reason.join(' ')
 			lockdown = Discordrb::Permissions.new

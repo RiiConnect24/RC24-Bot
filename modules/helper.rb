@@ -6,30 +6,30 @@ module SerieBot
 
         # It's okay for us to add server specific commands as we aren't
         # doing anything on other servers.
-        def self.is_developer?(event, member)
+        def self.is_developer?(event)
             # Check if the member has the ID of the developers role
             id = Helper.role_from_name(event.server, "Developers").id
-            if member.role?(event.server.role(id))
+            if event.user.role?(event.server.role(id))
                 return true
             else
                 return false
             end
         end
 
-        def self.is_bot_helper?(event, member)
+        def self.is_bot_helper?(event)
             # Check if the member has the ID of the bot helpers role
             id = Helper.role_from_name(event.server, "Bot Helpers").id
-            if member.role?(event.server.role(id))
+            if event.user.role?(event.server.role(id))
                 return true
             else
                 return false
             end
         end
 
-        def self.is_moderator?(event, member)
+        def self.is_moderator?(event)
             # Check if the member has the ID of the developers role
             id = Helper.role_from_name(event.server, "Moderators").id
-            if member.role?(event.server.role(id))
+            if event.user.role?(event.server.role(id))
                 return true
             else
                 return false

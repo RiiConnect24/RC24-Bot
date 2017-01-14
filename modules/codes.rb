@@ -267,7 +267,7 @@ module SerieBot
         end
 
         command(:wipecodes) do |event, *args|
-            unless Helper.is_developer?(event, event.user) || Helper.is_moderator?(event, event.user) || Helper.is_admin?(event.user)
+            unless Helper.is_developer?(event) || Helper.is_moderator?(event) || Helper.is_admin?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -282,7 +282,7 @@ module SerieBot
         end
 
         command(:save) do |event|
-            unless Helper.is_developer?(event, event.user) || Helper.is_bot_helper(event.user) || Helper.is_admin?(event.user)
+            unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end

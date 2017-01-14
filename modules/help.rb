@@ -35,7 +35,7 @@ module SerieBot
             help << "`#{Config.prefix}dns` will reply with the DNS settings for RiiConnect24."
             help << "`#{Config.prefix}about` will tell you information about the bot.\n"
             extrahelp = ""
-            if Helper.is_admin?(event.user) || Helper.is_moderator?(event, event.user) || Helper.is_developer?(event, event.user)
+            if Helper.is_admin?(event.user) || Helper.is_moderator?(event) || Helper.is_developer?(event)
                 extrahelp << "\n\n**__Mod commands__**\n"
                 extrahelp << "As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you have a limited option of some moderation commands.\n"
                 extrahelp << "\n"
@@ -43,7 +43,7 @@ module SerieBot
                 extrahelp << "`#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.\n"
                 extrahelp << ""
             end
-            if Helper.is_admin?(event.user) || Helper.is_bot_helper(event.user) || Helper.is_developer?(event, event.user)
+            if Helper.is_admin?(event.user) || Helper.is_bot_helper?(event) || Helper.is_developer?(event)
                 extrahelp << "\n\n**Developers:**\n"
                 extrahelp << "`#{Config.prefix}setavatar <file/URL>` will change the avatar to the provided URL/image.\n"
                 extrahelp << "`#{Config.prefix}status <status>` changes the status of the bot to one of the options of idle, dnd, invisible or online.\n"
@@ -57,7 +57,7 @@ module SerieBot
                 extrahelp << "`#{Config.prefix}wipecodes @user` will wipe all codes the specified user has added.\n"
                 extrahelp << "`#{Config.prefix}save` will save the current state of codes to data/codes.yml.\n"
             end
-            if Helper.is_admin?(event.user) || Helper.is_bot_helper(event.user)
+            if Helper.is_admin?(event.user) || Helper.is_bot_helper?(event)
                 extrahelp << "\n\n**Admins**\n"
                 extrahelp << "`#{Config.prefix}eval <code>` will evaluate the specified Ruby string. !!! USE WITH CARE !!!\n"
                 extrahelp << "`#{Config.prefix}bash <command>` will run the specified command in a bash shell. As before, !!! USE WITH CARE !!!\n"
