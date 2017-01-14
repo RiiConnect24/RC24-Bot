@@ -1,12 +1,12 @@
 module SerieBot
     module Helper
-        def self.isadmin?(member)
+        def self.is_admin?(member)
             Config.bot_owners.include?(member)
       end
 
         # It's okay for us to add server specific commands as we aren't
-        # doing anything on other servers
-        def self.isdeveloper?(event, member)
+        # doing anything on other servers.
+        def self.is_developer?(event, member)
             # Check if the member has the ID of the developers role
             id = Helper.role_from_name(event.server, "Developers").id
             if member.role?(event.server.role(id))
