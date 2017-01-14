@@ -64,7 +64,7 @@ module SerieBot
 				message << "They gave the following reason: ``#{bandisplay}``\n\n"
 				message << "If you wish to appeal for your ban's removal, please contact this person, or the server owner."
 				begin
-						memeber.pm(message)
+						member.pm(message)
 				rescue Discordrb::Errors::NoPermission
 						event.respond("👌 Banned sucessfully, but I wasn't able to DM the user about ban reasons.")
 						break
