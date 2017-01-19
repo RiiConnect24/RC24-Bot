@@ -29,16 +29,31 @@ module SerieBot
 			nil
 		end
 
-		command(:kick, description: "Temporarily kick somebody from the server. Mod only.", required_permissions: [:kick_members],usage: '&kick @User reason', min_args: 2) do |event, *kickreason|
+		command(:kick, description: "Temporarily kick somebody from the server. Mod only.", usage: "#{Config.prefix}kick @user reason", min_args: 2) do |event, *kickreason|
+			unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
 			member = event.server.member(event.message.mentions[0])
 
 			break if event.channel.private?
 			if event.message.mentions[0]
 				finalmessage = kickreason.drop(1)
 				display = finalmessage.join(" ")
-        event.server.kick(member) rescue next
-				member.pm("You have been kicked from the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\nThey gave the following reason: ``#{display}``")
-
+				message = "You have been kicked from the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
+				message << "They gave the following reason: ``#{display}``"
+				begin
+						member.pm(message)
+				rescue Discordrb::Errors::NoPermission
+						event.respond("Could not DM user about ban reason!")
+						break
+				end
+				begin
+        	event.server.kick(member)
+				rescue Discordrb::Errors::NoPermission
+					"The bot doesn't have permision to kick!"
+					break
+				end
 			else
 				"Invalid argument. Please mention a valid user."
 			end
@@ -68,8 +83,10 @@ module SerieBot
         	event.server.ban(member)
 				rescue Discordrb::Errors::NoPermission
 					"The bot doesn't have permision to ban!"
+					break
 				end
 				"👌 The ban hammer has hit, hard."
+				break
 			else
 				"Invalid argument. Please mention a valid user."
 			end

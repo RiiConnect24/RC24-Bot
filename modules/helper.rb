@@ -48,7 +48,11 @@ module SerieBot
         end
 
         def self.load_codes
-            Codes.codes = YAML.load(File.read('data/codes.yml'))
+            folder = 'data'
+            codesPath = "#{folder}/codes.yml"
+            FileUtils.mkdir(folder) unless File.exist?(folder)
+            File.open(codesPath, "w") {} unless File.exist?(codesPath)
+            Codes.codes = YAML.load(File.read(codesPath))
         end
 
         # Downloads an avatar when given a `user` object.
