@@ -34,14 +34,14 @@ module SerieBot
             help << "`#{Config.prefix}instructions` will reply with some setup instructions for RiiConnect24.\n"
             help << "`#{Config.prefix}dns` will reply with the DNS settings for RiiConnect24."
             help << "`#{Config.prefix}about` will tell you information about the bot.\n"
-            extrahelp = ''
+            extrahelp = ""
             if Helper.is_admin?(event.user) || Helper.is_moderator?(event) || Helper.is_developer?(event)
                 extrahelp << "\n\n**__Mod commands__**\n"
                 extrahelp << "As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you have a limited option of some moderation commands.\n"
                 extrahelp << "\n"
                 extrahelp << "**General commands**\n"
                 extrahelp << "`#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.\n"
-                extrahelp << ''
+                extrahelp << ""
             end
             if Helper.is_admin?(event.user) || Helper.is_bot_helper?(event) || Helper.is_developer?(event)
                 extrahelp << "\n\n**Developers:**\n"
@@ -64,11 +64,11 @@ module SerieBot
                 extrahelp << "`#{Config.prefix}shutdown` will do exactly as the name suggests to the bot.\n"
             end
             begin
-                event.user.pm(help)
-                event.user.pm(extrahelp)
-                event.respond('Check your DMs!')
+              event.user.pm(help)
+              event.user.pm(extrahelp)
+              event.respond("Check your DMs!")
             rescue Discordrb::Errors::NoPermission
-                event.respond("❌ Sorry, but it looks like you're blocking DMs.")
+              event.respond("❌ Sorry, but it looks like you're blocking DMs.")
             end
         end
   end
