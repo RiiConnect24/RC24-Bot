@@ -10,7 +10,7 @@ module SerieBot
             url = url.join(' ')
             file = Helper.download_file(url, 'tmp')
             event.bot.profile.avatar = File.open(file)
-            event.respond("✅ Avatar should be updated!")
+            event.respond('✅ Avatar should be updated!')
         end
 
         command(:ignore, description: 'Temporarily ignore a given user', min_args: 1, max_args: 1) do |event, mention|
@@ -58,16 +58,16 @@ module SerieBot
             end
             if status == 'idle'
                 event.bot.idle
-                event.respond("✅ Status set to **Idle**!")
+                event.respond('✅ Status set to **Idle**!')
             elsif status == 'dnd'
                 event.bot.dnd
-                event.respond("✅ Status set to **Do No Disturb**!")
+                event.respond('✅ Status set to **Do No Disturb**!')
             elsif status == 'online'
                 event.bot.online
-                event.respond("✅ Status set to **Online**!")
+                event.respond('✅ Status set to **Online**!')
             elsif status == 'invisible' || status == 'offline'
                 event.bot.invisible
-                event.respond("✅ Status set to **Invisible**!")
+                event.respond('✅ Status set to **Invisible**!')
             else
                 event.respond('Enter a valid argument!')
             end
@@ -102,9 +102,9 @@ module SerieBot
             bashcode = code.join(' ')
             # Capture all output, including STDERR.
             toBeRun = "#{bashcode} 2>&1"
-            result = ` #{toBeRun} `
+            result = `#{toBeRun}`
             event << if result.nil? || result == '' || result == ' ' || result == "\n"
-                         "✅ Done! (No output)"
+                         '✅ Done! (No output)'
                      else
                          "Output: ```\n#{result}```"
                      end
@@ -119,7 +119,7 @@ module SerieBot
             channel = begin
                         event.bot.channel(channel_id)
                     rescue
-                        event.respond("❌ Enter a valid channel id!")
+                        event.respond('❌ Enter a valid channel id!')
                     end
             output_filename = Helper.dump_channel(channel, event.channel, Config.dump_dir, event.message.timestamp)
             event.channel.send_file File.new([output_filename].sample)

@@ -18,7 +18,7 @@ module SerieBot
                 event.respond("❌ Sorry, but it looks like you're blocking DMs.")
                 break
             end
-            event.respond("👌")
+            event.respond('👌')
         end
 
         command(:error, max_args: 1, min_args: 1) do |event, code|
@@ -29,7 +29,7 @@ module SerieBot
                 # 0 returns an empty array (see http://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680936#post680936)
                 # We'll just treat it as an error.
                 if code == '0'
-                    event.respond("❌ Enter a valid error code!")
+                    event.respond('❌ Enter a valid error code!')
                     break
               end
                 # Determine method
@@ -75,33 +75,33 @@ module SerieBot
                     event.channel.send_embed do |e|
                         e.title = "Here's information about your error:"
                         e.description = messageToSend.to_s
-                        e.colour = "#D32F2F"
+                        e.colour = '#D32F2F'
                         e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information is from Wiimmfi.')
                     end
                     # This break is super important, otherwise it messages all of data[:infolist]
                     # Why? I don't know, just please don't remove this
                     break
                 else
-                    event.respond("❌ Could not find the specified error from Wiimmfi.")
+                    event.respond('❌ Could not find the specified error from Wiimmfi.')
                     break
                 end
             else
-                event.respond("❌ Enter a valid error code!")
+                event.respond('❌ Enter a valid error code!')
                 break
           end
         end
         command(:gametdb, max_args: 2, min_args: 2) do |event, platform, code|
             platforms = %w(Wii WiiU PS3 3DS DS)
             if platform == '' || platform.nil?
-                event.respond("❌ Enter a valid platform!")
+                event.respond('❌ Enter a valid platform!')
                 break
             end
             unless platforms.include?(platform)
-                event.respond("❌ Enter a valid platform!")
+                event.respond('❌ Enter a valid platform!')
                 break
             end
             if code == '' || code.nil?
-                event.respond("❌ Enter a valid game code!")
+                event.respond('❌ Enter a valid game code!')
                 break
             end
             event.respond("http://gametdb.com/#{platform}/#{code}")

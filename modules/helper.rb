@@ -8,7 +8,7 @@ module SerieBot
         # doing anything on other servers.
         def self.is_developer?(event)
             # Check if the member has the ID of the developers role
-            id = Helper.role_from_name(event.server, "Developers").id
+            id = Helper.role_from_name(event.server, 'Developers').id
             if event.user.role?(event.server.role(id))
                 return true
             else
@@ -18,7 +18,7 @@ module SerieBot
 
         def self.is_bot_helper?(event)
             # Check if the member has the ID of the bot helpers role
-            id = Helper.role_from_name(event.server, "Bot Helpers").id
+            id = Helper.role_from_name(event.server, 'Bot Helpers').id
             if event.user.role?(event.server.role(id))
                 return true
             else
@@ -28,7 +28,7 @@ module SerieBot
 
         def self.is_moderator?(event)
             # Check if the member has the ID of the developers role
-            id = Helper.role_from_name(event.server, "Moderators").id
+            id = Helper.role_from_name(event.server, 'Moderators').id
             if event.user.role?(event.server.role(id))
                 return true
             else
@@ -51,8 +51,8 @@ module SerieBot
             folder = 'data'
             codesPath = "#{folder}/codes.yml"
             FileUtils.mkdir(folder) unless File.exist?(folder)
-            File.open(codesPath, "w") {} unless File.exist?(codesPath)
-            Codes.codes = YAML.load(File.read(codesPath))
+            File.open(codesPath, 'w') {} unless File.exist?(codesPath)
+            Codes.codes = YAML.safe_load(File.read(codesPath))
         end
 
         # Downloads an avatar when given a `user` object.
@@ -91,9 +91,9 @@ module SerieBot
         def self.ignore_bots(user)
             if user.bot_account?
                 event.bot.ignore_user(event.user)
-                return true
+                true
             else
-                return false
+                false
             end
         end
 

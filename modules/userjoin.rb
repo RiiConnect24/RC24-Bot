@@ -53,7 +53,6 @@ module SerieBot
         end
 
         user_unban do |event|
-            # D32F2F
             time = Time.new
 
             channel = event.server.channels.select { |x| x.name == log_channel }.first
