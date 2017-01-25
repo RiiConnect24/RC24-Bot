@@ -59,7 +59,7 @@ module SerieBot
 			end
 		end
 
-		command(:ban, description: "Permanently ban someone from the server. Mod only.", usage: '&ban @User reason', min_args: 2) do |event, *banreason|
+		command(:ban, description: "Permanently ban someone from the server. Mod only.", usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *banreason|
 			unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
@@ -81,8 +81,8 @@ module SerieBot
 				end
 				begin
         	event.server.ban(member)
-				rescue Discordrb::Errors::NoPermission
-					"The bot doesn't have permision to ban!"
+				rescue
+					event.respond("The bot doesn't have permision to ban that user!")
 					break
 				end
 				"👌 The ban hammer has hit, hard."
