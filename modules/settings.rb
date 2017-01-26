@@ -14,6 +14,8 @@ module SerieBot
 
       attr_accessor :dump_dir
       attr_accessor :debug
+
+      attr_accessor :ignore_ids
   end
     config_location = Dir.pwd + '/config.rb'
     if File.exists?(config_location)

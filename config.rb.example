@@ -25,5 +25,8 @@ module SerieBot
 
 		# Set this false to use some production APIs.
 		@debug = true
+
+		# Block specific channel IDs from being logged.
+		@ignore_ids = [271724634368507904]
 	end
 end

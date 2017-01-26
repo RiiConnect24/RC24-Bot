@@ -63,19 +63,21 @@ module SerieBot
         end
 
         message do |event|
-            get_message(event, nil)
+            get_message(event, nil) unless Config.ignore_ids.include? event.channel.id
         end
 
         message_edit do |event|
-            get_message(event, '{EDIT}')
+            get_message(event, '{EDIT}') unless Config.ignore_ids.include? event.channel.id
         end
 
         message_delete do |event|
-            get_deleted_message(event, '{DELETE}')
+            get_deleted_message(event, '{DELETE}') unless Config.ignore_ids.include? event.channel.id
         end
 
         member_join do |event|
-            puts Rainbow("#{Time.now.strftime('[%D %H:%M]')} #{event.member.distinct} joined #{event.server.name}").blue
+            unless Config.ignore_ids.include? event.channel.id
+              puts Rainbow("#{Time.now.strftime('[%D %H:%M]')} #{event.member.distinct} joined #{event.server.name}").blue
+            end
         end
     end
 end
