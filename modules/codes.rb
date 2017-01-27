@@ -9,7 +9,8 @@ module SerieBot
         Helper.load_codes
 
         command(:code) do |event, option, *args|
-            puts "Args: #{args.join(' ')}"
+            user_id = event.user.id
+            Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
             if option == 'add'
                 if args[0] == 'wii'
                     args.delete_at(0)
@@ -18,16 +19,15 @@ module SerieBot
                     input = args.split(' | ')
                     code = input[1]
                     name = input[0]
-                    user_id = event.user.id
                     if code.nil?
-                        event << "❌ Please enter a valid code!"
+                        event << '❌ Please enter a valid code!'
                         next
                     end
                     if name.nil?
-                        event << "❌ Please enter a valid name!"
+                        event << '❌ Please enter a valid name!'
                         next
                     end
-                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+
                     Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
                     Codes.codes[user_id][:wiis][name] = code
                     Helper.save_codes
@@ -42,14 +42,14 @@ module SerieBot
                     name = input[0]
                     user_id = event.user.id
                     if code.nil?
-                        event << "❌ Please enter a valid code!"
+                        event << '❌ Please enter a valid code!'
                         next
                     end
                     if name.nil?
-                        event << "❌ Please enter a valid name!"
+                        event << '❌ Please enter a valid name!'
                         next
                     end
-                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+
                     Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
                     Codes.codes[user_id][:games][name] = begin
                                                            code
@@ -57,10 +57,9 @@ module SerieBot
                                                            Helper.save_codes
                                                        end
                     event.respond("✅ Added a code for `#{name}`")
-                    puts "[DEBUG] ```#{input}\nCode as int: #{code}```"
 
                 else
-                    event << "❌ Please enter a valid argument for the option `add`."
+                    event << '❌ Please enter a valid argument for the option `add`.'
                     event << 'Valid arguments: `wii`, `game`.'
                 end
             elsif option == 'edit'
@@ -73,14 +72,14 @@ module SerieBot
                     name = input[0]
                     user_id = event.user.id
                     if code.nil?
-                        event << "❌ Please enter a valid code!"
+                        event << '❌ Please enter a valid code!'
                         next
                     end
                     if name.nil?
-                        event << "❌ Please enter a valid name!"
+                        event << '❌ Please enter a valid name!'
                         next
                     end
-                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+
                     Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
                     if Codes.codes[user_id][:wiis][name].nil?
                         event << "❌ A code for Wii `#{name}` is not registered."
@@ -103,14 +102,14 @@ module SerieBot
                     name = input[0]
                     user_id = event.user.id
                     if code.nil?
-                        event << "❌ Please enter a valid code!"
+                        event << '❌ Please enter a valid code!'
                         next
                     end
                     if name.nil?
-                        event << "❌ Please enter a valid name!"
+                        event << '❌ Please enter a valid name!'
                         next
                     end
-                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+
                     Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
                     if Codes.codes[user_id][:games][name].nil?
                         event << "❌ A code for Wii `#{name}` is not registered."
@@ -125,7 +124,7 @@ module SerieBot
                     end
 
                 else
-                    event << "❌ Please enter a valid argument for the option `edit`."
+                    event << '❌ Please enter a valid argument for the option `edit`.'
                     event << 'Valid arguments: `wii`, `game`.'
                 end
             elsif option == 'remove'
@@ -138,14 +137,14 @@ module SerieBot
                     name = input[0]
                     user_id = event.user.id
                     if code.nil?
-                        event << "❌ Please enter a valid code!"
+                        event << '❌ Please enter a valid code!'
                         next
                     end
                     if name.nil?
-                        event << "❌ Please enter a valid name!"
+                        event << '❌ Please enter a valid name!'
                         next
                     end
-                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+
                     Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
                     if Codes.codes[user_id][:wiis][name].nil?
                         event << "❌ A code for Wii `#{name}` is not registered."
@@ -164,14 +163,14 @@ module SerieBot
                     name = input[0]
                     user_id = event.user.id
                     if code.nil?
-                        event << "❌ Please enter a valid code!"
+                        event << '❌ Please enter a valid code!'
                         next
                     end
                     if name.nil?
-                        event << "❌ Please enter a valid name!"
+                        event << '❌ Please enter a valid name!'
                         next
                     end
-                    Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+
                     Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
                     if Codes.codes[user_id][:games][name].nil?
                         event << "❌ A code for Wii `#{name}` is not registered."
@@ -183,7 +182,7 @@ module SerieBot
                     end
 
                 else
-                    event << "❌ Please enter a valid argument for the option `remove`."
+                    event << '❌ Please enter a valid argument for the option `remove`.'
                     event << 'Valid arguments: `wii`, `game`.'
                 end
             elsif option == 'lookup'
@@ -194,9 +193,13 @@ module SerieBot
                            event.user
                        end
                 user = event.user if args[0].nil?
-                if @codes[user.id].nil?
+                if @codes[user.id][:wiis].nil? && @codes[user.id][:games].nil?
+                  event.respond("❌ **#{user.on(event.server).display_name}** has not added any friend codes!")
+                  break
+                end
+                if @codes[user.id].nil? || codes[user.id] == {}
                     event.respond("❌ **#{user.on(event.server).display_name}** has not added any friend codes!")
-                    next
+                    break
                 else
                     event << "**__👤 Profile for #{user.on(event.server).display_name}__**\n"
                     unless @codes[user.id][:wiis].nil?
@@ -208,21 +211,29 @@ module SerieBot
                         event << ''
                     end
                     unless @codes[user.id][:games].nil?
-                        event << "🎮 **Games**:"
+                        event << '🎮 **Games**:'
                         @codes[user.id][:games].each do |game, code|
                             code_output = code
                             event << "`#{code_output}` - #{game}"
                         end
                         nil
                     end
-
                 end
             elsif option == 'help'
-                event.respond(Helper.get_help(event.user))
-
+                event.respond(Helper.get_help)
+            elsif option == 'disable'
+                user = event.user
+                Codes.codes[user.id][:enabled] = false
+                Helper.save_codes
+                event.respond("✅ Disabled `#{Config.prefix}add`! Turn back on adding with `#{Config.prefix}code enable`.")
+            elsif option == 'enable'
+                user = event.user
+                Codes.codes[user.id][:enabled] = true
+                Helper.save_codes
+                event.respond("✅ Enabled `#{Config.prefix}add`! Turn back off adding with `#{Config.prefix}code disable`.")
             else
-                event << "❌ Please enter a valid option for the command."
-                event << 'Valid options: `add`, `edit`, `remove`, `lookup`.'
+                event << '❌ Please enter a valid option for the command.'
+                event << 'Valid options: `add`, `edit`, `remove`, `lookup`, `enable`, `disable`.'
             end
         end
 
@@ -230,19 +241,28 @@ module SerieBot
             user = begin
                        event.bot.parse_mention(mention)
                    rescue
-                       event.respond(':x: Enter a valid user!')
+                       event.respond('❌ Enter a valid user!')
+                       break
                    end
-            if @codes[user.id].nil?
-                event.respond("❌ **#{user.on(event.server).display_name}** has not added any friend codes!")
-                next
+            if user.id == event.user.id
+                event.respond("❌ You can't add yourself!")
+                break
+            end
+            if @codes[user.id].nil? || @codes[user.id][:wiis].nil?
+                event.respond("❌ **#{user.on(event.server).display_name}** has not added any codes!")
+                break
             end
             if @codes[event.user.id].nil?
-                event.respond("❌ You have not added any friend codes!")
-                next
+                event.respond('❌ You have not added any friend codes!')
+                break
             end
             if @codes[event.user.id][:wiis].nil?
-                event.respond("❌ You have not added any Wii codes!")
-                next
+                event.respond('❌ You have not added any Wii codes!')
+                break
+            end
+            unless @codes[user.id][:enabled].nil? || @codes[user.id][:enabled]
+                event.respond('❌ The person you are trying to add has turned off adding!')
+                break
             end
             event << "**You have requested to add  #{user.on(event.server).display_name}'s Wii.**\n"
             if !@codes[user.id][:wiis].nil?

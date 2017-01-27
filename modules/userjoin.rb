@@ -5,7 +5,7 @@ module SerieBot
         log_channel = 'server-log'
 
         member_join do |event|
-            time = Time.new
+            time = Time.now.getutc
             messageToSend = "User: #{event.user.mention} | **#{event.user.distinct}**\n"
             messageToSend << "Account creation: `#{event.user.creation_time.getutc.asctime} UTC`\n"
 
@@ -18,7 +18,7 @@ module SerieBot
             end
         end
         member_leave do |event|
-            time = Time.new
+            time = Time.now.getutc
 
             # Check if the account was banned or just left.
             user = event.user
@@ -41,7 +41,7 @@ module SerieBot
         end
 
         user_ban do |event|
-            time = Time.new
+            time = Time.now.getutc
 
             channel = event.server.channels.select { |x| x.name == log_channel }.first
             channel.send_embed do |e|
@@ -54,7 +54,7 @@ module SerieBot
 
         user_unban do |event|
             # D32F2F
-            time = Time.new
+            time = Time.now.getutc
 
             channel = event.server.channels.select { |x| x.name == log_channel }.first
             channel.send_embed do |e|

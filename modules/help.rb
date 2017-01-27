@@ -5,26 +5,7 @@ module SerieBot
 
         command(:help) do |event|
             help = ''
-            help << "**__Using the bot__**\n"
-            help << "\n"
-            help << "**Adding codes:**\n"
-            help << "`#{Config.prefix}code add wii | Wii Name | 1234-5678-9012-3456` (You can add multiple Wiis with different names)\n"
-            help << "`#{Config.prefix}code add game | Game Name | 1234-5678-9012`\n"
-            help << "\n"
-            help << '**Editing codes**\n'
-            help << "`#{Config.prefix}code edit wii | Wii Name | 1234-5678-9012-3456`\n"
-            help << "`#{Config.prefix}code edit game | Game Name | 1234-5678-9012`\n"
-            help << "\n"
-            help << "**Removing codes**\n"
-            help << "`#{Config.prefix}code remove wii | Wii Name`\n"
-            help << "`#{Config.prefix}code remove game | Game Name`\n"
-            help << "\n"
-            help << "**Looking up codes**\n"
-            help << "`#{Config.prefix}code lookup @user`\n"
-            help << "\n"
-            help << "**Adding a user's Wii**\n"
-            help << "`#{Config.prefix}add @user`\n"
-            help << "This will send you their codes, and then send them your Wii/game codes.\n"
+            help << Helper.get_help
             help << "\n"
             help << "**Specific commands**\n"
             help << "`#{Config.prefix}wads` may or may not DM you some WADs.\n"

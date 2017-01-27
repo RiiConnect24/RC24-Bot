@@ -51,7 +51,9 @@ module SerieBot
             folder = 'data'
             codesPath = "#{folder}/codes.yml"
             FileUtils.mkdir(folder) unless File.exist?(folder)
-            File.open(codesPath, "w") {} unless File.exist?(codesPath)
+            unless File.exist?(codesPath)
+              File.open(codesPath, "w") { |file| file.write("---\n:version: 1\n") }
+            end
             Codes.codes = YAML.load(File.read(codesPath))
         end
 
@@ -173,6 +175,30 @@ module SerieBot
             roles = server.roles
             role = roles.select { |r| r.name == rolename }.first
             role
+        end
+
+        def self.get_help()
+          help = "**__Using the bot__**\n"
+          help << "\n"
+          help << "**Adding codes:**\n"
+          help << "`#{Config.prefix}code add wii | Wii Name | 1234-5678-9012-3456` (You can add multiple Wiis with different names)\n"
+          help << "`#{Config.prefix}code add game | Game Name | 1234-5678-9012`\n"
+          help << "\n"
+          help << '**Editing codes**\n'
+          help << "`#{Config.prefix}code edit wii | Wii Name | 1234-5678-9012-3456`\n"
+          help << "`#{Config.prefix}code edit game | Game Name | 1234-5678-9012`\n"
+          help << "\n"
+          help << "**Removing codes**\n"
+          help << "`#{Config.prefix}code remove wii | Wii Name`\n"
+          help << "`#{Config.prefix}code remove game | Game Name`\n"
+          help << "\n"
+          help << "**Looking up codes**\n"
+          help << "`#{Config.prefix}code lookup @user`\n"
+          help << "\n"
+          help << "**Adding a user's Wii**\n"
+          help << "`#{Config.prefix}add @user`\n"
+          help << "This will send you their codes, and then send them your Wii/game codes.\n"
+          help
         end
   end
  end
