@@ -75,6 +75,7 @@ module SerieBot
 				message << "If you wish to appeal for your ban's removal, please contact this person, or the server owner."
 				begin
 						member.pm(message)
+						event.respond("👌 The ban hammer has hit, hard.")
 				rescue Discordrb::Errors::NoPermission
 						event.respond("Could not DM user about ban reason!")
 						break
@@ -85,7 +86,7 @@ module SerieBot
 					event.respond("The bot doesn't have permision to ban that user!")
 					break
 				end
-				"👌 The ban hammer has hit, hard."
+
 				break
 			else
 				"Invalid argument. Please mention a valid user."
