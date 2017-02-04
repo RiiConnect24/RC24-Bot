@@ -57,6 +57,15 @@ module SerieBot
             Codes.codes = YAML.load(File.read(codesPath))
         end
 
+        def self.load_local_errors
+            folder = 'data'
+            errorPath = "#{folder}/local_errors.json"
+            unless File.exist?(errorPath)
+              Commands.local_errors = {}
+            end
+            Commands.local_errors = JSON.parse(File.read(errorPath))
+        end
+
         # Downloads an avatar when given a `user` object.
         # Returns the path of the downloaded file.
         def self.download_avatar(user, folder)

@@ -7,14 +7,19 @@ This bot was created by Seriel for the RiiConnect24 Discord server.
 - bundler (`gem install bundler`)
 
 ### Install
-1. Clone the repo: `git clone github.com/Seriell/RC24-Bot.git`
+1. Clone the repo: `git clone https://github.com/Seriell/RC24-Bot.git`
 2. cd into the repo: `cd RC24-Bot`
 3. Edit `config.rb.example` to include the needed information and save it as `config.rb`
 4. Install bundler if you haven't already: `gem install bundler`
 5. Install the bundle: `bundle install`
 6. Create 3 roles on your server: Moderators, Bot Helpers, and Developers.
 <br/>(Bot Helpers are above Moderators in the way RC24 Bot handles things.)
-7. Run the bot. For Linux: `./run_linux.sh`. For Windows: `run_windows.bat`.
+7. (optional) Edit `data/local_errors.json` to include custom errors. All of these codes will be run with FORE/NEWS.
+```json
+{
+    "000001": "Insert code here",
+}```
+8. Run the bot. For Linux: `./run_linux.sh`. For Windows: `run_windows.bat`.
 
 ### Updating
 1. Pull any changes from the repo: `git pull`

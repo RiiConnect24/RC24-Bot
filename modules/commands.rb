@@ -3,6 +3,10 @@ module SerieBot
         extend Discordrb::Commands::CommandContainer
         extend Discordrb::EventContainer
         require 'open-uri'
+        class << self
+          attr_accessor :local_errors
+        end
+        Helper.load_local_errors
 
         # Migrated from Yuu-Chan's Yuu module
         command (:wads) do |event|
@@ -24,7 +28,25 @@ module SerieBot
         command(:error, max_args: 1, min_args: 1) do |event, code|
             # Start typing so the user knows something's going on
             event.channel.start_typing
-            # Validate
+            # Check for local codes
+            local_match = /(NEWS|FORE)\d{6}/.match(code)
+            # TODO: remove
+            puts code
+            unless local_match.nil?
+                # match'd
+                error_num = code.gsub(local_match[1], '')
+                error_text = local_errors[error_num.to_s]
+                unless error_text.nil? || error_text == ''
+                  event.channel.send_embed do |e|
+                      e.title = "Here's information about your error:"
+                      e.description = error_text.to_s
+                      e.colour = '#D32F2F'
+                      e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information provided by RC24 Developers.')
+                  end
+                  break
+                end
+            end
+            # No? Validate the code
             if code.to_i.to_s == code
                 # 0 returns an empty array (see http://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680936#post680936)
                 # We'll just treat it as an error.
@@ -75,11 +97,11 @@ module SerieBot
                     event.channel.send_embed do |e|
                         e.title = "Here's information about your error:"
                         e.description = messageToSend.to_s
-                        e.colour = "#D32F2F"
+                        e.colour = '#D32F2F'
                         e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information is from Wiimmfi.')
                     end
                     # This break is super important, otherwise it messages all of data[:infolist]
-                    # Why? I don't know, just please don't remove this
+                    # because Ruby default returns the last variable.
                     break
                 else
                     event.respond("❌ Could not find the specified error from Wiimmfi.")
