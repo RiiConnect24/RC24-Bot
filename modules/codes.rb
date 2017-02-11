@@ -307,6 +307,7 @@ module SerieBot
                 break
             end
             message = event.respond 'Saving...'
+            Helper.save_morpher
             Helper.save_codes
             message.edit('All saved!')
         end

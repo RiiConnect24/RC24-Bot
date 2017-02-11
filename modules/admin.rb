@@ -81,6 +81,7 @@ module SerieBot
             end
             message = event.respond 'Saving and exiting... '
             Helper.save_codes
+            Helper.save_morpher
             event.bot.invisible
             message.edit('All saved. Goodbye!')
             Helper.quit

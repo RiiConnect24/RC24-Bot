@@ -20,6 +20,7 @@ module SerieBot
         Mod,
         Codes,
         Commands,
+        Morpher,
         Userjoin
     ]
     # Set up bot

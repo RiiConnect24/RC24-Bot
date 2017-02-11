@@ -75,9 +75,7 @@ module SerieBot
         end
 
         member_join do |event|
-            unless Config.ignore_ids.include? event.channel.id
-              puts Rainbow("#{Time.now.strftime('[%D %H:%M]')} #{event.member.distinct} joined #{event.server.name}").blue
-            end
+            puts Rainbow("#{Time.now.strftime('[%D %H:%M]')} #{event.member.distinct} joined #{event.server.name}").blue
         end
     end
 end

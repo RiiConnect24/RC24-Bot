@@ -198,7 +198,7 @@ module SerieBot
             loop do
                 hist_count_and_messages[0] = channel.history(100, nil, offset_id) # next 100
                 break if hist_count_and_messages[0] == []
-                hist_count_and_messages[1] = SerieBot.parse_history(hist_count_and_messages[0], hist_count_and_messages[1][0])
+                hist_count_and_messages[1] = parse_history(hist_count_and_messages[0], hist_count_and_messages[1][0])
                 output_file.write((hist_count_and_messages[1][1].reverse.join("\n") + "\n").encode('UTF-8')) # write to file right away, don't store everything in memory
                 output_file.flush # make sure it gets written to the file
                 offset_id = hist_count_and_messages[0][0].id
@@ -209,6 +209,38 @@ module SerieBot
             puts message
             puts "Done. Dump file: #{output_filename}"
             output_filename
+        end
+
+        def self.parse_history(hist, count)
+          messages = []
+          i = 0
+          until i == hist.length
+            message = hist[i]
+            if message.nil?
+              # STTTOOOOPPPPPP
+              puts 'nii'
+              break
+            end
+            author = if message.author.nil?
+                       'Unknown Disconnected User'
+                     else
+                       message.author.distinct
+                     end
+            time = message.timestamp
+            content = message.content
+
+            attachments = message.attachments
+            # attachments.each { |u| attachments.push("#{u.filename}: #{u.url}") }
+
+            messages[i] = "--#{time} #{author}: #{content}"
+            messages[i] += "\n<Attachments: #{attachments[0].filename}: #{attachments[0].url}}>" unless attachments.empty?
+            #			puts "Logged message #{i} ID:#{message.id}: #{messages[i]}"
+            i += 1
+
+            count += 1
+          end
+          return_value = [count, messages]
+          return_value
         end
 
         def self.role_from_name(server, rolename)
