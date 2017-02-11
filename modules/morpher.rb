@@ -24,21 +24,23 @@ module SerieBot
       end
     end
 
-    def self.create_embed(user, description)
+    def self.create_embed(message)
       embed_sent = Discordrb::Webhooks::Embed.new
       embed_sent.title = 'New announcement!'
-      embed_sent.description = description
+      embed_sent.description = message.content
       embed_sent.colour = '#FFEB3B'
-      embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: user.name,
+      embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: message.author.name,
                                                                url: 'https://www.riiconnect24.net',
-                                                               icon_url: Helper.avatar_url(user, 32))
+                                                               icon_url: Helper.avatar_url(message.author, 32))
+      # Format: Sat Feb 11 01:30:45 2017 UTC
+      embed_sent.footer = Discordrb::Webhooks::EmbedFooter.new(text: "#{message.timestamp.utc.strftime('%c')} UTC")
       return embed_sent
     end
 
     message do |event|
       setup_channels(event)
       if event.channel == original_channel
-        embed_to_send = create_embed(event.user, event.message.content)
+        embed_to_send = create_embed(event.message)
         message_to_send = mirrored_channel.send_embed('', embed_to_send)
 
         # Store message under original id
@@ -46,6 +48,7 @@ module SerieBot
           embed_sent: embed_to_send,
           message_sent: message_to_send.id
         }
+        Helper.save_morpher
       end
     end
 
@@ -55,13 +58,23 @@ module SerieBot
         # Time to edit the message!
         message_data = @messages[event.message.id]
         if message_data.nil?
-          mirrored_channel.send_embed('', create_embed(event.bot.profile, 'A message was edited but I was not able to see it.'))
+          embed_error = Discordrb::Webhooks::Embed.new
+          embed_error.title = 'An error occurred.'
+          embed_error.description = "An announcement was edited but I wasn't able to say it."
+          embed_error.colour = '#D32F2F'
+          embed_error.author = Discordrb::Webhooks::EmbedAuthor.new(name: event.bot.profile.name,
+                                                                   icon_url: Helper.avatar_url(event.bot.profile, 32))
+          mirrored_channel.send_embed('', embed_error)
         else
           embed = message_data[:embed_sent]
           embed.description = event.message.content
+          # Also edit the footer
+          # Format: Sat Feb 11 01:30:45 2017 UTC
+          embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: "#{event.message.edited_timestamp.utc.strftime('%c')} UTC")
           mirror_message_id = message_data[:message_sent]
           mirrored_channel.message(mirror_message_id).edit('', embed)
         end
+        Helper.save_morpher
       end
     end
 
@@ -76,6 +89,7 @@ module SerieBot
           mirrored_channel.message(@messages[event.id][:message_sent]).delete
           @messages.delete(event.id)
         end
+        Helper.save_morpher
       end
     end
 
@@ -83,8 +97,6 @@ module SerieBot
     # It's not a command. Call it with eval: #{Config.prefix}eval Morpher.sync_announcements
     # Also, I hope you've already setup the channels and cleared the whole channel.
     def self.sync_announcements
-      current_history = []
-
       # Start on first message
       offset_id = original_channel.history(1, 1, 1)[0].id # get first message id
 
@@ -99,7 +111,7 @@ module SerieBot
         # Mirror announcement + save it
         current_history.each do |message|
           next if message.nil?
-          embed_to_send = create_embed(message.user, message.content)
+          embed_to_send = create_embed(message)
           message_to_send = mirrored_channel.send_embed('', embed_to_send)
 
           # Store message under original id
