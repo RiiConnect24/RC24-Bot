@@ -87,7 +87,7 @@ module SerieBot
         end
 
         command(:eval, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *code|
-            unless Helper.isadmin?(event.user)
+            unless Helper.is_admin?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -97,7 +97,6 @@ module SerieBot
                 # Set eval result for further tracking later
                 event.respond(eval eval_message)
                 eval_message = nil
-                break
             rescue Discordrb::Errors::MessageTooLong
                 # Determine how many characters the message is over
                 lengthOver = eval_message.length - 2000
@@ -106,7 +105,7 @@ module SerieBot
             rescue => error
                 # Exception:
                 # stacktrace
-                error_response = "#{$ERROR_INFO}\n#{error.backtrace.join("\n")}"
+                error_response = "#{$!}\n#{error.backtrace.join("\n")}"
                 event.respond("```#{error_response}```")
                 # Log to console as well
                 puts error_response.to_s

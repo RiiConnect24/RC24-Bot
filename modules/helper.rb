@@ -41,6 +41,22 @@ module SerieBot
             exit
         end
 
+        def self.save_morpher
+            File.open('data/morpher.yml', 'w+') do |f|
+                f.write(Morpher.messages.to_yaml)
+            end
+        end
+
+        def self.load_morpher
+            folder = 'data'
+            codesPath = "#{folder}/morpher.yml"
+            FileUtils.mkdir(folder) unless File.exist?(folder)
+            unless File.exist?(codesPath)
+              File.open(codesPath, "w") { |file| file.write("---\n:version: 1\n") }
+            end
+            Morpher.messages = YAML.load(File.read(codesPath))
+        end
+
         def self.save_codes
             File.open('data/codes.yml', 'w+') do |f|
                 f.write(Codes.codes.to_yaml)
@@ -69,9 +85,24 @@ module SerieBot
         # Downloads an avatar when given a `user` object.
         # Returns the path of the downloaded file.
         def self.download_avatar(user, folder)
-            url = user.avatar_url
-            path = download_file(url, folder)
-            path
+          url = Helper.avatar_url(user)
+          path = download_file(url, folder)
+          path
+        end
+
+        def self.avatar_url(user, size = 256)
+          url = user.avatar_url
+          uri = URI.parse(url)
+          filename = File.basename(uri.path)
+
+          filename = if filename.start_with?('a_')
+                       filename.gsub('.jpg', '.gif')
+                     else
+                       filename.gsub('.jpg', '.png')
+                     end
+          url << '?size=256'
+          url = "https://cdn.discordapp.com/avatars/#{user.id}/#{filename}?size=#{size}"
+          url
         end
 
         # Download a file from a url to a specified folder.

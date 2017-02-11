@@ -4,11 +4,6 @@ module SerieBot
     require 'yaml'
     require 'fileutils'
 
-    def self.role(rolename, server)
-        roles = server.roles
-        roles.select { |r| r.name == rolename }.first
-    end
-
     # Load helper as it is needed first.
     helper_path = "modules/helper.rb"
     require_relative helper_path

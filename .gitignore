@@ -1,7 +1,6 @@
+# Bot config
 config.rb
-images/furries/*
-images/eevee/*
-images/weeb/*
+
 avatars/*
 tmp/*
 logs/*
@@ -12,3 +11,6 @@ Gemfile.lock
 .remote-sync.json
 .directory
 data/*
+
+# IDEs
+.idea/*
