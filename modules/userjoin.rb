@@ -6,13 +6,13 @@ module SerieBot
 
         member_join do |event|
             time = Time.now.getutc
-            messageToSend = "User: #{event.user.mention} | **#{event.user.distinct}**\n"
-            messageToSend << "Account creation: `#{event.user.creation_time.getutc.asctime} UTC`\n"
+            message_to_send = "User: #{event.user.mention} | **#{event.user.distinct}**\n"
+            message_to_send << "Account creation: `#{event.user.creation_time.getutc.asctime} UTC`\n"
 
             channel = event.server.channels.select { |x| x.name == log_channel }.first
             channel.send_embed do |e|
                 e.title = 'A user just joined the server!'
-                e.description = messageToSend.to_s
+                e.description = message_to_send.to_s
                 e.colour = '#00C853'
                 e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
             end

@@ -121,8 +121,8 @@ module SerieBot
             end
             bashcode = code.join(' ')
             # Capture all output, including STDERR.
-            toBeRun = "#{bashcode} 2>&1"
-            result = ` #{toBeRun} `
+            to_be_run = "#{bashcode} 2>&1"
+            result = ` #{to_be_run} `
             event << if result.nil? || result == '' || result == ' ' || result == "\n"
                          "✅ Done! (No output)"
                      else

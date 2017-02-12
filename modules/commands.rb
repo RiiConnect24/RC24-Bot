@@ -68,35 +68,35 @@ module SerieBot
                 # This is a hash wrapped in an array, so go grab it.
                 if array[0][:found] == 1
                     data = array[0]
-                    messageToSend = ''
+                    message_to_send = ''
                     # Infolist will have all the table things
                     data[:infolist].each do |row|
                         info = row[:info]
 
-                        otherLinkInfo = info
+                        other_link_info = info
 
                         # Cycle through all matches
                         loop do
                             # Links
-                            linkMatches = /<a href\s*=\s*"http([^"]*)">([^"]*)<\/a>/.match(otherLinkInfo)
-                            break if linkMatches.nil?
+                            link_matches = /<a href\s*=\s*"http([^"]*)">([^"]*)<\/a>/.match(other_link_info)
+                            break if link_matches.nil?
                             # Replaces matches with [title](http<url>) (Discord embed thing)
                             # We start the URL with http because of the regex.
-                            otherLink = "[#{linkMatches[2]}](http#{linkMatches[1]})"
-                            otherLinkInfo = otherLinkInfo.gsub(linkMatches[0], otherLink)
+                            other_link = "[#{link_matches[2]}](http#{link_matches[1]})"
+                            other_link_info = other_link_info.gsub(link_matches[0], other_link)
                         end
                         # For formatting.
-                        oneBold = otherLinkInfo.gsub('<b>', '**')
-                        twoBold = oneBold.gsub('</b>', '**')
-                        oneItalic = twoBold.gsub('<i>', '*')
-                        twoItalic = oneItalic.gsub('</i>', '*')
+                        one_bold = other_link_info.gsub('<b>', '**')
+                        two_bold = one_bold.gsub('</b>', '**')
+                        one_italic = two_bold.gsub('<i>', '*')
+                        two_italic = one_italic.gsub('</i>', '*')
 
-                        messageToSend += "#{row[:type]} for error #{row[:name]}: #{twoItalic}\n"
+                        message_to_send += "#{row[:type]} for error #{row[:name]}: #{two_italic}\n"
                     end
 
                     event.channel.send_embed do |e|
                         e.title = "Here's information about your error:"
-                        e.description = messageToSend.to_s
+                        e.description = message_to_send.to_s
                         e.colour = '#D32F2F'
                         e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information is from Wiimmfi.')
                     end

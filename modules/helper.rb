@@ -65,21 +65,21 @@ module SerieBot
 
         def self.load_codes
             folder = 'data'
-            codesPath = "#{folder}/codes.yml"
+            codes_path = "#{folder}/codes.yml"
             FileUtils.mkdir(folder) unless File.exist?(folder)
-            unless File.exist?(codesPath)
-              File.open(codesPath, "w") { |file| file.write("---\n:version: 1\n") }
+            unless File.exist?(codes_path)
+              File.open(codes_path, "w") { |file| file.write("---\n:version: 1\n") }
             end
-            Codes.codes = YAML.load(File.read(codesPath))
+            Codes.codes = YAML.load(File.read(codes_path))
         end
 
         def self.load_local_errors
             folder = 'data'
-            errorPath = "#{folder}/local_errors.json"
-            unless File.exist?(errorPath)
+            error_path = "#{folder}/local_errors.json"
+            unless File.exist?(error_path)
               Commands.local_errors = {}
             end
-            Commands.local_errors = JSON.parse(File.read(errorPath))
+            Commands.local_errors = JSON.parse(File.read(error_path))
         end
 
         # Downloads an avatar when given a `user` object.
@@ -152,19 +152,18 @@ module SerieBot
             message.mentions.each { |x| content = content.gsub("<@#{x.id}>", "@#{x.distinct}"); content = content.gsub("<@!#{x.id}>", "\@#{x.distinct}") }
             # Replace channel IDs with names
             # scan for some regex, /<#\d+>/ or something, then you can map ids.map { |id| bot.channel(id).name } or something
-            somethingSomethingTextArray = []
             content = content.gsub(/<#\d+>/) { |id| get_channel_name(id, bot) }
             content
         end
 
         def self.get_channel_name(channel_id, bot)
-            toReturn = nil
+            to_return = nil
             begin
-                toReturn = '#' + bot.channel(channel_id.gsub(/[^0-9,.]/, '')).name
+                to_return = '#' + bot.channel(channel_id.gsub(/[^0-9,.]/, '')).name
             rescue NoMethodError
-                toReturn = '#deleted-channel'
+                to_return = '#deleted-channel'
             end
-            toReturn
+            to_return
         end
 
         def self.filter_everyone(text)
