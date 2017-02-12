@@ -24,7 +24,7 @@ module SerieBot
 
             # Format expected:
             # (ID) [D H:M] server name/channel name <author>: message
-            log_message = "#{state}(#{id}) #{event.message.timestamp.strftime('[%D %H:%M]')} #{server_name}/#{channel_name} <#{event.author.distinct}>: #{content}"
+            log_message = "#{state}(#{id}) #{event.message.timestamp.utc.strftime('[%D %H:%M]')} #{server_name}/#{channel_name} <#{event.author.distinct}>: #{content}"
             attachment_message = "<Attachments: #{attachments[0].filename}: #{attachments[0].url} >" unless attachments.empty?
             if state == '{EDIT}'
                 puts Rainbow(log_message.to_s).yellow
@@ -58,7 +58,7 @@ module SerieBot
 
             attachments = message.attachments
             id = Base64.strict_encode64([message.id].pack('L<'))
-            puts Rainbow("/!\\#{state}(#{id}) #{message.timestamp.strftime('[%D %H:%M]')} #{server_name}/#{channel_name} <#{message.author.distinct}> #{content}").red
+            puts Rainbow("/!\\#{state}(#{id}) #{message.timestamp.utc.strftime('[%D %H:%M]')} #{server_name}/#{channel_name} <#{message.author.distinct}> #{content}").red
             puts Rainbow("<Attachments: #{attachments[0].filename}: #{attachments[0].url} >}").red unless attachments.empty?
         end
 
@@ -75,7 +75,7 @@ module SerieBot
         end
 
         member_join do |event|
-            puts Rainbow("#{Time.now.strftime('[%D %H:%M]')} #{event.member.distinct} joined #{event.server.name}").blue
+            puts Rainbow("#{Time.now.utc.strftime('[%D %H:%M]')} #{event.member.distinct} joined #{event.server.name}").blue
         end
     end
 end
