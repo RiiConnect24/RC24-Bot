@@ -17,7 +17,7 @@ module SerieBot
                 server_name = event.server.name
                 channel_name = "##{event.channel.name}"
             end
-            content = Helper.parse_mentions(event.bot, event.message)
+            content = Helper.parse_mentions(event.bot, event.message.content)
             content = Rumoji.encode(content)
             attachments = event.message.attachments
             id = Base64.strict_encode64([event.message.id].pack('L<'))
