@@ -20,7 +20,6 @@ module SerieBot
         Mod,
         Codes,
         Commands,
-        Morpher,
         Userjoin
     ]
     # Set up bot
@@ -31,6 +30,12 @@ module SerieBot
 
     bot = Discordrb::Commands::CommandBot.new token: Config.token, client_id: Config.appid, prefix: Config.prefix, parse_self: true, type: :bot
     modules.each { |m| bot.include! m; puts "Included: #{m}" }
+
+    # Check if we should enable Morpher.
+    if Config.morpher_enabled
+      bot.include! Morpher
+      puts "Morpher enabled!"
+    end
     # Run Bot
     Config.invite_url = bot.invite_url if Config.invite_url.nil?
     puts "Invite URL #{Config.invite_url}"

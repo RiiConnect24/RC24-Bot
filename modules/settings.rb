@@ -15,6 +15,8 @@ module SerieBot
       attr_accessor :dump_dir
       attr_accessor :debug
 
+      attr_accessor :morpher_enabled
+
       attr_accessor :ignore_ids
   end
     config_location = Dir.pwd + '/config.rb'

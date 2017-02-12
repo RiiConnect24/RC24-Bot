@@ -1,32 +1,35 @@
 module SerieBot
-	module Config
+  module Config
 
     #~ Basic Config (Required)
 
-		#Your bot account token. Create a bot account if you don't a bot account, get one and its token here -> https://discordapp.com/developers/applications/me/
-		@token = 'your token here!'
-		# The bot's App ID, which can be found at https://discordapp.com/developers/applications/me/
-		@appid = 000000000000000000
-		# All commands will use this symbol(s) before the command name. eg. &say has a prefix of &
-		@prefix = "!"
-		# Will appear after "Playing" under the bots name. Set to nil to not show a game
-		@playing = "type #{prefix}help"
+    #Your bot account token. Create a bot account if you don't a bot account, get one and its token here -> https://discordapp.com/developers/applications/me/
+    @token = 'your token here!'
+    # The bot's App ID, which can be found at https://discordapp.com/developers/applications/me/
+    @appid = 000000000000000000
+    # All commands will use this symbol(s) before the command name. eg. &say has a prefix of &
+    @prefix = "!"
+    # Will appear after "Playing" under the bots name. Set to nil to not show a game
+    @playing = "type #{prefix}help"
     @invite_url = nil  # Custom invite URL. Set to nil to use the default.
 
-		# These users will have full access to the bot's admin commands, and by extension, the server it is hosted on.
-		# Give this power with care!!
-		@bot_owners = [239809536012058625, 228574821590499329] #An array of user IDS.
+    # These users will have full access to the bot's admin commands, and by extension, the server it is hosted on.
+    # Give this power with care!!
+    @bot_owners = [239809536012058625, 228574821590499329] #An array of user IDS.
 
     # Status of the bot
     @status = "online"
 
-		# This can't contain spaces
+    # This can't contain spaces
     @dump_dir = 'logs'
 
-		# Set this false to use some production APIs.
-		@debug = true
+    # Set this false to use some production APIs.
+    @debug = true
 
-		# Block specific channel IDs from being logged.
-		@ignore_ids = [271724634368507904]
-	end
+    # Set this to true to enable Morpher running.
+    @morpher_enabled = true
+
+    # Block specific channel IDs from being logged.
+    @ignore_ids = [271724634368507904]
+  end
 end
