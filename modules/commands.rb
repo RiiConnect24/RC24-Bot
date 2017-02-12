@@ -130,7 +130,7 @@ module SerieBot
         end
 
         command(:instructions, max_args: 0, min_args: 0) do |event|
-            event.respond('https://riiconnect24.net/instructions/')
+            event.respond('**🔗 https://riiconnect24.net/instructions/**')
         end
 
         command(:dns) do |event|
