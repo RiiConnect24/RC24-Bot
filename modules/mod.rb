@@ -93,7 +93,11 @@ module SerieBot
 			end
 		end
 
-		command(:lockdown, required_permissions: [:administrator]) do |event, time, *reason|
+		command(:lockdown) do |event, time, *reason|
+			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+		  end
 			reason = reason.join(' ')
 			lockdown = Discordrb::Permissions.new
 			lockdown.can_send_messages = true
@@ -113,13 +117,16 @@ module SerieBot
 			end
 		end
 
-		command(:unlockdown, required_permissions: [:administrator]) do |event|
+		command(:unlockdown) do |event|
+			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
 			lockdown = Discordrb::Permissions.new
 			lockdown.can_send_messages = true
 			everyone_role = Helper.role_from_name(event.server, "@everyone")
 			event.channel.define_overwrite(everyone_role, lockdown, 0)
 			event.respond(":unlock: **Channel has been unlocked.**:unlock:")
 		end
-
 	end
 end
