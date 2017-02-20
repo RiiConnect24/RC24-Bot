@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
-gem 'discordrb', '=3.2.0.1'
+gem 'discordrb', '=3.2.1'
 gem 'rumoji'
 gem 'rainbow'
 gem 'rake'
