@@ -29,14 +29,17 @@ module SerieBot
             # Start typing so the user knows something's going on
             event.channel.start_typing
             # Check for local codes
-            local_match = /(NEWS|FORE)\d{6}/.match(code)
+            local_match = /(NEWS|FORE)0{4}\d{2}/.match(code)
             # TODO: remove
             puts code
             unless local_match.nil?
                 # match'd
                 error_num = code.gsub(local_match[1], '')
                 error_text = local_errors[error_num.to_s]
-                unless error_text.nil? || error_text == ''
+                if error_text.nil? || error_text == ''
+                  event.respond('❌ Could not find the specified app error code.')
+                  break
+                else
                   event.channel.send_embed do |e|
                       e.title = "Here's information about your error:"
                       e.description = error_text.to_s
@@ -51,7 +54,7 @@ module SerieBot
                 # 0 returns an empty array (see http://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680936#post680936)
                 # We'll just treat it as an error.
                 if code == '0'
-                    event.respond("❌ Enter a valid error code!")
+                    event.respond('❌ Enter a valid error code!')
                     break
               end
                 # Determine method
@@ -67,7 +70,6 @@ module SerieBot
                 array = JSON.parse(json_string, symbolize_names: true)
 
                 message_to_send = ''
-
                 # This is a hash wrapped in an array, so go grab it.
                 if array[0][:found] == 1
                     data = array[0]
@@ -112,11 +114,11 @@ module SerieBot
                     # because Ruby default returns the last variable.
                     break
                 else
-                    event.respond("❌ Could not find the specified error from Wiimmfi.")
+                    event.respond('❌ Could not find the specified error from Wiimmfi.')
                     break
                 end
             else
-                event.respond("❌ Enter a valid error code!")
+                event.respond('❌ Enter a valid error code!')
                 break
           end
         end
