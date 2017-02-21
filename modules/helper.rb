@@ -2,7 +2,7 @@ module SerieBot
     module Helper
         def self.is_admin?(member)
             Config.bot_owners.include?(member)
-      end
+        end
 
         # It's okay for us to add server specific commands as we aren't
         # doing anything on other servers.
@@ -41,12 +41,8 @@ module SerieBot
             exit
         end
 
-        def self.save_morpher
-            File.open('data/morpher.yml', 'w+') do |f|
-                f.write(Morpher.messages.to_yaml)
-            end
-        end
 
+        # Loading/saving of morpher messages
         def self.load_morpher
             folder = 'data'
             codes_path = "#{folder}/morpher.yml"
@@ -57,29 +53,44 @@ module SerieBot
             Morpher.messages = YAML.load(File.read(codes_path))
         end
 
-        def self.save_codes
-            File.open('data/codes.yml', 'w+') do |f|
-                f.write(Codes.codes.to_yaml)
+        def self.save_morpher
+          File.open('data/morpher.yml', 'w+') do |f|
+            f.write(Morpher.messages.to_yaml)
+          end
+        end
+
+        # Loading/saving of settings
+        def self.save_settings
+            File.open('data/settings.yml', 'w+') do |f|
+                f.write(Config.settings.to_yaml)
             end
         end
 
-        def self.load_codes
+        def self.load_settings
             folder = 'data'
-            codes_path = "#{folder}/codes.yml"
+            settings_path = "#{folder}/settings.yml"
             FileUtils.mkdir(folder) unless File.exist?(folder)
-            unless File.exist?(codes_path)
-              File.open(codes_path, "w") { |file| file.write("---\n:version: 1\n") }
+            unless File.exist?(settings_path)
+              puts Rainbow("[ERROR] I wasn't able to find data/settings.yml! Please grab the example from the repo.").red
             end
-            Codes.codes = YAML.load(File.read(codes_path))
+            Config.settings = YAML.load(File.read(settings_path))
         end
 
-        def self.load_local_errors
-            folder = 'data'
-            error_path = "#{folder}/local_errors.json"
-            unless File.exist?(error_path)
-              Commands.local_errors = {}
-            end
-            Commands.local_errors = JSON.parse(File.read(error_path))
+        # Loading/saving of codes
+        def self.load_codes
+          folder = 'data'
+          codes_path = "#{folder}/codes.yml"
+          FileUtils.mkdir(folder) unless File.exist?(folder)
+          unless File.exist?(codes_path)
+            File.open(codes_path, "w") { |file| file.write("---\n:version: 1\n") }
+          end
+          Codes.codes = YAML.load(File.read(codes_path))
+        end
+
+        def self.save_codes
+          File.open('data/codes.yml', 'w+') do |f|
+            f.write(Codes.codes.to_yaml)
+          end
         end
 
         # Downloads an avatar when given a `user` object.
@@ -305,5 +316,8 @@ module SerieBot
           help << "This will send you their codes, and then send them your Wii/game codes.\n"
           help
         end
+
+        # Load settings for all.
+        self.load_settings
   end
  end

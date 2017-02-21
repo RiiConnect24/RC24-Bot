@@ -1,0 +1,12 @@
+---
+local_codes:
+  news:
+    000001: "Can't open the VFF"
+    000002: "WiiConnect24 file problem"
+    000003: "VFF file corrupted"
+    000004: "Unknown (it probably doesn't exist)"
+    000005: "VFF processing error"
+    000006: "Invalid data"
+    000099: "Other error"
+  notes:
+    102032: "The IOS your app uses is not patched for RiiConnect24, and you took too long."
