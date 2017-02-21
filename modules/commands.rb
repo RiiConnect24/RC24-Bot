@@ -65,6 +65,9 @@ module SerieBot
                 # Grab JSON
                 json_string = open("https://wiimmfi.de/error?#{method}&m=json").read
                 array = JSON.parse(json_string, symbolize_names: true)
+
+                message_to_send = ''
+
                 # This is a hash wrapped in an array, so go grab it.
                 if array[0][:found] == 1
                     data = array[0]
@@ -94,11 +97,16 @@ module SerieBot
                         message_to_send += "#{row[:type]} for error #{row[:name]}: #{two_italic}\n"
                     end
 
+                    # Check if there are any local error notes.
+                    unless local_errors[code].nil? || local_errors[code] == ''
+                      message_to_send += "Note from RiiConnect24 devs: #{local_errors[code]}\n"
+                    end
+
                     event.channel.send_embed do |e|
                         e.title = "Here's information about your error:"
                         e.description = message_to_send.to_s
                         e.colour = '#D32F2F'
-                        e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information is from Wiimmfi.')
+                        e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information is from Wiimmfi unless noted.')
                     end
                     # This break is super important, otherwise it messages all of data[:infolist]
                     # because Ruby default returns the last variable.

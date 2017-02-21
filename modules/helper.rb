@@ -8,7 +8,7 @@ module SerieBot
         # doing anything on other servers.
         def self.is_developer?(event)
             # Check if the member has the ID of the developers role
-            id = Helper.role_from_name(event.server, "Developers").id
+            id = Helper.role_from_name(event.server, 'Developers').id
             if event.user.role?(event.server.role(id))
                 return true
             else
@@ -18,7 +18,7 @@ module SerieBot
 
         def self.is_bot_helper?(event)
             # Check if the member has the ID of the bot helpers role
-            id = Helper.role_from_name(event.server, "Bot Helpers").id
+            id = Helper.role_from_name(event.server, 'Bot Helpers').id
             if event.user.role?(event.server.role(id))
                 return true
             else
@@ -28,7 +28,7 @@ module SerieBot
 
         def self.is_moderator?(event)
             # Check if the member has the ID of the developers role
-            id = Helper.role_from_name(event.server, "Moderators").id
+            id = Helper.role_from_name(event.server, 'Moderators').id
             if event.user.role?(event.server.role(id))
                 return true
             else
@@ -49,12 +49,12 @@ module SerieBot
 
         def self.load_morpher
             folder = 'data'
-            codesPath = "#{folder}/morpher.yml"
+            codes_path = "#{folder}/morpher.yml"
             FileUtils.mkdir(folder) unless File.exist?(folder)
-            unless File.exist?(codesPath)
-              File.open(codesPath, "w") { |file| file.write("---\n:version: 1\n") }
+            unless File.exist?(codes_path)
+              File.open(codes_path, "w") { |file| file.write("---\n:version: 1\n") }
             end
-            Morpher.messages = YAML.load(File.read(codesPath))
+            Morpher.messages = YAML.load(File.read(codes_path))
         end
 
         def self.save_codes
