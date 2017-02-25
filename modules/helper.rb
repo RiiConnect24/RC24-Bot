@@ -4,33 +4,40 @@ module SerieBot
       Config.bot_owners.include?(member)
     end
 
-    def self.setup_role_storage?(name, id)
+    def self.get_role_id?(name, id)
       # Set all to defaults
-      Config.settings['role'] = [] if Config.settings['role'].nil?
-      Config.settings['role'][id] = [] if Config.settings['role'][id].nil?
-      Config.settings['role'][id][name] = 0 if Config.settings['role'][id][name].nil?
+      Config.settings['role'] = {} if Config.settings['role'].nil?
+      Config.settings['role'][id] = {} if Config.settings['role'][id].nil?
       return Config.settings['role'][id][name]
+    end
+
+    def self.save_role_id?(name, server_id, role_id)
+      if Config.debug
+        puts "Saving role name #{name} with role ID #{role_id} for server ID #{server_id}"
+      end
+      Config.settings['role'][server_id][name] = role_id
+      Helper.save_settings
     end
 
     # It's okay for us to add server specific commands as we aren't
     # doing anything on other servers.
     def self.is_developer?(event)
       # Check if config already has a role
-      developer_role = setup_role_storage?('developer', event.server.id)
+      dev_role_id = get_role_id?('dev', event.server.id)
 
-      if developer_role == 0
+      if dev_role_id.nil?
         # Set to default
-        developer_role = Helper.role_from_name(event.server, 'Developers').id
-        # Is it nil because of no role?
-        if developer_role.nil?
+        begin
+          dev_role_id = Helper.role_from_name(event.server, 'Developers').id
+          Helper.save_role_id?('dev', event.server.id, dev_role_id)
+        rescue NoMethodError
           event.respond("I wasn't able to find the role \"Developers\" for dev-level tasks! See `#{Config.prefix}config help` for information.")
           return false
-        else
-          event.respond("Role \"dev\" set to default. Use `#{Config.prefix}config setrole dev <mod role name>` to change otherwise.")
         end
+        event.respond("Role \"dev\" set to default. Use `#{Config.prefix}config setrole dev <mod role name>` to change otherwise.")
       end
-      # Check if the member has the ID of the developers role
-      return event.user.role?(event.server.role(Config.settings['role'][event.server.id]['developer']))
+      # Check if the member has the ID of the dev role
+      return event.user.role?(event.server.role(dev_role_id))
     end
 
     def self.is_bot_helper?(event)
