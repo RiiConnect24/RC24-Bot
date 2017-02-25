@@ -45,6 +45,10 @@ module SerieBot
 				event << "-Account created: **#{user.creation_time.getutc.asctime}** UTC"
 				event << "-Joined server at: **#{member.joined_at.getutc.asctime}** UTC"
 			end
-		end
+    end
+
+    command(:config, description: 'Change settings per-server for the bot.') do |event, *args|
+
+    end
 	end
 end
