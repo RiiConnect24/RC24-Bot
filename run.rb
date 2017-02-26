@@ -8,8 +8,9 @@ module SerieBot
     helper_path = "modules/helper.rb"
     require_relative helper_path
     puts "Loaded: #{helper_path}"
+
     # Require other modules asides from Helper
-    Dir['modules/*.rb'].each { |r| require_relative r unless r == "modules/helper.rb"; puts "Loaded: #{r}" }
+    Dir['modules/*.rb'].each { |r| require_relative r unless r == helper_path; puts "Loaded: #{r}" }
 
     # List of modules to include
     modules = [

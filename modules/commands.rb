@@ -4,9 +4,9 @@ module SerieBot
         extend Discordrb::EventContainer
         require 'open-uri'
         class << self
-          attr_accessor :local_errors
-        end
-        Helper.load_local_errors
+          attr_accessor :local_codes
+          end
+        @local_codes = Config.settings["local_codes"]
 
         # Migrated from Yuu-Chan's Yuu module
         command (:wads) do |event|
@@ -30,12 +30,10 @@ module SerieBot
             event.channel.start_typing
             # Check for local codes
             local_match = /(NEWS|FORE)0{4}\d{2}/.match(code)
-            # TODO: remove
-            puts code
             unless local_match.nil?
                 # match'd
                 error_num = code.gsub(local_match[1], '')
-                error_text = local_errors[error_num.to_s]
+                error_text = @local_codes["news"][error_num.to_s]
                 if error_text.nil? || error_text == ''
                   event.respond('❌ Could not find the specified app error code.')
                   break
@@ -73,7 +71,6 @@ module SerieBot
                 # This is a hash wrapped in an array, so go grab it.
                 if array[0][:found] == 1
                     data = array[0]
-                    message_to_send = ''
                     # Infolist will have all the table things
                     data[:infolist].each do |row|
                         info = row[:info]
@@ -100,8 +97,9 @@ module SerieBot
                     end
 
                     # Check if there are any local error notes.
-                    unless local_errors[code].nil? || local_errors[code] == ''
-                      message_to_send += "Note from RiiConnect24 devs: #{local_errors[code]}\n"
+                    possible_note = @local_codes['notes'][code.to_i]
+                    unless possible_note.nil? || possible_note == ''
+                      message_to_send += "Note from RiiConnect24 devs: #{possible_note}\n"
                     end
 
                     event.channel.send_embed do |e|
