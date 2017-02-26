@@ -4,44 +4,47 @@ module SerieBot
       Config.bot_owners.include?(member)
     end
 
-    def self.get_role_id?(name, id)
+    # Gets the role's ID based on the given parameters
+    def self.get_role_id?(role_type, server_id)
       # Set all to defaults
       Config.settings['role'] = {} if Config.settings['role'].nil?
-      Config.settings['role'][id] = {} if Config.settings['role'][id].nil?
-      return Config.settings['role'][id][name]
+      Config.settings['role'][server_id] = {} if Config.settings['role'][server_id].nil?
+      return Config.settings['role'][server_id][role_type]
     end
 
-    def self.save_role_id?(name, server_id, role_id)
+    # Saves the role's ID based on the given parameters
+    def self.save_role_id?(role_type, server_id, role_id)
       if Config.debug
-        puts "Saving role name #{name} with role ID #{role_id} for server ID #{server_id}"
+        puts "Saving role type #{role_type} with role ID #{role_id} for server ID #{server_id}"
       end
-      Config.settings['role'][server_id][name] = role_id
+      Config.settings['role'][server_id][role_type] = role_id
       Helper.save_settings
     end
 
-    def self.is_xxx_role?(event, full_name, short_name, show_message = true)
+    # Checks to see if the user has the given role, and if not deals accordingly to fix it.
+    def self.is_xxx_role?(event, role_type, full_name, show_message = true)
       # Check if config already has a role
-      said_role_id = get_role_id?(short_name, event.server.id)
+      xxx_role_id = get_role_id?(role_type, event.server.id)
 
-      if said_role_id.nil?
+      if xxx_role_id.nil?
         # Set to default
         begin
-          said_role_id = role_from_name(event.server, full_name).id
-          save_role_id?(short_name, event.server.id, said_role_id)
+          xxx_role_id = role_from_name(event.server, full_name).id
+          save_role_id?(role_type, event.server.id, xxx_role_id)
         rescue NoMethodError
           if show_message
             event.respond("I wasn't able to find the role \"#{full_name}\" for role-related tasks! See `#{Config.prefix}config help` for information.")
           end
           return false
         end
-        event.respond("Role \"#{full_name}\" set to default. Use `#{Config.prefix}config setrole #{short_name} <role name>` to change otherwise.")
+        event.respond("Role \"#{full_name}\" set to default. Use `#{Config.prefix}config setrole #{role_type} <role name>` to change otherwise.")
       end
       # Check if the member has the ID of said role
-      return event.user.role?(event.server.role(said_role_id))
+      return event.user.role?(event.server.role(xxx_role_id))
     end
 
-    # It's okay for us to add server specific commands as we aren't
-    # doing anything on other servers.
+
+    # The following commands are basically skeletons now. The work is done above.
     def self.is_developer?(event)
       return is_xxx_role?(event, 'dev', 'Developer')
     end

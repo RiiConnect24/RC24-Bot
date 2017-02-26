@@ -2,7 +2,7 @@ module SerieBot
   module Morpher
     extend Discordrb::Commands::CommandContainer
     extend Discordrb::EventContainer
-    # TODO: change the hell out of this
+
     class << self
         attr_accessor :original_channel
         attr_accessor :mirrored_channel
