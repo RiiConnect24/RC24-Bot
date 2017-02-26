@@ -46,7 +46,7 @@ module SerieBot
 
     # The following commands are basically skeletons now. The work is done above.
     def self.is_developer?(event)
-      return is_xxx_role?(event, 'dev', 'Developer')
+      return is_xxx_role?(event, 'dev', 'Developers')
     end
 
     def self.is_bot_helper?(event)

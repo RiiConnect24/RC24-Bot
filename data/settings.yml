@@ -11,6 +11,3 @@ local_codes:
   notes:
     102032: The IOS your app uses is not patched for RiiConnect24, and you took too
       long.
-role:
-  283439808053903362:
-    dev: 284908016111714304
