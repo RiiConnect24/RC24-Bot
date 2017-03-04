@@ -433,10 +433,6 @@ module SerieBot
                     # They may not have even used the bot, so make sure.
                     @codes[user.id] = {} if @codes[user.id].nil?
                 end
-                if @codes[user.id][:wiis].nil? && @codes[user.id][:games].nil?
-                  event.respond("❌ **#{user_name}** has not added any friend codes!")
-                  break
-                end
                 if @codes[user.id].nil? || codes[user.id] == {}
                     event.respond("❌ **#{user_name}** has not added any friend codes!")
                     break
