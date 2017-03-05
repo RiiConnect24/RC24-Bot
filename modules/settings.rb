@@ -18,7 +18,9 @@ module SerieBot
       # Debug mode
       attr_accessor :debug
 
+      # Options
       attr_accessor :morpher_enabled
+      attr_accessor :patch_mail
 
       # Ignore specific channels
       attr_accessor :ignore_ids

@@ -29,6 +29,9 @@ module SerieBot
     # Set this to true to enable Morpher running.
     @morpher_enabled = true
 
+    # Set this to true to allow patching of config files.
+    @patch_mail = true
+
     # Block specific channel IDs from being logged.
     @ignore_ids = [271724634368507904]
   end
