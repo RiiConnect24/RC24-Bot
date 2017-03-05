@@ -8,17 +8,25 @@ module SerieBot
         end
         Helper.load_codes
 
+        def self.parse_args(args)
+          # Remove first option
+          args.delete_at(0)
+          # Join em
+          args = args.join(' ')
+          # Grab the text inside
+          args.sub!('| ', '')
+          input = args.split(' | ')
+          # Return code and name
+          return input[1], input[0]
+        end
+
         command(:code) do |event, option, *args|
             user_id = event.user.id
+            # Create code for the user, to prevent future issues
             Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
             if option == 'add'
                 if args[0] == 'wii'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
+                    code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -34,12 +42,7 @@ module SerieBot
                     event.respond("✅ Added a code for `#{name}`")
                     
             	elsif args[0] == '3ds'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
+                    code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -55,12 +58,7 @@ module SerieBot
                     event.respond("✅ Added a code for `#{name}`")
                     
             	elsif args[0] == 'nnid'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
+                code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -76,12 +74,7 @@ module SerieBot
                     event.respond("✅ Added a code for `#{name}`")
                     
             	elsif args[0] == 'switch'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
+                code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -97,13 +90,7 @@ module SerieBot
                     event.respond("✅ Added a code for `#{name}`")
 
                 elsif args[0] == 'game'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -127,13 +114,7 @@ module SerieBot
                 end
             elsif option == 'edit'
                 if args[0] == 'wii'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -157,13 +138,7 @@ module SerieBot
                     end
             	
                 elsif args[0] == '3ds'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -187,13 +162,7 @@ module SerieBot
                     end
             	
                 elsif args[0] == 'nnid'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -217,13 +186,7 @@ module SerieBot
                     end
             	
                 elsif args[0] == 'switch'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -247,13 +210,7 @@ module SerieBot
                     end
 
                 elsif args[0] == 'game'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -282,13 +239,7 @@ module SerieBot
                 end
             elsif option == 'remove'
                 if args[0] == 'wii'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -308,13 +259,7 @@ module SerieBot
                         event.respond("✅ Deleted the code for `#{name}`")
                     end
                 elsif args[0] == '3ds'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -334,13 +279,7 @@ module SerieBot
                         event.respond("✅ Deleted the code for `#{name}`")
                     end
                 elsif args[0] == 'nnid'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -360,13 +299,7 @@ module SerieBot
                         event.respond("✅ Deleted the code for `#{name}`")
                     end
                 elsif args[0] == 'switch'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -386,13 +319,7 @@ module SerieBot
                         event.respond("✅ Deleted the code for `#{name}`")
                     end
                 elsif args[0] == 'game'
-                    args.delete_at(0)
-                    args = args.join(' ')
-                    args.sub!('| ', '')
-                    input = args.split(' | ')
-                    code = input[1]
-                    name = input[0]
-                    user_id = event.user.id
+                  code, name = parse_args(args)
                     if code.nil?
                         event << '❌ Please enter a valid code!'
                         next
@@ -433,6 +360,7 @@ module SerieBot
                     # They may not have even used the bot, so make sure.
                     @codes[user.id] = {} if @codes[user.id].nil?
                 end
+                # Make sure they have friend codes, period.
                 if @codes[user.id].nil? || codes[user.id] == {}
                     event.respond("❌ **#{user_name}** has not added any friend codes!")
                     break
@@ -449,14 +377,13 @@ module SerieBot
                     unless @codes[user.id][:n3dss].nil?
                         event << '<:New3DSXL:287651327763283968> **3DSs**:'
                         @codes[user.id][:n3dss].each do |threeds, code| #
-                            code_output = code
-                            event << "`#{code_output}` - #{threeds}"
+                            event << "`#{code}` - #{threeds}"
                         end
                         event << ''
                     end
                     unless @codes[user.id][:nnids].nil?
                         event << '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:'
-                        @codes[user.id][:n3dss].each do |threeds, code| #
+                        @codes[user.id][:nnids].each do |threeds, code| #
                             code_output = code
                             event << "`#{code_output}` - #{threeds}"
                         end
@@ -471,7 +398,7 @@ module SerieBot
                         event << ''
                     end
                     unless @codes[user.id][:games].nil?
-                        event << '🎮 **Games**:'
+                        event << "🎮 **Games**:"
                         @codes[user.id][:games].each do |game, code|
                             code_output = code
                             event << "`#{code_output}` - #{game}"
@@ -509,27 +436,11 @@ module SerieBot
                 break
             end
             if @codes[user.id].nil? || @codes[user.id][:wiis].nil? || @codes[user.id][:n3dss].nil? || @codes[user.id][:nnids].nil? || @codes[user.id][:switches].nil?
-                event.respond("❌ **#{user.on(event.server).display_name}** has not added any codes!")
+                event.respond("❌ **#{user.on(event.server).display_name}** has not added any Wii friend codes! Keep in mind this command currently only works with Wii codes.")
                 break
             end
             if @codes[event.user.id].nil?
-                event.respond('❌ You have not added any friend codes!')
-                break
-            end
-            if @codes[event.user.id][:wiis].nil?
-                event.respond('❌ You have not added any Wii codes!')
-                break
-            end
-            if @codes[event.user.id][:n3dss].nil?
-                event.respond('❌ You have not added any 3DS codes!')
-                break
-            end
-            if @codes[event.user.id][:nnids].nil?
-                event.respond('❌ You have not added any Nintendo Network IDs!')
-                break
-            end
-            if @codes[event.user.id][:switches].nil?
-                event.respond('❌ You have not added any Switch codes!')
+                event.respond('❌ You have not added any Wii friend codes! (Currently, this command only works with Wii codes.)')
                 break
             end
             unless @codes[user.id][:enabled].nil? || @codes[user.id][:enabled]
@@ -546,71 +457,15 @@ module SerieBot
                 nil
                 event << ''
                 message = ''
-                message << "#{event.user.on(event.server).display_name} has requested to add your Wii code!\n Their codes:\n"
+                message << "#{event.user.on(event.server).display_name} has requested to add your Wii's friend code!\n Their codes:\n"
                 @codes[event.user.id][:wiis].each do |wii, code| #
                     code_output = code
-                    message << "`#{code_output}` - #{wii}"
+                    message << "`#{code_output}` - #{wii}\n"
                 end
+
                 user.pm(message)
             else
                 event << "❌ **#{user.on(event.server).display_name}** has not added any Wii codes!"
-                next
-            end
-            if !@codes[user.id][:n3dss].nil?
-                event << '<:New3DSXL:287651327763283968> **3DSs**:'
-                @codes[user.id][:n3dss].each do |threeds, code| #
-                    code_output = code
-                    event << "`#{code_output}` - #{threeds}"
-                end
-                nil
-                event << ''
-                message = ''
-                message << "#{event.user.on(event.server).display_name} has requested to add your 3DS code!\n Their codes:\n"
-                @codes[event.user.id][:n3dss].each do |threeds, code| #
-                    code_output = code
-                    message << "`#{code_output}` - #{threeds}"
-                end
-                user.pm(message)
-            else
-                event << "❌ **#{user.on(event.server).display_name}** has not added any 3DS codes!"
-                next
-            end
-            if !@codes[user.id][:nnids].nil?
-                event << '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:'
-                @codes[user.id][:nnids].each do |nnid, code| #
-                    code_output = code
-                    event << "`#{code_output}` - #{nnid}"
-                end
-                nil
-                event << ''
-                message = ''
-                message << "#{event.user.on(event.server).display_name} has requested to add your Nintendo Network ID!\n Their Nintendo Network IDs:\n"
-                @codes[event.user.id][:nnids].each do |nnid, code| #
-                    code_output = code
-                    message << "`#{code_output}` - #{nnid}"
-                end
-                user.pm(message)
-            else
-                event << "❌ **#{user.on(event.server).display_name}** has not added any Nintnedo Network IDs!"
-                next
-            end
-            if !@codes[user.id][:switches].nil?
-                event << '<:Switch:287652338791874560> **Switches**:'
-                @codes[user.id][:switches].each do |switch, code| #
-                    code_output = code
-                    event << "`#{code_output}` - #{switch}"
-                end
-                nil
-                event << ''
-                message = ''
-                message << "#{event.user.on(event.server).display_name} has requested to add your Switch code!\n Their codes:\n"
-                @codes[event.user.id][:switches].each do |switch, code| #
-                    code_output = code
-                    message << "`#{code_output}` - #{switch}"
-                end
-                user.pm(message)
-            else
-                event << "❌ **#{user.on(event.server).display_name}** has not added any Switch codes!"
                 next
             end
         end
@@ -627,6 +482,7 @@ module SerieBot
                    end
             user = event.user if args[0].nil?
             Codes.codes[user.id] = nil
+            puts "#{event.user.distinct} has wiped #{user.distinct}'s codes.'"
             event << "Wiped all codes saved by `#{user.distinct}` (ID: #{user.id})"
         end
 
