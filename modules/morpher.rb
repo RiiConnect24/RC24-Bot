@@ -20,7 +20,13 @@ module SerieBot
                      event.bot.channel(206934926136705024, event.bot.server(206934458954153984))
                    end
         # ID of mirror server
-        @mirrored_channel = event.bot.channel(278674706377211915, event.bot.server(278674706377211915))
+        @mirrored_channel = if Config.debug
+                              # RC24 News Server #dev-test
+                              event.bot.channel(283320245958213634, event.bot.server(278674706377211915))
+                            else
+                              # RC24 News Server #announcements
+                              event.bot.channel(278674706377211915, event.bot.server(278674706377211915))
+                            end
       end
     end
 

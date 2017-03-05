@@ -95,7 +95,7 @@ module SerieBot
       settings_path = "#{folder}/settings.yml"
       FileUtils.mkdir(folder) unless File.exist?(folder)
       unless File.exist?(settings_path)
-        puts Rainbow("[ERROR] I wasn't able to find data/settings.yml! Please grab the example from the repo.").red
+        puts "[ERROR] I wasn't able to find data/settings.yml! Please grab the example from the repo."
       end
       Config.settings = YAML.load(File.read(settings_path))
     end
