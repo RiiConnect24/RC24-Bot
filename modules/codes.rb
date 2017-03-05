@@ -20,331 +20,72 @@ module SerieBot
           return input[1], input[0]
         end
 
+        def self.modify_codes(user_id, args, option)
+          # Save type of code before deletion
+          type = args[0]
+          # Populate if nil
+          user_codes = @codes[user_id]
+          user_codes[type.to_sym] = {} if @codes[user_id][type.to_sym].nil?
+          type_codes = user_codes[type.to_sym]
+          # Grab code and name from args
+          code, name = parse_args(args)
+          # Set status defaults
+          to_say = name
+          # If failure
+          if code.nil? && option != 'remove'
+            to_say = '❌ Please enter a valid code!'
+          elsif name.nil?
+            to_say = '❌ Please enter a valid name!'
+          elsif option == 'add'
+            # Set + save codes
+            type_codes[name] = code
+            to_say = "✅ Added a code for `#{name}`"
+          elsif option == 'edit'
+            # Populate if nil
+            if type_codes[name].nil?
+              to_say = "❌ A code for `#{name}` is not registered."
+            else
+              # Set to code
+              type_codes[name] = code
+              to_say = "✅ Edited the code for `#{name}`"
+            end
+          elsif option == 'remove'
+            if type_codes[name].nil?
+              to_say = "❌ A code for Wii `#{name}` is not registered."
+            else
+              type_codes.delete(name)
+              # Check if type is empty
+              if type_codes == {}
+                # We can go ahead and delete this code.
+                user_codes.delete(type.to_sym)
+              end
+              to_say = "✅ Deleted the code for `#{name}`"
+            end
+          end
+
+          # Save anyway, it can't hurt.
+          Helper.save_codes
+          return to_say
+        end
+
         command(:code) do |event, option, *args|
             user_id = event.user.id
             # Create code for the user, to prevent future issues
             Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
-            if option == 'add'
-                if args[0] == 'wii'
-                    code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
-                    Codes.codes[user_id][:wiis][name] = code
-                    Helper.save_codes
-                    event.respond("✅ Added a code for `#{name}`")
-                    
-            	elsif args[0] == '3ds'
-                    code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:n3dss] = {} if Codes.codes[user_id][:n3dss].nil?
-                    Codes.codes[user_id][:n3dss][name] = code
-                    Helper.save_codes
-                    event.respond("✅ Added a code for `#{name}`")
-                    
-            	elsif args[0] == 'nnid'
-                code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:nnids] = {} if Codes.codes[user_id][:nnids].nil?
-                    Codes.codes[user_id][:nnids][name] = code
-                    Helper.save_codes
-                    event.respond("✅ Added a code for `#{name}`")
-                    
-            	elsif args[0] == 'switch'
-                code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:switches] = {} if Codes.codes[user_id][:switches].nil?
-                    Codes.codes[user_id][:switches][name] = code
-                    Helper.save_codes
-                    event.respond("✅ Added a code for `#{name}`")
-
-                elsif args[0] == 'game'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
-                    Codes.codes[user_id][:games][name] = begin
-                                                           code
-                                                       rescue
-                                                           Helper.save_codes
-                                                       end
-                    event.respond("✅ Added a code for `#{name}`")
-
+            modification_options = %w(add edit remove)
+            if modification_options.include? option
+              case args[0]
+                # Only allow these types
+                when 'wii', '3ds', 'nnid', 'switch', 'game'
+                    # Send information off to function
+                    return_text = modify_codes(user_id, args, option)
+                    # Say response
+                    event.respond(return_text)
                 else
-                    event << '❌ Please enter a valid argument for the option `add`.'
-                    event << 'Valid arguments: `wii`, `3ds`, `nnid`, `switch`, `game`.'
-                end
-            elsif option == 'edit'
-                if args[0] == 'wii'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
-                    if Codes.codes[user_id][:wiis][name].nil?
-                        event << "❌ A code for Wii `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:wiis][name] = begin
-                                                              code
-                                                          rescue
-                                                              Helper.save_codes
-                                                          end
-                        event.respond("✅ Edited the code for `#{name}`")
-                    end
-            	
-                elsif args[0] == '3ds'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:n3dss] = {} if Codes.codes[user_id][:n3dss].nil?
-                    if Codes.codes[user_id][:n3dss][name].nil?
-                        event << "❌ A code for 3DS `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:n3dss][name] = begin
-                                                              code
-                                                          rescue
-                                                              Helper.save_codes
-                                                          end
-                        event.respond("✅ Edited the code for `#{name}`")
-                    end
-            	
-                elsif args[0] == 'nnid'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:nnids] = {} if Codes.codes[user_id][:n3dss].nil?
-                    if Codes.codes[user_id][:nnids][name].nil?
-                        event << "❌ A code for Nintendo Network ID `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:nnids][name] = begin
-                                                              code
-                                                          rescue
-                                                              Helper.save_codes
-                                                          end
-                        event.respond("✅ Edited the code for `#{name}`")
-                    end
-            	
-                elsif args[0] == 'switch'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:switches] = {} if Codes.codes[user_id][:n3dss].nil?
-                    if Codes.codes[user_id][:switches][name].nil?
-                        event << "❌ A code for Switch `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:switches][name] = begin
-                                                              code
-                                                          rescue
-                                                              Helper.save_codes
-                                                          end
-                        event.respond("✅ Edited the code for `#{name}`")
-                    end
-
-                elsif args[0] == 'game'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
-                    if Codes.codes[user_id][:games][name].nil?
-                        event << "❌ A code for Wii `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:games][name] = begin
-                                                               code
-                                                           rescue
-                                                               Helper.save_codes
-                                                           end
-                        event.respond("✅ Edited the code for `#{name}`")
-                    end
-
-                else
-                    event << '❌ Please enter a valid argument for the option `edit`.'
-                    event << 'Valid arguments: `wii`, `3ds`, `nnid`, `switch`, `game`.'
-                end
-            elsif option == 'remove'
-                if args[0] == 'wii'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:wiis] = {} if Codes.codes[user_id][:wiis].nil?
-                    if Codes.codes[user_id][:wiis][name].nil?
-                        event << "❌ A code for Wii `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:wiis].delete(name)
-                        Helper.save_codes
-                        event.respond("✅ Deleted the code for `#{name}`")
-                    end
-                elsif args[0] == '3ds'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:n3dss] = {} if Codes.codes[user_id][:n3dss].nil?
-                    if Codes.codes[user_id][:n3dss][name].nil?
-                        event << "❌ A code for 3DS `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:n3dss].delete(name)
-                        Helper.save_codes
-                        event.respond("✅ Deleted the code for `#{name}`")
-                    end
-                elsif args[0] == 'nnid'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:nnids] = {} if Codes.codes[user_id][:n3dss].nil?
-                    if Codes.codes[user_id][:nnids][name].nil?
-                        event << "❌ A code for Nintendo Network ID `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:nnids].delete(name)
-                        Helper.save_codes
-                        event.respond("✅ Deleted the code for `#{name}`")
-                    end
-                elsif args[0] == 'switch'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:n3dss] = {} if Codes.codes[user_id][:n3dss].nil?
-                    if Codes.codes[user_id][:n3dss][name].nil?
-                        event << "❌ A code for Switch `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:n3dss].delete(name)
-                        Helper.save_codes
-                        event.respond("✅ Deleted the code for `#{name}`")
-                    end
-                elsif args[0] == 'game'
-                  code, name = parse_args(args)
-                    if code.nil?
-                        event << '❌ Please enter a valid code!'
-                        next
-                    end
-                    if name.nil?
-                        event << '❌ Please enter a valid name!'
-                        next
-                    end
-
-                    Codes.codes[user_id][:games] = {} if Codes.codes[user_id][:games].nil?
-                    if Codes.codes[user_id][:games][name].nil?
-                        event << "❌ A code for Game `#{name}` is not registered."
-                        next
-                    else
-                        Codes.codes[user_id][:games].delete(name)
-                        Helper.save_codes
-                        event.respond("✅ Deleted the code for `#{name}`")
-                    end
-
-                else
-                    event << '❌ Please enter a valid argument for the option `remove`.'
+                    event << "❌ Please enter a valid argument for the option `#{option}`."
                     event << 'Valid arguments: `wii`, `3ds`, `nnid`, `switch`, `game`.'
                 end
             elsif option == 'lookup'
-
                 user = begin
                            event.bot.parse_mention(args[0])
                        rescue
@@ -356,7 +97,7 @@ module SerieBot
                 begin
                     user_name = user.on(event.server).display_name
                 rescue NoMethodError
-                    user_name = user.username
+                    user_name = user.display_name
                     # They may not have even used the bot, so make sure.
                     @codes[user.id] = {} if @codes[user.id].nil?
                 end
@@ -366,40 +107,40 @@ module SerieBot
                     break
                 else
                     event << "**__👤 Profile for #{user_name}__**\n"
-                    unless @codes[user.id][:wiis].nil?
+                    unless @codes[user.id][:wii].nil?
                         event << '<:Wii:259081748007223296> **Wiis**:'
-                        @codes[user.id][:wiis].each do |wii, code| #
+                        @codes[user.id][:wii].each do |wii, code| #
                             code_output = code
                             event << "`#{code_output}` - #{wii}"
                         end
                         event << ''
                     end
-                    unless @codes[user.id][:n3dss].nil?
+                    unless @codes[user.id]['3ds'.to_sym].nil?
                         event << '<:New3DSXL:287651327763283968> **3DSs**:'
-                        @codes[user.id][:n3dss].each do |threeds, code| #
+                        @codes[user.id]['3ds'.to_sym].each do |threeds, code| #
                             event << "`#{code}` - #{threeds}"
                         end
                         event << ''
                     end
-                    unless @codes[user.id][:nnids].nil?
+                    unless @codes[user.id][:nnid].nil?
                         event << '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:'
-                        @codes[user.id][:nnids].each do |threeds, code| #
+                        @codes[user.id][:nnid].each do |threeds, code| #
                             code_output = code
                             event << "`#{code_output}` - #{threeds}"
                         end
                         event << ''
                     end
-                    unless @codes[user.id][:switches].nil?
+                    unless @codes[user.id][:switch].nil?
                         event << '<:Switch:287652338791874560> **Switches**:'
-                        @codes[user.id][:switches].each do |switch, code| #
+                        @codes[user.id][:switch].each do |switch, code| #
                             code_output = code
                             event << "`#{code_output}` - #{switch}"
                         end
                         event << ''
                     end
-                    unless @codes[user.id][:games].nil?
+                    unless @codes[user.id][:game].nil?
                         event << "🎮 **Games**:"
-                        @codes[user.id][:games].each do |game, code|
+                        @codes[user.id][:game].each do |game, code|
                             code_output = code
                             event << "`#{code_output}` - #{game}"
                         end
@@ -410,12 +151,12 @@ module SerieBot
                 event.respond(Helper.get_help)
             elsif option == 'disable'
                 user = event.user
-                Codes.codes[user.id][:enabled] = false
+                @codes[user.id][:enabled] = false
                 Helper.save_codes
                 event.respond("✅ Disabled `#{Config.prefix}add`! Turn back on adding with `#{Config.prefix}code enable`.")
             elsif option == 'enable'
                 user = event.user
-                Codes.codes[user.id][:enabled] = true
+                @codes[user.id][:enabled] = true
                 Helper.save_codes
                 event.respond("✅ Enabled `#{Config.prefix}add`! Turn back off adding with `#{Config.prefix}code disable`.")
             else
@@ -430,12 +171,20 @@ module SerieBot
                    rescue
                        event.respond('❌ Enter a valid user!')
                        break
-                   end
+            end
+            # Check if the user is on this server.
+            begin
+              user_name = user.on(event.server).display_name
+            rescue NoMethodError
+              user_name = user.display_name
+              # They may not have even used the bot, so make sure.
+              @codes[user.id] = {} if @codes[user.id].nil?
+            end
             if user.id == event.user.id
                 event.respond("❌ You can't add yourself!")
                 break
             end
-            if @codes[user.id].nil? || @codes[user.id][:wiis].nil? || @codes[user.id][:n3dss].nil? || @codes[user.id][:nnids].nil? || @codes[user.id][:switches].nil?
+            if @codes[user.id].nil? || @codes[user.id][:wii].nil?
                 event.respond("❌ **#{user.on(event.server).display_name}** has not added any Wii friend codes! Keep in mind this command currently only works with Wii codes.")
                 break
             end
@@ -448,24 +197,24 @@ module SerieBot
                 break
             end
             event << "**You have requested to add  #{user.on(event.server).display_name}'s Wii.**\n"
-            if !@codes[user.id][:wiis].nil?
+            if !@codes[user.id][:wii].nil?
                 event << '<:Wii:259081748007223296> **Wiis**:'
-                @codes[user.id][:wiis].each do |wii, code| #
+                @codes[user.id][:wii].each do |wii, code| #
                     code_output = code
                     event << "`#{code_output}` - #{wii}"
                 end
                 nil
                 event << ''
                 message = ''
-                message << "#{event.user.on(event.server).display_name} has requested to add your Wii's friend code!\n Their codes:\n"
-                @codes[event.user.id][:wiis].each do |wii, code| #
+                message << "#{user_name} has requested to add your Wii's friend code!\nTheir codes:\n\n"
+                @codes[event.user.id][:wii].each do |wii, code| #
                     code_output = code
                     message << "`#{code_output}` - #{wii}\n"
                 end
 
                 user.pm(message)
             else
-                event << "❌ **#{user.on(event.server).display_name}** has not added any Wii codes!"
+                event << "❌ **#{user_name}** has not added any Wii codes!"
                 next
             end
         end

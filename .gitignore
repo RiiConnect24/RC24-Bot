@@ -11,6 +11,7 @@ Gemfile.lock
 .remote-sync.json
 .directory
 data/*
+data/settings.yml
 
 # IDEs
 .idea/*
