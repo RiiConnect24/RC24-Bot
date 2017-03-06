@@ -30,10 +30,10 @@ module SerieBot
       end
     end
 
-    def self.create_embed(message)
+    def self.create_embed(bot, message)
       embed_sent = Discordrb::Webhooks::Embed.new
       embed_sent.title = 'New announcement!'
-      embed_sent.description = message.content
+      embed_sent.description = Helper.parse_mentions(bot, message.content)
       embed_sent.colour = '#FFEB3B'
       embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: message.author.name,
                                                                url: 'https://www.riiconnect24.net',
@@ -43,10 +43,17 @@ module SerieBot
       return embed_sent
     end
 
+    def self.create_error_embed(message)
+      embed_error = Discordrb::Webhooks::Embed.new
+      embed_error.title = 'An error occurred.'
+      embed_error.description = message
+      embed_error.colour = '#D32F2F'
+    end
+
     message do |event|
       setup_channels(event)
       if event.channel == original_channel
-        embed_to_send = create_embed(event.message)
+        embed_to_send = create_embed(event.bot, event.message)
         message_to_send = mirrored_channel.send_embed('', embed_to_send)
 
         # Store message under original id
@@ -64,16 +71,11 @@ module SerieBot
         # Time to edit the message!
         message_data = @messages[event.message.id]
         if message_data.nil?
-          embed_error = Discordrb::Webhooks::Embed.new
-          embed_error.title = 'An error occurred.'
-          embed_error.description = "An announcement was edited but I wasn't able to say it."
-          embed_error.colour = '#D32F2F'
-          embed_error.author = Discordrb::Webhooks::EmbedAuthor.new(name: event.bot.profile.name,
-                                                                   icon_url: Helper.avatar_url(event.bot.profile, 32))
+          embed_error = create_error_embed("An announcement was edited, but I lost track and couldn't edit my copy.")
           mirrored_channel.send_embed('', embed_error)
         else
           embed = message_data[:embed_sent]
-          embed.description = event.message.content
+          embed.description = Helper.parse_mentions(event.bot, event.message)
           # Also edit the footer
           # Format: Sat Feb 11 01:30:45 2017 UTC
           embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: "#{event.message.edited_timestamp.utc.strftime('%c')} UTC")
@@ -101,7 +103,7 @@ module SerieBot
 
     # Per PokeAcer's recommendation
     member_join do |event|
-      # Mirrorred server
+      # RC24 News Server
       if event.server.id == 278674706377211915
         message_to_pm = "___Information Notice___\n"
         message_to_pm += 'Hi! You have joined the RiiConnect24 News Server, for users who are not allowed access to the regular server.'
@@ -113,9 +115,9 @@ module SerieBot
     end
 
     # The following method syncs the announcement channel with the mirror.
-    # It's not a command. Call it with eval: #{Config.prefix}eval Morpher.sync_announcements
+    # It's not a command. Call it with eval: #{Config.prefix}eval Morpher.sync_announcements(event)
     # Also, I hope you've already setup the channels and cleared the whole channel.
-    def self.sync_announcements
+    def self.sync_announcements(event)
       # Start on first message
       offset_id = original_channel.history(1, 1, 1)[0].id # get first message id
 
@@ -130,7 +132,7 @@ module SerieBot
         # Mirror announcement + save it
         current_history.each do |message|
           next if message.nil?
-          embed_to_send = create_embed(message)
+          embed_to_send = create_embed(event.bot, message_text)
           message_to_send = mirrored_channel.send_embed('', embed_to_send)
 
           # Store message under original id
@@ -140,7 +142,6 @@ module SerieBot
           }
         end
 
-        puts current_history.length
         # Set offset ID to last message in history that we saw
         # (this is the last message sent - 1 since Ruby has array offsets of 0)
         offset_id = current_history[current_history.length - 1].id
