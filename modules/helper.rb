@@ -22,7 +22,7 @@ module SerieBot
     end
 
     # Checks to see if the user has the given role, and if not deals accordingly to fix it.
-    def self.is_xxx_role?(event, role_type, full_name, show_message = true)
+    def self.is_xxx_role?(event, role_type, full_name, show_message = true, other_user = nil)
       # Check if config already has a role
       xxx_role_id = get_role_id?(role_type, event.server.id)
 
@@ -40,7 +40,12 @@ module SerieBot
         event.respond("Role \"#{full_name}\" set to default. Use `#{Config.prefix}config setrole #{role_type} <role name>` to change otherwise.")
       end
       # Check if the member has the ID of said role
-      return event.user.role?(event.server.role(xxx_role_id))
+      user = if other_user.nil?
+               event.user
+             else
+               other_user
+             end
+      return user.role?(event.server.role(xxx_role_id))
     end
 
 
@@ -56,6 +61,20 @@ module SerieBot
 
     def self.is_moderator?(event)
       return is_xxx_role?(event, 'mod', 'Moderators')
+    end
+
+    def self.is_helper?(event)
+      return is_xxx_role?(event, 'hlp', 'Helpers')
+    end
+
+    # We have to specify user here because we're checking if another user is verified
+    def self.is_verified?(event, other_user = nil)
+      user = if other_user.nil?
+               event.user
+             else
+               other_user
+             end
+      return is_xxx_role?(event, 'vfd', 'Verified', true, user)
     end
 
 
@@ -319,25 +338,26 @@ module SerieBot
 
     def self.get_help()
       help = "**__Using the bot__**\n"
-      help << "\n"
-      help << "**Adding codes:**\n"
-      help << "`#{Config.prefix}code add wii | Wii Name | 1234-5678-9012-3456` (You can add multiple Wiis with different names)\n"
-      help << "`#{Config.prefix}code add game | Game Name | 1234-5678-9012`\n"
-      help << "\n"
-      help << '**Editing codes**\n'
-      help << "`#{Config.prefix}code edit wii | Wii Name | 1234-5678-9012-3456`\n"
-      help << "`#{Config.prefix}code edit game | Game Name | 1234-5678-9012`\n"
-      help << "\n"
-      help << "**Removing codes**\n"
-      help << "`#{Config.prefix}code remove wii | Wii Name`\n"
-      help << "`#{Config.prefix}code remove game | Game Name`\n"
-      help << "\n"
-      help << "**Looking up codes**\n"
-      help << "`#{Config.prefix}code lookup @user`\n"
-      help << "\n"
-      help << "**Adding a user's Wii**\n"
-      help << "`#{Config.prefix}add @user`\n"
-      help << "This will send you their codes, and then send them your Wii/game codes.\n"
+      help += "\n"
+      help += "**Adding codes:**\n"
+      help += "`!code add wii | Wii Name Goes here | 1234-5678-9012-3456` (You can add multiple Wiis with different names)\n"
+      help += "`!code add game | Game Name | 1234-5678-9012`\n"
+      help += "and many more types! Run `!code add` to see all supported code types right now, such as the 3DS and Switch.\n"
+      help += "\n"
+      help += "**Editing codes**\n"
+      help += "`!code edit wii | Wii Name | 1234-5678-9012-3456`\n"
+      help += "`!code edit game | Game Name | 1234-5678-9012`\n"
+      help += "\n"
+      help += "**Removing codes**\n"
+      help += "`!code remove wii | Wii Name`\n"
+      help += "`!code remove game | Game Name`\n"
+      help += "\n"
+      help += "**Looking up codes**\n"
+      help += "`!code lookup @user`\n"
+      help += "\n"
+      help += "**Adding a user's Wii**\n"
+      help += "`!add @user`\n"
+      help += "This will send you their codes, and then DM them your Wii/game codes."
       help
     end
 

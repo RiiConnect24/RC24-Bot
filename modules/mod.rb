@@ -12,7 +12,6 @@ module SerieBot
 				event.respond("`#{count}` is not a valid number!")
 				break
 			end
-			original_num = count.to_i
 			clearnum = count.to_i + 1
 
 			begin
@@ -40,33 +39,43 @@ module SerieBot
 			nil
 		end
 
-		command(:kick, description: "Temporarily kick somebody from the server. Mod only.", usage: "#{Config.prefix}kick @user reason", min_args: 2) do |event, *kickreason|
-			unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
+		command(:kick, description: 'Temporarily kick somebody from the server. Mod only.', usage: "#{Config.prefix}kick @user reason", min_args: 2) do |event, *kick_reason|
+			unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
+
 			member = event.server.member(event.message.mentions[0])
+			# Helpers should only be able to kick unverified users.
+			if Helper.is_helper?(event)
+				# Check if the user has verified.
+				if Helper.is_verified?(event, member)
+					event.respond("❌ You can't kick verified members!")
+					break
+				end
+			end
 
 			break if event.channel.private?
 			if event.message.mentions[0]
-				finalmessage = kickreason.drop(1)
-				display = finalmessage.join(" ")
+				final_message = kick_reason.drop(1)
+				display = final_message.join(' ')
 				message = "You have been kicked from the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
 				message << "They gave the following reason: ``#{display}``"
 				begin
 						member.pm(message)
 				rescue Discordrb::Errors::NoPermission
-						event.respond("Could not DM user about ban reason!")
+						event.respond('Could not DM user about kick reason!')
 						break
 				end
 				begin
         	event.server.kick(member)
 				rescue Discordrb::Errors::NoPermission
-					"The bot doesn't have permision to kick!"
+					event.respond("❗❗❗ The bot doesn't have permission to kick!")
 					break
 				end
+				event.respond('✅ Kicked!')
 			else
-				"Invalid argument. Please mention a valid user."
+				event.respond('❌ Invalid argument. Please mention a valid user.')
 			end
 		end
 
@@ -94,7 +103,7 @@ module SerieBot
 				begin
         	event.server.ban(member)
 				rescue
-					event.respond("The bot doesn't have permision to ban that user!")
+					event.respond("The bot doesn't have permission to ban that user!")
 					break
 				end
 
