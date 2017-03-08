@@ -7,9 +7,9 @@ module SerieBot
     # Gets the role's ID based on the given parameters
     def self.get_role_id?(role_type, server_id)
       # Set all to defaults
-      Config.settings['role'] = {} if Config.settings['role'].nil?
-      Config.settings['role'][server_id] = {} if Config.settings['role'][server_id].nil?
-      return Config.settings['role'][server_id][role_type]
+      Config.settings[server_id] = {} if Config.settings[server_id].nil?
+      Config.settings[server_id]['role'] = {} if Config.settings[server_id]['role'].nil?
+      return Config.settings[server_id]['role'][role_type]
     end
 
     # Saves the role's ID based on the given parameters
@@ -17,7 +17,7 @@ module SerieBot
       if Config.debug
         puts "Saving role type #{role_type} with role ID #{role_id} for server ID #{server_id}"
       end
-      Config.settings['role'][server_id][role_type] = role_id
+      Config.settings[server_id]['role'][role_type] = role_id
       Helper.save_settings
     end
 
@@ -64,7 +64,7 @@ module SerieBot
     end
 
     def self.is_helper?(event)
-      return is_xxx_role?(event, 'hlp', 'Helpers')
+      return is_xxx_role?(event, 'hlp', 'Helpers', false)
     end
 
     # We have to specify user here because we're checking if another user is verified
