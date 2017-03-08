@@ -114,6 +114,42 @@ module SerieBot
       end
     end
 
+    reaction_add do |event|
+      setup_channels(event)
+      if event.channel == original_channel
+        # Figure out the corresponding announcement
+        message_data = @messages[event.message.id]
+        if message_data.nil?
+          embed_error = create_error_embed("An announcement had a reaction added, and I wasn't able to add the reaction to my copy.")
+          mirrored_channel.send_embed('', embed_error)
+        else
+          # Welp, looks like it worked.
+          # Check if the person who sent the message is creating the reaction.
+          if event.user == event.message.user
+            mirror_message_id = message_data[:message_sent]
+            reaction_to_add = event.emoji.to_reaction
+            mirrored_channel.message(mirror_message_id).create_reaction(reaction_to_add)
+          end
+        end
+      end
+    end
+
+    reaction_remove do |event|
+      setup_channels(event)
+      if event.channel == original_channel
+        # Figure out the corresponding announcement
+        message_data = @messages[event.message.id]
+        if message_data.nil?
+          embed_error = create_error_embed("An announcement had a reaction removed, and I wasn't able to remove a reaction from my copy.")
+          mirrored_channel.send_embed('', embed_error)
+        else
+          # Welp, looks like it worked.
+          mirror_message_id = message_data[:message_sent]
+          mirrored_channel.message(mirror_message_id).delete_own_reaction(event.emoji)
+        end
+      end
+    end
+
     # The following method syncs the announcement channel with the mirror.
     # It's not a command. Call it with eval: #{Config.prefix}eval Morpher.sync_announcements(event)
     # Also, I hope you've already setup the channels and cleared the whole channel.
@@ -134,6 +170,11 @@ module SerieBot
           next if message.nil?
           embed_to_send = create_embed(event.bot, message_text)
           message_to_send = mirrored_channel.send_embed('', embed_to_send)
+
+          # React if possible
+          message.reactions.each do |reaction|
+            message_to_send.create_reaction(reaction.name)
+          end
 
           # Store message under original id
           @messages[message.id] = {
