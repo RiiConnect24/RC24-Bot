@@ -10,7 +10,10 @@ module SerieBot
         @messages = {}
 
         def self.get_message(event, state)
-            unless event.message.content.nil? || event.message.content == ''
+            if event.message.nil?
+                # Why is this nil?
+            elsif event.message.content.start_with?(Config.prefix) || event.server.id == 206934458954153984
+            # We only want to log commands, or messages on RC24. (Yes, this is a hotfix, hold your horses.)
                 if event.channel.private?
                     server_name = 'DM'
                     channel_name = event.channel.name
