@@ -3,12 +3,17 @@ module SerieBot
     extend Discordrb::Commands::CommandContainer
     extend Discordrb::EventContainer
 
+    def self.get_server_log?(event)
+      # Get channel from ID
+      return event.bot.channel(Helper.get_xxx_channel?(event, 'srv', 'server-log'))
+    end
+
     member_join do |event|
       time = Time.now.getutc
       message_to_send = "User: #{event.user.mention} | **#{event.user.distinct}**\n"
       message_to_send << "Account creation: `#{event.user.creation_time.getutc.asctime} UTC`\n"
 
-      channel = Helper.get_xxx_channel?(event, 'srv', 'server-log')
+      channel = get_server_log?(event)
       unless channel.nil?
         channel.send_embed do |e|
           e.title = 'A user just joined the server!'
@@ -32,7 +37,7 @@ module SerieBot
         end
       end
       unless was_banned
-        channel = Helper.get_xxx_channel?(event, 'srv', 'server-log')
+        channel = get_server_log?(event)
         unless channel.nil?
           channel.send_embed do |e|
             e.title = 'A user left the server!'
@@ -47,7 +52,7 @@ module SerieBot
     user_ban do |event|
       time = Time.now.getutc
 
-      channel = Helper.get_xxx_channel?(event, 'srv', 'server-log')
+      channel = get_server_log?(event)
       unless channel.nil?
         channel.send_embed do |e|
           e.title = 'A user was banned from the server!'
@@ -73,7 +78,7 @@ module SerieBot
       # D32F2F
       time = Time.now.getutc
 
-      channel = Helper.get_xxx_channel?(event, 'srv', 'server-log')
+      channel = get_server_log?(event)
       unless channel.nil?
         channel.send_embed do |e|
           e.title = 'A user was unbanned from the server!'

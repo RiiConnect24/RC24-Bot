@@ -5,35 +5,40 @@ module SerieBot
     end
 
     # Gets the channel/role's ID based on the given parameters
-    def self.get_xxx_id?(short_type, xxx_type, server_id)
+    def self.get_xxx_id?(server_id, type, short_type)
+      puts server_id
       # Set all to defaults
       Config.settings[server_id] = {} if Config.settings[server_id].nil?
-      Config.settings[server_id][xxx_type] = {} if Config.settings[server_id][xxx_type].nil?
-      return Config.settings[server_id][xxx_type][short_type]
+      Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
+      Config.settings[server_id][type][short_type] = {} if Config.settings[server_id][type][short_type].nil?
+      return Config.settings[server_id][type][short_type]
     end
 
     # Saves the role's ID based on the given parameters
     # e.g save_xxx_id?('srv', 'channel', event.server.id, id)
-    def self.save_xxx_id?(storage_type, short_type, server_id, id)
+    # type can be channel, role, etc
+    # short_name: mod, dev, srv, etc
+    def self.save_xxx_id?(server_id, type, short_name, id)
       if Config.debug
-        puts "Saving #{storage_type} type #{short_type} with ID #{id} for server ID #{server_id}"
+        puts "Saving short type #{type} (type #{short_name}) with ID #{id} for server ID #{server_id}"
       end
       # Potentially populate
-      Config.settings[server_id][storage_type] = {} if Config.settings[server_id][storage_type].nil?
-      Config.settings[server_id][storage_type][short_type] = id
+      Config.settings[server_id] = {} if Config.settings[server_id].nil?
+      Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
+      Config.settings[server_id][type][short_name] = id
       Helper.save_settings
     end
 
     # Checks to see if the user has the given role, and if not deals accordingly to fix it.
     def self.is_xxx_role?(event, role_type, full_name, show_message = true, other_user = nil)
       # Check if config already has a role
-      xxx_role_id = get_xxx_id?(role_type, 'role', event.server.id)
+      xxx_role_id = get_xxx_id?(event.server.id, 'role', role_type)
 
       if xxx_role_id.nil?
         # Set to default
         begin
           xxx_role_id = role_from_name(event.server, full_name).id
-          save_xxx_id?(role_type, 'role', event.server.id, xxx_role_id)
+          save_xxx_id?(event.server.id, 'role', role_type, xxx_role_id)
         rescue NoMethodError
           if show_message
             event.respond("I wasn't able to find the role \"#{full_name}\" for role-related tasks! See `#{Config.prefix}config help` for information.")
@@ -53,24 +58,24 @@ module SerieBot
 
 
     # Checks to see if the server has the needed channel, and if not deals accordingly to fix it.
-    def self.get_xxx_channel?(event, channel_type, channel_name)
+    def self.get_xxx_channel?(event, short_type, channel_name)
       # Check if config already has a role
-      xxx_channel_id = get_xxx_id?(channel_type, 'channel', event.server.id)
+      xxx_channel_id = get_xxx_id?(event.server.id, 'channel', short_type)
 
       if xxx_channel_id.nil?
         # Set to default
-       # begin
+        begin
           xxx_channel_id = channel_from_name(event.server, channel_name).id
-          save_xxx_id?(channel_type, 'channel', event.server.id, xxx_channel_id)
-        # rescue NoMethodError
-        #   # Rip, we'll set the channel in config.
-        #   # If we're debugging, might be helpful to say that.
-        #   if Config.debug
-        #     puts "I wasn't able to find the channel \"#{channel_name}\" for use with #{channel_type}."
-        #   end
-        #   return nil
-        # end
-        event.server.general_channel.send_message("Role \"#{channel_name}\" set to default. Use `#{Config.prefix}config setchannel #{channel_type} <role name>` to change otherwise.")
+          save_xxx_id?(event.server.id, 'channel', short_type, xxx_channel_id)
+        rescue NoMethodError
+          # Rip, we'll set the channel in config.
+          # If we're debugging, might be helpful to say that.
+          if Config.debug
+            puts "I wasn't able to find the channel \"#{channel_name}\" for use with #{short_type}."
+          end
+          return nil
+        end
+        event.server.general_channel.send_message("Channel \"#{channel_name}\" set to default. Use `#{Config.prefix}config setchannel #{short_type} <channel name>` to change otherwise.")
       end
 
       # Check if the server has the specified channel
