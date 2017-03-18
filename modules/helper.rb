@@ -6,7 +6,6 @@ module SerieBot
 
     # Gets the channel/role's ID based on the given parameters
     def self.get_xxx_id?(server_id, type, short_type)
-      puts server_id
       # Set all to defaults
       Config.settings[server_id] = {} if Config.settings[server_id].nil?
       Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
