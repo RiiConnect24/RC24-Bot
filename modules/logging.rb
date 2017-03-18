@@ -10,10 +10,10 @@ module SerieBot
         @messages = {}
 
         def self.get_message(event, state)
-            if event.message.nil?
+            if event.nil? || event.message.nil?
                 # Why is this nil?
-            elsif event.message.content.start_with?(Config.prefix) || Config.logged_servers.include?(event.server.id)
-            # We only want to log commands, or messages on specified servers.
+            elsif event.channel.private? || event.message.content.start_with?(Config.prefix) || Config.logged_servers.include?(event.server.id)
+            # We only want to log commands run, or messages on specified servers, or DMed from the bot.
                 if event.channel.private?
                     server_name = 'DM'
                     channel_name = event.channel.name
