@@ -8,6 +8,11 @@ module SerieBot
       return event.bot.channel(Helper.get_xxx_channel?(event, 'srv', 'server-log'))
     end
 
+    def self.get_mod_log?(event)
+      # Get channel from ID
+      return event.bot.channel(Helper.get_xxx_channel?(event, 'mod', 'mod-log'))
+    end
+
     member_join do |event|
       time = Time.now.getutc
       message_to_send = "User: #{event.user.mention} | **#{event.user.distinct}**\n"
@@ -51,41 +56,39 @@ module SerieBot
 
     user_ban do |event|
       time = Time.now.getutc
+      e = Discordrb::Webhooks::Embed.new
+      e.title = 'A user was banned from the server!'
+      e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
+      e.colour = '#D32F2F'
+      e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
 
       channel = get_server_log?(event)
       unless channel.nil?
-        channel.send_embed do |e|
-          e.title = 'A user was banned from the server!'
-          e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
-          e.colour = '#D32F2F'
-          e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
-        end
+        channel.send_embed('', e)
       end
 
-      # Potentially let mod-log know too
-      channel = Helper.get_xxx_channel?(event, 'mod', 'mod-log')
-        unless channel.nil?
-        channel.send_embed do |e|
-          e.title = 'A user was banned from the server!'
-          e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
-          e.colour = '#D32F2F'
-          e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
-        end
-       end
+      channel = get_mod_log?(event)
+      unless channel.nil?
+        channel.send_embed('', e)
+      end
     end
 
     user_unban do |event|
-      # D32F2F
       time = Time.now.getutc
+      embed_sent = Discordrb::Webhooks::Embed.new
+      embed_sent.title = 'A user was unbanned from the server!'
+      embed_sent.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
+      embed_sent.colour = '#4CAF50'
+      embed_sent.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
 
       channel = get_server_log?(event)
       unless channel.nil?
-        channel.send_embed do |e|
-          e.title = 'A user was unbanned from the server!'
-          e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
-          e.colour = '#4CAF50'
-          e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
-        end
+        channel.send_embed('', embed_sent)
+      end
+
+      channel = get_mod_log?(event)
+      unless channel.nil?
+        channel.send_embed('', embed_sent)
       end
     end
   end

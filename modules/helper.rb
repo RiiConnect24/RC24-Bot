@@ -9,7 +9,6 @@ module SerieBot
       # Set all to defaults
       Config.settings[server_id] = {} if Config.settings[server_id].nil?
       Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
-      Config.settings[server_id][type][short_type] = {} if Config.settings[server_id][type][short_type].nil?
       return Config.settings[server_id][type][short_type]
     end
 
@@ -370,8 +369,14 @@ module SerieBot
 
     def self.channel_from_name(server, channel_name)
       channels = server.channels
-      channels = channels.select { |x| x.name == channel_name }.first
-      channels
+      if Config.debug
+       puts "Looking for #{channel_name}"
+      end
+      channel = channels.select { |x| x.name == channel_name }.first
+      if Config.debug
+        puts "Found #{channel.name} (ID: #{channel.id})"
+      end
+      channel
     end
 
     def self.get_help()
@@ -395,7 +400,7 @@ module SerieBot
       help += "\n"
       help += "**Adding a user's Wii**\n"
       help += "`!add @user`\n"
-      help += "This will send you their codes, and then DM them your Wii/game codes."
+      help += 'This will send you their codes, and then DM them your Wii/game codes.'
       help
     end
 
