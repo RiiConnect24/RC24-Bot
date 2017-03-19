@@ -10,10 +10,10 @@ module SerieBot
         @messages = {}
 
         def self.get_message(event, state)
-            if event.message.nil?
+            if event.nil? || event.message.nil?
                 # Why is this nil?
-            elsif event.message.content.start_with?(Config.prefix) || event.server.id == 206934458954153984
-            # We only want to log commands, or messages on RC24. (Yes, this is a hotfix, hold your horses.)
+            elsif event.channel.private? || event.message.content.start_with?(Config.prefix) || Config.logged_servers.include?(event.server.id)
+            # We only want to log commands run, or messages on specified servers, or DMed from the bot.
                 if event.channel.private?
                     server_name = 'DM'
                     channel_name = event.channel.name
@@ -50,7 +50,8 @@ module SerieBot
 
         def self.get_deleted_message(event, state)
             if @messages[event.id].nil?
-                puts "/!\\{DELETE} Message with ID #{event.id} was deleted, but the contents couldn't be fetched."
+                # Do nothing, as this message wasn't for the bot.
+                # This'd better be the case.
                 return nil
             end
 

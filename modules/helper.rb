@@ -4,33 +4,39 @@ module SerieBot
       Config.bot_owners.include?(member)
     end
 
-    # Gets the role's ID based on the given parameters
-    def self.get_role_id?(role_type, server_id)
+    # Gets the channel/role's ID based on the given parameters
+    def self.get_xxx_id?(server_id, type, short_type)
       # Set all to defaults
-      Config.settings['role'] = {} if Config.settings['role'].nil?
-      Config.settings['role'][server_id] = {} if Config.settings['role'][server_id].nil?
-      return Config.settings['role'][server_id][role_type]
+      Config.settings[server_id] = {} if Config.settings[server_id].nil?
+      Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
+      return Config.settings[server_id][type][short_type]
     end
 
     # Saves the role's ID based on the given parameters
-    def self.save_role_id?(role_type, server_id, role_id)
+    # e.g save_xxx_id?('srv', 'channel', event.server.id, id)
+    # type can be channel, role, etc
+    # short_name: mod, dev, srv, etc
+    def self.save_xxx_id?(server_id, type, short_name, id)
       if Config.debug
-        puts "Saving role type #{role_type} with role ID #{role_id} for server ID #{server_id}"
+        puts "Saving short type #{type} (type #{short_name}) with ID #{id} for server ID #{server_id}"
       end
-      Config.settings['role'][server_id][role_type] = role_id
+      # Potentially populate
+      Config.settings[server_id] = {} if Config.settings[server_id].nil?
+      Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
+      Config.settings[server_id][type][short_name] = id
       Helper.save_settings
     end
 
     # Checks to see if the user has the given role, and if not deals accordingly to fix it.
     def self.is_xxx_role?(event, role_type, full_name, show_message = true, other_user = nil)
       # Check if config already has a role
-      xxx_role_id = get_role_id?(role_type, event.server.id)
+      xxx_role_id = get_xxx_id?(event.server.id, 'role', role_type)
 
       if xxx_role_id.nil?
         # Set to default
         begin
           xxx_role_id = role_from_name(event.server, full_name).id
-          save_role_id?(role_type, event.server.id, xxx_role_id)
+          save_xxx_id?(event.server.id, 'role', role_type, xxx_role_id)
         rescue NoMethodError
           if show_message
             event.respond("I wasn't able to find the role \"#{full_name}\" for role-related tasks! See `#{Config.prefix}config help` for information.")
@@ -49,6 +55,31 @@ module SerieBot
     end
 
 
+    # Checks to see if the server has the needed channel, and if not deals accordingly to fix it.
+    def self.get_xxx_channel?(event, short_type, channel_name)
+      # Check if config already has a role
+      xxx_channel_id = get_xxx_id?(event.server.id, 'channel', short_type)
+
+      if xxx_channel_id.nil?
+        # Set to default
+        begin
+          xxx_channel_id = channel_from_name(event.server, channel_name).id
+          save_xxx_id?(event.server.id, 'channel', short_type, xxx_channel_id)
+        rescue NoMethodError
+          # Rip, we'll set the channel in config.
+          # If we're debugging, might be helpful to say that.
+          if Config.debug
+            puts "I wasn't able to find the channel \"#{channel_name}\" for use with #{short_type}."
+          end
+          return nil
+        end
+        event.server.general_channel.send_message("Channel \"#{channel_name}\" set to default. Use `#{Config.prefix}config setchannel #{short_type} <channel name>` to change otherwise.")
+      end
+
+      # Check if the server has the specified channel
+      return event.bot.channel(xxx_channel_id).id
+    end
+
     # The following commands are basically skeletons now. The work is done above.
     def self.is_developer?(event)
       return is_xxx_role?(event, 'dev', 'Developers')
@@ -64,7 +95,7 @@ module SerieBot
     end
 
     def self.is_helper?(event)
-      return is_xxx_role?(event, 'hlp', 'Helpers')
+      return is_xxx_role?(event, 'hlp', 'Helpers', false)
     end
 
     # We have to specify user here because we're checking if another user is verified
@@ -330,10 +361,22 @@ module SerieBot
       return_value
     end
 
-    def self.role_from_name(server, rolename)
+    def self.role_from_name(server, role_name)
       roles = server.roles
-      role = roles.select { |r| r.name == rolename }.first
+      role = roles.select { |r| r.name == role_name }.first
       role
+    end
+
+    def self.channel_from_name(server, channel_name)
+      channels = server.channels
+      if Config.debug
+       puts "Looking for #{channel_name}"
+      end
+      channel = channels.select { |x| x.name == channel_name }.first
+      if Config.debug
+        puts "Found #{channel.name} (ID: #{channel.id})"
+      end
+      channel
     end
 
     def self.get_help()
@@ -357,7 +400,7 @@ module SerieBot
       help += "\n"
       help += "**Adding a user's Wii**\n"
       help += "`!add @user`\n"
-      help += "This will send you their codes, and then DM them your Wii/game codes."
+      help += 'This will send you their codes, and then DM them your Wii/game codes.'
       help
     end
 
