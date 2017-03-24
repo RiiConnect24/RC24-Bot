@@ -84,14 +84,48 @@ module SerieBot
         # Find given role by name. Or, at least attempt to.
         begin
           new_role_id = Helper.role_from_name(event.server, role_name).id
-          Helper.save_role_id?(role_type, event.server.id, new_role_id)
+          Helper.save_xxx_id?(event.server.id, 'role', role_type, new_role_id)
           event.respond('✅ Successfully set!')
         rescue NoMethodError
           event.respond("❌ I wasn't able to find that role on this server! No changes have been made to your server's config.")
         end
+      elsif option == 'setchannel'
+        # Make sure that there are 2+ options here, so we don't waste our time.
+        if args.length < 2
+          event.respond('❌ Make sure to follow the syntax correctly!')
+          break
+        end
+
+        channel_type = args[0]
+
+        # Make sure that the short ID is valid
+        is_valid = case channel_type
+                     when 'srv', 'mod'
+                       true
+                     else
+                       false
+                   end
+        unless is_valid
+          event.respond('❌ Make sure to type in a valid channel type!')
+          break
+        end
+
+        # All appears to be good to go. Remove the type and go.
+        args.delete_at(0)
+        channel_name = args.join(' ')
+        puts "About to change #{channel_type} to #{channel_name}"
+
+        # Find given role by name. Or, at least attempt to.
+        begin
+          new_channel_id = Helper.channel_from_name(event.server, channel_name).id
+          Helper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id)
+          event.respond('✅ Successfully set!')
+        rescue NoMethodError
+          event.respond("❌ I wasn't able to find that channel on this server! No changes have been made to your server's config.")
+        end
       else
         event << '❌ You need to have an option! Valid options are:'
-        event << '`help`, `setrole`'
+        event << '`help`, `setrole`, `setchannel`'
       end
     end
   end
