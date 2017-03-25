@@ -11,7 +11,7 @@ Gemfile.lock
 .remote-sync.json
 .directory
 # Have config but not others
-data/
+data/*
 !data/settings.yml
 # IDEs
 .idea/*

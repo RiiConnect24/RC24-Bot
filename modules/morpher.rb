@@ -4,21 +4,21 @@ module SerieBot
     extend Discordrb::EventContainer
 
     class << self
-        attr_accessor :original_channel
-        attr_accessor :mirrored_channel
-        attr_accessor :messages
+      attr_accessor :original_channel
+      attr_accessor :mirrored_channel
+      attr_accessor :messages
     end
     Helper.load_morpher
 
     def self.setup_channels(event)
       if original_channel.nil? | mirrored_channel.nil?
         @original_channel = if Config.debug
-                     # Testing server #announcements
-                     event.bot.channel(278741282568798209, event.bot.server(254417537746337792))
-                   else
-                     # RiiConnect24 #announcements
-                     event.bot.channel(206934926136705024, event.bot.server(206934458954153984))
-                   end
+                              # Testing server #announcements
+                              event.bot.channel(278741282568798209, event.bot.server(254417537746337792))
+                            else
+                              # RiiConnect24 #announcements
+                              event.bot.channel(206934926136705024, event.bot.server(206934458954153984))
+                            end
         # ID of mirror server
         @mirrored_channel = if Config.debug
                               # RC24 News Server #dev-test
@@ -58,8 +58,8 @@ module SerieBot
 
         # Store message under original id
         @messages[event.message.id] = {
-          embed_sent: embed_to_send,
-          message_sent: message_to_send.id
+            embed_sent: embed_to_send,
+            message_sent: message_to_send.id
         }
         Helper.save_morpher
       end
@@ -114,43 +114,6 @@ module SerieBot
       end
     end
 
-    reaction_add do |event|
-      setup_channels(event)
-      if event.channel == original_channel
-        # Figure out the corresponding announcement
-        message_data = @messages[event.message.id]
-        if message_data.nil?
-          embed_error = create_error_embed("An announcement had a reaction added, and I wasn't able to add the reaction to my copy.")
-          mirrored_channel.send_embed('', embed_error)
-        else
-          # Welp, looks like it worked.
-          # Check if the person who sent the message is creating the reaction.
-          if event.user == event.message.user
-            mirror_message_id = message_data[:message_sent]
-            reaction_message = mirrored_channel.message(mirror_message_id)
-            reaction_to_add = event.emoji.name
-            reaction_message.create_reaction(reaction_to_add)
-          end
-        end
-      end
-    end
-
-    reaction_remove do |event|
-      setup_channels(event)
-      if event.channel == original_channel
-        # Figure out the corresponding announcement
-        message_data = @messages[event.message.id]
-        if message_data.nil?
-          embed_error = create_error_embed("An announcement had a reaction removed, and I wasn't able to remove a reaction from my copy.")
-          mirrored_channel.send_embed('', embed_error)
-        else
-          # Welp, looks like it worked.
-          mirror_message_id = message_data[:message_sent]
-          mirrored_channel.message(mirror_message_id).delete_own_reaction(event.emoji.name)
-        end
-      end
-    end
-
     # The following method syncs the announcement channel with the mirror.
     # It's not a command. Call it with eval: #{Config.prefix}eval Morpher.sync_announcements(event)
     # Also, I hope you've already setup the channels and cleared the whole channel.
@@ -171,12 +134,6 @@ module SerieBot
           next if message.nil?
           embed_to_send = create_embed(event.bot, message)
           message_to_send = mirrored_channel.send_embed('', embed_to_send)
-
-          # React if possible
-          message.reactions.each do |reaction|
-            # reaction[0] appears to be the reaction's name
-            message_to_send.create_reaction(reaction[0])
-          end
 
           # Store message under original id
           @messages[message.id] = {
