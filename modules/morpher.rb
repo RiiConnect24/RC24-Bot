@@ -127,8 +127,9 @@ module SerieBot
           # Check if the person who sent the message is creating the reaction.
           if event.user == event.message.user
             mirror_message_id = message_data[:message_sent]
-            reaction_to_add = event.emoji.to_reaction
-            mirrored_channel.message(mirror_message_id).create_reaction(reaction_to_add)
+            reaction_message = mirrored_channel.message(mirror_message_id)
+            reaction_to_add = event.emoji.name
+            reaction_message.create_reaction(reaction_to_add)
           end
         end
       end
@@ -145,7 +146,7 @@ module SerieBot
         else
           # Welp, looks like it worked.
           mirror_message_id = message_data[:message_sent]
-          mirrored_channel.message(mirror_message_id).delete_own_reaction(event.emoji)
+          mirrored_channel.message(mirror_message_id).delete_own_reaction(event.emoji.name)
         end
       end
     end
@@ -168,12 +169,13 @@ module SerieBot
         # Mirror announcement + save it
         current_history.each do |message|
           next if message.nil?
-          embed_to_send = create_embed(event.bot, message_text)
+          embed_to_send = create_embed(event.bot, message)
           message_to_send = mirrored_channel.send_embed('', embed_to_send)
 
           # React if possible
           message.reactions.each do |reaction|
-            message_to_send.create_reaction(reaction.name)
+            # reaction[0] appears to be the reaction's name
+            message_to_send.create_reaction(reaction[0])
           end
 
           # Store message under original id
