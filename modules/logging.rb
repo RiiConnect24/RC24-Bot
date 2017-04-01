@@ -10,42 +10,48 @@ module SerieBot
         @messages = {}
 
         def self.get_message(event, state)
-            if event.channel.private?
-                server_name = 'DM'
-                channel_name = event.channel.name
-            else
-                server_name = event.server.name
-                channel_name = "##{event.channel.name}"
-            end
-            content = Helper.parse_mentions(event.bot, event.message.content)
-            content = Rumoji.encode(content)
-            attachments = event.message.attachments
-            id = Base64.strict_encode64([event.message.id].pack('L<'))
+            if event.nil? || event.message.nil?
+                # Why is this nil?
+            elsif event.channel.private? || event.message.content.start_with?(Config.prefix) || Config.logged_servers.include?(event.server.id)
+            # We only want to log commands run, or messages on specified servers, or DMed from the bot.
+                if event.channel.private?
+                    server_name = 'DM'
+                    channel_name = event.channel.name
+                else
+                    server_name = event.server.name
+                    channel_name = "##{event.channel.name}"
+                end
+                content = Helper.parse_mentions(event.bot, event.message.content)
+                content = Rumoji.encode(content)
+                attachments = event.message.attachments
+                id = Base64.strict_encode64([event.message.id].pack('L<'))
 
-            # Format expected:
-            # (ID) [D H:M] server name/channel name <author>: message
-            log_message = "#{state}(#{id}) #{event.message.timestamp.utc.strftime('[%D %H:%M]')} #{server_name}/#{channel_name} <#{event.author.distinct}>: #{content}"
-            attachment_message = "<Attachments: #{attachments[0].filename}: #{attachments[0].url} >" unless attachments.empty?
-            if state == '{EDIT}'
-                puts Rainbow(log_message.to_s).yellow
-                puts Rainbow(attachment_message.to_s).yellow unless attachments.empty?
-            else
-                puts Rainbow(log_message.to_s).green
-                puts Rainbow(attachment_message.to_s).green unless attachments.empty?
-            end
-            # Store message
-            @messages = {
-                event.message.id => {
-                    message: event.message,
-                    channel: channel_name,
-                    server: server_name
+                # Format expected:
+                # (ID) [D H:M] server name/channel name <author>: message
+                log_message = "#{state}(#{id}) #{event.message.timestamp.utc.strftime('[%D %H:%M]')} #{server_name}/#{channel_name} <#{event.author.distinct}>: #{content}"
+                attachment_message = "<Attachments: #{attachments[0].filename}: #{attachments[0].url} >" unless attachments.empty?
+                if state == '{EDIT}'
+                    puts Rainbow(log_message.to_s).yellow
+                    puts Rainbow(attachment_message.to_s).yellow unless attachments.empty?
+                else
+                    puts Rainbow(log_message.to_s).green
+                    puts Rainbow(attachment_message.to_s).green unless attachments.empty?
+                end
+                # Store message
+                @messages = {
+                    event.message.id => {
+                        message: event.message,
+                        channel: channel_name,
+                        server: server_name
+                    }
                 }
-            }
+             end
         end
 
         def self.get_deleted_message(event, state)
             if @messages[event.id].nil?
-                puts "/!\\{DELETE} Message with ID #{event.id} was deleted, but the contents couldn't be fetched."
+                # Do nothing, as this message wasn't for the bot.
+                # This'd better be the case.
                 return nil
             end
 

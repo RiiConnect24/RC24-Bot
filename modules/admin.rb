@@ -155,5 +155,48 @@ module SerieBot
         command(:about, min_args: 0, max_args: 0) do |event|
             event << "`#{event.bot.user(event.bot.profile.id).distinct}` running **RC24-Bot v1-#{`git rev-parse --short HEAD`}** \n**https://github.com/Seriell/RC24-Bot **"
         end
+
+        command(:prune, required_permissions: [:manage_messages], max_args: 1) do |event, num|
+            Helper.ignore_bots(event)
+            begin
+                num = 50 if num.nil?
+                count = 0
+                event.channel.history(num).each do |x|
+                    if x.author.id == event.bot.profile.id
+                        x.delete
+                        count += 1
+                    end
+                end
+                message = event.respond("✅ Pruned #{count} messages!")
+                sleep(10)
+                message.delete
+                event.message.delete
+            rescue Discordrb::Errors::NoPermission
+                event.channel.send_message("❌ I don't have permission to delete messages!")
+                puts 'The bot does not have the delete message permission!'
+            end
+        end
+
+        command(:pruneuser, required_permissions: [:manage_messages], max_args: 1) do |event, user, num|
+            Helper.ignore_bots(event)
+            begin
+                user = event.bot.parse_mention(user)
+                num = 50 if num.nil?
+                count = 0
+                event.channel.history(num).each do |x|
+                    if x.author.id == user.id
+                        x.delete
+                        count += 1
+                    end
+                end
+                message = event.respond("✅ Pruned #{count} messages!")
+                sleep(10)
+                message.delete
+                event.message.delete
+            rescue Discordrb::Errors::NoPermission
+                event.channel.send_message("❌ I don't have permission to delete messages!")
+                puts 'The bot does not have the delete message permission!'
+            end
+        end
     end
 end

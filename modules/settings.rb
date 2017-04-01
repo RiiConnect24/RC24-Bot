@@ -25,6 +25,9 @@ module SerieBot
       # Ignore specific channels
       attr_accessor :ignore_ids
 
+      # Servers to log
+      attr_accessor :logged_servers
+
       # General settings (not in config.rb)
       attr_accessor :settings
     end
