@@ -2,22 +2,38 @@ module SerieBot
   module Userjoin
     extend Discordrb::Commands::CommandContainer
     extend Discordrb::EventContainer
-    log_channel = 'server-log'
+    require 'fileutils'
+
+
+    # For patching
     mail_exe = "#{Dir.home}/bin/mail"
+
+    def self.get_server_log?(event)
+      # Get channel from ID
+      return event.bot.channel(Helper.get_xxx_channel?(event, 'srv', 'server-log'))
+    end
+
+    def self.get_mod_log?(event)
+      # Get channel from ID
+      return event.bot.channel(Helper.get_xxx_channel?(event, 'mod', 'mod-log'))
+    end
 
     member_join do |event|
       time = Time.now.getutc
       message_to_send = "User: #{event.user.mention} | **#{event.user.distinct}**\n"
       message_to_send << "Account creation: `#{event.user.creation_time.getutc.asctime} UTC`\n"
 
-      channel = event.server.channels.select { |x| x.name == log_channel }.first
-      channel.send_embed do |e|
-        e.title = 'A user just joined the server!'
-        e.description = message_to_send.to_s
-        e.colour = '#00C853'
-        e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
+      channel = get_server_log?(event)
+      unless channel.nil?
+        channel.send_embed do |e|
+          e.title = 'A user just joined the server!'
+          e.description = message_to_send.to_s
+          e.colour = '#00C853'
+          e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
+        end
       end
     end
+
     member_leave do |event|
       time = Time.now.getutc
 
@@ -31,38 +47,53 @@ module SerieBot
         end
       end
       unless was_banned
-        channel = event.server.channels.select { |x| x.name == log_channel }.first
-        channel.send_embed do |e|
-          e.title = 'A user left the server!'
-          e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
-          e.colour = '#FFEB3B'
-          e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
+        channel = get_server_log?(event)
+        unless channel.nil?
+          channel.send_embed do |e|
+            e.title = 'A user left the server!'
+            e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
+            e.colour = '#FFEB3B'
+            e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
+          end
         end
       end
     end
 
     user_ban do |event|
       time = Time.now.getutc
+      e = Discordrb::Webhooks::Embed.new
+      e.title = 'A user was banned from the server!'
+      e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
+      e.colour = '#D32F2F'
+      e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
 
-      channel = event.server.channels.select { |x| x.name == log_channel }.first
-      channel.send_embed do |e|
-        e.title = 'A user was banned from the server!'
-        e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
-        e.colour = '#D32F2F'
-        e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
+      channel = get_server_log?(event)
+      unless channel.nil?
+        channel.send_embed('', e)
+      end
+
+      channel = get_mod_log?(event)
+      unless channel.nil?
+        channel.send_embed('', e)
       end
     end
 
     user_unban do |event|
-      # D32F2F
       time = Time.now.getutc
+      embed_sent = Discordrb::Webhooks::Embed.new
+      embed_sent.title = 'A user was unbanned from the server!'
+      embed_sent.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
+      embed_sent.colour = '#4CAF50'
+      embed_sent.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
 
-      channel = event.server.channels.select { |x| x.name == log_channel }.first
-      channel.send_embed do |e|
-        e.title = 'A user was unbanned from the server!'
-        e.description = "User: #{event.user.mention} | **#{event.user.distinct}**"
-        e.colour = '#4CAF50'
-        e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
+      channel = get_server_log?(event)
+      unless channel.nil?
+        channel.send_embed('', embed_sent)
+      end
+
+      channel = get_mod_log?(event)
+      unless channel.nil?
+        channel.send_embed('', embed_sent)
       end
     end
 
@@ -70,22 +101,30 @@ module SerieBot
     pm do |event|
       # Check that it's enabled.
       if Config.patch_mail
-        puts 'was here'
-        # Make sure that this is actually a mail file.
         file = event.message.attachments[0]
-        unless file.nil?
+        # Check that this isn't the bot itself, and that this is actually a mail file.
+        unless file.nil? || event.message.from_bot?
           if file.filename == 'nwc24msg.cfg'
             status_message = event.respond('Downloading config...')
-            # Download file to non-user defined name
-            Helper.download_file(file.url, 'tmp', "#{event.user.id}.cfg")
-            # Run the patcher
-            # mail <bot dir>/tmp/<user_id>.cfg
-            status_message.edit('Patching config...')
-            command_to_run = mail_exe + ' ' + Dir.pwd + '/tmp/' + event.user.id.to_s + '.cfg'
-            puts 'Running ' + command_to_run
-            %x( #{command_to_run} )
-            # Assume it worked. If it didn't rip xd
 
+            # Download file to tmp/userid/nwc24msg.cfg
+            Helper.download_file(file.url, "tmp/#{event.user.id}", 'nwc24msg.cfg')
+
+            # Run the patcher
+            # mail <bot dir>/tmp/<user_id>/nwc24msg.cfg
+            status_message.edit('Patching config...')
+            bot_tmp = Dir.pwd + '/tmp/'
+            downloaded_cfg_path = bot_tmp + event.user.id.to_s + '/nwc24msg.cfg'
+            if Config.debug
+              puts 'Path is ' + downloaded_cfg_path
+            end
+            system mail_exe, downloaded_cfg_path
+            # Assume it worked. If it didn't rip xd
+            status_message.delete
+
+            # Upload patched copy
+            event.channel.send_file(File.new([downloaded_cfg_path].sample), caption: "Here's your patched mail file, deleted from our server:")
+            FileUtils.rm_r bot_tmp + '/' + event.user.id.to_s
           end
         end
       end

@@ -202,7 +202,7 @@ module SerieBot
 
       path = "#{folder}/#{name}"
 
-      FileUtils.mkdir(folder) unless File.exist?(folder)
+      FileUtils.mkdir_p(folder) unless File.exist?(folder)
       FileUtils.rm(path) if File.exist?(path)
 
       File.new path, 'w'
@@ -226,7 +226,6 @@ module SerieBot
 
     def self.upload_file(channel, filename)
       channel.send_file File.new([filename].sample)
-      puts "Uploaded `#{filename} to \##{channel.name}!"
     end
 
     # Accepts a message, and returns the message content, with all mentions + channels replaced with @user#1234 or #channel-name
