@@ -2,6 +2,11 @@ module SerieBot
   module Userjoin
     extend Discordrb::Commands::CommandContainer
     extend Discordrb::EventContainer
+    require 'fileutils'
+
+
+    # For patching
+    mail_exe = "#{Dir.home}/bin/mail"
 
     def self.get_server_log?(event)
       # Get channel from ID
@@ -89,6 +94,39 @@ module SerieBot
       channel = get_mod_log?(event)
       unless channel.nil?
         channel.send_embed('', embed_sent)
+      end
+    end
+
+    # For patching
+    pm do |event|
+      # Check that it's enabled.
+      if Config.patch_mail
+        file = event.message.attachments[0]
+        # Check that this isn't the bot itself, and that this is actually a mail file.
+        unless file.nil? || event.message.from_bot?
+          if file.filename == 'nwc24msg.cfg'
+            status_message = event.respond('Downloading config...')
+
+            # Download file to tmp/userid/nwc24msg.cfg
+            Helper.download_file(file.url, "tmp/#{event.user.id}", 'nwc24msg.cfg')
+
+            # Run the patcher
+            # mail <bot dir>/tmp/<user_id>/nwc24msg.cfg
+            status_message.edit('Patching config...')
+            bot_tmp = Dir.pwd + '/tmp/'
+            downloaded_cfg_path = bot_tmp + event.user.id.to_s + '/nwc24msg.cfg'
+            if Config.debug
+              puts 'Path is ' + downloaded_cfg_path
+            end
+            system mail_exe, downloaded_cfg_path
+            # Assume it worked. If it didn't rip xd
+            status_message.delete
+
+            # Upload patched copy
+            event.channel.send_file(File.new([downloaded_cfg_path].sample), caption: "Here's your patched mail file, deleted from our server:")
+            FileUtils.rm_r bot_tmp + '/' + event.user.id.to_s
+          end
+        end
       end
     end
   end

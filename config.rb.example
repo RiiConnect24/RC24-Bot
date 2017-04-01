@@ -18,7 +18,7 @@ module SerieBot
     @bot_owners = [239809536012058625, 228574821590499329] #An array of user IDS.
 
     # Status of the bot
-    @status = "online"
+    @status = 'online'
 
     # This can't contain spaces
     @dump_dir = 'logs'
@@ -27,7 +27,10 @@ module SerieBot
     @debug = true
 
     # Set this to true to enable Morpher running.
-    @morpher_enabled = true
+    @morpher_enabled = false
+
+    # Set this to true to allow patching of config files via DM.
+    @patch_mail = false
 
     # Severs that should be logged
     @logged_servers = [000000000000000000, 000000000000000000]
