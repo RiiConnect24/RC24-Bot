@@ -85,7 +85,7 @@ module SerieBot
                     event << "❌ Please enter a valid argument for the option `#{option}`."
                     event << 'Valid arguments: `wii`, `3ds`, `nnid`, `switch`, `game`.'
                 end
-            elsif option == 'lookup'
+            elsif option == 'lookup' || option == 'list'
                 user = begin
                            event.bot.parse_mention(args[0])
                        rescue
@@ -101,51 +101,61 @@ module SerieBot
                     # They may not have even used the bot, so make sure.
                     @codes[user.id] = {} if @codes[user.id].nil?
                 end
+
                 # Make sure they have friend codes, period.
                 if @codes[user.id].nil? || codes[user.id] == {}
                     event.respond("❌ **#{user_name}** has not added any friend codes!")
                     break
                 else
-                    event << "**__👤 Profile for #{user_name}__**\n"
+                    # Start out with a line return due to embed author later on
+                    embed_text = "\n"
                     unless @codes[user.id][:wii].nil?
-                        event << '<:Wii:259081748007223296> **Wiis**:'
+                        embed_text += "<:Wii:259081748007223296> **Wiis**:\n"
                         @codes[user.id][:wii].each do |wii, code| #
                             code_output = code
-                            event << "`#{code_output}` - #{wii}"
+                            embed_text += "`#{code_output}` - #{wii}\n"
                         end
-                        event << ''
+                        embed_text += "\n"
                     end
                     unless @codes[user.id]['3ds'.to_sym].nil?
-                        event << '<:New3DSXL:287651327763283968> **3DSs**:'
+                      embed_text += "<:New3DSXL:287651327763283968> **3DSs**:\n"
                         @codes[user.id]['3ds'.to_sym].each do |threeds, code| #
-                            event << "`#{code}` - #{threeds}"
+                          embed_text += "`#{code}` - #{threeds}\n"
                         end
-                        event << ''
+                        embed_text += "\n"
                     end
                     unless @codes[user.id][:nnid].nil?
-                        event << '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:'
+                      embed_text += "<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:\n"
                         @codes[user.id][:nnid].each do |threeds, code| #
                             code_output = code
-                            event << "`#{code_output}` - #{threeds}"
+                            embed_text += "`#{code_output}` - #{threeds}\n"
                         end
-                        event << ''
+                      embed_text += "\n"
                     end
                     unless @codes[user.id][:switch].nil?
-                        event << '<:Switch:287652338791874560> **Switches**:'
+                      embed_text += "<:Switch:287652338791874560> **Switches**:\n"
                         @codes[user.id][:switch].each do |switch, code| #
                             code_output = code
-                            event << "`#{code_output}` - #{switch}"
+                            embed_text += "`#{code_output}` - #{switch}\n"
                         end
-                        event << ''
+                        embed_text += "\n"
                     end
                     unless @codes[user.id][:game].nil?
-                        event << "🎮 **Games**:"
+                      embed_text += "🎮 **Games**:\n"
                         @codes[user.id][:game].each do |game, code|
                             code_output = code
-                            event << "`#{code_output}` - #{game}"
+                            embed_text += "`#{code_output}` - #{game}\n"
                         end
                         nil
                     end
+
+                    embed_sent = Discordrb::Webhooks::Embed.new
+                    embed_sent.description = embed_text
+                    embed_sent.colour = '#0083e2'
+                    embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: "Profile for #{user_name}",
+                                                                             url: nil,
+                                                                             icon_url: Helper.avatar_url(user, 32))
+                    event.channel.send_embed('', embed_sent)
                 end
             elsif option == 'help'
                 event.respond(Helper.get_help)
