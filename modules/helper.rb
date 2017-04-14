@@ -367,19 +367,22 @@ module SerieBot
     end
 
     # Get the user's color
-    def self.color_from_user(user, default = 0)
+    def self.color_from_user(user, server, default = 0)
       color = default
-      user.roles.sort_by(&:position).reverse.each do | role |
-        if role.color.combined == 0
-          next
+      # Attempt to grab member
+      member = server.member(user.id)
+      unless member.nil?
+        member.roles.sort_by(&:position).reverse.each do | role |
+          if role.color.combined == 0
+            next
+          end
+          if Config.debug
+            puts 'Using ' + role.name + '\'s color ' + role.color.combined.to_s
+          end
+          color = role.color.combined
+          break
         end
-        if Config.debug
-          puts 'Using ' + role.name + '\'s color ' + role.color.combined.to_s
-        end
-        color = role.color.combined
-        break
-      end
-
+       end
       return color
     end
 

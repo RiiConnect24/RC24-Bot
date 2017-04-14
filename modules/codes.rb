@@ -97,7 +97,7 @@ module SerieBot
                 begin
                     user_name = user.on(event.server).display_name
                 rescue NoMethodError
-                    user_name = user.display_name
+                    user_name = user.name
                     # They may not have even used the bot, so make sure.
                     @codes[user.id] = {} if @codes[user.id].nil?
                 end
@@ -154,7 +154,7 @@ module SerieBot
                     embed_sent = Discordrb::Webhooks::Embed.new
                     embed_sent.description = embed_text
                     # 33762 is the same as hex #0083e2
-                    embed_sent.colour = Helper.color_from_user(user, 33762)
+                    embed_sent.colour = Helper.color_from_user(user, event.server, 33762)
                     embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: "Profile for #{user_name}",
                                                                              url: nil,
                                                                              icon_url: Helper.avatar_url(user, 32))
