@@ -149,9 +149,12 @@ module SerieBot
                         nil
                     end
 
+
+
                     embed_sent = Discordrb::Webhooks::Embed.new
                     embed_sent.description = embed_text
-                    embed_sent.colour = '#0083e2'
+                    # 33762 is the same as hex #0083e2
+                    embed_sent.colour = Helper.color_from_user(user, 33762)
                     embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: "Profile for #{user_name}",
                                                                              url: nil,
                                                                              icon_url: Helper.avatar_url(user, 32))
