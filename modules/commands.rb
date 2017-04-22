@@ -12,10 +12,8 @@ module SerieBot
         command (:wads) do |event|
             event.channel.start_typing
             wads = "**__ RiiConnect24 WADs: __**\n"
-            wads << "Latest IOS31: http://pokeacer.xyz/owncloud/index.php/s/qMm01pal7hN2wDU/download\n"
-            wads << "Latest IOS35: http://pokeacer.xyz/owncloud/index.php/s/S7uFituZzlt49oY/download\n"
-            wads << "Latest IOS80: http://pokeacer.xyz/owncloud/index.php/s/m1K8KW8Tsbn4zTS/download\n"
-            wads << 'Latest IOS251: http://pokeacer.xyz/owncloud/index.php/s/QxCideE7BGy2l5f/download'
+            wads << "Latest IOS31: https://cdn.discordapp.com/attachments/206931077313462272/305447451471511562/IOS31.wad\n"
+            wads << "Latest IOS80: https://cdn.discordapp.com/attachments/206931077313462272/305447453010821120/IOS80.wad\n"
             begin
                 event.user.pm(wads)
             rescue Discordrb::Errors::NoPermission
