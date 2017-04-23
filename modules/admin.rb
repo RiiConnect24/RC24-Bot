@@ -10,7 +10,7 @@ module SerieBot
             url = url.join(' ')
             file = Helper.download_file(url, 'tmp')
             event.bot.profile.avatar = File.open(file)
-            event.respond("✅ Avatar should be updated!")
+            event.respond('✅ Avatar should be updated!')
         end
 
         command(:ignore, description: 'Temporarily ignore a given user', min_args: 1, max_args: 1) do |event, mention|
@@ -80,8 +80,7 @@ module SerieBot
                 break
             end
             message = event.respond 'Saving and exiting... '
-            Helper.save_codes
-            Helper.save_morpher
+            Helper.save_all
             event.bot.invisible
             message.edit('All saved. Goodbye!')
             Helper.quit

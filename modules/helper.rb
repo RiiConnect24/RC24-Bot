@@ -115,31 +115,35 @@ module SerieBot
       exit
     end
 
-
-    # Loading/saving of morpher messages
-    def self.load_morpher
+    def self.load_xyz(name)
       folder = 'data'
-      codes_path = "#{folder}/morpher.yml"
+      path_to_yml = "#{folder}/#{name}.yml"
       FileUtils.mkdir(folder) unless File.exist?(folder)
-      unless File.exist?(codes_path)
-        File.open(codes_path, "w") { |file| file.write("---\n:version: 1\n") }
+      unless File.exist?(path_to_yml)
+        File.open(path_to_yml, 'w') { |file| file.write("---\n:version: 1\n") }
       end
-      Morpher.messages = YAML.load(File.read(codes_path))
+      return YAML.load(File.read(path_to_yml))
     end
 
-    def self.save_morpher
-      File.open('data/morpher.yml', 'w+') do |f|
-      f.write(Morpher.messages.to_yaml)
-      end
-    end
-
-    # Loading/saving of settings
-    def self.save_settings
-      File.open('data/settings.yml', 'w+') do |f|
-        f.write(Config.settings.to_yaml)
+    def self.save_xyz(name, location)
+      File.open("data/#{name}.yml", 'w+') do |f|
+        f.write(location.to_yaml)
       end
     end
 
+    def self.load_all
+      if Config.morpher_enabled
+        Morpher.messages = self.load_xyz('morpher')
+      end
+      Codes.codes = self.load_xyz('codes')
+    end
+
+    def self.save_all
+      self.save_xyz('morpher', Morpher.messages)
+      self.save_xyz('codes', Codes.codes)
+    end
+
+    # We must keep this seperate due to how everything is loaded.
     def self.load_settings
       folder = 'data'
       settings_path = "#{folder}/settings.yml"
@@ -148,23 +152,6 @@ module SerieBot
         puts "[ERROR] I wasn't able to find data/settings.yml! Please grab the example from the repo."
       end
       Config.settings = YAML.load(File.read(settings_path))
-    end
-
-    # Loading/saving of codes
-    def self.load_codes
-      folder = 'data'
-      codes_path = "#{folder}/codes.yml"
-      FileUtils.mkdir(folder) unless File.exist?(folder)
-      unless File.exist?(codes_path)
-      File.open(codes_path, "w") { |file| file.write("---\n:version: 1\n") }
-      end
-      Codes.codes = YAML.load(File.read(codes_path))
-    end
-
-    def self.save_codes
-      File.open('data/codes.yml', 'w+') do |f|
-      f.write(Codes.codes.to_yaml)
-      end
     end
 
     # Downloads an avatar when given a `user` object.
@@ -398,7 +385,7 @@ module SerieBot
       channel
     end
 
-    def self.get_help()
+    def self.get_help
       help = "**__Using the bot__**\n"
       help += "\n"
       help += "**Adding codes:**\n"

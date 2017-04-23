@@ -35,8 +35,12 @@ module SerieBot
     # Check if we should enable Morpher.
     if Config.morpher_enabled
       bot.include! Morpher
-      puts "Morpher enabled!"
+      puts 'Morpher enabled!'
     end
+
+    # Load config files
+    Helper.load_all
+
     # Run Bot
     Config.invite_url = bot.invite_url if Config.invite_url.nil?
     puts "Invite URL #{Config.invite_url}"

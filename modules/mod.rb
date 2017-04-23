@@ -12,24 +12,24 @@ module SerieBot
 				event.respond("`#{count}` is not a valid number!")
 				break
 			end
-			clearnum = count.to_i + 1
+			clear_num = count.to_i + 1
 
 			begin
-				while clearnum > 0
-					if clearnum >= 99
+				while clear_num > 0
+					if clear_num >= 99
 						# Welcome back to Workaround city.
 						ids = []
 						event.channel.history(99).each { |x| ids.push(x.id) }
 						Discordrb::API::Channel.bulk_delete_messages(event.bot.token, event.channel.id, ids)
-						clearnum -= 99
+						clear_num -= 99
 					else
 						ids = []
-						event.channel.history(clearnum).each { |x| ids.push(x.id) }
+						event.channel.history(clear_num).each { |x| ids.push(x.id) }
 						Discordrb::API::Channel.bulk_delete_messages(event.bot.token, event.channel.id, ids)
-						clearnum = 0
+						clear_num = 0
 					end
 				end
-				message = event.respond("🚮  Cleared #{original_num} messages!")
+				message = event.respond('🚮  Cleared #{original_num} messages!')
 				sleep(3)
 				message.delete
 			rescue Discordrb::Errors::NoPermission
@@ -74,6 +74,8 @@ module SerieBot
 					break
 				end
 				event.respond('✅ Kicked!')
+        # Register for logging
+        actions[member.id] = event.user.id
 			else
 				event.respond('❌ Invalid argument. Please mention a valid user.')
 			end
@@ -89,7 +91,7 @@ module SerieBot
 			break if event.channel.private?
 			if event.message.mentions[0]
 				finalbanmessage = banreason.drop(1)
-				bandisplay = finalbanmessage.join(" ")
+				bandisplay = finalbanmessage.join(' ')
 				message = "You have been **permanently banned** from the server #{event.server.name} by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
 				message << "They gave the following reason: ``#{bandisplay}``\n\n"
 				message << "If you wish to appeal for your ban's removal, please contact this person, or the server owner."

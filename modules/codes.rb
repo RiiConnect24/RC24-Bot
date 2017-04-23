@@ -6,7 +6,6 @@ module SerieBot
         class << self
             attr_accessor :codes
         end
-        Helper.load_codes
 
         def self.parse_args(args)
           # Remove first option
@@ -64,7 +63,7 @@ module SerieBot
           end
 
           # Save anyway, it can't hurt.
-          Helper.save_codes
+          Helper.save_xyz('codes', @codes)
           return to_say
         end
 
@@ -165,12 +164,12 @@ module SerieBot
             elsif option == 'disable'
                 user = event.user
                 @codes[user.id][:enabled] = false
-                Helper.save_codes
+                Helper.save_xyz('codes', @codes)
                 event.respond("✅ Disabled `#{Config.prefix}add`! Turn back on adding with `#{Config.prefix}code enable`.")
             elsif option == 'enable'
                 user = event.user
                 @codes[user.id][:enabled] = true
-                Helper.save_codes
+                Helper.save_xyz('codes', @codes)
                 event.respond("✅ Enabled `#{Config.prefix}add`! Turn back off adding with `#{Config.prefix}code disable`.")
             else
                 event << '❌ Please enter a valid option for the command.'
@@ -254,8 +253,7 @@ module SerieBot
                 break
             end
             message = event.respond 'Saving...'
-            Helper.save_morpher
-            Helper.save_codes
+            Helper.save_all
             message.edit('All saved!')
         end
     end

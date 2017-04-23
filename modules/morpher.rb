@@ -8,7 +8,6 @@ module SerieBot
       attr_accessor :mirrored_channel
       attr_accessor :messages
     end
-    Helper.load_morpher
 
     def self.setup_channels(event)
       if original_channel.nil? | mirrored_channel.nil?
@@ -61,7 +60,7 @@ module SerieBot
             embed_sent: embed_to_send,
             message_sent: message_to_send.id
         }
-        Helper.save_morpher
+        Helper.save_xyz('morpher', Morpher.messages)
       end
     end
 
@@ -82,7 +81,7 @@ module SerieBot
           mirror_message_id = message_data[:message_sent]
           mirrored_channel.message(mirror_message_id).edit('', embed)
         end
-        Helper.save_morpher
+        Helper.save_xyz('morpher', Morpher.messages)
       end
     end
 
@@ -97,7 +96,7 @@ module SerieBot
           mirrored_channel.message(@messages[event.id][:message_sent]).delete
           @messages.delete(event.id)
         end
-        Helper.save_morpher
+        Helper.save_xyz('morpher', Morpher.messages)
       end
     end
 
@@ -146,7 +145,7 @@ module SerieBot
         # (this is the last message sent - 1 since Ruby has array offsets of 0)
         offset_id = current_history[current_history.length - 1].id
       end
-      Helper.save_morpher
+      Helper.save_xyz('morpher', Morpher.messages)
       return 'Done!'
     end
   end
