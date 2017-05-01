@@ -218,7 +218,7 @@ module SerieBot
                 nil
                 event << ''
                 message = ''
-                message << "#{user_name} has requested to add your Wii's friend code!\nTheir codes:\n\n"
+                message << "#{event.user.name} has requested to add your Wii's friend code!\nTheir codes:\n\n"
                 @codes[event.user.id][:wii].each do |wii, code| #
                     code_output = code
                     message << "`#{code_output}` - #{wii}\n"

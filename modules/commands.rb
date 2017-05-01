@@ -162,7 +162,7 @@ module SerieBot
                                 "The Photo Channel and News Channel cats were made because one of the developers used a bunch of pictures of cats during development of the Photo Channel (he was a cat lover). So when they decided how to display the tips in the Channels, they decided they should use a cat. http://rc24.xyz/story_photo.php"
                              ]
 
-            event.respond("_**Did you know?**__ " + facts.sample + " Got any facts we should add? Ask Larsenv or another RiiConnect24 developer!")
+            event.respond("__**Did you know?**__ " + facts.sample + " Got any facts we should add? Ask Larsenv or another RiiConnect24 developer!")
         end
     end
 end
