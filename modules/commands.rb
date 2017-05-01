@@ -149,7 +149,7 @@ module SerieBot
         end
     
         command(:facts) do |event|
-            facts = facts = [
+            facts = [
                                 "The blue light on the Wii when you receive a message is meant to be timed exactly with a certain bird call - the Japanese bush warbler. Source: https://www.wired.com/2008/02/nintendos-takas/",
                                 "While development of the Forecast Channel took place a thunderstorm hit Nintendo of America and Nintendo of Japan lost contact with them for a while. Source: http://rc24.xyz/story_forecast.php",
                                 "During the final stage of News Channel development, a rainstorm hit Nintendo of Europe and Nintendo of Japan lost contact with them. Source: http://rc24.xyz/story_forecast.php",
