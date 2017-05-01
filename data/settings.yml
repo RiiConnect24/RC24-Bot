@@ -11,3 +11,4 @@ local_codes:
   notes:
     102032: The IOS your app uses is not patched for RiiConnect24, and you took too
       long.
+    107245: You either need to patch your IOS because you didn't follow instructions correctly or didn't update with the new patch to change the RSA key. Visit https://rc24.xyz/instructions to learn how to patch it.
