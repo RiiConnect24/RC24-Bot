@@ -9,6 +9,7 @@ local_codes:
     6: Invalid data
     '000099': Other error
   notes:
-    102032: The IOS your app uses is not patched for RiiConnect24, and you took too
-      long.
+    102032: The IOS your app uses is not patched for RiiConnect24. Try sending a message again but do it quickly, you need to do it in less than a minute.
     107245: You either need to patch your IOS because you didn't follow instructions correctly or didn't update with the new patch to change the RSA key. Visit https://rc24.xyz/instructions to learn how to patch it.
+    107304: Try again, or maybe play with your Internet settings. This may not be easy to fix for you.
+    107305: Try again.
