@@ -1,5 +1,5 @@
 # RC24 Bot
-This bot was created by Larsenv, Seriel, and spotlight_is_ok for the RiiConnect24 Discord server, but it can be used on other servers as well.
+This bot was thought of by PokeAcer, created by Seriel, and is currently being improved on by Seriel, spotlight_is_ok and Larsenv for the RiiConnect24 Discord server. Support for other servers is in progress and can be unstable.
 
 ## Self-Hosting:
 ### Requirements
