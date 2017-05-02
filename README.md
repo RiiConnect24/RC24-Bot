@@ -1,5 +1,5 @@
 # RC24 Bot
-This bot was created by Seriel for the RiiConnect24 Discord server.
+This bot was created by Larsenv, Seriel, and spotlight_is_ok for the RiiConnect24 Discord server, but it can be used on other servers as well.
 
 ## Self-Hosting:
 ### Requirements
@@ -7,7 +7,7 @@ This bot was created by Seriel for the RiiConnect24 Discord server.
 - bundler (`gem install bundler`)
 
 ### Install
-1. Clone the repo: `git clone https://github.com/Seriell/RC24-Bot.git`
+1. Clone the repo: `git clone https://github.com/RiiConnect24/RC24-Bot.git`
 2. cd into the repo: `cd RC24-Bot`
 3. Edit `config.rb.example` to include the needed information and save it as `config.rb`
 4. Install bundler if you haven't already: `gem install bundler`
