@@ -47,6 +47,12 @@ module SerieBot
       end
     end
 
+    command(:ping) do |event|
+      return_message = event.respond('Ping!')
+      ping = (return_message.id - event.message.id) >> 22
+      return_message.edit("Pong! - #{ping}ms")
+    end
+
     # Requires manage_roles permission since that's what we're doing.
     command(:config, description: 'Change settings per-server for the bot.', required_permissions: [:manage_roles]) do |event, option, *args|
       # TODO: more configuration options?
