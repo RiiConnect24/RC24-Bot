@@ -35,9 +35,6 @@ module SerieBot
         extrahelp << "`#{Config.prefix}ban @user` will ban @user from the server.\n"
         extrahelp << "`#{Config.prefix}lockdown <minutes>` will lockdown the channel. If specified, the channel will unlock after <minutes> or not at all.\n"
         extrahelp << "`#{Config.prefix}unlockdown` will remove the lockdown from the channel.\n"
-        extrahelp << "**Bot-specific commands**\n"
-        extrahelp << "`#{Config.prefix}wipecodes @user` will wipe all codes the specified user has added.\n"
-        extrahelp << "`#{Config.prefix}save` will save the current state of codes to data/codes.yml.\n"
       end
       if Helper.is_admin?(event.user) || Helper.is_bot_helper?(event)
         extrahelp << "\n\n**Admins**\n"

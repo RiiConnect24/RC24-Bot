@@ -16,6 +16,12 @@ module SerieBot
         event.channel.send_file File.new([avatar_path].sample)
     end
 
+    command(:ping) do |event|
+      return_message = event.respond('Ping!')
+      ping = (return_message.id - event.message.id) >> 22
+      return_message.edit("Pong! - #{ping}ms")
+    end
+
     command(:info, description: "Displays info about a user.") do |event, *mention|
       event.channel.start_typing
       if event.channel.private? # ignore PMs
@@ -59,7 +65,7 @@ module SerieBot
       if option == 'help'
         help = "__Help for #{Config.prefix}config:__\n\n"
         help += "_setrole_: Set the role to be used in place of Developers and Moderators. See #{Config.prefix}help for information about what these roles provide.\n"
-        help += "Usage: #{Config.prefix}config setrole <mod, dev> <new role name>"
+        help += "_setchannel_: Sets the channel to be used for specific logging items, such as server logs.\n"
         event.respond(help)
       elsif option == 'setrole'
         # Make sure that there are 2+ options here, so we don't waste our time.
@@ -69,16 +75,16 @@ module SerieBot
         end
 
         role_type = args[0]
+        valid_role_types = %w(dev bot mod)
 
         # Make sure that the short ID is valid
-        is_valid = case role_type
-                     when 'dev', 'bot', 'mod'
-                       true
-                     else
-                       false
-                   end
-        unless is_valid
-          event.respond('❌ Make sure to type in a valid role type!')
+        unless valid_role_types.include? role_type
+          response = '❌ Make sure to type in a valid role type!' + "\n"
+          response += 'Valid types are:' + "\n"
+          valid_role_types.each do |type|
+            response += "`#{type}` "
+          end
+          event.respond(response)
           break
         end
 
@@ -98,36 +104,55 @@ module SerieBot
       elsif option == 'setchannel'
         # Make sure that there are 2+ options here, so we don't waste our time.
         if args.length < 2
-          event.respond('❌ Make sure to follow the syntax correctly!')
+          event.respond('❌ Invalid syntax! `!config setchannel <type> <channel>`')
           break
         end
 
         channel_type = args[0]
+        valid_channel_types = %w(srv mod)
 
         # Make sure that the short ID is valid
-        is_valid = case channel_type
-                     when 'srv', 'mod'
-                       true
-                     else
-                       false
-                   end
-        unless is_valid
-          event.respond('❌ Make sure to type in a valid channel type!')
+        unless valid_channel_types.include? channel_type
+          response = '❌ Make sure to type in a valid channel type!' + "\n"
+          response += 'Valid types are:' + "\n"
+          valid_channel_types.each do |type|
+            response += "`#{type}` "
+          end
+          event.respond(response)
           break
         end
 
         # All appears to be good to go. Remove the type and go.
         args.delete_at(0)
         channel_name = args.join(' ')
-        puts "About to change #{channel_type} to #{channel_name}"
+        if Config.debug
+          puts "About to change #{channel_type} to #{channel_name}"
+        end
 
+        if channel_name.start_with?('<#')
+          # Must be a channel
+          begin
+            check_match = /<#\d+>/.match(channel_name)
+            break if check_match.nil?
+            new_channel_id = check_match[0]
+
+            # The below is a test.
+            event.bot.channel(new_channel_id)
+
+            Helper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id)
+            event.respond('✅ Successfully set!')
+          rescue NoMethodError
+            event.respond("❌ I wasn't able to find that channel on this server! No changes have been made to your server's config.")
+          end
+        else
         # Find given role by name. Or, at least attempt to.
-        begin
-          new_channel_id = Helper.channel_from_name(event.server, channel_name).id
-          Helper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id)
-          event.respond('✅ Successfully set!')
-        rescue NoMethodError
-          event.respond("❌ I wasn't able to find that channel on this server! No changes have been made to your server's config.")
+          begin
+            new_channel_id = Helper.channel_from_name(event.server, channel_name).id
+            Helper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id)
+            event.respond('✅ Successfully set!')
+          rescue NoMethodError
+            event.respond("❌ I wasn't able to find that channel on this server! No changes have been made to your server's config.")
+          end
         end
       else
         event << '❌ You need to have an option! Valid options are:'

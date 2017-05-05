@@ -24,7 +24,7 @@ module SerieBot
       Config.settings[server_id] = {} if Config.settings[server_id].nil?
       Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
       Config.settings[server_id][type][short_name] = id
-      Helper.save_settings
+      self.save_all
     end
 
     # Checks to see if the user has the given role, and if not deals accordingly to fix it.
@@ -219,32 +219,29 @@ module SerieBot
     def self.parse_mentions(bot, content)
       # Replce user IDs with names
       loop do
-      match = /<@\d+>/.match(content)
-      break if match.nil?
-      # Get user
-      id = match[0]
-      # We have to sub to just get the numerical ID.
-      num_id = /\d+/.match(id)[0]
-      content = content.sub(id, get_user_name(num_id, bot))
+        match = /<@\d+>/.match(content)
+        break if match.nil?
+        # Get user
+        id = match[0]
+        num_id = /\d+/.match(id)[0]
+        content = content.sub(id, get_user_name(num_id, bot))
       end
       loop do
-      match = /<@!\d+>/.match(content)
-      break if match.nil?
-      # Get user
-      id = match[0]
-      # We have to sub to just get the numerical ID.
-      num_id = /\d+/.match(id)[0]
-      content = content.sub(id, get_user_name(num_id, bot))
+        match = /<@!\d+>/.match(content)
+        break if match.nil?
+        # Get user
+        id = match[0]
+        num_id = /\d+/.match(id)[0]
+        content = content.sub(id, get_user_name(num_id, bot))
       end
       # Replace channel IDs with names
       loop do
-      match = /<#\d+>/.match(content)
-      break if match.nil?
-      # Get channel
-      id = match[0]
-      # We have to gsub to just get the numerical ID.
-      num_id = /\d+/.match(id)[0]
-      content = content.sub(id, get_channel_name(num_id, bot))
+        match = /<#\d+>/.match(content)
+        break if match.nil?
+        # Get channel
+        id = match[0]
+        num_id = /\d+/.match(id)[0]
+        content = content.sub(id, get_channel_name(num_id, bot))
       end
       content
     end

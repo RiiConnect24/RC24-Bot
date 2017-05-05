@@ -1,6 +1,11 @@
 module SerieBot
 	module Mod
 		extend Discordrb::Commands::CommandContainer
+    class << self
+      attr_accessor :actions
+    end
+    actions = []
+
 		command(:clear, max_args: 1, required_permissions: [:manage_messages], description: 'Deletes x messages, mod only.', usage: '&clear x') do |event, count|
 			Helper.ignore_bots(event)
 			if count.nil?
@@ -108,6 +113,10 @@ module SerieBot
 					event.respond("The bot doesn't have permission to ban that user!")
 					break
 				end
+
+				# Register for logging
+        actions[member.id] = event.user.id
+
 
 				break
 			else
