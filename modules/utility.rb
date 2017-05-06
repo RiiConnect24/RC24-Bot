@@ -9,10 +9,10 @@ module SerieBot
         elsif event.message.mentions[0]
           user = event.server.member(event.message.mentions[0])
         else
-          event << "❌ Mention a valid user!"
+          event << '❌ Mention a valid user!'
           next
         end
-        avatar_path = Helper.download_avatar(user, "tmp")
+        avatar_path = Helper.download_avatar(user, 'tmp')
         event.channel.send_file File.new([avatar_path].sample)
     end
 
@@ -22,27 +22,27 @@ module SerieBot
       return_message.edit("Pong! - #{ping}ms")
     end
 
-    command(:info, description: "Displays info about a user.") do |event, *mention|
+    command(:info, description: 'Displays info about a user.') do |event, *mention|
       event.channel.start_typing
       if event.channel.private? # ignore PMs
-        event << "❌ This command can only be used in a server."
+        event << '❌ This command can only be used in a server.'
         next
       end
 
       if event.message.mentions[0]
         user = event.message.mentions[0]
         if user.game.nil?
-          playing = "[N/A]"
+          playing = '[N/A]'
         else
           playing = user.game
         end
         member = user.on(event.server)
         if member.nickname.nil?
-          nick = "[N/A]" #
+          nick = '[N/A]' #
         else
           nick = member.nickname
         end
-        event << "👥  Infomation about **#{member.display_name}**"
+        event << "👥  Information about **#{member.display_name}**"
         event << "-ID: **#{user.id}**"
         event << "-Username: `#{user.distinct}`"
         event << "-Nickname: **#{nick}**"

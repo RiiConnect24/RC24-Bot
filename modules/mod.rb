@@ -30,7 +30,7 @@ module SerieBot
 						clear_num = 0
 					end
 				end
-				message = event.respond('🚮  Cleared #{original_num} messages!')
+				message = event.respond("🚮  Cleared #{original_num} messages!")
 				sleep(3)
 				message.delete
 			rescue Discordrb::Errors::NoPermission
@@ -118,27 +118,27 @@ module SerieBot
 			end
 		end
 
-		command(:lockdown) do |event, time, *reason|
+		command(:lockdown) do |event, time|
 			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
-		  end
-			reason = reason.join(' ')
+			end
+
 			lockdown = Discordrb::Permissions.new
 			lockdown.can_send_messages = true
 			everyone_role = Helper.role_from_name(event.server, "@everyone")
 			event.channel.define_overwrite(everyone_role, 0, lockdown)
 			if time.nil?
-				event.respond("🔒 **This channel is now in lockdown. Only staff can send messages. **🔒")
+				event.respond('🔒 **This channel is now in lockdown. Only staff can send messages. **🔒')
 			elsif /\A\d+\z/.match(time)
 				event.respond("🔒 **This channel is now in lockdown. Only staff can send messages. **🔒\n**Time:** #{time} minute(s)")
 				time_sec = time * 60
 				sleep(time_sec)
 				lockdown = Discordrb::Permissions.new
 				lockdown.can_send_messages = true
-				everyone_role = Helper.role_from_name(event.server, "@everyone")
+				everyone_role = Helper.role_from_name(event.server, '@everyone')
 				event.channel.define_overwrite(everyone_role, lockdown, 0)
-				event.respond(":unlock: **Channel has been unlocked.**:unlock:")
+				event.respond(':unlock: **Channel has been unlocked.**:unlock:')
 			end
 		end
 
@@ -149,9 +149,9 @@ module SerieBot
 			end
 			lockdown = Discordrb::Permissions.new
 			lockdown.can_send_messages = true
-			everyone_role = Helper.role_from_name(event.server, "@everyone")
+			everyone_role = Helper.role_from_name(event.server, '@everyone')
 			event.channel.define_overwrite(everyone_role, lockdown, 0)
-			event.respond(":unlock: **Channel has been unlocked.**:unlock:")
+			event.respond(':unlock: **Channel has been unlocked.**:unlock:')
 		end
 	end
 end
