@@ -36,7 +36,10 @@ module SerieBot
             unless local_match.nil?
                 # match'd
                 error_num = code.gsub(local_match[1], '')
-                error_text = @local_codes["news"][error_num.to_s]
+                if Config.debug
+                    puts 'Code is ' + error_num
+                end
+                error_text = @local_codes['news'][error_num.to_i]
                 if error_text.nil? || error_text == ''
                   event.respond('❌ Could not find the specified app error code.')
                   break
