@@ -15,10 +15,10 @@ module SerieBot
             wads << "Latest IOS31: https://cdn.discordapp.com/attachments/206931077313462272/305447451471511562/IOS31.wad\n"
             wads << "Latest IOS80: https://cdn.discordapp.com/attachments/206931077313462272/305447453010821120/IOS80.wad\n\n"
             wads << "**__ Wiimmfi Patched Mario Kart Channel: __**\n"
-            wads << "Korea :flag_kr:: https://cdn.discordapp.com/attachments/287740297923002368/308368095481823232/Mario_Kart_Channel_-_v1_-_Korea_-_RMCK.wad\n"
-            wads << "Japan :flag_jp:: https://cdn.discordapp.com/attachments/287740297923002368/310209257629024256/Mario_Kart_Channel_-_v1_-_Japan_-_RMCJ.wad\n"
             wads << "America :flag_us:: https://cdn.discordapp.com/attachments/287740297923002368/308368100477370368/Mario_Kart_Channel_-_v1_-_USA_-_RMCE.wad\n"
             wads << "Europe :flag_eu:: https://cdn.discordapp.com/attachments/287740297923002368/308368097801404416/Mario_Kart_Channel_-_v1_-_Europe_-_RMCP.wad\n"
+            wads << "Japan :flag_jp:: https://cdn.discordapp.com/attachments/287740297923002368/310209257629024256/Mario_Kart_Channel_-_v1_-_Japan_-_RMCJ.wad\n"
+            wads << "Korea :flag_kr:: https://cdn.discordapp.com/attachments/287740297923002368/308368095481823232/Mario_Kart_Channel_-_v1_-_Korea_-_RMCK.wad\n"
             begin
                 event.user.pm(wads)
             rescue Discordrb::Errors::NoPermission
