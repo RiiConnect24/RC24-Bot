@@ -115,12 +115,12 @@ module SerieBot
       exit
     end
 
-    def self.load_xyz(name)
+    def self.load_xyz(name, default_yaml = {:version=>1})
       folder = 'data'
       path_to_yml = "#{folder}/#{name}.yml"
       FileUtils.mkdir(folder) unless File.exist?(folder)
       unless File.exist?(path_to_yml)
-        File.open(path_to_yml, 'w') { |file| file.write("---\n:version: 1\n") }
+        File.open(path_to_yml, 'w') { |file| file.write(default_yaml.to_yaml) }
       end
       return YAML.load(File.read(path_to_yml))
     end
@@ -136,6 +136,7 @@ module SerieBot
         Morpher.messages = self.load_xyz('morpher')
       end
       Codes.codes = self.load_xyz('codes')
+      Logging.recorded_actions = self.load_xyz('actions', {:ban => {}, :kick => {}})
     end
 
     def self.save_all

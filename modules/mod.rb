@@ -1,10 +1,6 @@
 module SerieBot
-	module Mod
-		extend Discordrb::Commands::CommandContainer
-    class << self
-      attr_accessor :actions
-    end
-    actions = []
+  module Mod
+    extend Discordrb::Commands::CommandContainer
 
 		command(:clear, max_args: 1, required_permissions: [:manage_messages], description: 'Deletes x messages, mod only.', usage: '&clear x') do |event, count|
 			Helper.ignore_bots(event)
@@ -73,20 +69,21 @@ module SerieBot
 						break
 				end
 				begin
+					# Register for logging
+					Logging.record_action('kick', event.user, member, display)
         	event.server.kick(member)
 				rescue Discordrb::Errors::NoPermission
 					event.respond("❗❗❗ The bot doesn't have permission to kick!")
 					break
 				end
 				event.respond('✅ Kicked!')
-        # Register for logging
-        actions[member.id] = event.user.id
+				break
 			else
 				event.respond('❌ Invalid argument. Please mention a valid user.')
 			end
 		end
 
-		command(:ban, description: "Permanently ban someone from the server. Mod only.", usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *banreason|
+		command(:ban, description: "Permanently ban someone from the server. Mod only.", usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *ban_reason|
 			unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
@@ -95,32 +92,29 @@ module SerieBot
 			member = event.server.member(event.message.mentions[0])
 			break if event.channel.private?
 			if event.message.mentions[0]
-				finalbanmessage = banreason.drop(1)
-				bandisplay = finalbanmessage.join(' ')
+				final_ban_message = ban_reason.drop(1)
+				ban_display = final_ban_message.join(' ')
 				message = "You have been **permanently banned** from the server #{event.server.name} by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
-				message << "They gave the following reason: ``#{bandisplay}``\n\n"
+				message << "They gave the following reason: ``#{ban_display}``\n\n"
 				message << "If you wish to appeal for your ban's removal, please contact this person, or the server owner."
 				begin
 						member.pm(message)
-						event.respond("👌 The ban hammer has hit, hard.")
+						event.respond('👌 The ban hammer has hit, hard.')
 				rescue Discordrb::Errors::NoPermission
-						event.respond("Could not DM user about ban reason!")
+						event.respond('Could not DM user about ban reason!')
 						break
 				end
 				begin
+					# Register for logging
+					Logging.record_action('ban', event.user, member, ban_display)
         	event.server.ban(member)
 				rescue
 					event.respond("The bot doesn't have permission to ban that user!")
 					break
 				end
-
-				# Register for logging
-        actions[member.id] = event.user.id
-
-
 				break
 			else
-				"Invalid argument. Please mention a valid user."
+				event.respond('❌ Invalid argument. Please mention a valid user.')
 			end
 		end
 
