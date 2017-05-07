@@ -108,47 +108,23 @@ module SerieBot
                 else
                     # Start out with a line return due to embed author later on
                     embed_text = "\n"
-                    unless @codes[user.id][:wii].nil?
-                        embed_text += "<:Wii:259081748007223296> **Wiis**:\n"
-                        @codes[user.id][:wii].each do |wii, code| #
-                            code_output = code
-                            embed_text += "`#{code_output}` - #{wii}\n"
-                        end
-                        embed_text += "\n"
-                    end
-                    unless @codes[user.id]['3ds'.to_sym].nil?
-                      embed_text += "<:New3DSXL:287651327763283968> **3DSs**:\n"
-                        @codes[user.id]['3ds'.to_sym].each do |threeds, code| #
-                          embed_text += "`#{code}` - #{threeds}\n"
-                        end
-                        embed_text += "\n"
-                    end
-                    unless @codes[user.id][:nnid].nil?
-                      embed_text += "<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:\n"
-                        @codes[user.id][:nnid].each do |threeds, code| #
-                            code_output = code
-                            embed_text += "`#{code_output}` - #{threeds}\n"
-                        end
-                      embed_text += "\n"
-                    end
-                    unless @codes[user.id][:switch].nil?
-                      embed_text += "<:Switch:287652338791874560> **Switches**:\n"
-                        @codes[user.id][:switch].each do |switch, code| #
-                            code_output = code
-                            embed_text += "`#{code_output}` - #{switch}\n"
-                        end
-                        embed_text += "\n"
-                    end
-                    unless @codes[user.id][:game].nil?
-                      embed_text += "🎮 **Games**:\n"
-                        @codes[user.id][:game].each do |game, code|
-                            code_output = code
-                            embed_text += "`#{code_output}` - #{game}\n"
-                        end
-                        nil
-                    end
+                    code_types = {
+                        :wii => '<:Wii:259081748007223296> **Wiis**',
+                        '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DSs**',
+                        :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**',
+                        :switch => '<:Switch:287652338791874560> **Switches**',
+                        :game => '🎮 **Games**:'
+                    }
 
-
+                    code_types.each do |type, title|
+                      unless @codes[user.id][type].nil?
+                        embed_text += "#{title}\n"
+                        @codes[user.id][type].each do |name, code|
+                          code_output = code
+                          embed_text += "`#{code_output}` - #{name}\n"
+                        end
+                      end
+                    end
 
                     embed_sent = Discordrb::Webhooks::Embed.new
                     embed_sent.description = embed_text
