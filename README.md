@@ -50,6 +50,8 @@ or `@spotlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issu
 Enjoy~
 <br/>
 
+![MIT Logo](https://upload.wikimedia.org/wikipedia/commons/c/c3/License_icon-mit.svg "This software is licensed under the MIT License.")
+
 # Credits
 
 Kudos to the following users for helping me out:
