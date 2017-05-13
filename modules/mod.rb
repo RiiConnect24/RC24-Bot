@@ -47,14 +47,6 @@ module SerieBot
 			end
 
 			member = event.server.member(event.message.mentions[0])
-			# Helpers should only be able to kick unverified users.
-			if Helper.is_helper?(event)
-				# Check if the user has verified.
-				if Helper.is_verified?(event, member)
-					event.respond("❌ You can't kick verified members!")
-					break
-				end
-			end
 
 			break if event.channel.private?
 			if event.message.mentions[0]
