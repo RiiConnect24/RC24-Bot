@@ -72,19 +72,23 @@ module SerieBot
     end
 
     def self.get_server_log?(event)
+      id = nil
+      begin
       # Get channel from ID
-      id = event.bot.channel(Helper.get_xxx_channel?(event, 'srv', 'server-log'))
-      if id.nil?
+        id = event.bot.channel(Helper.get_xxx_channel?(event, 'srv', 'server-log'))
+      rescue NoMethodError
         event.server.general_channel.send_message("❌ I couldn't find the server log!")
-      end
+       end
       return id
     end
 
     def self.get_mod_log?(event)
-      # Get channel from ID
-      id = event.bot.channel(Helper.get_xxx_channel?(event, 'mod', 'mod-log'))
-      if id.nil?
-        event.server.general_channel.send_message("❌ I couldn't find the server log!")
+      id = nil
+      begin
+       # Get channel from ID
+       id = event.bot.channel(Helper.get_xxx_channel?(event, 'mod', 'mod-log'))
+      rescue NoMethodError
+        event.server.general_channel.send_message("❌ I couldn't find the mod log!")
       end
       return id
     end
@@ -125,32 +129,38 @@ module SerieBot
       user = event.user
       was_banned = event.server.bans.include? user
       unless was_banned
+        # Check if kicked by a bot command
+        user_info = nil
+        unless self.recorded_actions[:kick][user.id].nil?
+          unless self.recorded_actions[:kick][user.id].last[:notified]
+            # Looks like they were kicked.
+            user_info = self.recorded_actions[:kick][user.id].last
+          end
+        end
+        e = Discordrb::Webhooks::Embed.new
+        if user_info.nil?
+          e.title = 'A user left the server!'
+        else
+          e.title = 'A user was kicked from the server!'
+        end
+        description = "User: #{event.user.mention} | **#{event.user.distinct}**"
+        unless user_info.nil?
+          description += "\nKicked by #{event.bot.user(user_info[:doer]).name} with reason `#{user_info[:reason]}`"
+          self.recorded_actions[:kick][user.id].last[:notified] = true
+          Helper.save_xyz('actions', self.recorded_actions)
+        end
+        e.description = description
+        e.colour = '#FFEB3B'
+        e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
+
         channel = get_server_log?(event)
         unless channel.nil?
-          # Check if kicked by a bot command
-          user_info = nil
-          unless self.recorded_actions[:kick][user.id].nil?
-            unless self.recorded_actions[:kick][user.id].last[:notified]
-              # Looks like they were kicked.
-              user_info = self.recorded_actions[:kick][user.id].last
-            end
-          end
-          channel.send_embed do |e|
-            if user_info.nil?
-              e.title = 'A user left the server!'
-            else
-              e.title = 'A user was kicked from the server!'
-            end
-            description = "User: #{event.user.mention} | **#{event.user.distinct}**"
-            unless user_info.nil?
-              description += "\nKicked by #{event.bot.user(user_info[:doer]).name} with reason `#{user_info[:reason]}`"
-              self.recorded_actions[:kick][user.id].last[:notified] = true
-              Helper.save_xyz('actions', self.recorded_actions)
-            end
-            e.description = description
-            e.colour = '#FFEB3B'
-            e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
-          end
+          channel.send_embed('', e)
+        end
+
+        channel = get_mod_log?(event)
+        unless channel.nil?
+          channel.send_embed('', e)
         end
       end
     end

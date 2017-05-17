@@ -75,14 +75,22 @@ module SerieBot
 			end
 		end
 
-		command(:ban, description: "Permanently ban someone from the server. Mod only.", usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *ban_reason|
+		command(:ban, description: 'Permanently ban someone from the server. Mod only.', usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *ban_reason|
+      if event.channel.private?
+        event.respond("❌ You can't ban over DMs!")
+        break
+      end
+
 			unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
-		  end
+			end
 
 			member = event.server.member(event.message.mentions[0])
-			break if event.channel.private?
+			if event.user == member
+				event.respond("❌ You can't ban yourself 😉")
+        break
+			end
 			if event.message.mentions[0]
 				final_ban_message = ban_reason.drop(1)
 				ban_display = final_ban_message.join(' ')
@@ -91,15 +99,15 @@ module SerieBot
 				message << "If you wish to appeal for your ban's removal, please contact this person, or the server owner."
 				begin
 						member.pm(message)
-						event.respond('👌 The ban hammer has hit, hard.')
 				rescue Discordrb::Errors::NoPermission
 						event.respond('Could not DM user about ban reason!')
 						break
 				end
 				begin
+        	event.server.ban(member)
 					# Register for logging
 					Logging.record_action('ban', event.user, member, ban_display)
-        	event.server.ban(member)
+					event.respond('👌 The ban hammer has hit, hard.')
 				rescue
 					event.respond("The bot doesn't have permission to ban that user!")
 					break
