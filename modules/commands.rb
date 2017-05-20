@@ -3,6 +3,8 @@ module SerieBot
         extend Discordrb::Commands::CommandContainer
         extend Discordrb::EventContainer
         require 'open-uri'
+        require 'nokogiri'
+
         class << self
           attr_accessor :local_codes
           end
@@ -80,26 +82,43 @@ module SerieBot
                     # Infolist will have all the table things
                     data[:infolist].each do |row|
                         info = row[:info]
-
-                        other_link_info = info
+                        # We gotta reparse the HTML after each change as to update everything.
 
                         # Cycle through all matches
-                        loop do
-                            # Links
-                            link_matches = /<a href\s*=\s*"http([^"]*)">([^"]*)<\/a>/.match(other_link_info)
-                            break if link_matches.nil?
-                            # Replaces matches with [title](http<url>) (Discord embed thing)
-                            # We start the URL with http because of the regex.
-                            other_link = "[#{link_matches[2]}](http#{link_matches[1]})"
-                            other_link_info = other_link_info.gsub(link_matches[0], other_link)
+                        test = Nokogiri::HTML::DocumentFragment.parse(info)
+                        test.css('a').map.each do |link|
+                          url = link['href']
+                          # Fix certain links
+                          # Totally not in any way related to
+                          # http://stackoverflow.com/a/27286510/3874884
+                          encoded_text = {
+                              '(' => '%28',
+                              ')' => '%29'
+                          }
+                          encoded_text.each do |char, replacement|
+                              url = url.gsub(char, replacement)
+                          end
+                          text = link.text
+                          # For some reason, nokogiri converts & -> &amp;.
+                          # We gotta convert it back to replace with info.
+                          # That is, if it's possible.
+                          link_html = link.to_html.gsub('&amp;', '&')
+                          info = info.gsub(link_html, '[' + text + '](' + url + ')')
                         end
-                        # For formatting.
-                        one_bold = other_link_info.gsub('<b>', '**')
-                        two_bold = one_bold.gsub('</b>', '**')
-                        one_italic = two_bold.gsub('<i>', '*')
-                        two_italic = one_italic.gsub('</i>', '*')
 
-                        message_to_send += "#{row[:type]} for error #{row[:name]}: #{two_italic}\n"
+                        # For formatting.
+                        test = Nokogiri::XML::DocumentFragment.parse(info)
+                        test.css('b').map do |bold|
+                          text = bold.text
+                          info = info.gsub(bold.to_xhtml, '**' + text + '**')
+                        end
+                        test = Nokogiri::XML::DocumentFragment.parse(info)
+                        test.css('i').map do |italics|
+                          text = italics.text
+                          info = info.gsub(italics.to_xhtml, '*' + text + '*')
+                        end
+
+                        message_to_send += "#{row[:type]} for error #{row[:name]}: #{info}\n"
                     end
 
                     # Check if there are any local error notes.
@@ -110,7 +129,7 @@ module SerieBot
 
                     event.channel.send_embed do |e|
                         e.title = "Here's information about your error:"
-                        e.description = message_to_send.to_s
+                        e.description = message_to_send
                         e.colour = '#D32F2F'
                         e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information is from Wiimmfi unless noted.')
                     end
