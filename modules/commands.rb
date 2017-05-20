@@ -8,7 +8,7 @@ module SerieBot
         class << self
           attr_accessor :local_codes
           end
-        @local_codes = Config.settings["local_codes"]
+        @local_codes = Config.settings['local_codes']
 
         # Migrated from Yuu-Chan's Yuu module
         command (:wads) do |event|
@@ -124,7 +124,7 @@ module SerieBot
                     # Check if there are any local error notes.
                     possible_note = @local_codes['notes'][code.to_i]
                     unless possible_note.nil? || possible_note == ''
-                      message_to_send += "Note from RiiConnect24 devs: #{possible_note}\n"
+                      message_to_send += "Note from RiiConnect24: #{possible_note}\n"
                     end
 
                     event.channel.send_embed do |e|
@@ -148,15 +148,15 @@ module SerieBot
         command(:gametdb, max_args: 2, min_args: 2) do |event, platform, code|
             platforms = %w(Wii WiiU PS3 3DS DS)
             if platform == '' || platform.nil?
-                event.respond("❌ Enter a valid platform!")
+                event.respond('❌ Enter a valid platform!')
                 break
             end
             unless platforms.include?(platform)
-                event.respond("❌ Enter a valid platform!")
+                event.respond('❌ Enter a valid platform!')
                 break
             end
             if code == '' || code.nil?
-                event.respond("❌ Enter a valid game code!")
+                event.respond('❌ Enter a valid game code!')
                 break
             end
             event.respond("http://gametdb.com/#{platform}/#{code}")
@@ -173,22 +173,25 @@ module SerieBot
 
         command(:facts) do |event|
             facts = [
-                                "The blue light on the Wii when you receive a message is meant to be timed exactly with a certain bird call - the Japanese bush warbler. Source: https://www.wired.com/2008/02/nintendos-takas/",
-                                "While development of the Forecast Channel took place a thunderstorm hit Nintendo of America and Nintendo of Japan lost contact with them for a while. Source: https://rc24.xyz/story_forecast.php",
-                                "During the final stage of News Channel development, a rainstorm hit Nintendo of Europe and Nintendo of Japan lost contact with them. Source: https://rc24.xyz/story_forecast.php",
-                                "There's a clock in the News Channel and Forecast Channel in the Europe and Japan versions of the Channel in the top-left corner, but not in the American version.",
-                                "The list of cities that appear in the Forecast Channel vary by country, each country has more regional cities to choose from.",
-                                "While your Wii's in standby mode and the blue light's glowing, you can turn the light off by pressing the RESET button on your Wii. Source: iDroid",
-                                "The Japanese version of the Forecast Channel looks very different than the Europe and American versions of the Channel. There's differences like precipitation shown, a 7-day forecast instead of a 5-day forecast, and a pollen count and a laundry index (which shows if it's appropriate to dry your clothes outside).",
-                                "The Photo Channel cat and the News Channel cat are brothers and sisters. Source: https://rc24.xyz/story_photo.php",
-                                "The developers of the Photo Channel named the two cats that appear in the Photo Channel and News Channel. The one in the News Channel is named Runda and is male, and the one in the Photo Channel is named Rassie and is female. They both are named that way because of the ways they end their sentences in Japanese. Source: https://rc24.xyz/story_photo.php",
-                                "The Photo Channel and News Channel cats were made because one of the developers used a bunch of pictures of cats during development of the Photo Channel (he was a cat lover). So when they decided how to display the tips in the Channels, they decided they should use a cat. Source: https://rc24.xyz/story_photo.php",
-                                "Nintendo made Mario, Luigi, Princess Peach, Yoshi, Toad, and Bowser Wii Remotes. https://www.gamesmen.com.au/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/w/i/wii_u_remote_6_pack.jpg",
-                                "You can arrange contacts in the Wii Address Book by grabbing it with A and B and moving it to where you like, just like you can do it with moving Channels.",
-                                "The Globe in the News Channel and the Forecast Channel is also used in Mario Kart Wii.",
+                'The blue light on the Wii when you receive a message is meant to be timed exactly with a certain bird call - the Japanese bush warbler. Source: https://www.wired.com/2008/02/nintendos-takas/',
+                'While development of the Forecast Channel took place a thunderstorm hit Nintendo of America and Nintendo of Japan lost contact with them for a while. Source: https://rc24.xyz/story_forecast.php',
+                'During the final stage of News Channel development, a rainstorm hit Nintendo of Europe and Nintendo of Japan lost contact with them. Source: https://rc24.xyz/story_forecast.php',
+                "There's a clock in the News Channel and Forecast Channel in the Europe and Japan versions of the Channel in the top-left corner, but not in the American version.",
+                'The list of cities that appear in the Forecast Channel vary by country, each country has more regional cities to choose from.',
+                "While your Wii's in standby mode and the blue light's glowing, you can turn the light off by pressing the RESET button on your Wii. Source: iDroid",
+                "The Japanese version of the Forecast Channel looks very different than the Europe and American versions of the Channel. There's differences like precipitation shown, a 7-day forecast instead of a 5-day forecast, and a pollen count and a laundry index (which shows if it's appropriate to dry your clothes outside).",
+                'The Photo Channel cat and the News Channel cat are brothers and sisters. Source: https://rc24.xyz/story_photo.php',
+                'The developers of the Photo Channel named the two cats that appear in the Photo Channel and News Channel. The one in the News Channel is named Runda and is male, and the one in the Photo Channel is named Rassie and is female. They both are named that way because of the ways they end their sentences in Japanese. Source: https://rc24.xyz/story_photo.php',
+                'The Photo Channel and News Channel cats were made because one of the developers used a bunch of pictures of cats during development of the Photo Channel (he was a cat lover). So when they decided how to display the tips in the Channels, they decided they should use a cat. Source: https://rc24.xyz/story_photo.php',
+                'Nintendo made Mario, Luigi, Princess Peach, Yoshi, Toad, and Bowser Wii Remotes. https://www.gamesmen.com.au/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/w/i/wii_u_remote_6_pack.jpg',
+                'You can arrange contacts in the Wii Address Book by grabbing it with A and B and moving it to where you like, just like you can do it with moving Channels.',
+                'The Globe in the News Channel and the Forecast Channel is also used in Mario Kart Wii.',
                       ]
 
-            event.respond("__**Did you know?**__ " + facts.sample + " Got any facts we should add? Ask Larsenv or another RiiConnect24 developer!")
+            response = "__**Did you know?**__\n"
+            response += facts.sample
+            response +=" \n\nGot any facts we should add? Ask Larsenv or another RiiConnect24 developer!"
+            event.respond(response)
         end
     end
 end
