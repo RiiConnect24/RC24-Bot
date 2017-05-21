@@ -75,7 +75,7 @@ module SerieBot
         end
 
         role_type = args[0]
-        valid_role_types = %w(dev bot mod)
+        valid_role_types = %w(dev bot mod hlp vfd)
 
         # Make sure that the short ID is valid
         unless valid_role_types.include? role_type
