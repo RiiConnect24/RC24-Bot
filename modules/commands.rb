@@ -17,10 +17,10 @@ module SerieBot
             wads << "Latest IOS31: https://cdn.discordapp.com/attachments/206931077313462272/305447451471511562/IOS31.wad\n"
             wads << "Latest IOS80: https://cdn.discordapp.com/attachments/206931077313462272/305447453010821120/IOS80.wad\n\n"
             wads << "**__ Wiimmfi Patched Mario Kart Channel: __**\n"
-            wads << "America 🇺🇸: https://cdn.discordapp.com/attachments/287740297923002368/308368100477370368/Mario_Kart_Channel_-_v1_-_USA_-_RMCE.wad\n"
-            wads << "Europe 🇪🇺: https://cdn.discordapp.com/attachments/287740297923002368/308368097801404416/Mario_Kart_Channel_-_v1_-_Europe_-_RMCP.wad\n"
-            wads << "Japan 🇯🇵: https://cdn.discordapp.com/attachments/287740297923002368/310209257629024256/Mario_Kart_Channel_-_v1_-_Japan_-_RMCJ.wad\n"
-            wads << "Korea 🇰🇷: https://cdn.discordapp.com/attachments/287740297923002368/308368095481823232/Mario_Kart_Channel_-_v1_-_Korea_-_RMCK.wad\n"
+            wads << "America 🇺🇸: https://cdn.discordapp.com/attachments/287740297923002368/317632736040845312/Mario_Kart_Channel_-_v1_-_USA_-_RMCE.wad\n"
+            wads << "Europe 🇪🇺: https://cdn.discordapp.com/attachments/287740297923002368/317632737097940992/Mario_Kart_Channel_-_v1_-_Europe_-_RMCP.wad\n"
+            wads << "Japan 🇯🇵: https://cdn.discordapp.com/attachments/287740297923002368/317633010558173184/Mario_Kart_Channel_-_v1_-_Japan_-_RMCJ.wad\n"
+            wads << "Korea 🇰🇷: https://cdn.discordapp.com/attachments/287740297923002368/317632733046112268/Mario_Kart_Channel_-_v1_-_Korea_-_RMCK.wad\n"
             begin
                 event.user.pm(wads)
             rescue Discordrb::Errors::NoPermission
