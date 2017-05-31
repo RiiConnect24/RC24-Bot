@@ -13,7 +13,7 @@ module SerieBot
       help << "`#{Config.prefix}gametdb <platform> <title id>` will provide a GameTDB wiki page with the specified Title ID. Valid platforms are Wii, WiiU, PS3, 3DS, and DS.\n"
       help << "`#{Config.prefix}error <error code>` will provide you information about the specified error code from Wiimmfi.\n"
       help << "`#{Config.prefix}instructions` will reply with some setup instructions for RiiConnect24.\n"
-      help << "`#{Config.prefix}dns` will reply with the DNS settings for RiiConnect24."
+      help << "`#{Config.prefix}dns` will reply with the DNS settings for RiiConnect24. \n"
       help << "`#{Config.prefix}about` will tell you information about the bot.\n"
       help << "Need to patch your `nwc24msg.cfg` file? Just DM me the file, and I'll patch it for you."
       extrahelp = ""
