@@ -1,5 +1,5 @@
 # RC24 Bot
-![MIT Licensed](https://img.shields.io/badge/license-MIT-green.svg)
+![MIT Licensed](https://img.shields.io/github/license/riiconnect24/file-maker.svg)
 
 This bot was thought of by PokeAcer, created by Seriel, and is currently being improved on by Seriel, foxlight_is_ok and Larsenv for the RiiConnect24 Discord server. Support for other servers is in progress and can be unstable.
 
