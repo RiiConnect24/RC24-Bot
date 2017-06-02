@@ -1,4 +1,6 @@
 # RC24 Bot
+![MIT Licensed](https://img.shields.io/badge/license-MIT-green.svg)
+
 This bot was thought of by PokeAcer, created by Seriel, and is currently being improved on by Seriel, spotlight_is_ok and Larsenv for the RiiConnect24 Discord server. Support for other servers is in progress and can be unstable.
 
 ## Self-Hosting:
@@ -45,16 +47,14 @@ needed in your `config.rb`.
 4. Run the bot: `./run_linux.sh` or `run_windows.bat`
 
 Please report any issues to `@Seriel#0757` | `<@228574821590499329>` 
-or `@spotlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issue on GitHub!
+or `@foxlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issue on GitHub!
 
 Enjoy~
 <br/>
 
-![MIT Logo](https://upload.wikimedia.org/wikipedia/commons/c/c3/License_icon-mit.svg "This software is licensed under the MIT License.")
-
 # Credits
 
-Kudos to the following users for helping me out:
+Kudos to the following users for helping Seriel out:
 
 - luigoalma (https://github.com/luigoalma)
 - megumi (https://github.com/megumisonoda)
