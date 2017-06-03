@@ -1,5 +1,5 @@
 # RC24 Bot
-![License](https://img.shields.io/github/license/riiconnect24/file-maker.svg)
+![License](https://img.shields.io/github/license/riiconnect24/rc24-bot.svg)
 ![Production List](https://img.shields.io/discord/206934458954153984.svg)
 
 This bot was thought of by PokeAcer, created by Seriel, and is currently being improved on by Seriel, foxlight_is_ok and Larsenv for the RiiConnect24 Discord server. Support for other servers is in progress and can be unstable.
@@ -47,7 +47,7 @@ needed in your `config.rb`.
 3. Update the bundle: `bundle update`
 4. Run the bot: `./run_linux.sh` or `run_windows.bat`
 
-Please report any issues to `@Seriel#0757` | `<@228574821590499329>` 
+Please report any issues to `@Seriel#3760` | `<@228574821590499329>` 
 or `@foxlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issue on GitHub!
 
 Enjoy~
