@@ -142,6 +142,7 @@ module SerieBot
     def self.save_all
       self.save_xyz('morpher', Morpher.messages)
       self.save_xyz('codes', Codes.codes)
+      self.save_xyz('settings', Config.settings)
     end
 
     # We must keep this seperate due to how everything is loaded.
