@@ -1,8 +1,5 @@
 module SerieBot
   module Helper
-    def self.is_admin?(member)
-      Config.bot_owners.include?(member)
-    end
 
     # Gets the channel/role's ID based on the given parameters
     def self.get_xxx_id?(server_id, type, short_type)
@@ -96,6 +93,14 @@ module SerieBot
 
     def self.is_helper?(event)
       return is_xxx_role?(event, 'hlp', 'Helpers', false)
+    end
+
+    def self.is_server_admin?(event)
+      return is_xxx_role?(event, 'adm', 'Admin', false)
+    end
+
+    def self.is_bot_owner?(member)
+      Config.bot_owners.include?(member)
     end
 
     # We have to specify user here because we're checking if another user is verified

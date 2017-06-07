@@ -3,7 +3,7 @@ module SerieBot
         extend Discordrb::Commands::CommandContainer
 
         command(:setavatar) do |event, *url|
-            unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
+            unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -15,7 +15,7 @@ module SerieBot
 
         command(:ignore, description: 'Temporarily ignore a given user', min_args: 1, max_args: 1) do |event, mention|
             event.channel.start_typing
-            unless Helper.is_developer?(event) || Helper.is_moderator?(event) || Helper.is_admin?(event.user)
+            unless Helper.is_developer?(event) || Helper.is_moderator?(event) || Helper.is_bot_owner?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -34,7 +34,7 @@ module SerieBot
 
         command(:unignore, description: 'Unignores a given user', min_args: 1, max_args: 1) do |event, mention|
             event.channel.start_typing
-            unless Helper.is_developer?(event) || Helper.is_moderator?(event) || Helper.is_admin?(event.user)
+            unless Helper.is_developer?(event) || Helper.is_moderator?(event) || Helper.is_bot_owner?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -52,7 +52,7 @@ module SerieBot
         end
 
         command(:status, description: 'Set the bot as idle or dnd or invisible status. Admin only.', min_args: 1, max_args: 1) do |event, status|
-            unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
+            unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -75,7 +75,7 @@ module SerieBot
 
         command(:shutdown, description: 'Shuts down the bot. Admin only.', usage: '&shutdown') do |event|
             puts "#{event.author.distinct}: \`#{event.message.content}\`"
-            unless Helper.is_admin?(event.user)
+            unless Helper.is_bot_owner?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -87,7 +87,7 @@ module SerieBot
         end
 
         command(:eval, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *code|
-            unless Helper.is_admin?(event.user)
+            unless Helper.is_bot_owner?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -114,7 +114,7 @@ module SerieBot
         end
 
         command(:bash, description: 'Evaluate a Bash command. Admin only. Use with care.', usage: '&bash code') do |event, *code|
-            unless Helper.is_admin?(event.user)
+            unless Helper.is_bot_owner?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
             end
@@ -130,7 +130,7 @@ module SerieBot
         end
 
         command(:dump, description: 'Dumps a selected channel. Admin only.', usage: '&dump [id]') do |event, channel_id|
-            unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
+            unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
                 event << "❌ You don't have permission for that!"
                 break
             end

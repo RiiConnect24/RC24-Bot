@@ -41,7 +41,7 @@ module SerieBot
 		end
 
 		command(:kick, description: 'Temporarily kick somebody from the server. Mod only.', usage: "#{Config.prefix}kick @user reason", min_args: 2) do |event, *kick_reason|
-			unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
+			unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
@@ -81,7 +81,7 @@ module SerieBot
         break
       end
 
-			unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
+			unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
@@ -119,14 +119,14 @@ module SerieBot
 		end
 
 		command(:lockdown) do |event, time|
-			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
+			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
 
 			lockdown = Discordrb::Permissions.new
 			lockdown.can_send_messages = true
-			everyone_role = Helper.role_from_name(event.server, "@everyone")
+			everyone_role = Helper.role_from_name(event.server, '@everyone')
 			event.channel.define_overwrite(everyone_role, 0, lockdown)
 			if time.nil?
 				event.respond('🔒 **This channel is now in lockdown. Only staff can send messages. **🔒')
@@ -143,7 +143,7 @@ module SerieBot
 		end
 
 		command(:unlockdown) do |event|
-			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_admin?(event.user)
+			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
