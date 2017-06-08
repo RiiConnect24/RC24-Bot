@@ -118,6 +118,54 @@ module SerieBot
 			end
 		end
 
+		command(:userprune) do |event, code|
+			if code == 'info'
+				event.respond("This command kicks all users who are all of the following: a) no verified role, b) aren't banned, c) aren't a bot, d) and has the default avatar.")
+				break
+			end
+
+			unless code == 'yes'
+				event.respond("❌ Since this is command can be abusive, please run as `#{Config.prefix}userprune yes`. For more information about what this command does, `#{Config.prefix}userprune info`")
+				break
+			end
+
+			event.channel.start_typing
+			message = "Hi! we did some automatic cleanup and kicked users who weren't verified and have the default avatar.\n"
+			message += "If you were kicked, don't worry! Join us again. We have the invite URL on our website."
+			reason = "Automated cleaning started by #{event.user.display_name}"
+
+			event.server.members.each do |member|
+				# Verified role
+				unless member.role?($verified_role)
+					# Banned
+					unless event.server.bans.include? member.id
+						# Is a bot
+						unless member.bot_account?
+							# Default avatar has no filename
+							if File.basename(URI.parse(member.avatar_url).path) == '.jpg'
+								begin
+									member.pm(message)
+								rescue Discordrb::Errors::NoPermission
+									event.respond("Could not DM user #{mention} about kick reason!")
+									break
+								end
+
+								begin
+									event.server.kick(member)
+									# Register for logging
+									Logging.record_action('kick', event.user, member, ban_display)
+									event.respond('👌 The ban hammer has hit, hard.')
+								rescue
+									event.respond("The bot doesn't have permission to ban that user!")
+									break
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
 		command(:lockdown) do |event, time|
 			unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
 				event.respond("❌ You don't have permission for that!")
