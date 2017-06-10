@@ -77,7 +77,7 @@ module SerieBot
 					event.respond("❗❗❗ The bot doesn't have permission to kick!")
 					break
 				end
-				event.respond('✅ Kicked!')
+				event.respond('👌 You have kicked the user, hard.')
 				break
 			else
 				event.respond('❌ Invalid argument. Please mention a valid user.')
