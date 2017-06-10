@@ -22,6 +22,78 @@ module SerieBot
       return_message.edit("Pong! - #{ping}ms")
     end
 
+    command(:nsfw) do |event|
+      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
+
+      event.respond("⚠️ WARNING: Please don't post NSFW pictures or talk about anything NSFW-related.\nFailure to comply with this can result in a kick or ban.");
+    end
+
+    command(:phobic) do |event|
+      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
+
+      event.respond("⚠️ WARNING: Please don't be sexist, racist, anti-semitic or *phobic.\nFailure to comply with this can result in a kick or ban.")
+    end
+
+    command(:dox) do |event|
+      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
+
+      event.respond("⚠️ WARNING: Please don't dox people on this server.\nFailure to comply with this can result in a kick or ban.");
+    end
+
+    command(:spam) do |event|
+      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
+
+      event.respond("⚠️ WARNING: Please don't spam.\nFailure to comply with this can result in a kick or ban.");
+    end
+
+    command(:trash) do |event|
+      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
+
+      event.respond("⚠️ WARNING: Please take your spam to #trash. 🚮\nFailure to comply with this can result in a lockdown of this channel.\nIf you don't have the trash channel, type in `/roleme trash`.");
+    end
+
+    command(:copyright) do |event|
+      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
+
+      event.respond("⚠️ WARNING: Please don't share downloads to any copyrighted content, specifically paid software of any sort, including ROMs, Wii WBFS files, WAD files, and other types of paid software. DM a user about it if you want to share those things. Also, don’t ask for WADs of non-homebrew Wii Channels.\nFailure to comply with this can result in a kick or ban.");
+    end
+
+    command(:staff) do |event|
+      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
+
+      event.respond("⚠️ WARNING: Please don't ask to be staff when we are not specifically looking for any, we probably won’t consider you if you do so. Feel free to ask if we’re open for staff, though.\nFailure to comply with this can result in a kick or ban.");
+    end
+
+    command(:selfbot) do |event|
+      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+				event.respond("❌ You don't have permission for that!")
+				break
+			end
+      
+      event.respond("⚠️ WARNING: Please don't excessively use selfbots as it will spam up our logging methods. Using them sparingly or however you want in #trash is perfectly fine.\nFailure to comply with this can result in a kick or ban.");
+    end
+
     command(:info, description: 'Displays info about a user.') do |event, *mention|
       event.channel.start_typing
       if event.channel.private? # ignore PMs
@@ -51,12 +123,6 @@ module SerieBot
         event << "-Account created: **#{user.creation_time.getutc.asctime}** UTC"
         event << "-Joined server at: **#{member.joined_at.getutc.asctime}** UTC"
       end
-    end
-
-    command(:ping) do |event|
-      return_message = event.respond('Ping!')
-      ping = (return_message.id - event.message.id) >> 22
-      return_message.edit("Pong! - #{ping}ms")
     end
 
     # Requires manage_roles permission since that's what we're doing.
