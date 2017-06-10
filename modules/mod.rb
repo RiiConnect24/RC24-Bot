@@ -41,12 +41,21 @@ module SerieBot
 		end
 
 		command(:kick, description: 'Temporarily kick somebody from the server. Mod only.', usage: "#{Config.prefix}kick @user reason", min_args: 2) do |event, *kick_reason|
+      if event.channel.private?
+        event.respond("❌ You can't kick over DMs!")
+        break
+      end
+
 			unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
 
 			member = event.server.member(event.message.mentions[0])
+      if event.user == member
+      	event.respond("❌ You can't kick yourself. 😉")
+        break
+      end
 
 			break if event.channel.private?
 			if event.message.mentions[0]
@@ -88,7 +97,7 @@ module SerieBot
 
 			member = event.server.member(event.message.mentions[0])
 			if event.user == member
-				event.respond("❌ You can't ban yourself 😉")
+				event.respond("❌ You can't ban yourself. 😉")
         break
 			end
 			if event.message.mentions[0]
@@ -129,16 +138,16 @@ module SerieBot
 			everyone_role = Helper.role_from_name(event.server, '@everyone')
 			event.channel.define_overwrite(everyone_role, 0, lockdown)
 			if time.nil?
-				event.respond('🔒 **This channel is now in lockdown. Only staff can send messages. **🔒')
+				event.respond('🔒**This channel is now in lockdown. Only staff can send messages. **🔒')
 			elsif /\A\d+\z/.match(time)
-				event.respond("🔒 **This channel is now in lockdown. Only staff can send messages. **🔒\n**Time:** #{time} minute(s)")
+				event.respond("🔒**This channel is now in lockdown. Only staff can send messages. **🔒\n**Time:** #{time} minute(s)")
 				time_sec = time * 60
 				sleep(time_sec)
 				lockdown = Discordrb::Permissions.new
 				lockdown.can_send_messages = true
 				everyone_role = Helper.role_from_name(event.server, '@everyone')
 				event.channel.define_overwrite(everyone_role, lockdown, 0)
-				event.respond(':unlock: **Channel has been unlocked.**:unlock:')
+				event.respond('🔓**Channel has been unlocked.**🔓')
 			end
 		end
 
@@ -147,11 +156,12 @@ module SerieBot
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
+
 			lockdown = Discordrb::Permissions.new
 			lockdown.can_send_messages = true
 			everyone_role = Helper.role_from_name(event.server, '@everyone')
 			event.channel.define_overwrite(everyone_role, lockdown, 0)
-			event.respond(':unlock: **Channel has been unlocked.**:unlock:')
+			event.respond('🔓**Channel has been unlocked.**🔓')
 		end
 	end
 end
