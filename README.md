@@ -57,7 +57,7 @@ Enjoy~
 
 Kudos to the following users for helping Seriel out:
 
-- luigoalma (https://github.com/luigoalma)
-- megumi (https://github.com/megumisonoda)
+- [luigoalma](https://github.com/luigoalma)
+- [megumi](https://github.com/megumisonoda)
 - Anyone active on the Discordrb channel in the Discord API server.
-- meew0 for Discordrb (https://github.com/meew0/discordrb)
+- [meew0](https://github.com/meew0) for [Discordrb](https://github.com/meew0/discordrb)
