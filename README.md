@@ -10,7 +10,7 @@ This bot was thought of by PokeAcer, created by Seriel, and is currently being i
 - bundler (`gem install bundler`)
 
 ### Install
-1. Clone the repo: `git clone https://github.com/RiiConnect24/RC24-Bot.git`
+1. Clone the repo: `git clone https://github.com/fl0co/RC24-Bot.git`
 2. cd into the repo: `cd RC24-Bot`
 3. Edit `config.rb.example` to include the needed information and save it as `config.rb`
 4. Install bundler if you haven't already: `gem install bundler`
@@ -47,7 +47,7 @@ needed in your `config.rb`.
 3. Update the bundle: `bundle update`
 4. Run the bot: `./run_linux.sh` or `run_windows.bat`
 
-Please report any issues to `@Seriel#3760` | `<@228574821590499329>` 
+Please report any issues to `@Seriel#3760` | `<@228574821590499329>`
 or `@foxlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issue on GitHub!
 
 Enjoy~
