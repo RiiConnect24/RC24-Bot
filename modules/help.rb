@@ -57,7 +57,7 @@ module SerieBot
         end
         event.respond('Check your DMs!')
       rescue Discordrb::Errors::NoPermission
-        event.respond("It looks like you're blocking DMs.");
+        event.respond("❌ Sorry, but it looks like you're blocking DMs.")
       end
     end
   end
