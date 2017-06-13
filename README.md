@@ -47,7 +47,7 @@ needed in your `config.rb`.
 3. Update the bundle: `bundle update`
 4. Run the bot: `./run_linux.sh` or `run_windows.bat`
 
-Please report any issues to `@Seriel#3760` | `<@228574821590499329>`
+Please report any issues to `@Seriel 🌈#3760` | `<@228574821590499329>` 
 or `@foxlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issue on GitHub!
 
 Enjoy~
@@ -57,7 +57,7 @@ Enjoy~
 
 Kudos to the following users for helping Seriel out:
 
-- luigoalma (https://github.com/luigoalma)
-- megumi (https://github.com/megumisonoda)
+- [luigoalma](https://github.com/luigoalma)
+- [megumi](https://github.com/megumisonoda)
 - Anyone active on the Discordrb channel in the Discord API server.
-- meew0 for Discordrb (https://github.com/meew0/discordrb)
+- [meew0](https://github.com/meew0) for [Discordrb](https://github.com/meew0/discordrb)
