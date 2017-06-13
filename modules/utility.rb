@@ -90,7 +90,7 @@ module SerieBot
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
-      
+
       event.respond("⚠️ WARNING: Please don't excessively use selfbots as it will spam up our logging methods. Using them sparingly or however you want in #trash is perfectly fine.\nFailure to comply with this can result in a kick or ban.");
     end
 
