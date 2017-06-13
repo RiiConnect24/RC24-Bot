@@ -15,6 +15,15 @@ module SerieBot
       help << "`#{Config.prefix}instructions` will reply with some setup instructions for RiiConnect24.\n"
       help << "`#{Config.prefix}dns` will reply with the DNS settings for RiiConnect24. \n"
       help << "`#{Config.prefix}about` will tell you information about the bot.\n"
+      help << "**Reminder commands**\n"
+      help << "`#{Config.prefix}nsfw` will remind a user to not send NSFW pictures or talk about anything NSFW-related.\n"
+      help << "`#{Config.prefix}phobic` will remind a user to not be sexist, racist, anti-semitic or *phobic.\n"
+      help << "`#{Config.prefix}dox` will remind a user to not dox someone in the server.\n"
+      help << "`#{Config.prefix}spam` will remind a user to not spam.\n"
+      help << "`#{Config.prefix}trash` will remind a user to go to #trash for spamming.\n"
+      help << "`#{Config.prefix}copyright` will remind a user to not share downloads to any copyrighted content, specifically paid software of any sort, including ROMs, Wii WBFS files, WAD files, and other types of paid software.\n"
+      help << "`#{Config.prefix}staff` will remind a user to not be asking for staff when we are not specifically looking for any.\n"
+      help << "`#{Config.prefix}selfbot` will remind a user to not excessively use selfbots.\n"
       help << "Need to patch your `nwc24msg.cfg` file? Just DM me the file, and I'll patch it for you."
       extra_help = ''
       if Helper.is_bot_owner?(event.user) || Helper.is_moderator?(event) || Helper.is_developer?(event)
@@ -23,15 +32,6 @@ module SerieBot
         extra_help << "\n"
         extra_help << "**General commands**\n"
         extra_help << "`#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.\n"
-        extra_help << "**Reminder commands**\n"
-        extra_help << "`#{Config.prefix}nsfw` will remind a user to not send NSFW pictures or talk about anything NSFW-related.\n"
-        extra_help << "`#{Config.prefix}phobic` will remind a user to not be sexist, racist, anti-semitic or *phobic.\n"
-        extra_help << "`#{Config.prefix}dox` will remind a user to not dox someone in the server.\n"
-        extra_help << "`#{Config.prefix}spam` will remind a user to not spam.\n"
-        extra_help << "`#{Config.prefix}trash` will remind a user to go to #trash for spamming.\n"
-        extra_help << "`#{Config.prefix}copyright` will remind a user to not share downloads to any copyrighted content, specifically paid software of any sort, including ROMs, Wii WBFS files, WAD files, and other types of paid software.\n"
-        extra_help << "`#{Config.prefix}staff` will remind a user to not be asking for staff when we are not specifically looking for any.\n"
-        extra_help << "`#{Config.prefix}selfbot` will remind a user to not excessively use selfbots.\n"
       end
       if Helper.is_bot_owner?(event.user) || Helper.is_bot_helper?(event) || Helper.is_developer?(event)
         extra_help << "\n\n**Developers:**\n"
@@ -57,8 +57,7 @@ module SerieBot
         end
         event.respond('Check your DMs!')
       rescue Discordrb::Errors::NoPermission
-        event.respond("It looks like you're blocking DMs, so help will be displayed here.")
-        event.respond(help)
+        event.respond("It looks like you're blocking DMs.");
       end
     end
   end
