@@ -236,27 +236,36 @@ module SerieBot
         file = event.message.attachments[0]
         # Check that this isn't the bot itself, and that this is actually a mail file.
         unless file.nil? || event.message.from_bot?
-          if file.filename == 'nwc24msg.cfg'
+          if file.filename == 'nwc24msg.cfg' || file.filename == 'nwc24msg.cbk'
             status_message = event.respond('Downloading config...')
 
             # Download file to tmp/userid/nwc24msg.cfg
             Helper.download_file(file.url, "tmp/#{event.user.id}", 'nwc24msg.cfg')
 
             # Run the patcher
-            # mail <bot dir>/tmp/<user_id>/nwc24msg.cfg
             status_message.edit('Patching config...')
             bot_tmp = Dir.pwd + '/tmp/'
             downloaded_cfg_path = bot_tmp + event.user.id.to_s + '/nwc24msg.cfg'
             if Config.debug
               puts 'Path is ' + downloaded_cfg_path
             end
-            system mail_exe, downloaded_cfg_path
-            # Assume it worked. If it didn't rip xd
-            status_message.delete
 
-            # Upload patched copy
-            event.channel.send_file(File.new([downloaded_cfg_path].sample), caption: "Here's your patched mail file, deleted from our server:")
-            FileUtils.rm_r bot_tmp + '/' + event.user.id.to_s
+            error = MailParse.convert_mail(downloaded_cfg_path)
+            puts "Potential error: #{error}"
+            case error
+              when 2
+                event.respond("Some voodoo magic occurred and I wasn't able to download your file. Let a Bot Helper or Developer know.")
+              when 3
+                event.respond('Are you sure this is a `nwc24msg.cfg` file? Let a Bot Helper or Developer know.')
+              when 4
+                event.respond("Some voodoo magic occurred and I wasn't able to save your file. Let a Bot Helper or Developer know.")
+              else
+                # Upload patched copy + remove .old from file extension
+                event.channel.send_file(File.new([downloaded_cfg_path].sample), caption: "Here's your patched mail file, deleted from our server:")
+                FileUtils.rm_r bot_tmp + '/' + event.user.id.to_s
+            end
+
+            status_message.delete
           end
         end
       end
