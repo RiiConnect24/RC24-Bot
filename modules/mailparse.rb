@@ -50,7 +50,6 @@ module SerieBot
         # 0x80 is the URL's max length, so create up to that
         needed_nulls = 0x80 - replacement_url.length
         url.assign(replacement_url + ("\x00" * needed_nulls))
-        puts cfg.snapshot
       end
 
       # Remove current checksum
@@ -71,15 +70,12 @@ module SerieBot
         current_number.clear
         test += 1
         current_number.read(bytes)
-        puts "#{current_number} #{current_number.to_hex} on try #{test}\n"
         checksum += current_number
       end
       # Get lower 32 bits
       # Many thanks to AwesomeMarioFan for helping me out with this
       checksum_final = checksum & 0xFFFFFFFF
       cfg.checksum.assign(BinData::Uint32be.new(checksum_final).to_binary_s)
-
-      puts cfg.snapshot
 
       File.open(downloaded_cfg_path, 'wb') do |io|
         begin
