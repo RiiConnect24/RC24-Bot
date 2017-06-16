@@ -113,20 +113,36 @@ module SerieBot
             end
         end
 
-        command(:bash, description: 'Evaluate a Bash command. Admin only. Use with care.', usage: '&bash code') do |event, *code|
-            unless Helper.is_bot_owner?(event.user)
-                event.respond("❌ You don't have permission for that!")
-                break
+        command(:eval2, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *code|
+          begin
+            result = eval args.join(' ')
+            if result.length >= 1984
+              puts result
+              event << "⚠ Your output exceeded the character limit! (`#{result.length - 1984}`/`1984`)"
+              event << 'The result has been logged to the terminal instead :3'
+            else
+              event << ((result.nil? || result == '' || result == ' ' || result == "\n") ? "#{YuukiBot.config['emoji_tickbox']} Done! (No output)" : "Output: ```\n#{result}```")
             end
-            bashcode = code.join(' ')
-            # Capture all output, including STDERR.
-            to_be_run = "#{bashcode} 2>&1"
-            result = ` #{to_be_run} `
-            event << if result.nil? || result == '' || result == ' ' || result == "\n"
-                         "✅ Done! (No output)"
-                     else
-                         "Output: ```\n#{result}```"
-                     end
+          rescue Exception => e
+            event.respond(":x: An error has occured!! ```ruby\n#{e}```")
+          end
+        end
+
+
+        command(:bash, description: 'Evaluate a Bash command. Admin only. Use with care.', usage: '&bash code') do |event, *code|
+        unless Helper.is_bot_owner?(event.user)
+            event.respond("❌ You don't have permission for that!")
+            break
+        end
+        bashcode = code.join(' ')
+        # Capture all output, including STDERR.
+        to_be_run = "#{bashcode} 2>&1"
+        result = ` #{to_be_run} `
+        event << if result.nil? || result == '' || result == ' ' || result == "\n"
+                     "✅ Done! (No output)"
+                 else
+                     "Output: ```\n#{result}```"
+                 end
         end
 
         command(:dump, description: 'Dumps a selected channel. Admin only.', usage: '&dump [id]') do |event, channel_id|
