@@ -142,12 +142,14 @@ module SerieBot
       end
       Codes.codes = self.load_xyz('codes')
       Logging.recorded_actions = self.load_xyz('actions', {:ban => {}, :kick => {}})
+      Birthdays.dates = self.load_xyz('birthdays')
     end
 
     def self.save_all
       self.save_xyz('morpher', Morpher.messages)
       self.save_xyz('codes', Codes.codes)
       self.save_xyz('settings', Config.settings)
+      self.save_xyz('birthdays', Birthdays.dates)
     end
 
     # We must keep this seperate due to how everything is loaded.

@@ -109,10 +109,10 @@ module SerieBot
                     # Start out with a line return due to embed author later on
                     embed_text = "\n"
                     code_types = {
-                        :wii => '<:Wii:259081748007223296> **Wiis**',
-                        '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DSs**',
-                        :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**',
-                        :switch => '<:Switch:287652338791874560> **Switches**',
+                        :wii => '<:Wii:259081748007223296> **Wiis**:',
+                        '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DSs**:',
+                        :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:',
+                        :switch => '<:Switch:287652338791874560> **Switches**:',
                         :game => '🎮 **Games**:'
                     }
 

@@ -35,7 +35,7 @@ module SerieBot
       embed_sent.description = Helper.parse_mentions(bot, message.content)
       embed_sent.colour = '#FFEB3B'
       embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: message.author.name,
-                                                               url: 'https://www.riiconnect24.net',
+                                                               url: 'https://rc24.xyz',
                                                                icon_url: Helper.avatar_url(message.author, 32))
       # Format: Sat Feb 11 01:30:45 2017 UTC
       embed_sent.footer = Discordrb::Webhooks::EmbedFooter.new(text: "#{message.timestamp.utc.strftime('%c')} UTC")

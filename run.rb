@@ -15,6 +15,7 @@ module SerieBot
     # List of modules to include
     modules = [
         Admin,
+        Birthdays,
         Help,
         Logging,
         Utility,
@@ -47,5 +48,8 @@ module SerieBot
     bot.run :async
     bot.online
     bot.game = Config.playing
+
+    thread = Thread.new { Birthdays.sleeping_beauty(bot) }
+    thread.run
     bot.sync
 end
