@@ -113,7 +113,7 @@ module SerieBot
             end
         end
 
-        command(:eval2, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *code|
+        command(:eval2, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *args|
           begin
             result = eval args.join(' ')
             if result.length >= 1984
