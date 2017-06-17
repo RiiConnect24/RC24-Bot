@@ -30,7 +30,7 @@ module SerieBot
             clear_num = 0
           end
         end
-        message = event.respond("🚮  Cleared #{original_num} messages!")
+        message = event.respond("🚮  Cleared #{clear_num} messages!")
         sleep(3)
         message.delete
       rescue Discordrb::Errors::NoPermission
