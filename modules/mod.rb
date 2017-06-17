@@ -13,6 +13,7 @@ module SerieBot
         event.respond("`#{count}` is not a valid number!")
         break
       end
+      original_num = count.to_i
       clear_num = count.to_i + 1
 
       begin
@@ -30,7 +31,7 @@ module SerieBot
             clear_num = 0
           end
         end
-        message = event.respond("🚮  Cleared #{clear_num} messages!")
+        message = event.respond("🚮  Cleared #{original_num} messages!")
         sleep(3)
         message.delete
       rescue Discordrb::Errors::NoPermission
