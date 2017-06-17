@@ -54,6 +54,7 @@ module SerieBot
       rescue
         event.respond("I couldn't parse your date. Try something like April 20th, 2017, instead of 4/20/17.")
       end
+      Helper.save_all
     end
   end
 end
