@@ -41,7 +41,6 @@ module SerieBot
 
     command(:birthday) do |event, *args|
       date_string = args.join(' ')
-      puts date_string
       begin
         date = Date.parse(date_string)
 
