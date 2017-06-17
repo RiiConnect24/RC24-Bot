@@ -49,11 +49,11 @@ module SerieBot
           @dates[format] = []
         end
         @dates[format] << event.user.id
+        Helper.save_all
         event.respond('✅ Updated successfully!')
       rescue
         event.respond("I couldn't parse your date. Try something like April 20th, 2017, instead of 4/20/17.")
       end
-      Helper.save_all
     end
   end
 end
