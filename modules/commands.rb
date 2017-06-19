@@ -163,7 +163,7 @@ module SerieBot
         end
 
         command(:instructions, max_args: 0, min_args: 0) do |event|
-            event.respond('**🔗 https://rc24.xyz/instructions/**')
+            event.respond('**🔗 https://wii.guide/**')
         end
 
         command(:dns) do |event|

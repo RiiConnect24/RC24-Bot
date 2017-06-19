@@ -38,8 +38,8 @@ module SerieBot
       event.respond("⚠️ WARNING: Please don't spam.\nFailure to comply with this can result in a kick or ban.");
     end
 
-    command(:trash) do |event|
-      event.respond("⚠️ WARNING: Please take your spam to #trash. 🚮\nFailure to comply with this can result in a lockdown of this channel.\nIf you don't have the trash channel, type in `/roleme trash`.");
+    command(:random) do |event|
+      event.respond("⚠️ WARNING: Please take your spam to #random. 🚮\nFailure to comply with this can result in a lockdown of this channel.");
     end
 
     command(:copyright) do |event|
