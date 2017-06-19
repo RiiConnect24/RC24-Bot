@@ -172,11 +172,7 @@ module SerieBot
       e.title = 'A user was banned from the server!'
       description = "User: #{user.mention} | **#{user.distinct}**\n"
       unless self.recorded_actions[:ban][user.id].nil?
-        if self.recorded_actions[:ban][user.id].length == 1
-          user_info = self.recorded_actions[:ban][user.id].first
-        else
-          user_info = self.recorded_actions[:ban][user.id].last
-        end
+        user_info = self.recorded_actions[:ban][user.id].last
 
         description += "Banned by #{event.bot.user(user_info[:doer]).name} with reason `#{user_info[:reason]}`"
         # Save
@@ -219,7 +215,9 @@ module SerieBot
 
     def self.record_action(type, doer, recipient, reason)
       rep_id = recipient.id
-      self.recorded_actions[type.to_sym][rep_id] = Array.new
+      if self.recorded_actions[type.to_sym][rep_id].nil?
+        self.recorded_actions[type.to_sym][rep_id] = Array.new
+      end
       self.recorded_actions[type.to_sym][rep_id].push({
           'doer': doer.id,
           'reason': reason,

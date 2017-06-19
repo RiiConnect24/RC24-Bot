@@ -58,36 +58,36 @@ module SerieBot
         break
       end
 
-			break if event.channel.private?
-			if event.message.mentions[0]
-				final_message = kick_reason.drop(1)
-				display = final_message.join(' ')
-				message = "You have been kicked from the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
-				message << "They gave the following reason: ``#{display}``"
-				begin
-						member.pm(message)
-				rescue Discordrb::Errors::NoPermission
-						event.respond('Could not DM user about kick reason!')
-						break
-				end
-				begin
-					# Register for logging
-					Logging.record_action('kick', event.user, member, display)
-        	event.server.kick(member)
-				rescue Discordrb::Errors::NoPermission
-					event.respond("❗❗❗ The bot doesn't have permission to kick!")
-					break
-				end
-				event.respond('✅ Kicked!')
-				break
-			else
-				event.respond('❌ Invalid argument. Please mention a valid user.')
-			end
+      break if event.channel.private?
+      if event.message.mentions[0]
+        final_message = kick_reason.drop(1)
+        display = final_message.join(' ')
+        message = "You have been kicked from the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
+        message << "They gave the following reason: ``#{display}``"
+        begin
+          member.pm(message)
+        rescue Discordrb::Errors::NoPermission
+          event.respond('Could not DM user about kick reason!')
+          break
+        end
+        begin
+          # Register for logging
+          event.server.kick(member)
+          Logging.record_action('kick', event.user, member, display)
+        rescue Discordrb::Errors::NoPermission
+          event.respond("❗❗❗ The bot doesn't have permission to kick!")
+          break
+        end
+        event.respond('👌 You have kicked the user, hard.')
+        break
+      else
+        event.respond('❌ Invalid argument. Please mention a valid user.')
+      end
 		end
 	  
 		command(:warn, description: 'Warn somebody on the server. Mod only.', usage: "#{Config.prefix}warn @user reason", min_args: 2) do |event, *kick_reason|
 			unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
-				event.respond("âŒ You don't have permission for that!")
+				event.respond("❌ You don't have permission for that!")
 				break
 			end
 
@@ -105,46 +105,14 @@ module SerieBot
 						event.respond('Could not DM user about warn reason!')
 						break
 				end
-				begin
-					# Register for logging
-					Logging.record_action('kick', event.user, member, display)
-				rescue Discordrb::Errors::NoPermission
-					event.respond("â—â—â— The bot doesn't have permission to warn!")
-					break
-				end
-				event.respond('âœ… Warned!')
+        # Register for logging
+        Logging.record_action('warn', event.user, member, display)
+				event.respond('👌 Warned!')
 				break
 			else
-				event.respond('âŒ Invalid argument. Please mention a valid user.')
+				event.respond('❌ Invalid argument. Please mention a valid user.')
 			end
 		end
-
-      break if event.channel.private?
-      if event.message.mentions[0]
-        final_message = kick_reason.drop(1)
-        display = final_message.join(' ')
-        message = "You have been kicked from the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
-        message << "They gave the following reason: ``#{display}``"
-        begin
-            member.pm(message)
-        rescue Discordrb::Errors::NoPermission
-            event.respond('Could not DM user about kick reason!')
-            break
-        end
-        begin
-          # Register for logging
-          Logging.record_action('kick', event.user, member, display)
-          event.server.kick(member)
-        rescue Discordrb::Errors::NoPermission
-          event.respond("❗❗❗ The bot doesn't have permission to kick!")
-          break
-        end
-        event.respond('👌 You have kicked the user, hard.')
-        break
-      else
-        event.respond('❌ Invalid argument. Please mention a valid user.')
-      end
-    end
 
     command(:ban, description: 'Permanently ban someone from the server. Mod only.', usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *ban_reason|
       if event.channel.private?
