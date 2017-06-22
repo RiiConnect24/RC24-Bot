@@ -20,7 +20,7 @@ module SerieBot
       help << "`#{Config.prefix}phobic` will remind a user to not be sexist, racist, anti-semitic or *phobic.\n"
       help << "`#{Config.prefix}dox` will remind a user to not dox someone in the server.\n"
       help << "`#{Config.prefix}spam` will remind a user to not spam.\n"
-      help << "`#{Config.prefix}random` will remind a user to go to #random for spamming and using other bots commands.\n"
+      help << "`#{Config.prefix}random` will remind a user to go to #random for spamming.\n"
       help << "`#{Config.prefix}copyright` will remind a user to not share downloads to any copyrighted content, specifically paid software of any sort, including ROMs, Wii WBFS files, WAD files, and other types of paid software.\n"
       help << "`#{Config.prefix}staff` will remind a user to not be asking for staff when we are not specifically looking for any.\n"
       help << "`#{Config.prefix}selfbot` will remind a user to not excessively use selfbots.\n"
