@@ -39,7 +39,7 @@ module SerieBot
     end
 
     command(:random) do |event|
-      event.respond("⚠️ WARNING: Please use other bots commands, and take your spam to #random. 🚮\nFailure to comply with this can result in a lockdown of this channel.");
+      event.respond("⚠️ WARNING: Please take your spam to #random. 🚮\nFailure to comply with this can result in a lockdown of this channel.");
     end
 
     command(:copyright) do |event|
