@@ -113,7 +113,17 @@ module SerieBot
                         '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DSs**:',
                         :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:',
                         :switch => '<:Switch:287652338791874560> **Switches**:',
-                        :game => '🎮 **Games**:'
+                        :game => '🎮 **Games**:',
+                    }
+
+                    badge_types = {
+                      "dev" => "<:BadgeDeveloper:329710752778944512>",
+                      "mod" => "<:BadgeModerator:329715070768513024>",
+                      "hlp" => "<:BadgeHelper:329722382790950912>",
+                      "don" => "<:BadgeDonator:329712167983251458>",
+                      "adm" => "<:BadgeAdmin:329734061532774403>",
+                      "trn" => "<:BadgeTranslator:329723303814234113>",
+                      "vfd" => "<:BadgeVerified:329734122870145036>"
                     }
 
                     code_types.each do |type, title|
@@ -125,6 +135,17 @@ module SerieBot
                         end
                       end
                     end
+
+                    get_roles = Helper.get_roles(event)
+
+                    if get_roles.length > 0
+                      embed_text += "🏅**Badges**:\n"
+
+                      get_roles.each do |role|
+                        embed_text += "#{badge_types[role]}"
+                      end
+                    end
+
 
                     embed_sent = Discordrb::Webhooks::Embed.new
                     embed_sent.description = embed_text
