@@ -104,7 +104,7 @@ module SerieBot
     end
 
     def self.is_translator?(event)
-      return is_xxx_role?(event, 'trn', 'Translator', false)
+      return is_xxx_role?(event, 'trn', 'Translators', false)
     end
 
     def self.is_bot_owner?(member)
