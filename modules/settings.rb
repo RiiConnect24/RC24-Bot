@@ -1,34 +1,32 @@
 module SerieBot
   module Config
     class << self
-      # Bot important
+      # The bot necessities
       attr_accessor :token
       attr_accessor :appid
       attr_accessor :prefix
       attr_accessor :playing
-      attr_accessor :bot_owners
-
       attr_accessor :invite_url
-
-      #Status
+      attr_accessor :bot_owners
       attr_accessor :status
 
       # Logging dump dir
       attr_accessor :dump_dir
+
       # Debug mode
       attr_accessor :debug
 
-      # Options
-      attr_accessor :morpher_enabled
+      # Server config
+      attr_accessor :root_server
       attr_accessor :patch_mail
+      attr_accessor :morpher_enabled
+      attr_accessor :morpher_server
 
-      # Ignore specific channels
+      # Logging options
+      attr_accessor :logged_servers
       attr_accessor :ignore_ids
 
-      # Servers to log
-      attr_accessor :logged_servers
-
-      # General settings (not in config.rb)
+      # General settings (not loaded in config.rb)
       attr_accessor :settings
     end
 

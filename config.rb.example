@@ -3,7 +3,7 @@ module SerieBot
 
     #~ Basic Config (Required)
 
-    #Your bot account token. Create a bot account if you don't a bot account, get one and its token here -> https://discordapp.com/developers/applications/me/
+    # Your bot account token. Create a bot account if you don't a bot account, get one and its token here -> https://discordapp.com/developers/applications/me/
     @token = 'your token here!'
     # The bot's App ID, which can be found at https://discordapp.com/developers/applications/me/
     @appid = 000000000000000000
@@ -15,7 +15,7 @@ module SerieBot
 
     # These users will have full access to the bot's admin commands, and by extension, the server it is hosted on.
     # Give this power with care!!
-    @bot_owners = [239809536012058625, 228574821590499329] #An array of user IDS.
+    @bot_owners = [000000000000000000, 000000000000000000] # An array of user IDs.
 
     # Status of the bot
     @status = 'online'
@@ -26,16 +26,22 @@ module SerieBot
     # Set this false to use some production APIs.
     @debug = true
 
-    # Set this to true to enable Morpher running.
-    @morpher_enabled = false
+    # The root server this bot is based off of.
+    @root_server = 000000000000000000
 
     # Set this to true to allow patching of config files via DM.
     @patch_mail = false
+
+    # Set this to true to enable Morpher running.
+    @morpher_enabled = false
+
+    # The server that Morpher will mirror to.
+    @morpher_server = 000000000000000000
 
     # Severs that should be logged
     @logged_servers = [000000000000000000, 000000000000000000]
 
     # Block specific channel IDs from being logged.
-    @ignore_ids = [271724634368507904]
+    @ignore_ids = [000000000000000000]
   end
 end

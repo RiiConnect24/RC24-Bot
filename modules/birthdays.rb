@@ -29,7 +29,7 @@ module SerieBot
       unless @dates[format].nil?
         @dates[format].each do |id|
           # The user might've left the server. Check for so.
-          if bot.server(RIICONNECT24_SERVER_ID).nil?
+          if bot.server(RIICONNECT24_SERVER_ID).member(id).nil?
             next
           end
           person = bot.user(id)
@@ -42,7 +42,7 @@ module SerieBot
                                                                    url: 'https://rc24.xyz',
                                                                    icon_url: Helper.avatar_url(person, 32))
 
-          bot.channel(BIRTHDAY_CHANNEL, bot.server(RIICONNECT24_SERVER_ID)).send_embed('', embed_sent)
+          Helper.channel_from_name(bot.server(Config.root_server), 'birthdays').send_embed('', embed_sent)
         end
       end
     end

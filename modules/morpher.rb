@@ -9,22 +9,16 @@ module SerieBot
       attr_accessor :messages
     end
 
-    def self.setup_channels(event)
+
+
+    def self.setup_channels(server)
       if original_channel.nil? | mirrored_channel.nil?
-        @original_channel = if Config.debug
-                              # Testing server #announcements
-                              event.bot.channel(278741282568798209, event.bot.server(254417537746337792))
-                            else
-                              # RiiConnect24 #announcements
-                              event.bot.channel(206934926136705024, event.bot.server(206934458954153984))
-                            end
+        @original_channel = Helper.channel_from_name(server, 'announcements')
         # ID of mirror server
         @mirrored_channel = if Config.debug
-                              # RC24 News Server #dev-test
-                              event.bot.channel(283320245958213634, event.bot.server(278674706377211915))
+                              Helper.channel_from_name(server, 'dev-test')
                             else
-                              # RC24 News Server #announcements
-                              event.bot.channel(278674706377211915, event.bot.server(278674706377211915))
+                              Helper.channel_from_name(server, 'announcements')
                             end
       end
     end
@@ -50,7 +44,7 @@ module SerieBot
     end
 
     message do |event|
-      setup_channels(event)
+      setup_channels(event.server)
       if event.channel == original_channel
         embed_to_send = create_embed(event.bot, event.message)
         message_to_send = mirrored_channel.send_embed('', embed_to_send)
@@ -64,8 +58,8 @@ module SerieBot
       end
     end
 
-    message_edit do |event|
-      setup_channels(event)
+    message_edit do |event.server|
+      setup_channels(event.server)
       if event.channel == original_channel
         # Time to edit the message!
         message_data = @messages[event.message.id]
@@ -86,7 +80,7 @@ module SerieBot
     end
 
     message_delete do |event|
-      setup_channels(event)
+      setup_channels(event.server)
       if event.channel == original_channel
         # Time to remove the corresponding announcement.
         if @messages[event.id].nil?
@@ -120,7 +114,7 @@ module SerieBot
       # Start on first message
       offset_id = original_channel.history(1, 1, 1)[0].id # get first message id
 
-      # Now let's dump!
+      # Now let's sync!
       loop do
         # We can only go through 100 messages at a time, so grab 100.
         # We need to reverse it because it goes reverse in what we're doing.
