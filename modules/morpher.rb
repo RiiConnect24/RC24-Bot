@@ -11,14 +11,14 @@ module SerieBot
 
 
 
-    def self.setup_channels(server)
+    def self.setup_channels(event)
       if original_channel.nil? | mirrored_channel.nil?
-        @original_channel = Helper.channel_from_name(server, 'announcements')
+        @original_channel = Helper.channel_from_name(event.bot.server(Config.root_server), 'announcements')
         # ID of mirror server
         @mirrored_channel = if Config.debug
-                              Helper.channel_from_name(server, 'dev-test')
+                              Helper.channel_from_name(event.bot.server(Config.morpher_server), 'dev-test')
                             else
-                              Helper.channel_from_name(server, 'announcements')
+                              Helper.channel_from_name(event.bot.server(Config.morpher_server), 'announcements')
                             end
       end
     end
@@ -44,7 +44,7 @@ module SerieBot
     end
 
     message do |event|
-      setup_channels(event.server)
+      setup_channels(event)
       if event.channel == original_channel
         embed_to_send = create_embed(event.bot, event.message)
         message_to_send = mirrored_channel.send_embed('', embed_to_send)
@@ -59,7 +59,7 @@ module SerieBot
     end
 
     message_edit do |event|
-      setup_channels(event.server)
+      setup_channels(event)
       if event.channel == original_channel
         # Time to edit the message!
         message_data = @messages[event.message.id]
@@ -80,7 +80,7 @@ module SerieBot
     end
 
     message_delete do |event|
-      setup_channels(event.server)
+      setup_channels(event)
       if event.channel == original_channel
         # Time to remove the corresponding announcement.
         if @messages[event.id].nil?
