@@ -2,7 +2,6 @@ module SerieBot
   module Birthdays
     require 'yaml'
     require 'time'
-    # doesn't everything take time?
     require 'date'
 
     extend Discordrb::Commands::CommandContainer
@@ -13,7 +12,12 @@ module SerieBot
     BIRTHDAY_CHANNEL = 315973215904071681
 
     def self.sleeping_beauty(bot)
-      sleep(Time.parse('23:59:59') - Time.now)
+      sleep((Time.parse('23:59:59') - Time.now))
+      # Yes, you're reading this right, we're sleeping for a bit more.
+      # This is some type of race condition -- from my understanding it fires a few seconds behind.
+      # Can't hurt, really.
+      sleep(5)
+
       check_for_birthdays(Date.today, bot)
       # yeah, a tad recursive
       sleeping_beauty(bot)
@@ -24,6 +28,10 @@ module SerieBot
       format = "#{date.mon}-#{date.mday}"
       unless @dates[format].nil?
         @dates[format].each do |id|
+          # The user might've left the server. Check for so.
+          if bot.server(RIICONNECT24_SERVER_ID).nil?
+            next
+          end
           person = bot.user(id)
           embed_sent = Discordrb::Webhooks::Embed.new
           embed_sent.title = 'Happy birthday! 🎂'
@@ -42,7 +50,15 @@ module SerieBot
     command(:birthday) do |event, *args|
       date_string = args.join(' ')
       begin
+        user_id = event.user.id
         date = Date.parse(date_string)
+
+        # Because they're all arrays, right?
+        # ....right?
+        @dates.each do |month_date_thing|
+          # Remove duplicates
+          @dates[month_date_thing].delete(user_id)
+        end
 
         format = "#{date.mon}-#{date.mday}"
         if @dates[format].nil?
