@@ -68,6 +68,7 @@ module SerieBot
         end
 
         command(:code) do |event, option, *args|
+          Helper.ignore_bots(event)
             user_id = event.user.id
             # Create code for the user, to prevent future issues
             Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
@@ -154,6 +155,7 @@ module SerieBot
         end
 
         command(:add, min_args: 1, max_args: 1) do |event, mention|
+          Helper.ignore_bots(event)
             user = begin
                        event.bot.parse_mention(mention)
                    rescue
@@ -208,6 +210,7 @@ module SerieBot
         end
 
         command(:wipecodes) do |event, *args|
+          Helper.ignore_bots(event)
             unless Helper.is_bot_owner?(event.user)
                 event.respond("❌ You don't have permission for that!")
                 break
