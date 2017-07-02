@@ -58,7 +58,7 @@ module SerieBot
       end
     end
 
-    message_edit do |event.server|
+    message_edit do |event|
       setup_channels(event.server)
       if event.channel == original_channel
         # Time to edit the message!
