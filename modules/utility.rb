@@ -54,6 +54,15 @@ module SerieBot
       event.respond("⚠️ WARNING: Please don't excessively use selfbots as it will spam up our logging methods. Using them sparingly or however you want in #trash is perfectly fine.\nFailure to comply with this can result in a kick or ban.");
     end
 
+    command(:patch) do |event|
+      begin
+        event.user.pm("Just drag and drop your `nwc24msg.cfg` here, and I'll patch it and upload it.")
+        event.respond('Check your DMs!')
+      rescue Discordrb::Errors::NoPermission
+        event.respond("❌ Sorry, but it looks like you're blocking DMs.")
+      end
+    end
+
     command(:info, description: 'Displays info about a user.') do |event, *mention|
       event.channel.start_typing
       if event.channel.private? # ignore PMs
