@@ -9,7 +9,7 @@ module SerieBot
       help << "\n\n"
       help << "**Specific commands**\n"
       help << "`#{Config.prefix}wads` may or may not DM you some WADs.\n"
-      help << "`#{Config.prefix}patch` will give you instructions on how to patch your `nwc24msg.cfg` using me."
+      help << "`#{Config.prefix}patch` will give you instructions on how to patch your `nwc24msg.cfg` using me.\n"
       help << "`#{Config.prefix}help` or `#{Config.prefix}code help` will send you this help message.\n"
       help << "`#{Config.prefix}gametdb <platform> <title id>` will provide a GameTDB wiki page with the specified Title ID. Valid platforms are Wii, WiiU, PS3, 3DS, and DS.\n"
       help << "`#{Config.prefix}error <error code>` will provide you information about the specified error code from Wiimmfi.\n"
