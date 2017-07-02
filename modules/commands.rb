@@ -190,7 +190,7 @@ module SerieBot
 
             response = "__**Did you know?**__\n"
             response += facts.sample
-            response +=" \n\nGot any facts we should add? Ask Larsenv or another RiiConnect24 developer!"
+            response +=" \n\nGot any facts we should add? Ask a RiiConnect24 developer!"
             event.respond(response)
         end
     end

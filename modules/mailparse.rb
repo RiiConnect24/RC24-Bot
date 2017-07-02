@@ -55,20 +55,21 @@ module SerieBot
       # Remove current checksum
       to_checksum = cfg.to_hex[0...(cfg.to_hex.length - 8)]
 
-      # This is so hacky.
+      # To describe the checksum:
+      # Take your entire file and break it into 4 byte groups.
+      # Add them all up, and grab the lower 32 bits.
+
       # We currently have it out in hex, so we
-      # can just split it into groups of 4 bytes
-      # (or 8 bits = 8 chars for us)
+      # can just split it 8 char groups
+      # (since 2 hex chars = 1 byte)
       blocks = to_checksum.scan(/(........)/)
       checksum = 0
-      test = -1
       current_number = BinData::Uint32be.new
       blocks.each do |block|
         # Convert back to string
         bytes = block[0].scan(/../).map { |x| x.hex.chr }.join
 
         current_number.clear
-        test += 1
         current_number.read(bytes)
         checksum += current_number
       end
