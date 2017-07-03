@@ -95,8 +95,16 @@ module SerieBot
       return is_xxx_role?(event, 'hlp', 'Helpers', false)
     end
 
+    def self.is_donator?(event)
+      return is_xxx_role?(event, 'don', 'Donators', false)
+    end
+
     def self.is_server_admin?(event)
       return is_xxx_role?(event, 'adm', 'Admin', false)
+    end
+
+    def self.is_translator?(event)
+      return is_xxx_role?(event, 'trn', 'Translators', false)
     end
 
     def self.is_bot_owner?(member)
@@ -113,6 +121,21 @@ module SerieBot
       return is_xxx_role?(event, 'vfd', 'Verified', true, user)
     end
 
+    def self.get_roles(event)
+      roles = []
+
+      # I'm sure there's a better way to do this. Please fix it.
+
+      if is_developer?(event) then roles << "dev" end
+      if is_moderator?(event) then roles << "mod" end
+      if is_helper?(event) then roles << "hlp" end
+      if is_donator?(event) then roles << "don" end
+      if is_server_admin?(event) then roles << "adm" end
+      if is_translator?(event) then roles << "trn" end
+      # if is_verified?(event) then roles << "vfd" end
+
+      return roles
+    end
 
     # TODO: perhaps save and stuff?
     def self.quit
