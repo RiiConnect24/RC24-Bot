@@ -141,7 +141,7 @@ module SerieBot
         Morpher.messages = self.load_xyz('morpher')
       end
       Codes.codes = self.load_xyz('codes')
-      Logging.recorded_actions = self.load_xyz('actions', {:ban => {}, :kick => {}})
+      Logging.recorded_actions = self.load_xyz('actions', {:ban => {}, :kick => {}, :warn => {}})
       Birthdays.dates = self.load_xyz('birthdays')
     end
 

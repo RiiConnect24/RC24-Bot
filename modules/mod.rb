@@ -86,7 +86,7 @@ module SerieBot
 		end
 	  
 		command(:warn, description: 'Warn somebody on the server. Mod only.', usage: "#{Config.prefix}warn @user reason", min_args: 2) do |event, *kick_reason|
-			unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_admin?(event.user)
+			unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_server_admin?(event.user)
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
