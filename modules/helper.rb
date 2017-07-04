@@ -235,7 +235,12 @@ module SerieBot
     # Returns true if the user was a bot.
     def self.ignore_bots(event)
       if event.user.bot_account?
-        event.bot.ignore_user(event.user)
+        id = event.user.id
+        event.bot.ignore_user(id)
+        # Add to persistent list
+        unless Config.settings['ignored_bots'].include? id
+          Config.settings['ignored_bots'].push(id)
+        end
         true
       else
         false

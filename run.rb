@@ -42,7 +42,13 @@ module SerieBot
   Helper.load_all
   
   # We should have settings loaded at this point
-  
+  if Config.settings['ignored_bots'].nil?
+    Config.settings['ignored_bots'] = []
+    Helper.save_xyz('settings', Config.settings)
+  end
+  Config.settings['ignored_bots'].each do |bot_id|
+    bot.ignore_user(bot_id)
+  end
 
   # Run Bot
   Config.invite_url = bot.invite_url if Config.invite_url.nil?
