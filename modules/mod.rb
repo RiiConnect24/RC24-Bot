@@ -2,7 +2,7 @@ module SerieBot
   module Mod
     extend Discordrb::Commands::CommandContainer
 
-    command(:clear, max_args: 1, required_permissions: [:manage_messages], description: 'Deletes x messages, mod only.', usage: '&clear x') do |event, count|
+    command(:clear, max_args: 1, required_permissions: [:manage_messages], description: 'Deletes x messages, mod only.', usage: "#{Config.prefix}clear x") do |event, count|
       Helper.ignore_bots(event)
       if count.nil?
         event.respond('❌ No argument specicied. Enter a valid number!')
@@ -47,7 +47,7 @@ module SerieBot
         break
       end
 
-      unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :mod, :hlp])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -86,7 +86,7 @@ module SerieBot
 		end
 	  
 		command(:warn, description: 'Warn somebody on the server. Mod only.', usage: "#{Config.prefix}warn @user reason", min_args: 2) do |event, *kick_reason|
-			unless Helper.is_helper?(event) || Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_server_admin?(event.user)
+			unless Helper.has_role?(event, [:adm, :dev, :mod, :hlp])
 				event.respond("❌ You don't have permission for that!")
 				break
 			end
@@ -120,7 +120,7 @@ module SerieBot
         break
       end
 
-      unless Helper.is_moderator?(event) || Helper.is_developer?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :mod])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -158,7 +158,7 @@ module SerieBot
     end
 
     command(:userprune) do |event, code|
-      unless Helper.is_server_admin?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :bot, :adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -210,7 +210,7 @@ module SerieBot
     end
 
     command(:lockdown) do |event, time|
-      unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -234,7 +234,7 @@ module SerieBot
     end
 
     command(:unlockdown) do |event|
-      unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
         event.respond("❌ You don't have permission for that!")
         break
       end

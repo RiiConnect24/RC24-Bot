@@ -1,5 +1,21 @@
 module SerieBot
   module Helper
+    class << self
+      attr_accessor :types
+    end
+
+    # Format:
+    # [name, show_message]
+    @types = {
+        :owner => ['Dummy Entry', true],
+        :dev => ['RiiConnect24 Developers', true],
+        :bot => ['Bot Helpers', false],
+        :mod => ['Server Moderators', true],
+        :hlp => ['Helpers', false],
+        :don => ['Donators', false],
+        :adm => ['Server Admins', false],
+        :trn => ['Translators', false]
+    }
 
     # Gets the channel/role's ID based on the given parameters
     def self.get_xxx_id?(server_id, type, short_type)
@@ -22,6 +38,31 @@ module SerieBot
       Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
       Config.settings[server_id][type][short_name] = id
       self.save_all
+    end
+
+    # Checks to see if the server has the needed channel, and if not deals accordingly to fix it.
+    def self.get_xxx_channel?(event, short_type, channel_name)
+      # Check if config already has a role
+      xxx_channel_id = get_xxx_id?(event.server.id, 'channel', short_type)
+
+      if xxx_channel_id.nil?
+        # Set to default
+        begin
+          xxx_channel_id = channel_from_name(event.server, channel_name).id
+          save_xxx_id?(event.server.id, 'channel', short_type, xxx_channel_id)
+        rescue NoMethodError
+          # Rip, we'll set the channel in config.
+          # If we're debugging, might be helpful to say that.
+          if Config.debug
+            puts "I wasn't able to find the channel \"#{channel_name}\" for use with #{short_type}."
+          end
+          return nil
+        end
+        event.server.general_channel.send_message("Channel \"#{channel_name}\" set to default. Use `#{Config.prefix}config setchannel #{short_type} <channel name>` to change otherwise.")
+      end
+
+      # Check if the server has the specified channel
+      return event.bot.channel(xxx_channel_id).id
     end
 
     # Checks to see if the user has the given role, and if not deals accordingly to fix it.
@@ -51,60 +92,42 @@ module SerieBot
       return user.role?(event.server.role(xxx_role_id))
     end
 
-
-    # Checks to see if the server has the needed channel, and if not deals accordingly to fix it.
-    def self.get_xxx_channel?(event, short_type, channel_name)
-      # Check if config already has a role
-      xxx_channel_id = get_xxx_id?(event.server.id, 'channel', short_type)
-
-      if xxx_channel_id.nil?
-        # Set to default
-        begin
-          xxx_channel_id = channel_from_name(event.server, channel_name).id
-          save_xxx_id?(event.server.id, 'channel', short_type, xxx_channel_id)
-        rescue NoMethodError
-          # Rip, we'll set the channel in config.
-          # If we're debugging, might be helpful to say that.
-          if Config.debug
-            puts "I wasn't able to find the channel \"#{channel_name}\" for use with #{short_type}."
+    def self.has_role?(event, roles)
+      # Only support listed types.
+      roles.each do |role_type|
+        if @types.include? role_type
+          if role_type.to_s == 'owner'
+            status = Config.bot_owners.include?(event.server.member(event.user))
+          else
+            role_info = @types[role_type]
+            status = is_xxx_role?(event, role_type.to_s, role_info[0], role_info[1])
           end
-          return nil
+          if status
+            # They've got at least one of the roles
+            if Config.debug
+              puts "Looks like the user has #{role_type.to_s}"
+            end
+            return status
+          else
+            # Continue, I guess
+            next
+          end
+        else
+          if Config.debug
+            puts "I don't have the #{role_type.to_s} role in my list... perhaps you made a typo?"
+          end
         end
-        event.server.general_channel.send_message("Channel \"#{channel_name}\" set to default. Use `#{Config.prefix}config setchannel #{short_type} <channel name>` to change otherwise.")
       end
 
-      # Check if the server has the specified channel
-      return event.bot.channel(xxx_channel_id).id
-    end
-
-    # The following commands are basically skeletons now. The work is done above.
-    def self.is_developer?(event)
-      return is_xxx_role?(event, 'dev', 'Developers')
-    end
-
-    def self.is_bot_helper?(event)
-      # There's a very large chance the user won't need to be a bot helper.
-      return is_xxx_role?(event, 'bot', 'Bot Helpers', false)
-    end
-
-    def self.is_moderator?(event)
-      return is_xxx_role?(event, 'mod', 'Moderators')
-    end
-
-    def self.is_helper?(event)
-      return is_xxx_role?(event, 'hlp', 'Helpers', false)
-    end
-
-    def self.is_server_admin?(event)
-      return is_xxx_role?(event, 'adm', 'Admin', false)
-    end
-
-    def self.is_bot_owner?(member)
-      Config.bot_owners.include?(member)
+      # If we got here we couldn't find the role
+      if Config.debug
+        puts 'The user had none of the roles requested!'
+      end
+      return false
     end
 
     # We have to specify user here because we're checking if another user is verified
-    def self.is_verified?(event, other_user = nil)
+    def self.is_other_verified?(event, other_user = nil)
       user = if other_user.nil?
                event.user
              else
@@ -112,7 +135,6 @@ module SerieBot
              end
       return is_xxx_role?(event, 'vfd', 'Verified', true, user)
     end
-
 
     # TODO: perhaps save and stuff?
     def self.quit

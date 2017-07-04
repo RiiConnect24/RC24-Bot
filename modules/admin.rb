@@ -3,7 +3,7 @@ module SerieBot
     extend Discordrb::Commands::CommandContainer
 
     command(:setavatar) do |event, *url|
-      unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -15,7 +15,7 @@ module SerieBot
 
     command(:ignore, description: 'Temporarily ignore a given user', min_args: 1, max_args: 1) do |event, mention|
       event.channel.start_typing
-      unless Helper.is_developer?(event) || Helper.is_moderator?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :mod])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -34,7 +34,7 @@ module SerieBot
 
     command(:unignore, description: 'Unignores a given user', min_args: 1, max_args: 1) do |event, mention|
       event.channel.start_typing
-      unless Helper.is_developer?(event) || Helper.is_moderator?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -52,22 +52,22 @@ module SerieBot
     end
 
     command(:status, description: 'Set the bot as idle or dnd or invisible status. Admin only.', min_args: 1, max_args: 1) do |event, status|
-      unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
       if status == 'idle'
         event.bot.idle
-        event.respond("✅ Status set to **Idle**!")
+        event.respond('✅ Status set to **Idle**!')
       elsif status == 'dnd'
         event.bot.dnd
-        event.respond("✅ Status set to **Do No Disturb**!")
+        event.respond('✅ Status set to **Do No Disturb**!')
       elsif status == 'online'
         event.bot.online
-        event.respond("✅ Status set to **Online**!")
+        event.respond('✅ Status set to **Online**!')
       elsif status == 'invisible' || status == 'offline'
         event.bot.invisible
-        event.respond("✅ Status set to **Invisible**!")
+        event.respond('✅ Status set to **Invisible**!')
       else
         event.respond('Enter a valid argument!')
       end
@@ -75,7 +75,7 @@ module SerieBot
 
     command(:shutdown, description: 'Shuts down the bot. Admin only.', usage: '&shutdown') do |event|
       puts "#{event.author.distinct}: \`#{event.message.content}\`"
-      unless Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -87,7 +87,7 @@ module SerieBot
     end
 
     command(:eval, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *code|
-      unless Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -114,23 +114,25 @@ module SerieBot
     end
 
     command(:eval2, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *args|
-      begin
-        result = eval args.join(' ')
-        if result.length >= 1984
-          puts result
-          event << "⚠ Your output exceeded the character limit! (`#{result.length - 1984}`/`1984`)"
-          event << 'The result has been logged to the terminal instead :3'
-        else
-          event << ((result.nil? || result == '' || result == ' ' || result == "\n") ? "✅ Done! (No output)" : "Output: ```\n#{result}```")
+      unless Helper.has_role?(event, [:owner])
+        begin
+          result = eval args.join(' ')
+          if result.length >= 1984
+            puts result
+            event << "⚠ Your output exceeded the character limit! (`#{result.length - 1984}`/`1984`)"
+            event << 'The result has been logged to the terminal instead :3'
+          else
+            event << ((result.nil? || result == '' || result == ' ' || result == "\n") ? "✅ Done! (No output)" : "Output: ```\n#{result}```")
+          end
+        rescue Exception => e
+          event.respond(":x: An error has occured!! ```ruby\n#{e}```")
         end
-      rescue Exception => e
-        event.respond(":x: An error has occured!! ```ruby\n#{e}```")
       end
     end
 
 
     command(:bash, description: 'Evaluate a Bash command. Admin only. Use with care.', usage: '&bash code') do |event, *code|
-      unless Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -146,7 +148,7 @@ module SerieBot
     end
 
     command(:dump, description: 'Dumps a selected channel. Admin only.', usage: '&dump [id]') do |event, channel_id|
-      unless Helper.is_developer?(event) || Helper.is_bot_helper?(event) || Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner, :dev, :bot])
         event << "❌ You don't have permission for that!"
         break
       end
@@ -154,7 +156,7 @@ module SerieBot
       channel = begin
         event.bot.channel(channel_id)
       rescue
-        event.respond("❌ Enter a valid channel id!")
+        event.respond('❌ Enter a valid channel id!')
       end
       output_filename = Helper.dump_channel(channel, event.channel, Config.dump_dir, event.message.timestamp)
       event.channel.send_file File.new([output_filename].sample)
