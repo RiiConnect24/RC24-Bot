@@ -98,6 +98,10 @@ module SerieBot
 			end
 
 			member = event.server.member(event.message.mentions[0])
+      if event.user == member
+        event.respond("❌ You can't warn yourself. 😉")
+        break
+      end
 
 			break if event.channel.private?
 			if event.message.mentions[0]
