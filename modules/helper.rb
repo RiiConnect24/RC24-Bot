@@ -241,6 +241,7 @@ module SerieBot
         unless Config.settings['ignored_bots'].include? id
           Config.settings['ignored_bots'].push(id)
         end
+        Helper.save_xyz('settings', Config.settings)
         true
       else
         false

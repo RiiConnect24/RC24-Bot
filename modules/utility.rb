@@ -112,13 +112,12 @@ module SerieBot
         end
 
         role_type = args[0]
-        valid_role_types = %w(dev bot mod hlp vfd adm)
 
         # Make sure that the short ID is valid
-        unless valid_role_types.include? role_type
+        unless Helper.types.include? role_type
           response = '❌ Make sure to type in a valid role type!' + "\n"
           response += 'Valid types are:' + "\n"
-          valid_role_types.each do |type|
+          Helper.types.each do |type|
             response += "`#{type}` "
           end
           event.respond(response)

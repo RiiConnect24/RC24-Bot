@@ -102,6 +102,8 @@ module SerieBot
                     @codes[user.id] = {} if @codes[user.id].nil?
                 end
 
+
+
                 # Make sure they have friend codes, period.
                 if @codes[user.id].nil? || codes[user.id] == {}
                     event.respond("❌ **#{user_name}** has not added any friend codes!")
@@ -251,8 +253,9 @@ module SerieBot
                    end
             user = event.user if args[0].nil?
             Codes.codes[user.id] = nil
-            puts "#{event.user.distinct} has wiped #{user.distinct}'s codes.'"
+            puts "#{event.user.distinct} has wiped #{user.distinct}'s codes."
             event << "Wiped all codes saved by `#{user.distinct}` (ID: #{user.id})"
+          Helper.save_xyz('codes', @codes)
         end
 
         command(:save) do |event|
