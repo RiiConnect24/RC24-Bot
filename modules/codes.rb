@@ -138,12 +138,17 @@ module SerieBot
                     end
 
                     badges_list = ''
-                    badge_types.each do |type|
-                      # First element in array is role type
-                      if Helper.has_role?(event, [type[0]])
-                        # Next element in array is emoji
-                        badges_list += type[1] + ' '
+                    unless event.channel.private?
+                      badge_types.each do |type|
+                        # First element in array is role type
+                        if Helper.has_role?(event, [type[0]])
+                          # Next element in array is emoji
+                          badges_list += type[1] + ' '
+                        end
                       end
+                    end
+                    if event.channel.private?
+                      badges_list = "Sorry, you can't view badges in DMs."
                     end
 
                     unless badges_list == ''
@@ -154,7 +159,7 @@ module SerieBot
                     embed_sent = Discordrb::Webhooks::Embed.new
                     embed_sent.description = embed_text
                     # 33762 is the same as hex #0083e2
-                    embed_sent.colour = Helper.color_from_user(user, event.server, 33762)
+                    embed_sent.colour = Helper.color_from_user(user, event.channel, '0083e2')
                     embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: "Profile for #{user_name}",
                                                                              url: nil,
                                                                              icon_url: Helper.avatar_url(user, 32))

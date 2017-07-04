@@ -382,10 +382,12 @@ module SerieBot
     end
 
     # Get the user's color
-    def self.color_from_user(user, server, default = 0)
+    def self.color_from_user(user, channel, default = 0)
       color = default
+      return color if channel.private?
+
       # Attempt to grab member
-      member = server.member(user.id)
+      member = channel.server.member(user.id)
       unless member.nil?
         member.roles.sort_by(&:position).reverse.each do | role |
           if role.color.combined == 0
