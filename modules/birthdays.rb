@@ -8,7 +8,6 @@ module SerieBot
     class << self
       attr_accessor :dates
     end
-    RIICONNECT24_SERVER_ID = 206934458954153984
     BIRTHDAY_CHANNEL = 315973215904071681
 
     def self.sleeping_beauty(bot)
@@ -29,7 +28,7 @@ module SerieBot
       unless @dates[format].nil?
         @dates[format].each do |id|
           # The user might've left the server. Check for so.
-          if bot.server(RIICONNECT24_SERVER_ID).member(id).nil?
+          if bot.server(Config.root_server).member(id).nil?
             next
           end
           person = bot.user(id)

@@ -11,8 +11,6 @@ module SerieBot
     end
 
     @messages = {}
-    # For patching
-    mail_exe = "#{Dir.home}/bin/mail"
 
     def self.get_message(event, state)
       if event.nil? || event.message.nil? || event.message.content.nil?

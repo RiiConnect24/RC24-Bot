@@ -20,14 +20,14 @@ module SerieBot
       help << "The following is a list of commands that can be used to remind users about the rules.\n"
       help << "`nsfw`, `phobic`, `dox`, `spam`, `random`, `copyright`, `staff`, `selfbot`\n"
       extra_help = ''
-      if Helper.is_bot_owner?(event.user) || Helper.is_moderator?(event) || Helper.is_developer?(event)
+      if Helper.has_role?(event, [:owner, :dev, :mod])
         extra_help << "\n\n**Mod commands**\n"
         extra_help << "As this RiiConnect24 bot is a stripped down version of Yuu-Chan/Serie-Bot, you have a limited option of some moderation commands.\n"
         extra_help << "\n"
         extra_help << "**General commands**\n"
         extra_help << "`#{Config.prefix}ignore @user`/`#{Config.prefix}unignore @user` will respectively ignore and unignore the specified user.\n"
       end
-      if Helper.is_bot_owner?(event.user) || Helper.is_bot_helper?(event) || Helper.is_developer?(event)
+      if Helper.has_role?(event, [:owner, :dev, :bot])
         extra_help << "\n\n**Developers:**\n"
         extra_help << "`#{Config.prefix}setavatar <file/URL>` will change the avatar to the provided URL/image.\n"
         extra_help << "`#{Config.prefix}status <status>` changes the status of the bot to one of the options of idle, dnd, invisible or online.\n"
@@ -38,7 +38,7 @@ module SerieBot
         extra_help << "`#{Config.prefix}lockdown <minutes>` will lockdown the channel. If specified, the channel will unlock after <minutes> or not at all.\n"
         extra_help << "`#{Config.prefix}unlockdown` will remove the lockdown from the channel.\n"
       end
-      if Helper.is_bot_owner?(event.user) || Helper.is_bot_helper?(event)
+      if Helper.has_role?(event, [:owner, :bot])
         extra_help << "\n\n**Admins**\n"
         extra_help << "`#{Config.prefix}eval <code>` will evaluate the specified Ruby string. !!! USE WITH CARE !!!\n"
         extra_help << "`#{Config.prefix}bash <command>` will run the specified command in a bash shell. As before, !!! USE WITH CARE !!!\n"
@@ -46,7 +46,7 @@ module SerieBot
       end
       begin
         event.user.pm(help)
-        if Helper.is_bot_owner?(event.user) || Helper.is_moderator?(event) || Helper.is_developer?(event)
+        if Helper.has_role?(event,[:owner, :dev, :bot])
           event.user.pm(extra_help)
         end
         event.respond('Check your DMs!')
