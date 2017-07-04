@@ -63,35 +63,37 @@ module SerieBot
       end
     end
 
-    command(:info, description: 'Displays info about a user.') do |event, *mention|
+    command(:info, description: 'Displays info about a user.') do |event|
       event.channel.start_typing
       if event.channel.private? # ignore PMs
         event << '❌ This command can only be used in a server.'
         next
       end
 
-      if event.message.mentions[0]
+      unless event.message.mentions[0].nil?
         user = event.message.mentions[0]
-        if user.game.nil?
-          playing = '[N/A]'
-        else
-          playing = user.game
-        end
-        member = user.on(event.server)
-        if member.nickname.nil?
-          nick = '[N/A]' #
-        else
-          nick = member.nickname
-        end
-        event << "👥  Information about **#{member.display_name}**"
-        event << "-ID: **#{user.id}**"
-        event << "-Username: `#{user.distinct}`"
-        event << "-Nickname: **#{nick}**"
-        event << "-Status: **#{user.status}**"
-        event << "-Playing: **#{playing}**"
-        event << "-Account created: **#{user.creation_time.getutc.asctime}** UTC"
-        event << "-Joined server at: **#{member.joined_at.getutc.asctime}** UTC"
+      else
+        user = event.user
       end
+      if user.game.nil?
+        playing = '[N/A]'
+      else
+        playing = user.game
+      end
+      member = user.on(event.server)
+      if member.nickname.nil?
+        nick = '[N/A]' #
+      else
+        nick = member.nickname
+      end
+      event << "👥  Information about **#{member.display_name}**"
+      event << "-ID: **#{user.id}**"
+      event << "-Username: `#{user.distinct}`"
+      event << "-Nickname: **#{nick}**"
+      event << "-Status: **#{user.status}**"
+      event << "-Playing: **#{playing}**"
+      event << "-Account created: **#{user.creation_time.getutc.asctime}** UTC"
+      event << "-Joined server at: **#{member.joined_at.getutc.asctime}** UTC"
     end
 
     # Requires manage_roles permission since that's what we're doing.
