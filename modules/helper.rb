@@ -317,68 +317,62 @@ module SerieBot
            else
              channel.server.name
           end
-      message = "Dumping messages from channel \"#{channel.name.gsub('`', '\\`')}\" in #{server.gsub('`', '\\`')}, please wait..."
+      message = "Dumping messages from channel \"#{channel.name.gsub('`', '\\`')}\" in #{server.gsub('`', '\\`')}, please wait...\n"
       output_channel.send_message(message) unless output_channel.nil?
       puts message
 
-      if !channel.private?
+      unless channel.private?
         output_filename = "#{folder}/output_" + server + '_' + channel.server.id.to_s + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
       else
         output_filename = "#{folder}/output_" + server + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
       end
       output_filename = output_filename.tr(' ', '_').delete('+').delete('\\').delete('/').delete(':').delete('*').delete('?').delete('"').delete('<').delete('>').delete('|')
-      hist_count_and_messages = [[], [0, []]]
 
       output_file = File.open(output_filename, 'w')
+
+      # Start on first message
       offset_id = channel.history(1, 1, 1)[0].id # get first message id
+      message_count = 0
 
       # Now let's dump!
       loop do
-        hist_count_and_messages[0] = channel.history(100, nil, offset_id) # next 100
-        break if hist_count_and_messages[0] == []
-        hist_count_and_messages[1] = parse_history(hist_count_and_messages[0], hist_count_and_messages[1][0])
-        output_file.write((hist_count_and_messages[1][1].reverse.join("\n") + "\n").encode('UTF-8')) # write to file right away, don't store everything in memory
-        output_file.flush # make sure it gets written to the file
-        offset_id = hist_count_and_messages[0][0].id
+        # We can only go through 100 messages at a time, so grab 100.
+        current_history = channel.history(100, nil, offset_id).reverse
+        # Break if there are no other messages
+        break if current_history == []
+
+        # Have a working string so we don't flog up disk writes
+        to_write = ''
+        current_history.each do |message|
+          next if message.nil?
+          author = if message.author.nil?
+                     'Unknown User'
+                   else
+                     message.author.distinct
+                   end
+          time = message.timestamp
+          content = message.content
+
+          attachments = message.attachments
+
+          to_write += "#{time} #{author}: #{content}\n"
+          to_write += "\n<Attachments: #{attachments[0].filename}: #{attachments[0].url}}>\n" unless attachments.empty?
+          message_count += 1
+        end
+
+        output_file.write(to_write)
+        output_file.flush
+
+        # Set offset ID to last message in history that we saw
+        # (this is the last message sent - 1 since Ruby has array offsets of 0)
+        offset_id = current_history[current_history.length - 1].id
       end
       output_file.close
-      message = "#{hist_count_and_messages[1][0]} messages logged."
+      message = "#{message_count} messages logged."
       output_channel.send_message(message) unless output_channel.nil?
       puts message
       puts "Done. Dump file: #{output_filename}"
       output_filename
-    end
-
-    def self.parse_history(hist, count)
-      messages = []
-      i = 0
-      until i == hist.length
-      message = hist[i]
-      if message.nil?
-        # STTTOOOOPPPPPP
-        puts 'nii'
-        break
-      end
-      author = if message.author.nil?
-             'Unknown Disconnected User'
-           else
-             message.author.distinct
-           end
-      time = message.timestamp
-      content = message.content
-
-      attachments = message.attachments
-      # attachments.each { |u| attachments.push("#{u.filename}: #{u.url}") }
-
-      messages[i] = "--#{time} #{author}: #{content}"
-      messages[i] += "\n<Attachments: #{attachments[0].filename}: #{attachments[0].url}}>" unless attachments.empty?
-      #			puts "Logged message #{i} ID:#{message.id}: #{messages[i]}"
-      i += 1
-
-      count += 1
-      end
-      return_value = [count, messages]
-      return_value
     end
 
     def self.role_from_name(server, role_name)
