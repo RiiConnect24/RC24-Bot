@@ -378,7 +378,7 @@ module SerieBot
     def self.role_from_name(server, role_name)
       roles = server.roles
       role = roles.select { |r| r.name == role_name }.first
-      role
+      return role
     end
 
     # Get the user's color
@@ -412,14 +412,14 @@ module SerieBot
       if Config.debug
         puts "Found #{channel.name} (ID: #{channel.id})"
       end
-      channel
+      return channel
     end
 
     def self.get_help
       help = "**__Using the bot__**\n"
       help += "\n"
       help += "**Adding codes:**\n"
-      help += "`#{Config.prefix}code add wii | Wii Name Goes here | 1234-5678-9012-3456` (You can add multiple Wiis with different names)\n"
+      help += "`#{Config.prefix}code add wii | Wii Name Goes here | 1234-5678-9012-3456`\n"
       help += "`#{Config.prefix}code add game | Game Name | 1234-5678-9012`\n"
       help += "and many more types! Run `#{Config.prefix}code add` to see all supported code types right now, such as the 3DS and Switch.\n"
       help += "\n"
@@ -437,7 +437,7 @@ module SerieBot
       help += "**Adding a user's Wii**\n"
       help += "`#{Config.prefix}add @user`\n"
       help += 'This will send you their codes, and then DM them your Wii/game codes.'
-      help
+      return help
     end
 
     # Load settings for all.
