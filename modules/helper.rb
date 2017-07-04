@@ -8,9 +8,9 @@ module SerieBot
     # [name, show_message]
     @types = {
         :owner => ['Dummy Entry', true],
-        :dev => ['Developers', true],
+        :dev => ['RiiConnect24 Developers', true],
         :bot => ['Bot Helpers', false],
-        :mod => ['Moderators', true],
+        :mod => ['Server Moderators', true],
         :hlp => ['Helpers', false],
         :don => ['Donators', false],
         :adm => ['Server Admins', false],

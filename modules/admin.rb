@@ -75,7 +75,7 @@ module SerieBot
 
     command(:shutdown, description: 'Shuts down the bot. Admin only.', usage: '&shutdown') do |event|
       puts "#{event.author.distinct}: \`#{event.message.content}\`"
-      unless Helper.is_bot_owner?(event.user)
+      unless Helper.has_role?(event, [:owner])
         event.respond("❌ You don't have permission for that!")
         break
       end
