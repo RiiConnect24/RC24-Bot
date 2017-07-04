@@ -110,11 +110,21 @@ module SerieBot
                     # Start out with a line return due to embed author later on
                     embed_text = "\n"
                     code_types = {
-                        :wii => '<:Wii:259081748007223296> **Wiis**:',
-                        '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DSs**:',
-                        :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:',
-                        :switch => '<:Switch:287652338791874560> **Switches**:',
-                        :game => '🎮 **Games**:'
+                      :wii => '<:Wii:259081748007223296> **Wiis**:',
+                      '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DSs**:',
+                      :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network IDs**:',
+                      :switch => '<:Switch:287652338791874560> **Switches**:',
+                      :game => '🎮 **Games**:'
+                    }
+
+                    badge_types = {
+                        :owner => '<:BadgeBotDev:331597705472114688>',
+                        :dev => '<:BadgeDeveloper:329710752778944512>',
+                        :adm => '<:BadgeAdmin:329734061532774403>',
+                        :mod => '<:BadgeModerator:329715070768513024>',
+                        :hlp => '<:BadgeHelper:329722382790950912>',
+                        :don => '<:BadgeDonator:329712167983251458>',
+                        :trn => '<:BadgeTranslator:329723303814234113>'
                     }
 
                     code_types.each do |type, title|
@@ -126,6 +136,20 @@ module SerieBot
                         end
                       end
                     end
+
+                    badges_list = ''
+                    badge_types.each do |type|
+                      # First element in array is role type
+                      if Helper.has_role?(event, [type[0]])
+                        # Next element in array is emoji
+                        badges_list += type[1] + ' '
+                      end
+                    end
+
+                    unless badges_list == ''
+                      embed_text += "\n🏅**Badges**:\n#{badges_list}"
+                    end
+
 
                     embed_sent = Discordrb::Webhooks::Embed.new
                     embed_sent.description = embed_text
