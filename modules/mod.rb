@@ -2,8 +2,14 @@ module SerieBot
   module Mod
     extend Discordrb::Commands::CommandContainer
 
-    command(:clear, max_args: 1, required_permissions: [:manage_messages], description: 'Deletes x messages, mod only.', usage: "#{Config.prefix}clear x") do |event, count|
+    command(:clear, max_args: 1, description: 'Deletes x messages, mod only.', usage: "#{Config.prefix}clear x") do |event, count|
       Helper.ignore_bots(event)
+
+      unless Helper.has_role?(event, [:owner, :dev, :mod, :hlp])
+        event.respond("❌ You don't have permission for that!")
+        break
+      end
+
       if count.nil?
         event.respond('❌ No argument specicied. Enter a valid number!')
         break
