@@ -97,10 +97,10 @@ module SerieBot
     # Per PokeAcer's recommendation
     member_join do |event|
       # RC24 News Server
-      if event.server.id == 278674706377211915
+      if event.server.id == Config.morpher_server
         message_to_pm = "___Information Notice___\n"
         message_to_pm += 'Hi! You have joined the RiiConnect24 News Server, for users who are not allowed access to the regular server.'
-        message_to_pm += "As such, we do not know whom is in the server, and you may wish to turn off access to Direct Messages between members to ensure users cannot contact you through the public mutual server.\n"
+        message_to_pm += " As such, we do not know whom is in the server, and you may wish to turn off access to Direct Messages between members to ensure users cannot contact you through the public mutual server.\n"
         message_to_pm += "Here's how to do it: http://i.imgur.com/EssBp8d.gifv\n\n"
         message_to_pm += "Regards,\nRiiConnect24"
         event.user.pm(message_to_pm)
