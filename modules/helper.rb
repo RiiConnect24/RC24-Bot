@@ -165,6 +165,7 @@ module SerieBot
       Codes.codes = self.load_xyz('codes')
       Logging.recorded_actions = self.load_xyz('actions', {:ban => {}, :kick => {}, :warn => {}})
       Birthdays.dates = self.load_xyz('birthdays')
+      EULA.rules = self.load_xyz('eula', {:actual_rules => {}})
     end
 
     def self.save_all
@@ -172,6 +173,7 @@ module SerieBot
       self.save_xyz('codes', Codes.codes)
       self.save_xyz('settings', Config.settings)
       self.save_xyz('birthdays', Birthdays.dates)
+      self.save_xyz('eula', EULA.rules)
     end
 
     # We must keep this seperate due to how everything is loaded.

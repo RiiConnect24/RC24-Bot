@@ -16,9 +16,7 @@ module SerieBot
       help << "`#{Config.prefix}instructions` will reply with some setup instructions for RiiConnect24.\n"
       help << "`#{Config.prefix}dns` will reply with the DNS settings for RiiConnect24. \n"
       help << "`#{Config.prefix}about` will tell you information about the bot.\n"
-      help << "**Reminder commands**\n"
-      help << "The following is a list of commands that can be used to remind users about the rules.\n"
-      help << "`nsfw`, `phobic`, `dox`, `spam`, `random`, `copyright`, `staff`, `selfbot`\n"
+      help << "`#{Config.prefix}rule <number>` will return the rule at that number.\n"
       extra_help = ''
       if Helper.has_role?(event, [:owner, :dev, :mod])
         extra_help << "\n\n**Mod commands**\n"

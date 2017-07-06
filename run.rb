@@ -16,6 +16,7 @@ module SerieBot
   modules = [
     Admin,
     Birthdays,
+    EULA,
     Help,
     Logging,
     Utility,
