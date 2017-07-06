@@ -21,11 +21,10 @@ module SerieBot
       to_send = "**__Server Rules__**\n"
       count = 1
       @rules[:actual_rules].each do |rule|
-        to_send += "**#{count}.** #{rule}\n\n"
+        to_send += "**#{count}.** #{rule}\n"
         count += 1
       end
-      to_send += "\n**We’ll warn, kick or ban you if you break the above rules, depending on the severity of them. These rules are subject to change at any time, possibly without warning.**\n"
-      to_send += "To output one of these rules manually, type `#{Config.prefix}rule <rule number>`."
+      to_send += "\n**We’ll warn, kick or ban you if you break the above rules, depending on the severity of them. These rules are subject to change at any time, possibly without warning.**"
       return to_send
     end
 
