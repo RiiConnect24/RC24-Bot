@@ -29,6 +29,10 @@ module SerieBot
     end
 
     command(:editrule) do |event, rule_num, *text|
+      unless event.server.id == Config.root_server
+        event.respond('❌ Nice try.')
+        break
+      end
       unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
         event.respond("❌ You don't have permission for that!")
         break
@@ -47,6 +51,9 @@ module SerieBot
     end
 
     command(:rule) do |event, rule_num|
+      unless event.server.id == Config.root_server
+        event.respond("ℹ Please note that these aren't this server's rules.")
+      end
       unless rule_num.to_i.to_s == rule_num
         event.respond('❌ Please enter a valid rule number!')
         break
