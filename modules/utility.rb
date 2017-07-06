@@ -85,10 +85,11 @@ module SerieBot
         unless Helper.types.include? role_type
           response = '❌ Make sure to type in a valid role type!' + "\n"
           response += 'Valid types are:' + "\n"
-          Helper.types.each do |type|
-            response += "`#{type}` "
+          Helper.types.each do |short_code, info|
+            next if short_code.to_s == 'owner'
+            response += "`#{short_code}` (#{info[0]}), "
           end
-          event.respond(response)
+          event.respond(response[0...response.length-2])
           break
         end
 
@@ -122,7 +123,7 @@ module SerieBot
           valid_channel_types.each do |type|
             response += "`#{type}` "
           end
-          event.respond(response)
+          event.respond(response[0...response.length-2])
           break
         end
 
@@ -138,7 +139,8 @@ module SerieBot
           begin
             check_match = /<#\d+>/.match(channel_name)
             break if check_match.nil?
-            new_channel_id = check_match[0]
+            before_id = check_match[0]
+            new_channel_id = /\d+/.match(before_id)[0]
 
             # The below is a test.
             event.bot.channel(new_channel_id)

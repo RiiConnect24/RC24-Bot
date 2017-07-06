@@ -258,15 +258,7 @@ module SerieBot
     def self.parse_mentions(bot, content)
       # Replce user IDs with names
       loop do
-        match = /<@\d+>/.match(content)
-        break if match.nil?
-        # Get user
-        id = match[0]
-        num_id = /\d+/.match(id)[0]
-        content = content.sub(id, get_user_name(num_id, bot))
-      end
-      loop do
-        match = /<@!\d+>/.match(content)
+        match = /<@!?\d+>/.match(content)
         break if match.nil?
         # Get user
         id = match[0]
@@ -275,9 +267,9 @@ module SerieBot
       end
       # Replace channel IDs with names
       loop do
-        match = /<#\d+>/.match(content)
+        match = /<#\d{18}>/.match(content)
         break if match.nil?
-        # Get channel
+        # Get channel ID
         id = match[0]
         num_id = /\d+/.match(id)[0]
         content = content.sub(id, get_channel_name(num_id, bot))
@@ -287,24 +279,12 @@ module SerieBot
 
     # Returns a user-readable username for the specified ID.
     def self.get_user_name(user_id, bot)
-      to_return = nil
-      begin
-      to_return = '@' + bot.user(user_id).distinct
-      rescue NoMethodError
-      to_return = '@invalid-user'
-      end
-      to_return
+      '@' + (bot.user(user_id).distinct rescue 'invalid-user')
     end
 
     # Returns a user-readable channel name for the specified ID.
     def self.get_channel_name(channel_id, bot)
-      to_return = nil
-      begin
-      to_return = '#' + bot.channel(channel_id).name
-      rescue NoMethodError
-      to_return = '#deleted-channel'
-      end
-      to_return
+      '#' + (bot.channel(channel_id).name rescue 'deleted-channel')
     end
 
     def self.filter_everyone(text)
