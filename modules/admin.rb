@@ -114,7 +114,7 @@ module SerieBot
     end
 
     command(:eval2, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *args|
-      unless Helper.has_role?(event, [:owner])
+      if Helper.has_role?(event, [:owner])
         begin
           result = eval args.join(' ')
           if result.length >= 1984
