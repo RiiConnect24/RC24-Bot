@@ -43,6 +43,7 @@ module SerieBot
       end
 
       rule_text = text.join(' ')
+
       # Go back one since rules index off 1 and arrays 0
       @rules[:actual_rules][rule_num.to_i - 1] = rule_text
       Helper.save_all
@@ -59,7 +60,13 @@ module SerieBot
         break
       end
 
-      rule_text = @rules[:actual_rules][rule_num.to_i - 1]
+      number = rule_num.to_i - 1
+      # Go back on per above
+      if number == 33
+        event.respond('( ͡° ͜ʖ ͡°)')
+        break
+      end
+      rule_text = @rules[:actual_rules][number]
       if rule_text.nil?
         event.respond('❌ Please enter a valid rule number!')
         break
