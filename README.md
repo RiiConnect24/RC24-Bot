@@ -13,12 +13,10 @@ This bot was thought of by PokeAcer, created by Seriel, and is currently being i
 1. Clone the repo: `git clone https://github.com/fl0co/RC24-Bot.git`
 2. cd into the repo: `cd RC24-Bot`
 3. Edit `config.rb.example` to include the needed information and save it as `config.rb`
+You'll need to set a provider. `yml` is recommended, as `mysql` is still in development.
 4. Install bundler if you haven't already: `gem install bundler`
 5. Install the bundle: `bundle install`
-6. ~~Create 3 roles on your server: Moderators, Bot Helpers, and Developers.
-<br/>(Bot Helpers are above Moderators in the way RC24 Bot handles things.)~~
-<br/> You can still do the above step, however RC24-Bot now has a config command so you can
-adjust role names if required. The above role names will be looked for as a default.
+6. 
 7. (optional) Edit `data/settings.yml` to include custom errors.
 All of these codes will be run with FORE/NEWS.
 ```yaml

@@ -162,7 +162,7 @@ module SerieBot
       if Config.morpher_enabled
         Morpher.messages = self.load_xyz('morpher')
       end
-      Codes.codes = self.load_xyz('codes')
+      Provider.load_codes
       Logging.recorded_actions = self.load_xyz('actions', {:ban => {}, :kick => {}, :warn => {}})
       Birthdays.dates = self.load_xyz('birthdays')
       EULA.rules = self.load_xyz('eula', {:actual_rules => {}})
@@ -170,13 +170,14 @@ module SerieBot
 
     def self.save_all
       self.save_xyz('morpher', Morpher.messages)
-      self.save_xyz('codes', Codes.codes)
+      Provider.save_codes
+      self.save_xyz('actions', Logging.recorded_actions)
       self.save_xyz('settings', Config.settings)
       self.save_xyz('birthdays', Birthdays.dates)
       self.save_xyz('eula', EULA.rules)
     end
 
-    # We must keep this seperate due to how everything is loaded.
+    # We must keep this separate due to how everything is loaded.
     def self.load_settings
       folder = 'data'
       settings_path = "#{folder}/settings.yml"

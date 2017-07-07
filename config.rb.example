@@ -8,10 +8,16 @@ module SerieBot
     # The bot's App ID, which can be found at https://discordapp.com/developers/applications/me/
     @appid = 000000000000000000
     # All commands will use this symbol(s) before the command name. eg. &say has a prefix of &
-    @prefix = "!"
+    @prefix = '!'
     # Will appear after "Playing" under the bots name. Set to nil to not show a game
     @playing = "type #{prefix}help"
     @invite_url = nil  # Custom invite URL. Set to nil to use the default.
+
+
+    # Provider for codes and such. Will be loaded as providers/<name>.rb.
+    @provider = 'yml'
+    # Options needed for per-provider. If you're using yml leave this as nil
+    @provider_options = nil
 
     # These users will have full access to the bot's admin commands, and by extension, the server it is hosted on.
     # Give this power with care!!

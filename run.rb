@@ -39,6 +39,11 @@ module SerieBot
     puts 'Morpher enabled!'
   end
 
+  # Load provider
+  provider_path = "providers/#{Config.provider}.rb"
+  require_relative provider_path
+  puts "Loaded: #{provider_path}"
+
   # Load config files
   Helper.load_all
   

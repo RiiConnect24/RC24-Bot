@@ -124,7 +124,7 @@ module SerieBot
 			end
 		end
 
-    command(:ban, description: 'Permanently ban someone from the server. Mod only.', usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *ban_reason|
+		command(:ban, description: 'Permanently ban someone from the server. Mod only.', usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *ban_reason|
       if event.channel.private?
         event.respond("❌ You can't ban over DMs!")
         break

@@ -10,6 +10,10 @@ module SerieBot
       attr_accessor :bot_owners
       attr_accessor :status
 
+      # Providers
+      attr_accessor :provider
+      attr_accessor :provider_options
+
       # Logging dump dir
       attr_accessor :dump_dir
 
