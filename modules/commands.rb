@@ -14,8 +14,8 @@ module SerieBot
     command (:wads) do |event|
       event.channel.start_typing
       wads = "**__ RiiConnect24 IOS WADs: __**\n"
-      wads << "Latest IOS31: https://cdn.discordapp.com/attachments/206931077313462272/305447451471511562/IOS31.wad\n"
-      wads << "Latest IOS80: https://cdn.discordapp.com/attachments/206931077313462272/305447453010821120/IOS80.wad\n\n"
+      wads << "Latest IOS31: https://cdn.discordapp.com/attachments/287740297923002368/334043317744435200/IOS31.wad\n"
+      wads << "Latest IOS80: https://cdn.discordapp.com/attachments/287740297923002368/334043320307286037/IOS80.wad\n\n"
       wads << "**__ Wiimmfi Patched Mario Kart Channel: __**\n"
       wads << "America 🇺🇸: https://cdn.discordapp.com/attachments/287740297923002368/317632736040845312/Mario_Kart_Channel_-_v1_-_USA_-_RMCE.wad\n"
       wads << "Europe 🇪🇺: https://cdn.discordapp.com/attachments/287740297923002368/317632737097940992/Mario_Kart_Channel_-_v1_-_Europe_-_RMCP.wad\n"
