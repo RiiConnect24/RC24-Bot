@@ -3,6 +3,7 @@ module SerieBot
     require 'yaml'
     require 'time'
     require 'date'
+    require 'pry'
 
     extend Discordrb::Commands::CommandContainer
     class << self
@@ -52,11 +53,13 @@ module SerieBot
         user_id = event.user.id
         date = Date.parse(date_string)
 
-        # Because they're all arrays, right?
-        # ....right?
-        @dates.each do |month_date_thing|
-          # Remove duplicates
-          @dates[month_date_thing].delete(user_id)
+        binding.pry
+        unless @dates.nil?
+          @dates.each do |date_pair|
+            next unless @dates[date_pair].is_a?(Array)
+            # Remove duplicates
+            @dates[date_pair].delete(user_id)
+          end
         end
 
         format = "#{date.mon}-#{date.mday}"
@@ -66,8 +69,10 @@ module SerieBot
         @dates[format] << event.user.id
         Helper.save_all
         event.respond('✅ Updated successfully!')
-      rescue
+      rescue ArgumentError
         event.respond("I couldn't parse your date. Try something like April 20th, 2017, instead of 4/20/17.")
+      # rescue
+      #   event.respond("Something went super wrong, please contact a bot owner! See a list at `#{Config.prefix}owners`.")
       end
     end
   end
