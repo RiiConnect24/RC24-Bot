@@ -53,6 +53,9 @@ or `@foxlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issue
 Enjoy~
 <br/>
 
+## Notes
+If you converted to MySQL just like we did or wanted to know what it used to be like before MySQL storage was reverted, you may find our revert script interesting. https://gist.github.com/spotlightishere/d74b563652882385b7c8c522d55abed6
+
 # Credits
 
 Kudos to the following users for helping Seriel out:
