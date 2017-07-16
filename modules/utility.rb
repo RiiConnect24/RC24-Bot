@@ -82,7 +82,7 @@ module SerieBot
         role_type = args[0]
 
         # Make sure that the short ID is valid
-        unless Helper.types.include? role_type
+        unless Helper.types {|roles| roles & role_type }
           response = '❌ Make sure to type in a valid role type!' + "\n"
           response += 'Valid types are:' + "\n"
           Helper.types.each do |short_code, info|
