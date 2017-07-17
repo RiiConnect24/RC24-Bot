@@ -38,9 +38,7 @@ module SerieBot
       unless local_match.nil?
         # match'd
         error_num = code.gsub(local_match[1], '')
-        if Config.debug
-          puts 'Code is ' + error_num
-        end
+        puts 'Code is ' + error_num if Config.debug
         error_text = @local_codes['news'][error_num.to_i]
         if error_text.nil? || error_text == ''
           event.respond('❌ Could not find the specified app error code.')
@@ -67,9 +65,9 @@ module SerieBot
         # Per http://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680943#post680943
         # it was recommended to use "t=<code>" for dev and "e=<code>" for prod due to statistical reasons.
         method = if Config.debug
-               "t=#{code}"
-             else
-               "e=#{code}"
+                   "t=#{code}"
+                 else
+                   "e=#{code}"
              end
         # Grab JSON
         json_string = open("https://wiimmfi.de/error?#{method}&m=json").read
@@ -146,7 +144,7 @@ module SerieBot
       end
     end
     command(:gametdb, max_args: 2, min_args: 2) do |event, platform, code|
-      platforms = %w(Wii WiiU PS3 3DS DS)
+      platforms = %w[Wii WiiU PS3 3DS DS]
       if platform == '' || platform.nil?
         event.respond('❌ Enter a valid platform!')
         break
@@ -185,12 +183,12 @@ module SerieBot
         'The Photo Channel and News Channel cats were made because one of the developers used a bunch of pictures of cats during development of the Photo Channel (he was a cat lover). So when they decided how to display the tips in the Channels, they decided they should use a cat. Source: https://rc24.xyz/story_photo.php',
         'Nintendo made Mario, Luigi, Princess Peach, Yoshi, Toad, and Bowser Wii Remotes. https://www.gamesmen.com.au/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/w/i/wii_u_remote_6_pack.jpg',
         'You can arrange contacts in the Wii Address Book by grabbing it with A and B and moving it to where you like, just like you can do it with moving Channels.',
-        'The Globe in the News Channel and the Forecast Channel is also used in Mario Kart Wii.',
-            ]
+        'The Globe in the News Channel and the Forecast Channel is also used in Mario Kart Wii.'
+      ]
 
       response = "__**Did you know?**__\n"
       response += facts.sample
-      response +=" \n\nGot any facts we should add? Ask a RiiConnect24 developer!"
+      response += " \n\nGot any facts we should add? Ask a RiiConnect24 developer!"
       event.respond(response)
     end
   end

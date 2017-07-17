@@ -3,7 +3,7 @@ module SerieBot
     extend Discordrb::Commands::CommandContainer
 
     command(:setavatar) do |event, *url|
-      unless Helper.has_role?(event, [:owner, :dev, :bot])
+      unless Helper.has_role?(event, %i[owner dev bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -15,7 +15,7 @@ module SerieBot
 
     command(:ignore, description: 'Temporarily ignore a given user', min_args: 1, max_args: 1) do |event, mention|
       event.channel.start_typing
-      unless Helper.has_role?(event, [:owner, :dev, :mod])
+      unless Helper.has_role?(event, %i[owner dev mod])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -34,7 +34,7 @@ module SerieBot
 
     command(:unignore, description: 'Unignores a given user', min_args: 1, max_args: 1) do |event, mention|
       event.channel.start_typing
-      unless Helper.has_role?(event, [:owner, :dev, :bot])
+      unless Helper.has_role?(event, %i[owner dev bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -52,7 +52,7 @@ module SerieBot
     end
 
     command(:status, description: 'Set the bot as idle or dnd or invisible status. Admin only.', min_args: 1, max_args: 1) do |event, status|
-      unless Helper.has_role?(event, [:owner, :dev, :bot])
+      unless Helper.has_role?(event, %i[owner dev bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -95,7 +95,7 @@ module SerieBot
       eval_message = code.join(' ')
       begin
         # Set eval result for further tracking later
-        event.respond(eval eval_message)
+        event.respond(eval(eval_message))
         eval_message = nil
       rescue Discordrb::Errors::MessageTooLong
         # Determine how many characters the message is over
@@ -105,7 +105,7 @@ module SerieBot
       rescue => error
         # Exception:
         # stacktrace
-        error_response = "#{$!}\n#{error.backtrace.join("\n")}"
+        error_response = "#{$ERROR_INFO}\n#{error.backtrace.join("\n")}"
         event.respond("```#{error_response}```")
         # Log to console as well
         puts error_response.to_s
@@ -122,14 +122,13 @@ module SerieBot
             event << "⚠ Your output exceeded the character limit! (`#{result.length - 1984}`/`1984`)"
             event << 'The result has been logged to the terminal instead :3'
           else
-            event << ((result.nil? || result == '' || result == ' ' || result == "\n") ? "✅ Done! (No output)" : "Output: ```\n#{result}```")
+            event << (result.nil? || result == '' || result == ' ' || result == "\n" ? '✅ Done! (No output)' : "Output: ```\n#{result}```")
           end
         rescue Exception => e
           event.respond(":x: An error has occured!! ```ruby\n#{e}```")
         end
       end
     end
-
 
     command(:bash, description: 'Evaluate a Bash command. Admin only. Use with care.', usage: '&bash code') do |event, *code|
       unless Helper.has_role?(event, [:owner])
@@ -141,14 +140,14 @@ module SerieBot
       to_be_run = "#{bashcode} 2>&1"
       result = ` #{to_be_run} `
       event << if result.nil? || result == '' || result == ' ' || result == "\n"
-                 "✅ Done! (No output)"
+                 '✅ Done! (No output)'
                else
                  "Output: ```\n#{result}```"
                end
     end
 
     command(:dump, description: 'Dumps a selected channel. Admin only.', usage: '&dump [id]') do |event, channel_id|
-      unless Helper.has_role?(event, [:owner, :dev, :bot])
+      unless Helper.has_role?(event, %i[owner dev bot])
         event << "❌ You don't have permission for that!"
         break
       end

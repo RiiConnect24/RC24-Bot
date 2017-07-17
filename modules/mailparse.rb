@@ -3,21 +3,21 @@ module SerieBot
     require 'bindata'
     class Config < BinData::Record
       endian :big
-      string :magic, :read_length => 4, :assert => 'WcCf'
+      string :magic, read_length: 4, assert: 'WcCf'
       uint32 :unknown
       uint64 :wii_code
       uint32 :id_generation
       uint32 :has_registered
-      string :wii_email_domain, :read_length => 0x40
-      string :passwd, :read_length => 0x20
-      string :mlchkid, :read_length => 0x24
-      array :points, :initial_length => 5 do
-        string :url, :read_length => 0x80
+      string :wii_email_domain, read_length: 0x40
+      string :passwd, read_length: 0x20
+      string :mlchkid, read_length: 0x24
+      array :points, initial_length: 5 do
+        string :url, read_length: 0x80
       end
-      string :reserved, :read_length => 0xdc
+      string :reserved, read_length: 0xdc
       uint32 :title_booting
       # We won't even need this later on
-      string :checksum, :read_length => 0x4
+      string :checksum, read_length: 0x4
     end
     def self.convert_mail(downloaded_cfg_path)
       begin
@@ -34,7 +34,7 @@ module SerieBot
 
       # Patch domain
       original = cfg.wii_email_domain.to_binary_s
-      replacement_url = original.gsub("\x00", '')
+      replacement_url = original.delete("\x00")
       replacement_url = replacement_url.gsub('@wii.com', '@rc24.xyz')
       needed_nulls = 0x40 - replacement_url.length
       cfg.wii_email_domain.assign(replacement_url + ("\x00" * needed_nulls))
@@ -42,7 +42,7 @@ module SerieBot
       cfg.points.each do |url|
         # Patch with our URL from original or other
         original = url.to_binary_s
-        replacement_url = original.gsub("\x00", '')
+        replacement_url = original.delete("\x00")
         replacement_url = replacement_url.gsub(/https?:\/\/(...).wc24.wii.com/, 'http://rc24.xyz')
         replacement_url = replacement_url.gsub(/https?:\/\/riiconnect24.net/, 'http://rc24.xyz')
 
@@ -86,7 +86,7 @@ module SerieBot
         end
       end
       # Success!
-      return 1
+      1
     end
   end
 end

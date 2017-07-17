@@ -25,7 +25,7 @@ module SerieBot
     Commands
   ]
   # Set up bot
-  if Config.appid == 0 || Config.appid.nil?
+  if Config.appid.zero? || Config.appid.nil?
     puts 'You need to set your app ID in config.rb!'
     exit
   end
@@ -41,7 +41,7 @@ module SerieBot
 
   # Load config files
   Helper.load_all
-  
+
   # We should have settings loaded at this point
   if Config.settings['ignored_bots'].nil?
     Config.settings['ignored_bots'] = []

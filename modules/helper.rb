@@ -7,14 +7,14 @@ module SerieBot
     # Format:
     # [name, show_message]
     @types = {
-        :owner => ['Dummy Entry', true],
-        :dev => ['RiiConnect24 Developers', true],
-        :bot => ['Bot Helpers', false],
-        :mod => ['Server Moderators', true],
-        :hlp => ['Helpers', false],
-        :don => ['Donators', false],
-        :adm => ['Server Admins', false],
-        :trn => ['Translators', false]
+      owner: ['Dummy Entry', true],
+      dev: ['RiiConnect24 Developers', true],
+      bot: ['Bot Helpers', false],
+      mod: ['Server Moderators', true],
+      hlp: ['Helpers', false],
+      don: ['Donators', false],
+      adm: ['Server Admins', false],
+      trn: ['Translators', false]
     }
 
     # Gets the channel/role's ID based on the given parameters
@@ -22,7 +22,7 @@ module SerieBot
       # Set all to defaults
       Config.settings[server_id] = {} if Config.settings[server_id].nil?
       Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
-      return Config.settings[server_id][type][short_type]
+      Config.settings[server_id][type][short_type]
     end
 
     # Saves the role's ID based on the given parameters
@@ -37,7 +37,7 @@ module SerieBot
       Config.settings[server_id] = {} if Config.settings[server_id].nil?
       Config.settings[server_id][type] = {} if Config.settings[server_id][type].nil?
       Config.settings[server_id][type][short_name] = id
-      self.save_all
+      save_all
     end
 
     # Checks to see if the server has the needed channel, and if not deals accordingly to fix it.
@@ -62,7 +62,7 @@ module SerieBot
       end
 
       # Check if the server has the specified channel
-      return event.bot.channel(xxx_channel_id).id
+      event.bot.channel(xxx_channel_id).id
     end
 
     # Checks to see if the user has the given role, and if not deals accordingly to fix it.
@@ -89,7 +89,7 @@ module SerieBot
              else
                other_user
              end
-      return user.role?(event.server.role(xxx_role_id))
+      user.role?(event.server.role(xxx_role_id))
     end
 
     def self.has_role?(event, roles, user = nil)
@@ -108,13 +108,11 @@ module SerieBot
               return false
             end
             role_info = @types[role_type]
-            status = is_xxx_role?(event, role_type.to_s, role_info[0], role_info[1], user)
+            status = is_xxx_role?(event, role_type.to_s, role_type[0], role_info[1], user)
           end
           if status
             # They've got at least one of the roles
-            if Config.debug
-              puts "Looks like the user has #{role_type.to_s}"
-            end
+            puts "Looks like the user has #{role_type}" if Config.debug
             return status
           else
             # Continue to next role if possible
@@ -122,16 +120,14 @@ module SerieBot
           end
         else
           if Config.debug
-            puts "I don't have the #{role_type.to_s} role in my list... perhaps you made a typo?"
+            puts "I don't have the #{role_type} role in my list... perhaps you made a typo?"
           end
         end
       end
 
       # If we got here we couldn't find the role
-      if Config.debug
-        puts 'The user had none of the roles requested!'
-      end
-      return false
+      puts 'The user had none of the roles requested!' if Config.debug
+      false
     end
 
     # We have to specify user here because we're checking if another user is verified
@@ -141,7 +137,7 @@ module SerieBot
              else
                other_user
              end
-      return is_xxx_role?(event, 'vfd', 'Verified', true, user)
+      is_xxx_role?(event, 'vfd', 'Verified', true, user)
     end
 
     # TODO: perhaps save and stuff?
@@ -150,14 +146,14 @@ module SerieBot
       exit
     end
 
-    def self.load_xyz(name, default_yaml = {:version=>1})
+    def self.load_xyz(name, default_yaml = { version: 1 })
       folder = 'data'
       path_to_yml = "#{folder}/#{name}.yml"
       FileUtils.mkdir(folder) unless File.exist?(folder)
       unless File.exist?(path_to_yml)
         File.open(path_to_yml, 'w') { |file| file.write(default_yaml.to_yaml) }
       end
-      return YAML.load(File.read(path_to_yml))
+      YAML.load(File.read(path_to_yml))
     end
 
     def self.save_xyz(name, location)
@@ -167,21 +163,19 @@ module SerieBot
     end
 
     def self.load_all
-      if Config.morpher_enabled
-        Morpher.messages = self.load_xyz('morpher')
-      end
-      Codes.codes = self.load_xyz('codes')
-      Logging.recorded_actions = self.load_xyz('actions', {:ban => {}, :kick => {}, :warn => {}})
-      Birthdays.dates = self.load_xyz('birthdays')
-      EULA.rules = self.load_xyz('eula', {:actual_rules => {}})
+      Morpher.messages = load_xyz('morpher') if Config.morpher_enabled
+      Codes.codes = load_xyz('codes')
+      Logging.recorded_actions = load_xyz('actions', ban: {}, kick: {}, warn: {})
+      Birthdays.dates = load_xyz('birthdays')
+      EULA.rules = load_xyz('eula', actual_rules: {})
     end
 
     def self.save_all
-      self.save_xyz('morpher', Morpher.messages)
-      self.save_xyz('codes', Codes.codes)
-      self.save_xyz('settings', Config.settings)
-      self.save_xyz('birthdays', Birthdays.dates)
-      self.save_xyz('eula', EULA.rules)
+      save_xyz('morpher', Morpher.messages)
+      save_xyz('codes', Codes.codes)
+      save_xyz('settings', Config.settings)
+      save_xyz('birthdays', Birthdays.dates)
+      save_xyz('eula', EULA.rules)
     end
 
     # We must keep this seperate due to how everything is loaded.
@@ -192,7 +186,7 @@ module SerieBot
       unless File.exist?(settings_path)
         puts "[ERROR] I wasn't able to find data/settings.yml! Please grab the example from the repo."
       end
-      Config.settings = YAML.load(File.read(settings_path))
+      Config.settings = YAML.safe_load(File.read(settings_path))
     end
 
     # Downloads an avatar when given a `user` object.
@@ -209,9 +203,9 @@ module SerieBot
       filename = File.basename(uri.path)
 
       filename = if filename.start_with?('a_')
-             filename.gsub('.jpg', '.gif')
-           else
-             filename.gsub('.jpg', '.png')
+                   filename.gsub('.jpg', '.gif')
+                 else
+                   filename.gsub('.jpg', '.png')
            end
       url << '?size=256'
       url = "https://cdn.discordapp.com/avatars/#{user.id}/#{filename}?size=#{size}"
@@ -263,6 +257,12 @@ module SerieBot
     end
 
     # Accepts a message, and returns the message content, with all mentions + channels replaced with @user#1234 or #channel-name
+    # Hopefully, at some point, will be <@!?&?\d{16,18}>
+    # Test that regex with
+    # <@&269923672913870848>
+    # <@269923672913870848>
+    # <@!269923672913870848>
+    # <@!2699236729138701>
     def self.parse_mentions(bot, content)
       # Replce user IDs with names
       loop do
@@ -287,12 +287,20 @@ module SerieBot
 
     # Returns a user-readable username for the specified ID.
     def self.get_user_name(user_id, bot)
-      '@' + (bot.user(user_id).distinct rescue 'invalid-user')
+      '@' + (begin
+               bot.user(user_id).distinct
+             rescue
+               'invalid-user'
+             end)
     end
 
     # Returns a user-readable channel name for the specified ID.
     def self.get_channel_name(channel_id, bot)
-      '#' + (bot.channel(channel_id).name rescue 'deleted-channel')
+      '#' + (begin
+               bot.channel(channel_id).name
+             rescue
+               'deleted-channel'
+             end)
     end
 
     def self.filter_everyone(text)
@@ -303,18 +311,18 @@ module SerieBot
     # Returns the filepath of the file containing the dump.
     def self.dump_channel(channel, output_channel = nil, folder, timestamp)
       server = if channel.private?
-             'DMs'
-           else
-             channel.server.name
+                 'DMs'
+               else
+                 channel.server.name
           end
       message = "Dumping messages from channel \"#{channel.name.gsub('`', '\\`')}\" in #{server.gsub('`', '\\`')}, please wait...\n"
       output_channel.send_message(message) unless output_channel.nil?
       puts message
 
-      unless channel.private?
-        output_filename = "#{folder}/output_" + server + '_' + channel.server.id.to_s + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
-      else
+      if channel.private?
         output_filename = "#{folder}/output_" + server + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
+      else
+        output_filename = "#{folder}/output_" + server + '_' + channel.server.id.to_s + '_' + channel.name + '_' + channel.id.to_s + '_' + timestamp.to_s + '.txt'
       end
       output_filename = output_filename.tr(' ', '_').delete('+').delete('\\').delete('/').delete(':').delete('*').delete('?').delete('"').delete('<').delete('>').delete('|')
 
@@ -368,7 +376,7 @@ module SerieBot
     def self.role_from_name(server, role_name)
       roles = server.roles
       role = roles.select { |r| r.name == role_name }.first
-      return role
+      role
     end
 
     # Get the user's color
@@ -379,10 +387,8 @@ module SerieBot
       # Attempt to grab member
       member = channel.server.member(user.id)
       unless member.nil?
-        member.roles.sort_by(&:position).reverse.each do | role |
-          if role.color.combined == 0
-            next
-          end
+        member.roles.sort_by(&:position).reverse.each do |role|
+          next if role.color.combined == 0
           if Config.debug
             puts 'Using ' + role.name + '\'s color ' + role.color.combined.to_s
           end
@@ -390,19 +396,15 @@ module SerieBot
           break
         end
        end
-      return color
+      color
     end
 
     def self.channel_from_name(server, channel_name)
       channels = server.channels
-      if Config.debug
-       puts "Looking for #{channel_name}"
-      end
+      puts "Looking for #{channel_name}" if Config.debug
       channel = channels.select { |x| x.name == channel_name }.first
-      if Config.debug
-        puts "Found #{channel.name} (ID: #{channel.id})"
-      end
-      return channel
+      puts "Found #{channel.name} (ID: #{channel.id})" if Config.debug
+      channel
     end
 
     def self.get_help
@@ -427,10 +429,10 @@ module SerieBot
       help += "**Adding a user's Wii**\n"
       help += "`#{Config.prefix}add @user`\n"
       help += 'This will send you their codes, and then DM them your Wii/game codes.'
-      return help
+      help
     end
 
     # Load settings for all.
-    self.load_settings
+    load_settings
   end
  end

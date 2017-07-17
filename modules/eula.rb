@@ -10,7 +10,7 @@ module SerieBot
       channel = Helper.channel_from_name(bot.server(Config.root_server), 'about')
       @rules[:about_id] = channel.id
 
-      to_send = self.gen_rules_layout
+      to_send = gen_rules_layout
 
       message = channel.send_message(to_send)
       @rules[:message_id] = message.id
@@ -25,7 +25,7 @@ module SerieBot
         count += 1
       end
       to_send += "\n**We’ll warn, kick or ban you if you break the above rules, depending on the severity of them. These rules are subject to change at any time, possibly without warning.**"
-      return to_send
+      to_send
     end
 
     command(:editrule) do |event, rule_num, *text|
@@ -33,7 +33,7 @@ module SerieBot
         event.respond('❌ Nice try.')
         break
       end
-      unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
+      unless Helper.has_role?(event, %i[owner dev bot adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -47,7 +47,7 @@ module SerieBot
       # Go back one since rules index off 1 and arrays 0
       @rules[:actual_rules][rule_num.to_i - 1] = rule_text
       Helper.save_all
-      event.bot.channel(@rules[:about_id]).message(@rules[:message_id]).edit(self.gen_rules_layout)
+      event.bot.channel(@rules[:about_id]).message(@rules[:message_id]).edit(gen_rules_layout)
       event.respond('✅ Hopefully updated!')
     end
 

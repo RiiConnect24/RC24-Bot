@@ -32,7 +32,7 @@ module SerieBot
 
     # Load bot configuration
     config_location = Dir.pwd + '/config.rb'
-    if File.exists?(config_location)
+    if File.exist?(config_location)
       require_relative config_location
     else
       puts "Could not load config.rb!\n"

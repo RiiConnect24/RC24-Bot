@@ -22,15 +22,12 @@ module SerieBot
       sleeping_beauty(bot)
     end
 
-
     def self.check_for_birthdays(date = Date.today, bot)
       format = "#{date.mon}-#{date.mday}"
       unless @dates[format].nil?
         @dates[format].each do |id|
           # The user might've left the server. Check for so.
-          if bot.server(Config.root_server).member(id).nil?
-            next
-          end
+          next if bot.server(Config.root_server).member(id).nil?
           person = bot.user(id)
           embed_sent = Discordrb::Webhooks::Embed.new
           embed_sent.title = 'Happy birthday! 🎂'
@@ -61,9 +58,7 @@ module SerieBot
         end
 
         format = "#{date.mon}-#{date.mday}"
-        if @dates[format].nil?
-          @dates[format] = []
-        end
+        @dates[format] = [] if @dates[format].nil?
         @dates[format] << event.user.id
         Helper.save_all
         event.respond('✅ Updated successfully!')

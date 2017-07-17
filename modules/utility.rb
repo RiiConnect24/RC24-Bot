@@ -4,16 +4,16 @@ module SerieBot
 
     command(:avatar, description: 'Displays the avatar of a user.') do |event, *mention|
       event.channel.start_typing # Let people know the bot is working on something.
-        if mention.nil?
-          user = event.message.author
-        elsif event.message.mentions[0]
-          user = event.server.member(event.message.mentions[0])
-        else
-          event << '❌ Mention a valid user!'
-          next
-        end
-        avatar_path = Helper.download_avatar(user, 'tmp')
-        event.channel.send_file File.new([avatar_path].sample)
+      if mention.nil?
+        user = event.message.author
+      elsif event.message.mentions[0]
+        user = event.server.member(event.message.mentions[0])
+      else
+        event << '❌ Mention a valid user!'
+        next
+      end
+      avatar_path = Helper.download_avatar(user, 'tmp')
+      event.channel.send_file File.new([avatar_path].sample)
     end
 
     command(:ping) do |event|
@@ -38,22 +38,22 @@ module SerieBot
         next
       end
 
-      unless event.message.mentions[0].nil?
-        user = event.message.mentions[0]
-      else
-        user = event.user
-      end
-      if user.game.nil?
-        playing = '[N/A]'
-      else
-        playing = user.game
-      end
+      user = if event.message.mentions[0].nil?
+               event.user
+             else
+               event.message.mentions[0]
+             end
+      playing = if user.game.nil?
+                  '[N/A]'
+                else
+                  user.game
+                end
       member = user.on(event.server)
-      if member.nickname.nil?
-        nick = '[N/A]' #
-      else
-        nick = member.nickname
-      end
+      nick = if member.nickname.nil?
+               '[N/A]' #
+             else
+               member.nickname
+             end
       event << "👥  Information about **#{member.display_name}**"
       event << "-ID: **#{user.id}**"
       event << "-Username: `#{user.distinct}`"
@@ -82,14 +82,14 @@ module SerieBot
         role_type = args[0]
 
         # Make sure that the short ID is valid
-        unless Helper.types {|roles| roles & role_type }
+        unless Helper.types { |roles| roles & role_type }
           response = '❌ Make sure to type in a valid role type!' + "\n"
           response += 'Valid types are:' + "\n"
           Helper.types.each do |short_code, info|
             next if short_code.to_s == 'owner'
             response += "`#{short_code}` (#{info[0]}), "
           end
-          event.respond(response[0...response.length-2])
+          event.respond(response[0...response.length - 2])
           break
         end
 
@@ -114,7 +114,7 @@ module SerieBot
         end
 
         channel_type = args[0]
-        valid_channel_types = %w(srv mod)
+        valid_channel_types = %w[srv mod]
 
         # Make sure that the short ID is valid
         unless valid_channel_types.include? channel_type
@@ -123,7 +123,7 @@ module SerieBot
           valid_channel_types.each do |type|
             response += "`#{type}` "
           end
-          event.respond(response[0...response.length-2])
+          event.respond(response[0...response.length - 2])
           break
         end
 
@@ -151,7 +151,7 @@ module SerieBot
             event.respond("❌ I wasn't able to find that channel on this server! No changes have been made to your server's config.")
           end
         else
-        # Find given role by name. Or, at least attempt to.
+          # Find given role by name. Or, at least attempt to.
           begin
             new_channel_id = Helper.channel_from_name(event.server, channel_name).id
             Helper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id)

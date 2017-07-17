@@ -9,8 +9,6 @@ module SerieBot
       attr_accessor :messages
     end
 
-
-
     def self.setup_channels(event)
       if original_channel.nil? | mirrored_channel.nil?
         @original_channel = Helper.channel_from_name(event.bot.server(Config.root_server), 'announcements')
@@ -33,7 +31,7 @@ module SerieBot
                                                                icon_url: Helper.avatar_url(message.author, 32))
       # Format: Sat Feb 11 01:30:45 2017 UTC
       embed_sent.footer = Discordrb::Webhooks::EmbedFooter.new(text: "#{message.timestamp.utc.strftime('%c')} UTC")
-      return embed_sent
+      embed_sent
     end
 
     def self.create_error_embed(message)
@@ -51,8 +49,8 @@ module SerieBot
 
         # Store message under original id
         @messages[event.message.id] = {
-            embed_sent: embed_to_send,
-            message_sent: message_to_send.id
+          embed_sent: embed_to_send,
+          message_sent: message_to_send.id
         }
         Helper.save_xyz('morpher', Morpher.messages)
       end
@@ -130,8 +128,8 @@ module SerieBot
 
           # Store message under original id
           @messages[message.id] = {
-              embed_sent: embed_to_send,
-              message_sent: message_to_send.id
+            embed_sent: embed_to_send,
+            message_sent: message_to_send.id
           }
         end
 
@@ -140,7 +138,7 @@ module SerieBot
         offset_id = current_history[current_history.length - 1].id
       end
       Helper.save_xyz('morpher', Morpher.messages)
-      return 'Done!'
+      'Done!'
     end
   end
 end

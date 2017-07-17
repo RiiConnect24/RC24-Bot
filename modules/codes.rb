@@ -16,7 +16,7 @@ module SerieBot
       args.sub!('| ', '')
       input = args.split(' | ')
       # Return code and name
-      return input[1], input[0]
+      [input[1], input[0]]
     end
 
     def self.modify_codes(user_id, args, option)
@@ -64,25 +64,25 @@ module SerieBot
 
       # Save anyway, it can't hurt.
       Helper.save_xyz('codes', @codes)
-      return to_say
+      to_say
     end
 
     command(:code) do |event, option, *args|
       Helper.ignore_bots(event)
       # Create code for the user, to prevent future issues
       Codes.codes[event.user.id] = {} if Codes.codes[event.user.id].nil?
-      modification_options = %w(add edit remove)
+      modification_options = %w[add edit remove]
       if modification_options.include? option
         case args[0]
           # Only allow these types
-          when 'wii', '3ds', 'nnid', 'switch', 'game'
-            # Send information off to function
-            return_text = modify_codes(event.user.id, args, option)
-            # Say response
-            event.respond(return_text)
-          else
-            event << "❌ Please enter a valid argument for the option `#{option}`."
-            event << 'Valid arguments: `wii`, `3ds`, `nnid`, `switch`, `game`.'
+        when 'wii', '3ds', 'nnid', 'switch', 'game'
+          # Send information off to function
+          return_text = modify_codes(event.user.id, args, option)
+          # Say response
+          event.respond(return_text)
+        else
+          event << "❌ Please enter a valid argument for the option `#{option}`."
+          event << 'Valid arguments: `wii`, `3ds`, `nnid`, `switch`, `game`.'
         end
       elsif option == 'lookup' || option == 'list'
         # Mention, search for, current user
@@ -120,46 +120,45 @@ module SerieBot
           embed_sent = Discordrb::Webhooks::Embed.new
           # Start out with a line return due to embed author later on
           code_types = {
-              :wii => '<:Wii:259081748007223296> **Wii**',
-              '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DS**',
-              :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**',
-              :switch => '<:Switch:287652338791874560> **Switch**',
-              :game => '🎮 **Games**'
+            :wii => '<:Wii:259081748007223296> **Wii**',
+            '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DS**',
+            :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**',
+            :switch => '<:Switch:287652338791874560> **Switch**',
+            :game => '🎮 **Games**'
           }
           badge_types = {
-              :owner => '<:BadgeBotDev:331597705472114688>',
-              :dev => '<:BadgeDeveloper:329710752778944512>',
-              :adm => '<:BadgeAdmin:329734061532774403>',
-              :mod => '<:BadgeModerator:329715070768513024>',
-              :hlp => '<:BadgeHelper:329722382790950912>',
-              :don => '<:BadgeDonator:329712167983251458>',
-              :trn => '<:BadgeTranslator:329723303814234113>'
+            owner: '<:BadgeBotDev:331597705472114688>',
+            dev: '<:BadgeDeveloper:329710752778944512>',
+            adm: '<:BadgeAdmin:329734061532774403>',
+            mod: '<:BadgeModerator:329715070768513024>',
+            hlp: '<:BadgeHelper:329722382790950912>',
+            don: '<:BadgeDonator:329712167983251458>',
+            trn: '<:BadgeTranslator:329723303814234113>'
           }
 
           code_types.each do |type, title|
-            unless @codes[user_id][type].nil?
-              column_codes = @codes[user_id][type].each_slice(2).to_a
+            next if @codes[user_id][type].nil?
+            column_codes = @codes[user_id][type].each_slice(2).to_a
 
-              column_codes.each do |column|
-                field_text = ''
-                column.each do |name, code|
-                  code_output = code
-                  field_text += "#{name}:\n`#{code_output}`\n"
-                end
-                embed_sent.add_field(name: title, value: field_text, inline: true)
+            column_codes.each do |column|
+              field_text = ''
+              column.each do |name, code|
+                code_output = code
+                field_text += "#{name}:\n`#{code_output}`\n"
               end
+              embed_sent.add_field(name: title, value: field_text, inline: true)
             end
           end
 
           badges_list = ''
           unless event.channel.private?
-              badge_types.each do |type|
-                # First element in array is role type
-                if Helper.has_role?(event, [type[0]], user)
-                  # Next element in array is emoji
-                  badges_list += type[1] + ' '
-                end
+            badge_types.each do |type|
+              # First element in array is role type
+              if Helper.has_role?(event, [type[0]], user)
+                # Next element in array is emoji
+                badges_list += type[1] + ' '
               end
+            end
             end
           if event.channel.private?
             badges_list = "Sorry, you can't view badges in DMs."
@@ -251,7 +250,7 @@ module SerieBot
     end
 
     command(:save) do |event|
-      unless Helper.has_role?(event, [:owner, :dev, :bot])
+      unless Helper.has_role?(event, %i[owner dev bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
