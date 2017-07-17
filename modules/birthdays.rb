@@ -3,7 +3,6 @@ module SerieBot
     require 'yaml'
     require 'time'
     require 'date'
-    require 'pry'
 
     extend Discordrb::Commands::CommandContainer
     class << self
@@ -53,7 +52,6 @@ module SerieBot
         user_id = event.user.id
         date = Date.parse(date_string)
 
-        binding.pry
         unless @dates.nil?
           @dates.each do |date_pair|
             next unless @dates[date_pair].is_a?(Array)
@@ -71,8 +69,8 @@ module SerieBot
         event.respond('✅ Updated successfully!')
       rescue ArgumentError
         event.respond("I couldn't parse your date. Try something like April 20th, 2017, instead of 4/20/17.")
-      # rescue
-      #   event.respond("Something went super wrong, please contact a bot owner! See a list at `#{Config.prefix}owners`.")
+      rescue
+        event.respond("Something went super wrong, please contact a bot owner! See a list at `#{Config.prefix}owners`.")
       end
     end
   end

@@ -89,7 +89,12 @@ module SerieBot
         # Mention, search for, current user
         user = event.bot.parse_mention(args[0])
         user = event.bot.find_user(args[0])[0] if user.nil?
+        # Attempt to find local user on server
+        test = event.server.member(event.bot.find_user(args[0])[0])
+        user = test unless test.nil?
+        # Fall back to the user itself
         user = event.user if user.nil?
+
         if user.nil?
           event.respond("❌ Could not find user #{args[0]}!")
           break
@@ -145,12 +150,6 @@ module SerieBot
 
           badges_list = ''
           unless event.channel.private?
-            unless begin
-                     user.roles
-                     true
-            rescue NoMethodError
-              false
-            end
               badge_types.each do |type|
                 # First element in array is role type
                 if Helper.has_role?(event, [type[0]], user)
@@ -159,7 +158,6 @@ module SerieBot
                 end
               end
             end
-          end
           if event.channel.private?
             badges_list = "Sorry, you can't view badges in DMs."
           end

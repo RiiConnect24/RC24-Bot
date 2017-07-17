@@ -92,14 +92,17 @@ module SerieBot
       return user.role?(event.server.role(xxx_role_id))
     end
 
-    def self.has_role?(event, roles, potential_other_user = nil)
-      user = event.user if potential_other_user.nil?
+    def self.has_role?(event, roles, user = nil)
+      user = event.user if user.nil?
+
       # Only support listed types.
       roles.each do |role_type|
         if @types.include? role_type
           if role_type.to_s == 'owner'
             status = Config.bot_owners.include?(user.id)
           else
+            # Normal users don't have roles, only Members, so we can't check.
+            return false if user.roles.nil?
             role_info = @types[role_type]
             status = is_xxx_role?(event, role_type.to_s, role_info[0], role_info[1], user)
           end
@@ -110,7 +113,7 @@ module SerieBot
             end
             return status
           else
-            # Continue, I guess
+            # Continue to next role if possible
             next
           end
         else
