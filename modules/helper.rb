@@ -102,7 +102,11 @@ module SerieBot
             status = Config.bot_owners.include?(user.id)
           else
             # Normal users don't have roles, only Members, so we can't check.
-            return false if user.roles.nil?
+            begin
+              return false if user.roles.nil?
+            rescue NoMethodError
+              return false
+            end
             role_info = @types[role_type]
             status = is_xxx_role?(event, role_type.to_s, role_info[0], role_info[1], user)
           end

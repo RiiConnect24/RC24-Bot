@@ -87,12 +87,13 @@ module SerieBot
         end
       elsif option == 'lookup' || option == 'list'
         # Mention, search for, current user
-        user = event.bot.parse_mention(args[0])
+        # Mention on local server
+        user = event.server.member(event.bot.parse_mention(args[0])) unless event.bot.parse_mention(args[0]).nil?
+        # Search for across bot/on server
         user = event.bot.find_user(args[0])[0] if user.nil?
-        # Attempt to find local user on server
         test = event.server.member(event.bot.find_user(args[0])[0])
         user = test unless test.nil?
-        # Fall back to the user itself
+        # Fall back to the user themself
         user = event.user if user.nil?
 
         if user.nil?
