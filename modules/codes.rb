@@ -69,16 +69,15 @@ module SerieBot
 
     command(:code) do |event, option, *args|
       Helper.ignore_bots(event)
-      user_id = event.user.id
       # Create code for the user, to prevent future issues
-      Codes.codes[user_id] = {} if Codes.codes[user_id].nil?
+      Codes.codes[event.user.id] = {} if Codes.codes[event.user.id].nil?
       modification_options = %w(add edit remove)
       if modification_options.include? option
         case args[0]
           # Only allow these types
           when 'wii', '3ds', 'nnid', 'switch', 'game'
             # Send information off to function
-            return_text = modify_codes(user_id, args, option)
+            return_text = modify_codes(event.user.id, args, option)
             # Say response
             event.respond(return_text)
           else
@@ -100,6 +99,9 @@ module SerieBot
           event.respond("❌ Could not find user #{args[0]}!")
           break
         end
+
+        # Set the user we're referencing's ID, just in case
+        user_id = user.id
 
         # Check if the user is on this server.
         begin
