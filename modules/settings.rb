@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module SerieBot
+  # Configuration for the bot, loaded from config.rb.
   module Config
     class << self
       # The bot necessities

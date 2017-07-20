@@ -1,10 +1,13 @@
+# frozen_string_literal: true
+
 module SerieBot
+  # Container for configuration and listing of stored codes.
   module Codes
     require 'yaml'
     extend Discordrb::Commands::CommandContainer
     extend Discordrb::EventContainer
     class << self
-      attr_accessor :codes
+     attr_accessor :codes
     end
 
     def self.parse_args(args)
@@ -63,18 +66,77 @@ module SerieBot
       end
 
       # Save anyway, it can't hurt.
-      Helper.save_xyz('codes', @codes)
+      RoleHelper.save_xyz('codes', @codes)
       to_say
     end
 
+    def self.create_code_embed(event, user, user_name)
+      user_id = user.id
+      embed_sent = Discordrb::Webhooks::Embed.new
+      # Start out with a line return due to embed author later on
+      code_types = {
+        wii: '<:Wii:259081748007223296> **Wii**',
+        '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DS**',
+        nnid: '<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**',
+        switch: '<:Switch:287652338791874560> **Switch**',
+        game: '🎮 **Games**'
+      }
+      badge_types = {
+        owner: '<:BadgeBotDev:331597705472114688>',
+        dev: '<:BadgeDeveloper:329710752778944512>',
+        adm: '<:BadgeAdmin:329734061532774403>',
+        mod: '<:BadgeModerator:329715070768513024>',
+        hlp: '<:BadgeHelper:329722382790950912>',
+        don: '<:BadgeDonator:329712167983251458>',
+        trn: '<:BadgeTranslator:329723303814234113>'
+      }
+
+      code_types.each do |type, title|
+        next if @codes[user_id][type].nil?
+        column_codes = @codes[user_id][type].each_slice(2).to_a
+
+        column_codes.each do |column|
+          field_text = ''
+          column.each do |name, code|
+            code_output = code
+            field_text += "#{name}:\n`#{code_output}`\n"
+          end
+          embed_sent.add_field(name: title, value: field_text, inline: true)
+        end
+      end
+
+      badges_list = ''
+      unless event.channel.private?
+        badge_types.each do |type|
+          # First element in array is role type
+          if RoleHelper.named_role?(event, [type[0]], user)
+            # Next element in array is emoji
+            badges_list += type[1] + ' '
+          end
+        end
+      end
+      if event.channel.private?
+        badges_list = "Sorry, you can't view badges in DMs."
+      end
+      unless badges_list == ''
+        embed_sent.add_field(name: '🏅**Badges**', value: badges_list)
+      end
+      # 33762 is the same as hex #0083e2
+      embed_sent.colour = BotHelper.color_from_user(user, event.channel, '0083e2')
+      embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: "Profile for #{user_name}",
+                                                               url: nil,
+                                                               icon_url: BotHelper.avatar_url(user, 32))
+      embed_sent
+    end
+
     command(:code) do |event, option, *args|
-      Helper.ignore_bots(event)
+      BotHelper.ignore_bots(event)
       # Create code for the user, to prevent future issues
       Codes.codes[event.user.id] = {} if Codes.codes[event.user.id].nil?
       modification_options = %w[add edit remove]
       if modification_options.include? option
         case args[0]
-          # Only allow these types
+        # Only allow these types
         when 'wii', '3ds', 'nnid', 'switch', 'game'
           # Send information off to function
           return_text = modify_codes(event.user.id, args, option)
@@ -84,7 +146,7 @@ module SerieBot
           event << "❌ Please enter a valid argument for the option `#{option}`."
           event << 'Valid arguments: `wii`, `3ds`, `nnid`, `switch`, `game`.'
         end
-      elsif option == 'lookup' || option == 'list'
+      elsif %w[lookup list].include? option
         # Mention, search for, current user
         # Mention on local server
         user = event.server.member(event.bot.parse_mention(args[0])) unless event.bot.parse_mention(args[0]).nil?
@@ -115,66 +177,12 @@ module SerieBot
         # Make sure they have friend codes, period.
         if @codes[user_id].nil? || codes[user_id] == {}
           event.respond("❌ **#{user_name}** has not added any friend codes!")
-          break
         else
-          embed_sent = Discordrb::Webhooks::Embed.new
-          # Start out with a line return due to embed author later on
-          code_types = {
-            wii: '<:Wii:259081748007223296> **Wii**',
-            '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DS**',
-            nnid: '<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**',
-            switch: '<:Switch:287652338791874560> **Switch**',
-            game: '🎮 **Games**'
-          }
-          badge_types = {
-            owner: '<:BadgeBotDev:331597705472114688>',
-            dev: '<:BadgeDeveloper:329710752778944512>',
-            adm: '<:BadgeAdmin:329734061532774403>',
-            mod: '<:BadgeModerator:329715070768513024>',
-            hlp: '<:BadgeHelper:329722382790950912>',
-            don: '<:BadgeDonator:329712167983251458>',
-            trn: '<:BadgeTranslator:329723303814234113>'
-          }
-
-          code_types.each do |type, title|
-            next if @codes[user_id][type].nil?
-            column_codes = @codes[user_id][type].each_slice(2).to_a
-
-            column_codes.each do |column|
-              field_text = ''
-              column.each do |name, code|
-                code_output = code
-                field_text += "#{name}:\n`#{code_output}`\n"
-              end
-              embed_sent.add_field(name: title, value: field_text, inline: true)
-            end
-          end
-
-          badges_list = ''
-          unless event.channel.private?
-            badge_types.each do |type|
-              # First element in array is role type
-              if Helper.has_role?(event, [type[0]], user)
-                # Next element in array is emoji
-                badges_list += type[1] + ' '
-              end
-            end
-            end
-          if event.channel.private?
-            badges_list = "Sorry, you can't view badges in DMs."
-          end
-          unless badges_list == ''
-            embed_sent.add_field(name: '🏅**Badges**', value: badges_list)
-          end
-          # 33762 is the same as hex #0083e2
-          embed_sent.colour = Helper.color_from_user(user, event.channel, '0083e2')
-          embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: "Profile for #{user_name}",
-                                                                   url: nil,
-                                                                   icon_url: Helper.avatar_url(user, 32))
+          embed_sent = create_code_embed(event, user, user_name)
           event.channel.send_embed('', embed_sent)
         end
       elsif option == 'help'
-        event.respond(Helper.get_help)
+        event.respond(RoleHelper.help_text)
       else
         event << '❌ Please enter a valid option for the command.'
         event << 'Valid options: `add`, `edit`, `remove`, `lookup`, `enable`, `disable`.'
@@ -182,13 +190,13 @@ module SerieBot
     end
 
     command(:add, min_args: 1, max_args: 1) do |event, mention|
-      Helper.ignore_bots(event)
+      RoleHelper.ignore_bots(event)
       # Mention, search for, current user
       # Mention on local server
-      user = event.server.member(event.bot.parse_mention(args[0])) unless event.bot.parse_mention(args[0]).nil?
+      user = event.server.member(event.bot.parse_mention(mention)) unless event.bot.parse_mention(mention).nil?
       # Search for across bot/on server
-      user = event.bot.find_user(args[0])[0] if user.nil?
-      test = event.server.member(event.bot.find_user(args[0])[0])
+      user = event.bot.find_user(mention)[0] if user.nil?
+      test = event.server.member(event.bot.find_user(mention)[0])
       user = test unless test.nil?
       # Fall back to the user themself
       user = event.user if user.nil?
@@ -219,7 +227,7 @@ module SerieBot
           code_output = code
           event << "`#{code_output}` - #{wii}"
         end
-        nil
+
         event << ''
         message = ''
         message << "#{event.user.name} has requested to add your Wii's friend code!\nTheir codes:\n\n"
@@ -236,8 +244,8 @@ module SerieBot
     end
 
     command(:wipecodes) do |event, *args|
-      Helper.ignore_bots(event)
-      unless Helper.has_role?(event, [:owner])
+      BotHelper.ignore_bots(event)
+      unless RoleHelper.named_role?(event, [:owner])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -249,16 +257,16 @@ module SerieBot
       user = event.user if args[0].nil?
       puts "#{event.user.distinct} has wiped #{user.distinct}'s codes."
       event << "Wiped all codes saved by `#{user.distinct}` (ID: #{user.id})"
-      Helper.save_xyz('codes', @codes)
+      RoleHelper.save_xyz('codes', @codes)
     end
 
     command(:save) do |event|
-      unless Helper.has_role?(event, %i[owner dev bot])
+      unless RoleHelper.named_role?(event, %i[owner dev bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
       message = event.respond 'Saving...'
-      Helper.save_all
+      RoleHelper.save_all
       message.edit('All saved!')
     end
   end

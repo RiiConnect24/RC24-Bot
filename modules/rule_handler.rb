@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module SerieBot
-  module EULA
+  # Handles rules.
+  module RuleHandler
     class << self
       attr_accessor :rules
     end
@@ -7,14 +10,14 @@ module SerieBot
     extend Discordrb::Commands::CommandContainer
 
     def self.create_rules(bot)
-      channel = Helper.channel_from_name(bot.server(Config.root_server), 'about')
+      channel = BotHelper.channel_from_name(bot.server(Config.root_server), 'about')
       @rules[:about_id] = channel.id
 
       to_send = gen_rules_layout
 
       message = channel.send_message(to_send)
       @rules[:message_id] = message.id
-      Helper.save_all
+      RoleHelper.save_all
     end
 
     def self.gen_rules_layout
@@ -33,7 +36,7 @@ module SerieBot
         event.respond('❌ Nice try.')
         break
       end
-      unless Helper.has_role?(event, %i[owner dev bot adm])
+      unless BotHelper.named_role?(event, %i[owner dev bot adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -46,7 +49,7 @@ module SerieBot
 
       # Go back one since rules index off 1 and arrays 0
       @rules[:actual_rules][rule_num.to_i - 1] = rule_text
-      Helper.save_all
+      RoleHelper.save_all
       event.bot.channel(@rules[:about_id]).message(@rules[:message_id]).edit(gen_rules_layout)
       event.respond('✅ Hopefully updated!')
     end

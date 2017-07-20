@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module SerieBot
+  # Utility commands for the bot.
   module Utility
     extend Discordrb::Commands::CommandContainer
 
@@ -12,7 +15,7 @@ module SerieBot
         event << '❌ Mention a valid user!'
         next
       end
-      avatar_path = Helper.download_avatar(user, 'tmp')
+      avatar_path = BotHelper.download_avatar(user, 'tmp')
       event.channel.send_file File.new([avatar_path].sample)
     end
 
@@ -65,7 +68,7 @@ module SerieBot
     end
 
     # Requires manage_roles permission since that's what we're doing.
-    command(:config, description: 'Change settings per-server for the bot.', required_permissions: [:manage_roles]) do |event, option, *args|
+    command(:config, required_permissions: [:manage_roles]) do |event, option, *args|
       # TODO: more configuration options?
       if option == 'help'
         help = "__Help for #{Config.prefix}config:__\n\n"
@@ -82,10 +85,10 @@ module SerieBot
         role_type = args[0]
 
         # Make sure that the short ID is valid
-        unless Helper.types { |roles| roles & role_type }
+        unless BotHelper.types { |roles| roles & role_type }
           response = '❌ Make sure to type in a valid role type!' + "\n"
           response += 'Valid types are:' + "\n"
-          Helper.types.each do |short_code, info|
+          BotHelper.types.each do |short_code, info|
             next if short_code.to_s == 'owner'
             response += "`#{short_code}` (#{info[0]}), "
           end
@@ -100,8 +103,8 @@ module SerieBot
 
         # Find given role by name. Or, at least attempt to.
         begin
-          new_role_id = Helper.role_from_name(event.server, role_name).id
-          Helper.save_xxx_id?(event.server.id, 'role', role_type, new_role_id)
+          new_role_id = BotHelper.role_from_name(event.server, role_name).id
+          RoleHelper.save_xxx_id?(event.server.id, 'role', role_type, new_role_id)
           event.respond('✅ Successfully set!')
         rescue NoMethodError
           event.respond("❌ I wasn't able to find that role on this server! No changes have been made to your server's config.")
@@ -145,7 +148,7 @@ module SerieBot
             # The below is a test.
             event.bot.channel(new_channel_id)
 
-            Helper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id)
+            RoleHelper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id.to_i)
             event.respond('✅ Successfully set!')
           rescue NoMethodError
             event.respond("❌ I wasn't able to find that channel on this server! No changes have been made to your server's config.")
@@ -153,8 +156,8 @@ module SerieBot
         else
           # Find given role by name. Or, at least attempt to.
           begin
-            new_channel_id = Helper.channel_from_name(event.server, channel_name).id
-            Helper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id)
+            new_channel_id = BotHelper.channel_from_name(event.server, channel_name).id
+            RoleHelper.save_xxx_id?(event.server.id, 'channel', channel_type, new_channel_id.to_i)
             event.respond('✅ Successfully set!')
           rescue NoMethodError
             event.respond("❌ I wasn't able to find that channel on this server! No changes have been made to your server's config.")

@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module SerieBot
+  # Container for Morpher, the cross-server message mirror.
   module Morpher
     extend Discordrb::Commands::CommandContainer
     extend Discordrb::EventContainer
@@ -10,25 +13,24 @@ module SerieBot
     end
 
     def self.setup_channels(event)
-      if original_channel.nil? | mirrored_channel.nil?
-        @original_channel = Helper.channel_from_name(event.bot.server(Config.root_server), 'announcements')
-        # ID of mirror server
-        @mirrored_channel = if Config.debug
-                              Helper.channel_from_name(event.bot.server(Config.morpher_server), 'dev-test')
-                            else
-                              Helper.channel_from_name(event.bot.server(Config.morpher_server), 'announcements')
-                            end
-      end
+      return unless original_channel.nil? | mirrored_channel.nil?
+      @original_channel = BotHelper.channel_from_name(event.bot.server(Config.root_server), 'announcements')
+      # ID of mirror server
+      @mirrored_channel = if Config.debug
+                            BotHelper.channel_from_name(event.bot.server(Config.morpher_server), 'dev-test')
+                          else
+                            BotHelper.channel_from_name(event.bot.server(Config.morpher_server), 'announcements')
+                          end
     end
 
     def self.create_embed(bot, message)
       embed_sent = Discordrb::Webhooks::Embed.new
       embed_sent.title = 'New announcement!'
-      embed_sent.description = Helper.parse_mentions(bot, message.content)
+      embed_sent.description = BotHelper.parse_mentions(bot, message.content)
       embed_sent.colour = '#FFEB3B'
       embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: message.author.name,
                                                                url: 'https://rc24.xyz',
-                                                               icon_url: Helper.avatar_url(message.author, 32))
+                                                               icon_url: BotHelper.avatar_url(message.author, 32))
       # Format: Sat Feb 11 01:30:45 2017 UTC
       embed_sent.footer = Discordrb::Webhooks::EmbedFooter.new(text: "#{message.timestamp.utc.strftime('%c')} UTC")
       embed_sent
@@ -39,6 +41,7 @@ module SerieBot
       embed_error.title = 'An error occurred.'
       embed_error.description = message
       embed_error.colour = '#D32F2F'
+      embed_error
     end
 
     message do |event|
@@ -52,7 +55,7 @@ module SerieBot
           embed_sent: embed_to_send,
           message_sent: message_to_send.id
         }
-        Helper.save_xyz('morpher', Morpher.messages)
+        RoleHelper.save_xyz('morpher', Morpher.messages)
       end
     end
 
@@ -66,14 +69,14 @@ module SerieBot
           mirrored_channel.send_embed('', embed_error)
         else
           embed = message_data[:embed_sent]
-          embed.description = Helper.parse_mentions(event.bot, event.message)
+          embed.description = BotHelper.parse_mentions(event.bot, event.message)
           # Also edit the footer
           # Format: Sat Feb 11 01:30:45 2017 UTC
           embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: "#{event.message.edited_timestamp.utc.strftime('%c')} UTC")
           mirror_message_id = message_data[:message_sent]
           mirrored_channel.message(mirror_message_id).edit('', embed)
         end
-        Helper.save_xyz('morpher', Morpher.messages)
+        RoleHelper.save_xyz('morpher', Morpher.messages)
       end
     end
 
@@ -88,7 +91,7 @@ module SerieBot
           mirrored_channel.message(@messages[event.id][:message_sent]).delete
           @messages.delete(event.id)
         end
-        Helper.save_xyz('morpher', Morpher.messages)
+        RoleHelper.save_xyz('morpher', Morpher.messages)
       end
     end
 
@@ -98,7 +101,7 @@ module SerieBot
       if event.server.id == Config.morpher_server
         message_to_pm = "___Information Notice___\n"
         message_to_pm += 'Hi! You have joined the RiiConnect24 News Server, for users who are not allowed access to the regular server.'
-        message_to_pm += " As such, we do not know whom is in the server, and you may wish to turn off access to Direct Messages between members to ensure users cannot contact you through the public mutual server.\n"
+        message_to_pm += " Since we don't moderate the users here, you might want to consider turning off Direct Messages for this server.\n"
         message_to_pm += "Here's how to do it: http://i.imgur.com/EssBp8d.gifv\n\n"
         message_to_pm += "Regards,\nRiiConnect24"
         event.user.pm(message_to_pm)
@@ -137,7 +140,7 @@ module SerieBot
         # (this is the last message sent - 1 since Ruby has array offsets of 0)
         offset_id = current_history[current_history.length - 1].id
       end
-      Helper.save_xyz('morpher', Morpher.messages)
+      RoleHelper.save_xyz('morpher', Morpher.messages)
       'Done!'
     end
   end

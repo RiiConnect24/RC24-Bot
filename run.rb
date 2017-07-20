@@ -4,25 +4,26 @@ module SerieBot
   require 'yaml'
   require 'fileutils'
 
-  # Load helper as it is needed first.
-  helper_path = 'modules/helper.rb'
+  # Load helpers as they are needed first.
+  helper_path = 'modules/helpers/role_helper.rb'
   require_relative helper_path
   puts "Loaded: #{helper_path}"
+  Dir['modules/helpers/*.rb'].each { |r| next if r == helper_path; require_relative r; puts "Loaded: #{r}" }
 
-  # Require other modules asides from Helper
-  Dir['modules/*.rb'].each { |r| require_relative r unless r == helper_path; puts "Loaded: #{r}" }
+  # Require other modules asides from Helpers
+  Dir['modules/*.rb'].each { |r| require_relative r; puts "Loaded: #{r}" }
 
   # List of modules to include
   modules = [
-    Admin,
-    Birthdays,
-    EULA,
-    Help,
-    Logging,
-    Utility,
-    Mod,
-    Codes,
-    Commands
+      Admin,
+      BirthdayHandler,
+      RuleHandler,
+      Help,
+      Logging,
+      Utility,
+      Mod,
+      Codes,
+      Commands
   ]
   # Set up bot
   if Config.appid.zero? || Config.appid.nil?
@@ -40,12 +41,12 @@ module SerieBot
   end
 
   # Load config files
-  Helper.load_all
+  RoleHelper.load_all
 
   # We should have settings loaded at this point
   if Config.settings['ignored_bots'].nil?
     Config.settings['ignored_bots'] = []
-    Helper.save_xyz('settings', Config.settings)
+    RoleHelper.save_xyz('settings', Config.settings)
   end
   Config.settings['ignored_bots'].each do |bot_id|
     bot.ignore_user(bot_id)
@@ -59,7 +60,7 @@ module SerieBot
   bot.online
   bot.game = Config.playing
 
-  thread = Thread.new { Birthdays.sleeping_beauty(bot) }
+  thread = Thread.new { BirthdayHandler.sleeping_beauty(bot) }
   thread.run
   bot.sync
 end

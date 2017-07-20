@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 module SerieBot
+  # Moderator command container.
   module Mod
     extend Discordrb::Commands::CommandContainer
 
     command(:clear, max_args: 1, description: 'Deletes x messages, mod only.', usage: "#{Config.prefix}clear x") do |event, count|
-      Helper.ignore_bots(event)
+      BotHelper.ignore_bots(event)
 
-      unless Helper.has_role?(event, [:owner, :dev, :mod, :hlp])
+      unless RoleHelper.named_role?(event, %i[owner dev mod hlp])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -15,15 +18,16 @@ module SerieBot
         break
       end
 
-      unless /\A\d+\z/ =~ count
+      unless /\A\d+\z/.match?(count)
         event.respond("`#{count}` is not a valid number!")
         break
       end
       original_num = count.to_i
       clear_num = count.to_i + 1
+      ids = []
 
       begin
-        while clear_num > 0
+        while clear_num.positive?
           if clear_num >= 99
             # Welcome back to Workaround city.
             ids = []
@@ -47,13 +51,13 @@ module SerieBot
       nil
     end
 
-    command(:kick, description: 'Temporarily kick somebody from the server. Mod only.', usage: "#{Config.prefix}kick @user reason", min_args: 2) do |event, *kick_reason|
+    command(:kick, description: 'Kick somebody from the server.', usage: "#{Config.prefix}kick @user reason", min_args: 2) do |event, *kick_reason|
       if event.channel.private?
         event.respond("❌ You can't kick over DMs!")
         break
       end
 
-      unless Helper.has_role?(event, [:owner, :dev, :mod, :hlp])
+      unless RoleHelper.named_role?(event, %i[owner dev mod hlp])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -68,8 +72,8 @@ module SerieBot
       if event.message.mentions[0]
         final_message = kick_reason.drop(1)
         display = final_message.join(' ')
-        message = "You have been kicked from the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
-        message << "They gave the following reason: ``#{display}``"
+        message = "You have been kicked from the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n" \
+        "They gave the following reason: ``#{display}``"
         begin
           member.pm(message)
         rescue Discordrb::Errors::NoPermission
@@ -89,48 +93,48 @@ module SerieBot
       else
         event.respond('❌ Invalid argument. Please mention a valid user.')
       end
-		end
-	  
-		command(:warn, description: 'Warn somebody on the server. Mod only.', usage: "#{Config.prefix}warn @user reason", min_args: 2) do |event, *kick_reason|
-			unless Helper.has_role?(event, [:adm, :dev, :mod, :hlp])
-				event.respond("❌ You don't have permission for that!")
-				break
-			end
+    end
 
-			member = event.server.member(event.message.mentions[0])
+    command(:warn, description: 'Warn somebody on the server.', usage: "#{Config.prefix}warn @user reason", min_args: 2) do |event, *kick_reason|
+      unless RoleHelper.named_role?(event, %i[adm dev mod hlp])
+        event.respond("❌ You don't have permission for that!")
+        break
+      end
+
+      member = event.server.member(event.message.mentions[0])
       if event.user == member
         event.respond("❌ You can't warn yourself. 😉")
         break
       end
 
-			break if event.channel.private?
-			if event.message.mentions[0]
-				final_message = kick_reason.drop(1)
-				display = final_message.join(' ')
-				message = "You have been warned on the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
-				message << "They gave the following reason: ``#{display}``"
-				begin
-						member.pm(message)
-				rescue Discordrb::Errors::NoPermission
-						event.respond('Could not DM user about warn reason!')
-						break
-				end
+      break if event.channel.private?
+      if event.message.mentions[0]
+        final_message = kick_reason.drop(1)
+        display = final_message.join(' ')
+        message = "You have been warned on the server **#{event.server.name}** by #{event.message.author.mention} | **#{event.message.author.display_name}**\n" \
+        "They gave the following reason: ``#{display}``"
+        begin
+          member.pm(message)
+        rescue Discordrb::Errors::NoPermission
+          event.respond('Could not DM user about warn reason!')
+          break
+        end
         # Register for logging
         Logging.record_action('warn', event.user, member, display)
-				event.respond('👌 Warned!')
-				break
-			else
-				event.respond('❌ Invalid argument. Please mention a valid user.')
-			end
-		end
+        event.respond('👌 Warned!')
+        break
+      else
+        event.respond('❌ Invalid argument. Please mention a valid user.')
+      end
+    end
 
-    command(:ban, description: 'Permanently ban someone from the server. Mod only.', usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *ban_reason|
+    command(:ban, description: 'Ban someone from the server.', usage: "#{Config.prefix}ban @user reason", min_args: 2) do |event, *ban_reason|
       if event.channel.private?
         event.respond("❌ You can't ban over DMs!")
         break
       end
 
-      unless Helper.has_role?(event, [:owner, :dev, :mod])
+      unless RoleHelper.named_role?(event, %i[owner dev mod])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -143,14 +147,14 @@ module SerieBot
       if event.message.mentions[0]
         final_ban_message = ban_reason.drop(1)
         ban_display = final_ban_message.join(' ')
-        message = "You have been **permanently banned** from the server #{event.server.name} by #{event.message.author.mention} | **#{event.message.author.display_name}**\n"
-        message << "They gave the following reason: ``#{ban_display}``\n\n"
-        message << "If you wish to appeal for your ban's removal, please contact this person, or the server owner."
+        message = "You have been **permanently banned** from the server #{event.server.name} by #{event.message.author.mention} | **#{event.message.author.display_name}**\n" \
+        "They gave the following reason: ``#{ban_display}``\n\n" \
+        "If you wish to appeal for your ban's removal, please contact this person, or the server owner."
         begin
-            member.pm(message)
+          member.pm(message)
         rescue Discordrb::Errors::NoPermission
-            event.respond('Could not DM user about ban reason!')
-            break
+          event.respond('Could not DM user about ban reason!')
+          break
         end
         begin
           event.server.ban(member)
@@ -168,7 +172,7 @@ module SerieBot
     end
 
     command(:userprune) do |event, code|
-      unless Helper.has_role?(event, [:owner, :bot, :adm])
+      unless RoleHelper.named_role?(event, %i[owner bot adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -183,44 +187,40 @@ module SerieBot
       end
 
       event.channel.start_typing
-      message = "Hi! we did some automatic cleanup and kicked users who weren't verified and have the default avatar.\n"
-      message += "If you were kicked, don't worry! Join us again. We have the invite URL on our website."
+      message = "Hi! we did some automatic cleanup and kicked users who weren't verified and have the default avatar.\n" \
+      "If you were kicked, don't worry! Join us again. We have the invite URL on our website."
       reason = "Automated cleaning started by #{event.user.display_name}"
 
       event.server.members.each do |member|
         # Verified role
-        unless Helper.is_verified?(event, member)
-          # Banned
-          unless event.server.bans.include? member.id
-            # Is a bot
-            unless member.bot_account?
-              # Default avatar has no filename
-              if File.basename(URI.parse(member.avatar_url).path) == '.jpg'
-                begin
-                  member.pm(message)
-                rescue Discordrb::Errors::NoPermission
-                  event.respond("Could not DM user #{mention} about kick reason!")
-                  break
-                end
+        next if BotHelper.is_verified?(event, member)
+        # Banned
+        next if event.server.bans.include? member.id
+        # Is a bot
+        next if member.bot_account?
+        # Default avatar has no filename
+        next unless File.basename(URI.parse(member.avatar_url).path) == '.jpg'
+        begin
+          member.pm(message)
+        rescue Discordrb::Errors::NoPermission
+          event.respond("Could not DM user #{mention} about kick reason!")
+          break
+        end
 
-                begin
-                  event.server.kick(member)
-                  # Register for logging
-                  Logging.record_action('kick', event.user, member, reason)
-                  event.respond('👌 The ban hammer has hit, hard.')
-                rescue
-                  event.respond("The bot doesn't have permission to ban that user!")
-                  break
-                end
-              end
-            end
-          end
+        begin
+          event.server.kick(member)
+          # Register for logging
+          Logging.record_action('kick', event.user, member, reason)
+          event.respond('👌 The ban hammer has hit, hard.')
+        rescue
+          event.respond("The bot doesn't have permission to ban that user!")
+          break
         end
       end
     end
 
     command(:lockdown, min_args: 1, usage: "#{Config.prefix}lockdown <reason>") do |event, reason|
-      unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
+      unless RoleHelper.named_role?(event, %i[owner dev bot adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -228,26 +228,30 @@ module SerieBot
 
       lockdown = Discordrb::Permissions.new
       lockdown.can_send_messages = true
-      everyone_role = Helper.role_from_name(event.server, '@everyone')
+      everyone_role = BotHelper.role_from_name(event.server, '@everyone')
       event.channel.define_overwrite(everyone_role, 0, lockdown)
       event.respond("🔒**This channel is now in lockdown. Only staff can send messages. Reason: #{display_reason}**🔒")
     end
 
     command(:unlockdown) do |event|
-      unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
+      unless RoleHelper.named_role?(event, %i[owner dev bot adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
 
       lockdown = Discordrb::Permissions.new
       lockdown.can_send_messages = true
-      everyone_role = Helper.role_from_name(event.server, '@everyone')
+      everyone_role = BotHelper.role_from_name(event.server, '@everyone')
       event.channel.define_overwrite(everyone_role, lockdown, 0)
       event.respond('🔓**Channel has been unlocked.**🔓')
     end
 
     command(:history) do |event, user_mention|
-      unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
+      if event.channel.private?
+        event.respond('You can only run this on a server, not over DMs!')
+        break
+      end
+      unless RoleHelper.named_role?(event, %i[owner dev bot adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -262,9 +266,9 @@ module SerieBot
       user = event.user if user.nil?
       embed_sent = Discordrb::Webhooks::Embed.new
       logged_types = {
-          warn: 'Warns',
-          ban: 'Bans',
-          kick: 'Kicks'
+        warn: 'Warns',
+        ban: 'Bans',
+        kick: 'Kicks'
       }
 
       user_name = ''
@@ -285,16 +289,16 @@ module SerieBot
         next if actions[action_type].nil?
         to_add = ''
         actions[action_type].each do |action_recorded|
-          to_add += "By #{event.bot.user(action_recorded[:doer]).name} for `#{action_recorded[:reason]}`. Log notified: #{action_recorded[:notified] ? 'yes' : "no"}\n"
+          to_add += "By #{event.bot.user(action_recorded[:doer]).name} for `#{action_recorded[:reason]}`. Log notified: #{action_recorded[:notified] ? 'yes' : 'no'}\n"
         end
         embed_sent.add_field(name: action_title, value: to_add)
       end
 
       # 33762 is the same as hex #0083e2
-      embed_sent.colour = Helper.color_from_user(user, event.channel, '0083e2')
+      embed_sent.colour = BotHelper.color_from_user(user, event.channel, '0083e2')
       embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: "Server log history for #{user_name}",
                                                                url: nil,
-                                                               icon_url: Helper.avatar_url(user, 32))
+                                                               icon_url: BotHelper.avatar_url(user, 32))
       event.channel.send_embed('', embed_sent)
     end
   end

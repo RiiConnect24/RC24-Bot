@@ -1,21 +1,24 @@
+# frozen_string_literal: true
+
 module SerieBot
+  # Command container for Admin-related commands.
   module Admin
     extend Discordrb::Commands::CommandContainer
 
     command(:setavatar) do |event, *url|
-      unless Helper.has_role?(event, %i[owner dev bot])
+      unless RoleHelper.named_role?(event, %i[owner dev bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
       url = url.join(' ')
-      file = Helper.download_file(url, 'tmp')
+      file = BotHelper.download_file(url, 'tmp')
       event.bot.profile.avatar = File.open(file)
       event.respond('✅ Avatar should be updated!')
     end
 
     command(:ignore, description: 'Temporarily ignore a given user', min_args: 1, max_args: 1) do |event, mention|
       event.channel.start_typing
-      unless Helper.has_role?(event, %i[owner dev mod])
+      unless RoleHelper.named_role?(event, %i[owner dev mod])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -34,7 +37,7 @@ module SerieBot
 
     command(:unignore, description: 'Unignores a given user', min_args: 1, max_args: 1) do |event, mention|
       event.channel.start_typing
-      unless Helper.has_role?(event, %i[owner dev bot])
+      unless RoleHelper.named_role?(event, %i[owner dev bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -52,7 +55,7 @@ module SerieBot
     end
 
     command(:status, description: 'Set the bot as idle or dnd or invisible status. Admin only.', min_args: 1, max_args: 1) do |event, status|
-      unless Helper.has_role?(event, %i[owner dev bot])
+      unless RoleHelper.named_role?(event, %i[owner dev bot])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -65,7 +68,7 @@ module SerieBot
       elsif status == 'online'
         event.bot.online
         event.respond('✅ Status set to **Online**!')
-      elsif status == 'invisible' || status == 'offline'
+      elsif %w[invisible offline].include? status
         event.bot.invisible
         event.respond('✅ Status set to **Invisible**!')
       else
@@ -75,19 +78,19 @@ module SerieBot
 
     command(:shutdown, description: 'Shuts down the bot. Admin only.', usage: '&shutdown') do |event|
       puts "#{event.author.distinct}: \`#{event.message.content}\`"
-      unless Helper.has_role?(event, [:owner])
+      unless RoleHelper.named_role?(event, [:owner])
         event.respond("❌ You don't have permission for that!")
         break
       end
       message = event.respond 'Saving and exiting... '
-      Helper.save_all
+      RoleHelper.save_all
       event.bot.invisible
       message.edit('All saved. Goodbye!')
-      Helper.quit
+      BotHelper.quit
     end
 
     command(:eval, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *code|
-      unless Helper.has_role?(event, [:owner])
+      unless RoleHelper.named_role?(event, [:owner])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -99,8 +102,8 @@ module SerieBot
         eval_message = nil
       rescue Discordrb::Errors::MessageTooLong
         # Determine how many characters the message is over
-        lengthOver = eval_message.length - 2000
-        event.respond("❌ Message was too long to send by #{lengthOver} characters!")
+        length_over = eval_message.length - 2000
+        event.respond("❌ Message was too long to send by #{length_over} characters!")
         break
       rescue => error
         # Exception:
@@ -114,7 +117,7 @@ module SerieBot
     end
 
     command(:eval2, description: 'Evaluate a Ruby command. Admin only.', usage: "#{Config.prefix}eval code") do |event, *args|
-      if Helper.has_role?(event, [:owner])
+      if RoleHelper.named_role?(event, [:owner])
         begin
           result = eval args.join(' ')
           if result.length >= 1984
@@ -131,7 +134,7 @@ module SerieBot
     end
 
     command(:bash, description: 'Evaluate a Bash command. Admin only. Use with care.', usage: '&bash code') do |event, *code|
-      unless Helper.has_role?(event, [:owner])
+      unless RoleHelper.named_role?(event, [:owner])
         event.respond("❌ You don't have permission for that!")
         break
       end
@@ -147,7 +150,7 @@ module SerieBot
     end
 
     command(:dump, description: 'Dumps a selected channel. Admin only.', usage: '&dump [id]') do |event, channel_id|
-      unless Helper.has_role?(event, %i[owner dev bot])
+      unless RoleHelper.named_role?(event, %i[owner dev bot])
         event << "❌ You don't have permission for that!"
         break
       end
@@ -157,7 +160,7 @@ module SerieBot
       rescue
         event.respond('❌ Enter a valid channel id!')
       end
-      output_filename = Helper.dump_channel(channel, event.channel, Config.dump_dir, event.message.timestamp)
+      output_filename = BotHelper.dump_channel(channel, event.channel, Config.dump_dir, event.message.timestamp)
       event.channel.send_file File.new([output_filename].sample)
     end
 
@@ -173,7 +176,7 @@ module SerieBot
     end
 
     command(:prune, required_permissions: [:manage_messages], max_args: 1) do |event, num|
-      Helper.ignore_bots(event)
+      BotHelper.ignore_bots(event)
       begin
         num = 50 if num.nil?
         count = 0
@@ -194,7 +197,7 @@ module SerieBot
     end
 
     command(:pruneuser, required_permissions: [:manage_messages], max_args: 1) do |event, user, num|
-      Helper.ignore_bots(event)
+      BotHelper.ignore_bots(event)
       begin
         user = event.bot.parse_mention(user)
         num = 50 if num.nil?

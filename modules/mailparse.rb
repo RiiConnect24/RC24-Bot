@@ -1,6 +1,10 @@
+# frozen_string_literal: true
+
 module SerieBot
+  # Parser and patcher for nwc24msg configs.
   module MailParse
     require 'bindata'
+    # File layout for nwc24msg configs
     class Config < BinData::Record
       endian :big
       string :magic, read_length: 4, assert: 'WcCf'
@@ -21,13 +25,13 @@ module SerieBot
     end
     def self.convert_mail(downloaded_cfg_path)
       begin
-        io = File.open(downloaded_cfg_path)
+        config_io = File.open(downloaded_cfg_path)
       rescue IOError
         return 2
       end
 
       begin
-        cfg = Config.read(io)
+        cfg = Config.read(config_io)
       rescue ValidityError
         return 3
       end
@@ -43,8 +47,8 @@ module SerieBot
         # Patch with our URL from original or other
         original = url.to_binary_s
         replacement_url = original.delete("\x00")
-        replacement_url = replacement_url.gsub(/https?:\/\/(...).wc24.wii.com/, 'http://rc24.xyz')
-        replacement_url = replacement_url.gsub(/https?:\/\/riiconnect24.net/, 'http://rc24.xyz')
+        replacement_url = replacement_url.gsub(%r{/https?:\/\/(...).wc24.wii.com/}, 'http://rc24.xyz')
+        replacement_url = replacement_url.gsub(%r{https?:\/\/riiconnect24.net/}, 'http://rc24.xyz')
 
         # Add nulls to create original length
         # 0x80 is the URL's max length, so create up to that
@@ -78,9 +82,9 @@ module SerieBot
       checksum_final = checksum & 0xFFFFFFFF
       cfg.checksum.assign(BinData::Uint32be.new(checksum_final).to_binary_s)
 
-      File.open(downloaded_cfg_path, 'wb') do |io|
+      File.open(downloaded_cfg_path, 'wb') do |converted_file|
         begin
-          cfg.write(io)
+          cfg.write(converted_file)
         rescue IOError
           return 4
         end

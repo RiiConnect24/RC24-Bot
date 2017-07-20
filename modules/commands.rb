@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module SerieBot
+  # Miscellaneous commands related to the bot.
   module Commands
     extend Discordrb::Commands::CommandContainer
     extend Discordrb::EventContainer
@@ -6,21 +9,20 @@ module SerieBot
     require 'nokogiri'
 
     class << self
-      attr_accessor :local_codes
-     end
+     attr_accessor :local_codes
+    end
     @local_codes = Config.settings['local_codes']
 
-    # Migrated from Yuu-Chan's Yuu module
-    command (:wads) do |event|
+    command(:wads) do |event|
       event.channel.start_typing
-      wads = "**__ RiiConnect24 IOS WADs: __**\n"
-      wads << "Latest IOS31: https://cdn.discordapp.com/attachments/287740297923002368/334043317744435200/IOS31.wad\n"
-      wads << "Latest IOS80: https://cdn.discordapp.com/attachments/287740297923002368/334043320307286037/IOS80.wad\n\n"
-      wads << "**__ Wiimmfi Patched Mario Kart Channel: __**\n"
-      wads << "America 🇺🇸: https://cdn.discordapp.com/attachments/287740297923002368/317632736040845312/Mario_Kart_Channel_-_v1_-_USA_-_RMCE.wad\n"
-      wads << "Europe 🇪🇺: https://cdn.discordapp.com/attachments/287740297923002368/317632737097940992/Mario_Kart_Channel_-_v1_-_Europe_-_RMCP.wad\n"
-      wads << "Japan 🇯🇵: https://cdn.discordapp.com/attachments/287740297923002368/317633010558173184/Mario_Kart_Channel_-_v1_-_Japan_-_RMCJ.wad\n"
-      wads << "Korea 🇰🇷: https://cdn.discordapp.com/attachments/287740297923002368/317632733046112268/Mario_Kart_Channel_-_v1_-_Korea_-_RMCK.wad\n"
+      wads = "**__ RiiConnect24 IOS WADs: __**\n" \
+             "Latest IOS31: https://cdn.discordapp.com/attachments/287740297923002368/334043317744435200/IOS31.wad\n" \
+             "Latest IOS80: https://cdn.discordapp.com/attachments/287740297923002368/334043320307286037/IOS80.wad\n\n" \
+             "**__ Wiimmfi Patched Mario Kart Channel: __**\n" \
+             "America 🇺🇸: https://cdn.discordapp.com/attachments/287740297923002368/317632736040845312/Mario_Kart_Channel_-_v1_-_USA_-_RMCE.wad\n" \
+             "Europe 🇪🇺: https://cdn.discordapp.com/attachments/287740297923002368/317632737097940992/Mario_Kart_Channel_-_v1_-_Europe_-_RMCP.wad\n" \
+             "Japan 🇯🇵: https://cdn.discordapp.com/attachments/287740297923002368/317633010558173184/Mario_Kart_Channel_-_v1_-_Japan_-_RMCJ.wad\n" \
+             "Korea 🇰🇷: https://cdn.discordapp.com/attachments/287740297923002368/317632733046112268/Mario_Kart_Channel_-_v1_-_Korea_-_RMCK.wad\n"
       begin
         event.user.pm(wads)
       rescue Discordrb::Errors::NoPermission
@@ -42,7 +44,6 @@ module SerieBot
         error_text = @local_codes['news'][error_num.to_i]
         if error_text.nil? || error_text == ''
           event.respond('❌ Could not find the specified app error code.')
-          break
         else
           event.channel.send_embed do |e|
             e.title = "Here's information about your error:"
@@ -50,8 +51,8 @@ module SerieBot
             e.colour = '#D32F2F'
             e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information provided by RC24 Developers.')
           end
-          break
         end
+        break
       end
       # No? Validate the code
       if code.to_i.to_s == code
@@ -68,7 +69,7 @@ module SerieBot
                    "t=#{code}"
                  else
                    "e=#{code}"
-             end
+                 end
         # Grab JSON
         json_string = open("https://wiimmfi.de/error?#{method}&m=json").read
         array = JSON.parse(json_string, symbolize_names: true)
@@ -131,16 +132,11 @@ module SerieBot
             e.colour = '#D32F2F'
             e.footer = Discordrb::Webhooks::EmbedFooter.new(text: 'All information is from Wiimmfi unless noted.')
           end
-          # This break is super important, otherwise it messages all of data[:infolist]
-          # because Ruby default returns the last variable.
-          break
         else
           event.respond('❌ Could not find the specified error from Wiimmfi.')
-          break
         end
       else
         event.respond('❌ Enter a valid error code!')
-        break
       end
     end
     command(:gametdb, max_args: 2, min_args: 2) do |event, platform, code|
@@ -166,7 +162,7 @@ module SerieBot
 
     command(:dns) do |event|
       event.respond("`185.82.21.64` should be your primary DNS.
-      `8.8.8.8` (Google's DNS) can be your secondary DNS server.")
+         `8.8.8.8` (Google's DNS) can be your secondary DNS server.")
     end
 
     command(:facts) do |event|
@@ -176,11 +172,15 @@ module SerieBot
         'During the final stage of News Channel development, a rainstorm hit Nintendo of Europe and Nintendo of Japan lost contact with them. Source: https://rc24.xyz/story_forecast.php',
         "There's a clock in the News Channel and Forecast Channel in the Europe and Japan versions of the Channel in the top-left corner, but not in the American version.",
         'The list of cities that appear in the Forecast Channel vary by country, each country has more regional cities to choose from.',
-        "While your Wii's in standby mode and the blue light's glowing, you can turn the light off by pressing the RESET button on your Wii. Source: iDroid",
-        "The Japanese version of the Forecast Channel looks very different than the Europe and American versions of the Channel. There's differences like precipitation shown, a 7-day forecast instead of a 5-day forecast, and a pollen count and a laundry index (which shows if it's appropriate to dry your clothes outside).",
+        "While your Wii's in standby mode and the blue light's glowing, you can turn the light off by pressing the RESET button on your Wii.",
+        'The Japanese version of the Forecast Channel looks very different than the Europe and American versions of the Channel.' \
+          "There's differences like precipitation shown, a 7-day forecast instead of a 5-day forecast, and a pollen count and a laundry index" \
+            " (which shows if it's appropriate to dry your clothes outside).",
         'The Photo Channel cat and the News Channel cat are brothers and sisters. Source: https://rc24.xyz/story_photo.php',
-        'The developers of the Photo Channel named the two cats that appear in the Photo Channel and News Channel. The one in the News Channel is named Runda and is male, and the one in the Photo Channel is named Rassie and is female. They both are named that way because of the ways they end their sentences in Japanese. Source: https://rc24.xyz/story_photo.php',
-        'The Photo Channel and News Channel cats were made because one of the developers used a bunch of pictures of cats during development of the Photo Channel (he was a cat lover). So when they decided how to display the tips in the Channels, they decided they should use a cat. Source: https://rc24.xyz/story_photo.php',
+        'The developers of the Photo Channel named the two cats that appear in the Photo Channel and News Channel. The one in the News Channel is named Runda and is male, ' \
+          'and the one in the Photo Channel is named Rassie and is female. They both are named that way because of the ways they end their sentences in Japanese. Source: https://rc24.xyz/story_photo.php',
+        'The Photo Channel and News Channel cats were made because one of the developers used a bunch of pictures of cats during development of the Photo Channel (he was a cat lover). ' \
+          'So when they decided how to display the tips in the Channels, they decided they should use a cat. Source: https://rc24.xyz/story_photo.php',
         'Nintendo made Mario, Luigi, Princess Peach, Yoshi, Toad, and Bowser Wii Remotes. https://www.gamesmen.com.au/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/w/i/wii_u_remote_6_pack.jpg',
         'You can arrange contacts in the Wii Address Book by grabbing it with A and B and moving it to where you like, just like you can do it with moving Channels.',
         'The Globe in the News Channel and the Forecast Channel is also used in Mario Kart Wii.'
