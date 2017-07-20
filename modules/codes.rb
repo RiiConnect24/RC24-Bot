@@ -183,12 +183,15 @@ module SerieBot
 
     command(:add, min_args: 1, max_args: 1) do |event, mention|
       Helper.ignore_bots(event)
-      user = begin
-        event.bot.parse_mention(mention)
-      rescue
-        event.respond('❌ Enter a valid user!')
-        break
-      end
+      # Mention, search for, current user
+      # Mention on local server
+      user = event.server.member(event.bot.parse_mention(args[0])) unless event.bot.parse_mention(args[0]).nil?
+      # Search for across bot/on server
+      user = event.bot.find_user(args[0])[0] if user.nil?
+      test = event.server.member(event.bot.find_user(args[0])[0])
+      user = test unless test.nil?
+      # Fall back to the user themself
+      user = event.user if user.nil?
       # Check if the user is on this server.
       begin
         user_name = user.on(event.server).display_name

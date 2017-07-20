@@ -219,28 +219,18 @@ module SerieBot
       end
     end
 
-    command(:lockdown) do |event, time|
+    command(:lockdown, min_args: 1, usage: "#{Config.prefix}lockdown <reason>") do |event, reason|
       unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
+      display_reason = reason.join(' ')
 
       lockdown = Discordrb::Permissions.new
       lockdown.can_send_messages = true
       everyone_role = Helper.role_from_name(event.server, '@everyone')
       event.channel.define_overwrite(everyone_role, 0, lockdown)
-      if time.nil?
-        event.respond('🔒**This channel is now in lockdown. Only staff can send messages. **🔒')
-      elsif /\A\d+\z/.match(time)
-        event.respond("🔒**This channel is now in lockdown. Only staff can send messages. **🔒\n**Time:** #{time} minute(s)")
-        time_sec = time * 60
-        sleep(time_sec)
-        lockdown = Discordrb::Permissions.new
-        lockdown.can_send_messages = true
-        everyone_role = Helper.role_from_name(event.server, '@everyone')
-        event.channel.define_overwrite(everyone_role, lockdown, 0)
-        event.respond('🔓**Channel has been unlocked.**🔓')
-      end
+      event.respond("🔒**This channel is now in lockdown. Only staff can send messages. Reason: #{display_reason}**🔒")
     end
 
     command(:unlockdown) do |event|
@@ -254,6 +244,58 @@ module SerieBot
       everyone_role = Helper.role_from_name(event.server, '@everyone')
       event.channel.define_overwrite(everyone_role, lockdown, 0)
       event.respond('🔓**Channel has been unlocked.**🔓')
+    end
+
+    command(:history) do |event, user_mention|
+      unless Helper.has_role?(event, [:owner, :dev, :bot, :adm])
+        event.respond("❌ You don't have permission for that!")
+        break
+      end
+      # Mention, search for, current user
+      # Mention on local server
+      user = event.server.member(event.bot.parse_mention(user_mention)) unless event.bot.parse_mention(user_mention).nil?
+      # Search for across bot/on server
+      user = event.bot.find_user(user_mention)[0] if user_mention.nil?
+      test = event.server.member(event.bot.find_user(user_mention)[0])
+      user = test unless test.nil?
+      # Fall back to the user themself
+      user = event.user if user.nil?
+      embed_sent = Discordrb::Webhooks::Embed.new
+      logged_types = {
+          warn: 'Warns',
+          ban: 'Bans',
+          kick: 'Kicks'
+      }
+
+      user_name = ''
+      begin
+        user_name = user.on(event.server).display_name
+      rescue NoMethodError
+        user_name = user.name
+      end
+
+      if Logging.recorded_actions[user.id].nil?
+        event.respond("No actions recorded for user #{user_name}!")
+        break
+      end
+
+      actions = Logging.recorded_actions[user.id]
+
+      logged_types.each do |action_type, action_title|
+        next if actions[action_type].nil?
+        to_add = ''
+        actions[action_type].each do |action_recorded|
+          to_add += "By #{event.bot.user(action_recorded[:doer]).name} for `#{action_recorded[:reason]}`. Log notified: #{action_recorded[:notified] ? 'yes' : "no"}\n"
+        end
+        embed_sent.add_field(name: action_title, value: to_add)
+      end
+
+      # 33762 is the same as hex #0083e2
+      embed_sent.colour = Helper.color_from_user(user, event.channel, '0083e2')
+      embed_sent.author = Discordrb::Webhooks::EmbedAuthor.new(name: "Server log history for #{user_name}",
+                                                               url: nil,
+                                                               icon_url: Helper.avatar_url(user, 32))
+      event.channel.send_embed('', embed_sent)
     end
   end
 end
