@@ -140,7 +140,7 @@ module SerieBot
         if user_info.nil?
           verb = 'left'
         else
-          verb = 'was kicked from!'
+          verb = 'was kicked from'
         end
         description = "User: #{event.user.mention} | **#{event.user.distinct}**"
         unless user_info.nil?
