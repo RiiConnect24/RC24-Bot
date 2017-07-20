@@ -148,7 +148,7 @@ module SerieBot
           self.recorded_actions[user.id][:kick].last[:notified] = true
           Helper.save_xyz('actions', self.recorded_actions)
         end
-        e.title "A user #{verb} the server!"
+        e.title = "A user #{verb} the server!"
         e.description = description
         e.colour = '#FFEB3B'
         e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
