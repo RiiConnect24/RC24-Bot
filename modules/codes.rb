@@ -120,11 +120,11 @@ module SerieBot
           embed_sent = Discordrb::Webhooks::Embed.new
           # Start out with a line return due to embed author later on
           code_types = {
-            :wii => '<:Wii:259081748007223296> **Wii**',
+            wii: '<:Wii:259081748007223296> **Wii**',
             '3ds'.to_sym => '<:New3DSXL:287651327763283968> **3DS**',
-            :nnid => '<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**',
-            :switch => '<:Switch:287652338791874560> **Switch**',
-            :game => '🎮 **Games**'
+            nnid: '<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**',
+            switch: '<:Switch:287652338791874560> **Switch**',
+            game: '🎮 **Games**'
           }
           badge_types = {
             owner: '<:BadgeBotDev:331597705472114688>',

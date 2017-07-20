@@ -129,24 +129,26 @@ module SerieBot
       unless was_banned
         # Check if kicked by a bot command
         user_info = nil
-        unless self.recorded_actions[:kick][user.id].nil?
-          unless self.recorded_actions[:kick][user.id].last[:notified]
+        unless self.recorded_actions[user.id][:kick].nil?
+          # It could be that the user was kicked previously and this was already known.
+          unless self.recorded_actions[user.id][:kick].last[:notified]
             # Looks like they were kicked.
-            user_info = self.recorded_actions[:kick][user.id].last
+            user_info = self.recorded_actions[user.id][:kick].last
           end
         end
         e = Discordrb::Webhooks::Embed.new
         if user_info.nil?
-          e.title = 'A user left the server!'
+          verb = 'left'
         else
-          e.title = 'A user was kicked from the server!'
+          verb = 'was kicked from!'
         end
         description = "User: #{event.user.mention} | **#{event.user.distinct}**"
         unless user_info.nil?
           description += "\nKicked by #{event.bot.user(user_info[:doer]).name} with reason `#{user_info[:reason]}`"
-          self.recorded_actions[:kick][user.id].last[:notified] = true
+          self.recorded_actions[user.id][:kick].last[:notified] = true
           Helper.save_xyz('actions', self.recorded_actions)
         end
+        e.title "A user #{verb} the server!"
         e.description = description
         e.colour = '#FFEB3B'
         e.footer = Discordrb::Webhooks::EmbedFooter.new(text: "Current UTC time: #{time.strftime('%H:%M')}")
@@ -169,13 +171,13 @@ module SerieBot
       e = Discordrb::Webhooks::Embed.new
       e.title = 'A user was banned from the server!'
       description = "User: #{user.mention} | **#{user.distinct}**\n"
-      unless self.recorded_actions[:ban][user.id].nil?
-        user_info = self.recorded_actions[:ban][user.id].last
+      unless self.recorded_actions[user.id][:ban].nil?
+        user_info = self.recorded_actions[user.id][:ban].last
 
         description += "Banned by #{event.bot.user(user_info[:doer]).name} with reason `#{user_info[:reason]}`"
-        # look, a race condition
+        # look, a race condition due to leaving
         sleep(1)
-        self.recorded_actions[:ban][user.id].last[:notified] = true
+        self.recorded_actions[user.id][:ban].last[:notified] = true
         Helper.save_xyz('actions', self.recorded_actions)
       end
       e.description = description
@@ -214,16 +216,16 @@ module SerieBot
 
     def self.record_action(type, doer, recipient, reason)
       rep_id = recipient.id
-      if self.recorded_actions[type.to_sym][rep_id].nil?
-        self.recorded_actions[type.to_sym][rep_id] = Array.new
+      if self.recorded_actions[rep_id][type.to_sym].nil?
+        self.recorded_actions[rep_id][type.to_sym] = Array.new
       end
-      self.recorded_actions[type.to_sym][rep_id].push({
+      self.recorded_actions[rep_id][type.to_sym].push({
           'doer': doer.id,
           'reason': reason,
           'notified': false
                                  })
       Helper.save_xyz('actions', self.recorded_actions)
-      return nil
+      nil
     end
 
     # For patching
