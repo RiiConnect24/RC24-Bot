@@ -36,7 +36,7 @@ module SerieBot
         event.respond('❌ Nice try.')
         break
       end
-      unless BotHelper.named_role?(event, %i[owner dev bot adm])
+      unless RoleHelper.named_role?(event, %i[owner dev bot adm])
         event.respond("❌ You don't have permission for that!")
         break
       end
