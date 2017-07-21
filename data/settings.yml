@@ -1,5 +1,8 @@
 ---
 local_codes:
+  # Hi from Spotlight!
+  # Please don't edit this file directly, as it causes
+  # chaos with other things.
   news:
     1: Can't open the VFF
     2: WiiConnect24 file problem
@@ -9,110 +12,7 @@ local_codes:
     6: Invalid data
     99: Other error
   notes:
-    102032: The IOS your app uses is not patched for RiiConnect24. Try sending a message
-      again but do it quickly, you need to do it in less than a minute.
-    107245: You either need to patch your IOS because you didn't follow instructions
-      correctly or didn't update with the new patch to change the RSA key. Visit https://rc24.xyz/instructions
-      to learn how to patch it.
-    107304: Try again, or maybe play with your Internet settings. This may not be
-      easy to fix for you.
+    102032: The IOS your app uses is not patched for RiiConnect24. Try sending a message again but do it quickly, you need to do it in less than a minute.
+    107245: You either need to patch your IOS because you didn't follow instructions correctly or didn't update with the new patch to change the RSA key. Visit https://rc24.xyz/instructions to learn how to patch it.
+    107304: Try again, or maybe play with your Internet settings. This may not be easy to fix for you.
     107305: Try again.
-ignored_bots:
-- 305277118105911296
-308721773036175363:
-  channel:
-    srv: 331545306145488906
-    mod: 331537421911195648
-82792377416159232:
-  role:
-    mod: 212786166703849472
-    dev: 164645517207273472
-    adm: 216022360283807755
-  channel:
-    srv: 329292717890994188
-    mod: 329292777647243265
-319846362504232960:
-  channel:
-    srv: 336124998056148993
-    mod: 336125072790126594
-  role:
-    dev: 319860735054446612
-    mod: 319860891917090826
-    vfd: 334846424116363266
-332275966590320640:
-  channel:
-    srv: 332278282181410816
-    mod: 332278310476316673
-206934458954153984:
-  channel:
-    srv: 271724634368507904
-    mod: 288803098162495488
-  role:
-    dev: 206934624096616459
-    mod: 217710564313530368
-    bot: 269923672913870848
-    adm: 302199468458246154
-    hlp: 288364650808999937
-    don: 290306899667320832
-    trn: 284437673966305282
-177170375598276609:
-  channel:
-    mod: '336192075781373953'
-254417537746337792:
-  channel:
-    srv: '288888448767754240'
-    mod: '288888448767754240'
-279392673352384513:
-  channel:
-    srv: 336293229894959104
-    mod: 336293244294004746
-  role: {}
-226404143999221761:
-  channel: {}
-  role: {}
-327779042050703362:
-  channel:
-    mod: '332100323906813953'
-    srv: '332100278629171201'
-311659153154244608:
-  channel:
-    srv: 315518094996930561
-    mod: 315518507620237322
-  role:
-    dev: 311659499431788547
-    mod: 311660047451029504
-    vfd: 311659816479227905
-    hlp: 312013176931614731
-253982178566864910:
-  role:
-    d: 253984750358888449
-    m: 292363099950940161
-    dev: 253984750358888449
-  channel:
-    srv: '290251524532076544'
-312776731704426496:
-  channel:
-    srv: 316772335925592064
-    mod: 316772258712387585
-145990830040154114:
-  channel:
-    srv: 335531593894461440
-  role: {}
-312301509410816000:
-  role: {}
-  channel: {}
-226100395997528076:
-  channel: {}
-302689606837731328:
-  channel:
-    srv: 319129541077499905
-329304048341876758:
-  channel:
-    srv: 331835311321513985
-    mod: 330025626385776640
-294107388036907010:
-  channel:
-    srv: 294474536701788161
-336994620288532480:
-  role: {}
-  channel: {}
