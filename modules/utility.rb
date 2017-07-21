@@ -90,10 +90,10 @@ module SerieBot
         role_type = args[0]
 
         # Make sure that the short ID is valid
-        unless BotHelper.types { |roles| roles & role_type }
+        unless RoleHelper.types { |roles| roles & role_type }
           response = '❌ Make sure to type in a valid role type!' + "\n"
           response += 'Valid types are:' + "\n"
-          BotHelper.types.each do |short_code, info|
+          RoleHelper.types.each do |short_code, info|
             next if short_code.to_s == 'owner'
             response += "`#{short_code}` (#{info[0]}), "
           end
