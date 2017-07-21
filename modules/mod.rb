@@ -7,18 +7,11 @@ module SerieBot
 
     command(:clear, max_args: 1, description: 'Deletes x messages, mod only.', usage: "#{Config.prefix}clear x") do |event, count|
       BotHelper.ignore_bots(event)
-
       unless RoleHelper.named_role?(event, %i[owner dev mod hlp])
         event.respond("❌ You don't have permission for that!")
         break
       end
-
-      if count.nil?
-        event.respond('❌ No argument specicied. Enter a valid number!')
-        break
-      end
-
-      unless /\A\d+\z/.match?(count)
+      unless count.nil? || /\A\d+\z/.match?(count)
         event.respond("`#{count}` is not a valid number!")
         break
       end

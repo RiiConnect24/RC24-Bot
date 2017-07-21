@@ -146,7 +146,7 @@ module SerieBot
           event << "❌ Please enter a valid argument for the option `#{option}`."
           event << 'Valid arguments: `wii`, `3ds`, `nnid`, `switch`, `game`.'
         end
-      elsif %w[lookup list].include? option
+      elsif option == 'lookup'
         # Mention, search for, current user
         # Mention on local server
         user = event.server.member(event.bot.parse_mention(args[0])) unless event.bot.parse_mention(args[0]).nil?
@@ -181,11 +181,13 @@ module SerieBot
           embed_sent = create_code_embed(event, user, user_name)
           event.channel.send_embed('', embed_sent)
         end
+      elsif option == 'list'
+        event.respond('❌ Invalid command! Did you mean: `!code lookup`')
       elsif option == 'help'
         event.respond(RoleHelper.help_text)
       else
-        event << '❌ Please enter a valid option for the command.'
-        event << 'Valid options: `add`, `edit`, `remove`, `lookup`, `enable`, `disable`.'
+        event << ' Please enter a valid option for the command.'
+        event << 'Valid options: `add`, `edit`, `remove`, `lookup`.'
       end
     end
 

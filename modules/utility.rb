@@ -68,7 +68,12 @@ module SerieBot
     end
 
     # Requires manage_roles permission since that's what we're doing.
-    command(:config, required_permissions: [:manage_roles]) do |event, option, *args|
+    command(:config) do |event, option, *args|
+      unless RoleHelper.named_role?(event, %i[owner adm dev]) || event.server.owner == event.user
+        event.respond('Only Bot Owners, Server Owners, Server Admins, and Developers can use this command!')
+        break
+      end
+
       # TODO: more configuration options?
       if option == 'help'
         help = "__Help for #{Config.prefix}config:__\n\n"
