@@ -92,6 +92,13 @@ module SerieBot
              else
                other_user
              end
+      # Check if user can even do so
+      begin
+        user.roles
+      rescue NoMethodError
+        puts 'Looks like the user was not a member.' if Config.debug
+        return false
+      end
       user.role?(event.server.role(xxx_role_id))
     end
 

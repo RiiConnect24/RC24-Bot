@@ -205,6 +205,7 @@ module SerieBot
 
     def self.record_action(type, doer, recipient, reason)
       rep_id = recipient.id
+      recorded_actions[rep_id] = [] if recorded_actions[rep_id].nil?
       if recorded_actions[rep_id][type.to_sym].nil?
         recorded_actions[rep_id][type.to_sym] = []
       end
