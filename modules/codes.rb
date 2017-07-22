@@ -83,10 +83,10 @@ module SerieBot
       }
       badge_types = {
         owner: '<:BadgeBotDev:331597705472114688>',
-        dev: '<:BadgeDeveloper:329710752778944512>',
-        adm: '<:BadgeAdmin:329734061532774403>',
+        dev: '<:BadgeDeveloper:338399284376633367>',
+        adm: '<:BadgeAdmin:338398740727726081>',
         mod: '<:BadgeModerator:329715070768513024>',
-        hlp: '<:BadgeHelper:329722382790950912>',
+        hlp: '<:BadgeHelper:338399338739007488>',
         don: '<:BadgeDonator:329712167983251458>',
         trn: '<:BadgeTranslator:329723303814234113>'
       }
