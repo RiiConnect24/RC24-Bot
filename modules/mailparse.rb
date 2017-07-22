@@ -47,7 +47,7 @@ module SerieBot
         # Patch with our URL from original or other
         original = url.to_binary_s
         replacement_url = original.delete("\x00")
-        replacement_url = replacement_url.gsub(%r{/https?:\/\/(...).wc24.wii.com/}, 'http://rc24.xyz')
+        replacement_url = replacement_url.gsub(%r{https?:\/\/(...).wc24.wii.com}, 'http://rc24.xyz')
         replacement_url = replacement_url.gsub(%r{https?:\/\/riiconnect24.net/}, 'http://rc24.xyz')
 
         # Add nulls to create original length
