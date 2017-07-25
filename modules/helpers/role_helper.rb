@@ -99,6 +99,7 @@ module SerieBot
         puts 'Looks like the user was not a member.' if Config.debug
         return false
       end
+      event.respond("Looks like the #{full_name} role has a faulty ID! Please set the role again.") if xxx_role_id.nil?
       user.role?(event.server.role(xxx_role_id))
     end
 

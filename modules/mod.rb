@@ -212,7 +212,7 @@ module SerieBot
       end
     end
 
-    command(:lockdown, min_args: 1, usage: "#{Config.prefix}lockdown <reason>") do |event, reason|
+    command(:lockdown, min_args: 1, usage: "#{Config.prefix}lockdown <reason>") do |event, *reason|
       unless RoleHelper.named_role?(event, %i[owner dev bot adm])
         event.respond("❌ You don't have permission for that!")
         break

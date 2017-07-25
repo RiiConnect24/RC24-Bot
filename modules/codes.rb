@@ -192,7 +192,7 @@ module SerieBot
     end
 
     command(:add, min_args: 1, max_args: 1) do |event, mention|
-      RoleHelper.ignore_bots(event)
+      BotHelper.ignore_bots(event)
       # Mention, search for, current user
       # Mention on local server
       user = event.server.member(event.bot.parse_mention(mention)) unless event.bot.parse_mention(mention).nil?
