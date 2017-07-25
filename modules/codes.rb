@@ -222,26 +222,26 @@ module SerieBot
         event.respond('❌ You have not added any Wii friend codes! (Currently, this command only works with Wii codes.)')
         break
       end
-      event << "**You have requested to add  #{user.on(event.server).display_name}'s Wii.**\n"
-      if !@codes[user.id][:wii].nil?
-        event << '<:Wii:259081748007223296> **Wiis**:'
+      primary_user = "**You have requested to add  #{user.on(event.server).display_name}'s Wii.**\n"
+      if @codes[user.id][:wii].nil?
+        event.respond("❌ **#{user_name}** has not added any Wii codes!")
+        next
+      else
+        primary_user += "<:Wii:259081748007223296> **Wiis**:\n"
         @codes[user.id][:wii].each do |wii, code| #
           code_output = code
-          event << "`#{code_output}` - #{wii}"
+          primary_user += "`#{code_output}` - #{wii}"
         end
 
-        event << ''
-        message = ''
-        message << "#{event.user.name} has requested to add your Wii's friend code!\nTheir codes:\n\n"
+        added_user = "#{event.user.name} has requested to add your Wii's friend code!\nTheir codes:\n\n"
         @codes[event.user.id][:wii].each do |wii, code| #
           code_output = code
-          message << "`#{code_output}` - #{wii}\n"
+          added_user += "`#{code_output}` - #{wii}\n"
         end
 
-        user.pm(message)
-      else
-        event << "❌ **#{user_name}** has not added any Wii codes!"
-        next
+        event.user.pm(primary_user)
+        user.pm(added_user)
+        event.respond('✅ Check your DMs!')
       end
     end
 
