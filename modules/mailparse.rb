@@ -47,9 +47,12 @@ module SerieBot
         # Patch with our URL from original or other
         original = url.to_binary_s
         replacement_url = original.delete("\x00")
-        replacement_url = replacement_url.gsub(%r{https?:\/\/(...).wc24.wii.com}, 'http://rc24.xyz')
-        replacement_url = replacement_url.gsub(%r{https?:\/\/riiconnect24.net}, 'http://rc24.xyz')
 
+        mail_domain = 'http://wii.rc24.xyz/mail'
+        replacement_url = replacement_url.gsub(%r{https?:\/\/(...).wc24.wii.com}, mail_domain)
+        replacement_url = replacement_url.gsub(%r{https?:\/\/riiconnect24.net}, mail_domain)
+        replacement_url = replacement_url.gsub(%r{https?:\/\/rc24.xyz}, mail_domain)
+        
         # Add nulls to create original length
         # 0x80 is the URL's max length, so create up to that
         needed_nulls = 0x80 - replacement_url.length
