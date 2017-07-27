@@ -8,7 +8,7 @@ module SerieBot
     class Config < BinData::Record
       endian :big
       string :magic, read_length: 4, assert: 'WcCf'
-      uint32 :unknown
+      uint32 :version
       uint64 :wii_code
       uint32 :id_generation
       uint32 :has_registered
@@ -23,6 +23,14 @@ module SerieBot
       # We won't even need this later on
       string :checksum, read_length: 0x4
     end
+
+
+    def self.string_with_null(string, length)
+      # Get amount of nulls needed for complete string
+      needed_nulls = length - string.length
+      return string + ("\x00" * needed_nulls)
+    end
+
     def self.convert_mail(downloaded_cfg_path)
       begin
         config_io = File.open(downloaded_cfg_path)
@@ -37,26 +45,14 @@ module SerieBot
       end
 
       # Patch domain
-      original = cfg.wii_email_domain.to_binary_s
-      replacement_url = original.delete("\x00")
-      replacement_url = replacement_url.gsub('@wii.com', '@rc24.xyz')
-      needed_nulls = 0x40 - replacement_url.length
-      cfg.wii_email_domain.assign(replacement_url + ("\x00" * needed_nulls))
+      cfg.wii_email_domain.assign(string_with_null('@rc24.xyz', 0x40))
 
-      cfg.points.each do |url|
-        # Patch with our URL from original or other
-        original = url.to_binary_s
-        replacement_url = original.delete("\x00")
-
-        mail_domain = 'http://wii.rc24.xyz/mail'
-        replacement_url = replacement_url.gsub(%r{https?:\/\/(...).wc24.wii.com}, mail_domain)
-        replacement_url = replacement_url.gsub(%r{https?:\/\/riiconnect24.net}, mail_domain)
-        replacement_url = replacement_url.gsub(%r{https?:\/\/rc24.xyz}, mail_domain)
-        
-        # Add nulls to create original length
-        # 0x80 is the URL's max length, so create up to that
-        needed_nulls = 0x80 - replacement_url.length
-        url.assign(replacement_url + ("\x00" * needed_nulls))
+      base_domain = 'http://mtw.rc24.xyz/cgi-bin/'
+      # List of cgis (in order!)
+      cgi_script = %w(account check receive delete send)
+      cgi_script.length.times do |point_number|
+        # Set point number to cgi script at point
+        cfg.points[point_number].assign(string_with_null(base_domain + cgi_script[point_number] + '.cgi', 0x80))
       end
 
       # Remove current checksum
