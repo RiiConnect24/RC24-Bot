@@ -16,3 +16,5 @@ local_codes:
     107245: You either need to patch your IOS because you didn't follow instructions correctly or didn't update with the new patch to change the RSA key. Visit https://rc24.xyz/instructions to learn how to patch it.
     107304: Try again, or maybe play with your Internet settings. This may not be easy to fix for you.
     107305: Try again.
+    105409: If you are getting this problem while doing something with Wii Mail - check if you patched nwc24msg.cfg correctly.
+    20103: Delete NWC_AUTHDATA file stored in nand:/shared2/. Delete it using WiiXplorer.
