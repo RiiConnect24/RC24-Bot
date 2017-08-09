@@ -187,7 +187,7 @@ module SerieBot
         event.respond(RoleHelper.help_text)
       else
         event << ' Please enter a valid option for the command.'
-        event << 'Valid options: `add`, `edit`, `remove`, `lookup`, help.'
+        event << 'Valid options: `add`, `edit`, `remove`, `lookup`, `help`.'
       end
     end
 
