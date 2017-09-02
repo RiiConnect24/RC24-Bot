@@ -1,0 +1,21 @@
+# Netbeans says hello.
+/target/
+/.nb-gradle/
+/build/
+/.gradle/
+# IntelliJ agrees.
+/.idea
+/*.iml
+# For Eclipse, who doesn't really say hello. (Who uses Eclipse)
+/.project
+/.classpath
+/bin
+/.settings
+
+# Configuration
+config.yml
+/data
+
+# Java files
+*.class
+*.jar
