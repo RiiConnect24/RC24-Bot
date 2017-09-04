@@ -47,8 +47,7 @@ needed in your `config.rb`.
 3. Update the bundle: `bundle update`
 4. Run the bot: `./run_linux.sh` or `run_windows.bat`
 
-Please report any issues to `@Seriel 🌈#3760` | `<@228574821590499329>` 
-or `@foxlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issue on GitHub!
+Please report any issues to `@foxlight_is_ok#6129` | `<@239809536012058625>` on Discord, or open an issue on GitHub!
 
 Enjoy~
 <br/>
