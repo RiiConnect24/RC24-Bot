@@ -1,0 +1,78 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        // Add dependency for build script,
+        // so we can access Git from our
+        // build script.
+        classpath 'org.ajoberstar:grgit:1.1.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'xyz.rc24.bot'
+version = '2.0.0'
+
+description = """"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'resources/'
+        }
+        java {
+            srcDir 'src/'
+        }
+    }
+}
+
+repositories {
+     jcenter()
+}
+dependencies {
+    compile group: 'net.dv8tion', name: 'JDA', version: '3.2.0_242'
+    compile group: 'com.jagrosh', name: 'JDA-Utilities', version: '1.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0'
+}
+
+// Fix jar + main class
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'xyz.rc24.bot.RiiConnect24Bot',
+                'Implementation-Title': 'RC24 Bot',
+                'Implementation-Version': version,
+        )
+    }
+    from { (configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    from "$buildDir/resources/info.properties"
+}
+
+task createBuildInfoFile(dependsOn: processResources) {
+    doLast {
+        def buildInfoFile = new File("$buildDir/resources/info.properties")
+        Properties props = new Properties()
+        props.setProperty('commit', org.ajoberstar.grgit.Grgit.open(file('.')).head().abbreviatedId)
+        props.store(buildInfoFile.newWriter(), null)
+    }
+}
+
+classes {
+    dependsOn createBuildInfoFile
+}
