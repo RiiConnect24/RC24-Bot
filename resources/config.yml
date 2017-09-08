@@ -1,0 +1,40 @@
+---
+# Your bot account token. Create a bot account if you don't a bot account, get one and its token here -> https://discordapp.com/developers/applications/me/
+token: Put your token here!
+# All commands will use this symbol(s) before the command name. eg. &say has a prefix of &
+prefix: '!'
+# Will appear after "Playing" under the bots name. Set to nil to not show a game
+playing: "type !help"
+
+# These users will have full access to the bot's admin commands, and by extension, the server it is hosted on.
+# Give this power with care!!
+primary_owner: 239809536012058625
+secondary_owners:
+  - 228574821590499329
+  - 264499432538505217
+
+# Status of the bot
+status: ONLINE
+
+# Set this false to use some production APIs.
+debug: true
+
+# The root server this bot will be based off.
+root_server: 000000000000000000
+
+# Set this to true to allow patching of config files via DM.
+patch_mail: true
+
+# Set this to true to enable Morpher running.
+morpher_enabled: false
+
+# The server that Morpher will mirror to.
+morpher_server: 000000000000000000
+
+# Severs that should be logged
+logged_servers:
+ - 000000000000000000
+
+# Block specific channel IDs from being logged.
+ignore_ids:
+  - 000000000000000000

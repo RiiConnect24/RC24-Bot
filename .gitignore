@@ -13,7 +13,6 @@
 /.settings
 
 # Configuration
-config.yml
 /data
 
 # Java files
