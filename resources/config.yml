@@ -1,6 +1,6 @@
 ---
 # Your bot account token. Create a bot account if you don't a bot account, get one and its token here -> https://discordapp.com/developers/applications/me/
-token: Put your token here!
+token: 'Put your token here!'
 # All commands will use this symbol(s) before the command name. eg. &say has a prefix of &
 prefix: '!'
 # Will appear after "Playing" under the bots name. Set to nil to not show a game

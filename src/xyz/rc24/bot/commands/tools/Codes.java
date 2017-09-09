@@ -32,7 +32,8 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
-import xyz.rc24.bot.utils.GlobalUtil;
+import net.dv8tion.jda.core.utils.SimpleLog;
+import xyz.rc24.bot.utils.CodeManager;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -46,10 +47,10 @@ import java.util.Map;
  */
 
 public class Codes extends Command {
-    private Map<String, Map<String, Map<String, String>>> codes;
 
-    public Codes(Map codes) {
-        this.codes = codes;
+    private CodeManager manager;
+    public Codes(CodeManager manager) {
+        this.manager = manager;
         this.name = "code";
         this.help = "Manages codes for the user.";
         this.children = new Command[]{new Add(), new Remove(), new Edit(), new Lookup(), new Help()};
@@ -101,13 +102,10 @@ public class Codes extends Command {
             codeEmbed.setAuthor("Profile for " + member.getEffectiveName(),
                     null, member.getUser().getEffectiveAvatarUrl());
 
-            // I promise you, it's a map.
-            Map<String, Map<String, String>> userCodes = codes.get(event.getAuthor().getId());
-            if (userCodes == null || userCodes.isEmpty()) {
-                event.replyError("**" + event.getMember().getEffectiveName() + "** has not added any friend codes!");
-                return;
-            }
-            for (Map.Entry<String, Map<String, String>> typeData : userCodes.entrySet()) {
+            // Map: Type, then a further map of name/value.
+            Map<CodeManager.Type, Map<String, String>> userCodes = manager.getAllCodes(member.getUser().getIdLong());
+
+            for (Map.Entry<CodeManager.Type, Map<String, String>> typeData : userCodes.entrySet()) {
                 // We define each code as the name (key) and the code (value) itself.
                 Map<String, String> codes = typeData.getValue();
                 // Make sure it's not null or empty and such
@@ -141,38 +139,30 @@ public class Codes extends Command {
         @Override
         protected void execute(CommandEvent event) {
             String type = event.getArgs().split(" ")[0];
-            if (!codeTypes.containsKey(type)) {
+            if (!commonNames.containsKey(type)) {
                 event.replyError(getTypes());
+                return;
             }
-
-            String id = event.getAuthor().getId();
-            Map<String, Map<String, String>> userCodes = codes.get(id);
-            if (userCodes == null) {
-                // Populate it!
-                codes.put(event.getAuthor().getId(), new HashMap<>());
-                userCodes = codes.get(event.getAuthor().getId());
-            }
-            Map<String, String> typeCodes = userCodes.get(type);
 
             // Begin the parsing.
             String toAdd = event.getArgs().substring(type.length());
             // For example, we might have | Name | code
             // We need to determine the name and code.
             String[] information = toAdd.split(" \\| ");
-            // [0] is name, [1] is code
             String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
                     "`" + event.getClient().getPrefix() + "code add " + type + " | name | code`.";
-            if (information[0].equals(toAdd)) {
+            // The array should have 3 (empty, name, and code).
+            if (information.length != 3) {
                 event.replyError(errorMessage);
                 return;
             }
-            if (information[0].isEmpty() || information[1].isEmpty()) {
+            SimpleLog.getLog("Codes").info("Here you go: " + information[1] + ", also " +information[2]);
+            if (information[1].isEmpty() || information[2].isEmpty()) {
                 event.replyError(errorMessage);
+                return;
             }
-            typeCodes.put(information[0], information[1]);
-            userCodes.put(type, typeCodes);
-            codes.put(id, userCodes);
-            GlobalUtil.saveData("codes", codes);
+            manager.addCode(event.getAuthor().getIdLong(), commonNames.get(type), information[1], information[2]);
+            event.replySuccess("Added a code for `" + information[1] + "`");
         }
     }
 
@@ -239,12 +229,20 @@ public class Codes extends Command {
     }
 
 
-    private static final Map<String, String> codeTypes = new HashMap<String, String>() {{
-        put("wii", "<:Wii:259081748007223296> **Wii**");
-        put("3ds", "<:New3DSXL:287651327763283968> **3DS**");
-        put("nnid", "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**");
-        put("switch", "<:Switch:287652338791874560> **Switch**");
-        put("game", "🎮 **Games**");
+    private static final Map<CodeManager.Type, String> codeTypes = new HashMap<CodeManager.Type, String>() {{
+        put(CodeManager.Type.WII, "<:Wii:259081748007223296> **Wii**");
+        put(CodeManager.Type.THREE_DS, "<:New3DSXL:287651327763283968> **3DS**");
+        put(CodeManager.Type.NNID, "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**");
+        put(CodeManager.Type.SWITCH, "<:Switch:287652338791874560> **Switch**");
+        put(CodeManager.Type.GAME, "🎮 **Games**");
+    }};
+
+    private static final Map<String, CodeManager.Type> commonNames = new HashMap<String, CodeManager.Type>() {{
+        put("wii", CodeManager.Type.WII);
+        put("3ds", CodeManager.Type.THREE_DS);
+        put("nnid", CodeManager.Type.NNID);
+        put("switch", CodeManager.Type.SWITCH);
+        put("game", CodeManager.Type.GAME);
     }};
 
     private static final Map<String, String> badgeTypes = new HashMap<String, String>() {{
@@ -259,7 +257,7 @@ public class Codes extends Command {
 
     private String getTypes() {
         StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
-        for (String type : codeTypes.keySet()) {
+        for (String type : commonNames.keySet()) {
             response.append("`").append(type).append("`, ");
         }
         // Remove leftover comma + space

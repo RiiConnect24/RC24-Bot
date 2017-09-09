@@ -40,10 +40,11 @@ repositories {
      jcenter()
 }
 dependencies {
-    compile group: 'net.dv8tion', name: 'JDA', version: '3.3.0_261'
+    compile group: 'net.dv8tion', name: 'JDA', version: '3.2.0_242'
     compile group: 'com.jagrosh', name: 'JDA-Utilities', version: '1.4'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0'
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0'
+    compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
 }
 
 // Fix jar + main class

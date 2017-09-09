@@ -24,8 +24,6 @@
 
 package xyz.rc24.bot;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jagrosh.jdautilities.commandclient.CommandClientBuilder;
 import com.jagrosh.jdautilities.waiter.EventWaiter;
 import net.dv8tion.jda.core.AccountType;
@@ -39,10 +37,10 @@ import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.tools.Codes;
 import xyz.rc24.bot.commands.tools.UserInfo;
 import xyz.rc24.bot.loader.Config;
+import xyz.rc24.bot.utils.CodeManager;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
-import java.util.Map;
 
 /**
  * @author Artu
@@ -51,7 +49,6 @@ import java.util.Map;
 public class RiiConnect24Bot extends ListenerAdapter {
 
     private static Config config;
-    private static Map codes;
 
     public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException {
         try {
@@ -61,9 +58,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
             return;
         }
 
-        // Load code data
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        codes = mapper.readValue(new FileInputStream("data/codes.yml"), Map.class);
+        CodeManager manager = new CodeManager();
 
         // Register commands and some other things
         EventWaiter waiter = new EventWaiter();
@@ -75,8 +70,8 @@ public class RiiConnect24Bot extends ListenerAdapter {
         client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
         client.setPrefix(config.getPrefix());
         client.addCommands(
-                new Codes(codes),
-                new Shutdown(),
+                new Codes(manager),
+                new Shutdown(manager),
                 new UserInfo()
         );
 

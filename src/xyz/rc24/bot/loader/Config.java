@@ -48,7 +48,7 @@ public class Config {
     public Config() throws Exception {
         // TODO: copy sample file
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        format = mapper.readValue(new File("config.yml"), ConfigFormat.class);
+        format = mapper.readValue(new File("data/config.yml"), ConfigFormat.class);
         // Check config
         for (Field field : format.getClass().getDeclaredFields()) {
             // For each field defined in the class, check if null.
