@@ -34,7 +34,8 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import xyz.rc24.bot.commands.botadm.Shutdown;
-import xyz.rc24.bot.commands.tools.Codes;
+import xyz.rc24.bot.commands.codes.Add;
+import xyz.rc24.bot.commands.codes.Codes;
 import xyz.rc24.bot.commands.tools.UserInfo;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.utils.CodeManager;
@@ -71,6 +72,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
         client.setPrefix(config.getPrefix());
         client.addCommands(
                 new Codes(manager),
+                new Add(manager),
                 new Shutdown(manager),
                 new UserInfo()
         );

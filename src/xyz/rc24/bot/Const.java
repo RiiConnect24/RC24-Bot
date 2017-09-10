@@ -24,8 +24,14 @@
 
 package xyz.rc24.bot;
 
+import xyz.rc24.bot.utils.CodeManager;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * @author Artu
+ * Constants for the bot
+ * @author Artu, Spotlight
  */
 
 public class Const {
@@ -34,4 +40,38 @@ public class Const {
     public static String WARN_E = ("⚠");
     public static String FAIL_E = ("❌");
     public static String GAME_0 = ("Loading...");
+    public static final Map<CodeManager.Type, String> typesToReadableName = new HashMap<CodeManager.Type, String>() {{
+        put(CodeManager.Type.WII, "<:Wii:259081748007223296> **Wii**");
+        put(CodeManager.Type.THREE_DS, "<:New3DSXL:287651327763283968> **3DS**");
+        put(CodeManager.Type.NNID, "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**");
+        put(CodeManager.Type.SWITCH, "<:Switch:287652338791874560> **Switch**");
+        put(CodeManager.Type.GAME, "🎮 **Games**");
+    }};
+
+    public static final Map<String, CodeManager.Type> namesToType = new HashMap<String, CodeManager.Type>() {{
+        put("wii", CodeManager.Type.WII);
+        put("3ds", CodeManager.Type.THREE_DS);
+        put("nnid", CodeManager.Type.NNID);
+        put("switch", CodeManager.Type.SWITCH);
+        put("game", CodeManager.Type.GAME);
+    }};
+
+    public static final Map<String, String> badgeTypes = new HashMap<String, String>() {{
+        put("owner", "<:BadgeBotDev:331597705472114688>");
+        put("dev", "<:BadgeDeveloper:338399284376633367>");
+        put("adm", "<:BadgeAdmin:338398740727726081>");
+        put("mod", "<:BadgeModerator:329715070768513024>");
+        put("hlp", "<:BadgeHelper:338399338739007488>");
+        put("don", "<:BadgeDonator:329712167983251458>");
+        put("trn", "<:BadgeTranslator:329723303814234113>");
+    }};
+    // oops, a function in a constant file
+    public static String getTypes() {
+        StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
+        for (String type : namesToType.keySet()) {
+            response.append("`").append(type).append("`, ");
+        }
+        // Remove leftover comma + space
+        return response.substring(0, response.length() - 2);
+    }
 }

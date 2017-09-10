@@ -1,9 +1,9 @@
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.commands.codes;
 
 /*
  * The MIT License
  *
- * Copyright 2017 Artu.
+ * Copyright 2017 Spotlight, Artu, Seriel.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ package xyz.rc24.bot.commands.tools;
  * THE SOFTWARE.
  */
 
-
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import com.jagrosh.jdautilities.utils.FinderUtil;
@@ -32,15 +31,15 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
+import xyz.rc24.bot.Const;
 import xyz.rc24.bot.utils.CodeManager;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Manages codes for the user, stored in the yaml format.
+ * Manages codes for the user, stored on Redis.
  *
  * @author Spotlight
  */
@@ -118,14 +117,14 @@ public class Codes extends Command {
                                 .append(codeData.getValue()).append("\n");
                     }
                     // Now that we have the code text set up, we'll just add it as a field.
-                    codeEmbed.addField(codeTypes.get(typeData.getKey()), fieldContents.toString(), true);
+                    codeEmbed.addField(Const.typesToReadableName.get(typeData.getKey()), fieldContents.toString(), true);
                 }
                 // I guess all codes for it were deleted if we got here.
                 // Carry on!
             }
             // There won't be any fields if the types are all empty.
             if (codeEmbed.getFields().isEmpty()) {
-                event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!\n");
+                event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
             } else {
                 event.reply(codeEmbed.build());
             }
@@ -143,8 +142,8 @@ public class Codes extends Command {
         @Override
         protected void execute(CommandEvent event) {
             String type = event.getArgs().split(" ")[0];
-            if (!commonNames.containsKey(type)) {
-                event.replyError(getTypes());
+            if (!Const.namesToType.containsKey(type)) {
+                event.replyError(Const.getTypes());
                 return;
             }
 
@@ -164,7 +163,7 @@ public class Codes extends Command {
                 event.replyError(errorMessage);
                 return;
             }
-            manager.addCode(event.getAuthor().getIdLong(), commonNames.get(type), information[1], information[2]);
+            manager.addCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1], information[2]);
             event.replySuccess("Added a code for `" + information[1] + "`");
         }
     }
@@ -180,8 +179,8 @@ public class Codes extends Command {
         @Override
         protected void execute(CommandEvent event) {
             String type = event.getArgs().split(" ")[0];
-            if (!commonNames.containsKey(type)) {
-                event.replyError(getTypes());
+            if (!Const.namesToType.containsKey(type)) {
+                event.replyError(Const.getTypes());
                 return;
             }
             // Begin the parsing.
@@ -201,7 +200,7 @@ public class Codes extends Command {
                 event.replyError(errorMessage);
                 return;
             }
-            Boolean status = manager.removeCode(event.getAuthor().getIdLong(), commonNames.get(type), information[1]);
+            Boolean status = manager.removeCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1]);
             if (status) {
                 event.replySuccess("Removed the code for `" + information[1] + "`");
             } else {
@@ -221,8 +220,8 @@ public class Codes extends Command {
         @Override
         protected void execute(CommandEvent event) {
             String type = event.getArgs().split(" ")[0];
-            if (!commonNames.containsKey(type)) {
-                event.replyError(getTypes());
+            if (!Const.namesToType.containsKey(type)) {
+                event.replyError(Const.getTypes());
                 return;
             }
             // Begin the parsing.
@@ -242,7 +241,7 @@ public class Codes extends Command {
                 event.replyError(errorMessage);
                 return;
             }
-            Boolean status = manager.editCode(event.getAuthor().getIdLong(), commonNames.get(type), information[1], information[2]);
+            Boolean status = manager.editCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1], information[2]);
             if (status) {
                 event.replySuccess("Edited the code for `" + information[1] + "`");
             } else {
@@ -286,41 +285,5 @@ public class Codes extends Command {
                     (failure) -> event.replyError("I couldn't DM you!")
             ));
         }
-    }
-
-
-    private static final Map<CodeManager.Type, String> codeTypes = new HashMap<CodeManager.Type, String>() {{
-        put(CodeManager.Type.WII, "<:Wii:259081748007223296> **Wii**");
-        put(CodeManager.Type.THREE_DS, "<:New3DSXL:287651327763283968> **3DS**");
-        put(CodeManager.Type.NNID, "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**");
-        put(CodeManager.Type.SWITCH, "<:Switch:287652338791874560> **Switch**");
-        put(CodeManager.Type.GAME, "🎮 **Games**");
-    }};
-
-    private static final Map<String, CodeManager.Type> commonNames = new HashMap<String, CodeManager.Type>() {{
-        put("wii", CodeManager.Type.WII);
-        put("3ds", CodeManager.Type.THREE_DS);
-        put("nnid", CodeManager.Type.NNID);
-        put("switch", CodeManager.Type.SWITCH);
-        put("game", CodeManager.Type.GAME);
-    }};
-
-    private static final Map<String, String> badgeTypes = new HashMap<String, String>() {{
-        put("owner", "<:BadgeBotDev:331597705472114688>");
-        put("dev", "<:BadgeDeveloper:338399284376633367>");
-        put("adm", "<:BadgeAdmin:338398740727726081>");
-        put("mod", "<:BadgeModerator:329715070768513024>");
-        put("hlp", "<:BadgeHelper:338399338739007488>");
-        put("don", "<:BadgeDonator:329712167983251458>");
-        put("trn", "<:BadgeTranslator:329723303814234113>");
-    }};
-
-    private String getTypes() {
-        StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
-        for (String type : commonNames.keySet()) {
-            response.append("`").append(type).append("`, ");
-        }
-        // Remove leftover comma + space
-        return response.substring(0, response.length() - 2);
     }
 }
