@@ -176,7 +176,34 @@ public class Codes extends Command {
 
         @Override
         protected void execute(CommandEvent event) {
-            event.replySuccess("Stub!");
+            String type = event.getArgs().split(" ")[0];
+            if (!commonNames.containsKey(type)) {
+                event.replyError(getTypes());
+                return;
+            }
+            // Begin the parsing.
+            String toAdd = event.getArgs().substring(type.length());
+            // For example, we might have | Name | code
+            // We need to determine the name and code.
+            String[] information = toAdd.split(" \\| ");
+            String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
+                    "`" + event.getClient().getPrefix() + "code remove " + type + " | code name`.";
+            // The array should have 2 (empty, name).
+            if (information.length != 2) {
+                event.replyError(errorMessage);
+                return;
+            }
+            SimpleLog.getLog("Codes").info("Removing " + information[1]);
+            if (information[1].isEmpty()) {
+                event.replyError(errorMessage);
+                return;
+            }
+            Boolean status = manager.deleteCode(event.getAuthor().getIdLong(), commonNames.get(type), information[1]);
+            if (status) {
+                event.replySuccess("Edited the code for `" + information[1] + "`");
+            } else {
+                event.replyError("A code for `" + information[1] + "` is not registered.");
+            }
         }
     }
 
@@ -190,7 +217,34 @@ public class Codes extends Command {
 
         @Override
         protected void execute(CommandEvent event) {
-            event.replySuccess("Stub!");
+            String type = event.getArgs().split(" ")[0];
+            if (!commonNames.containsKey(type)) {
+                event.replyError(getTypes());
+                return;
+            }
+            // Begin the parsing.
+            String toAdd = event.getArgs().substring(type.length());
+            // For example, we might have | Name | code
+            // We need to determine the name and code.
+            String[] information = toAdd.split(" \\| ");
+            String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
+                    "`" + event.getClient().getPrefix() + "code edit " + type + " | code name | new code`.";
+            // The array should have 3 (empty, name, and code).
+            if (information.length != 3) {
+                event.replyError(errorMessage);
+                return;
+            }
+            SimpleLog.getLog("Codes").info("Editing " + information[1] + " to " +information[2]);
+            if (information[1].isEmpty() || information[2].isEmpty()) {
+                event.replyError(errorMessage);
+                return;
+            }
+            Boolean status = manager.editCode(event.getAuthor().getIdLong(), commonNames.get(type), information[1], information[2]);
+            if (status) {
+                event.replySuccess("Edited the code for `" + information[1] + "`");
+            } else {
+                event.replyError("A code for `" + information[1] + "` is not registered.");
+            }
         }
     }
 
