@@ -39,7 +39,7 @@ public class Error extends Command {
     public Error(CodeManager manager) {
         this.manager = manager;
         this.name = "error";
-        this.help = "Turns the bot off.";
+        this.help = "Looks up errors using the Wiimmfi API.";
         this.category = new Command.Category("Admins");
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
