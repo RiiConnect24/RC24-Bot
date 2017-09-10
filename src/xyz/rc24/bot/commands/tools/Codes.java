@@ -32,7 +32,6 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import xyz.rc24.bot.utils.CodeManager;
 
 import java.awt.*;
@@ -49,6 +48,7 @@ import java.util.Map;
 public class Codes extends Command {
 
     private CodeManager manager;
+
     public Codes(CodeManager manager) {
         this.manager = manager;
         this.name = "code";
@@ -281,7 +281,10 @@ public class Codes extends Command {
                     "**Adding a user's Wii**\n" +
                     "`" + event.getClient().getPrefix() + "add @user`\n" +
                     "This will send you their codes, and then DM them your Wii/game codes.";
-            event.reply(help);
+            event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage(help).queue(
+                    (success) -> event.reactSuccess(),
+                    (failure) -> event.replyError("I couldn't DM you!")
+            ));
         }
     }
 
