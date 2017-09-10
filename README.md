@@ -1,8 +1,11 @@
-# RC24 Bot
-![License](https://img.shields.io/github/license/riiconnect24/rc24-bot.svg)
+# RC24 Bot Ruby
+![License](https://img.shields.io/github/license/riiconnect24/rc24-bot/ruby.svg)
 ![Production List](https://img.shields.io/discord/206934458954153984.svg)
 
-This bot was thought of by PokeAcer, created by Seriel, and is currently being improved on by Seriel, foxlight_is_ok and Larsenv for the RiiConnect24 Discord server. Support for other servers is in progress and can be unstable.
+This bot was thought of by PokeAcer, created by Seriel, and was improved on by Seriel, foxlight_is_ok and Larsenv for the RiiConnect24 Discord server. 
+The GitHub version started on December 30th, 2016, when foxlight_is_ok took over managing some bots for Seriel. Fast forward to now, and the Ruby version was too unstable. A decision was made to rewrite in JDA, and use Redis as the code storage format.
+
+Below, you'll find what the README said, adapted to the source's current conditions.
 
 ## Self-Hosting:
 ### Requirements
@@ -10,7 +13,7 @@ This bot was thought of by PokeAcer, created by Seriel, and is currently being i
 - bundler (`gem install bundler`)
 
 ### Install
-1. Clone the repo: `git clone https://github.com/fl0co/RC24-Bot.git`
+1. Clone the repo: `git clone https://github.com/RiiConnect24/RC24-Bot.git -b ruby`
 2. cd into the repo: `cd RC24-Bot`
 3. Edit `config.rb.example` to include the needed information and save it as `config.rb`
 4. Install bundler if you haven't already: `gem install bundler`
