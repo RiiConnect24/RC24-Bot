@@ -15,7 +15,8 @@ module SerieBot
 
     command(:wads) do |event|
       event.channel.start_typing
-      wads = "**__ RiiConnect24 IOS WADs: __**\n" \
+      wads = "Note: These wads won't be available soon. Use the IOS patcher at https://github.com/RiiConnect24/IOS-Patcher/releases instead!" \
+             "**__ RiiConnect24 IOS WADs: __**\n" \
              "Latest IOS31: https://cdn.discordapp.com/attachments/287740297923002368/334043317744435200/IOS31.wad\n" \
              "Latest IOS80: https://cdn.discordapp.com/attachments/287740297923002368/334043320307286037/IOS80.wad\n\n" \
              "**__ Wiimmfi Patched Mario Kart Channel: __**\n" \
