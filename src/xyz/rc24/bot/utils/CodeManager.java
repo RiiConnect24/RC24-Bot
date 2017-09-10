@@ -72,10 +72,10 @@ public class CodeManager {
         }
     }
 
-    public Boolean deleteCode(Long userID, Type codeType, String codeName) {
+    public Boolean removeCode(Long userID, Type codeType, String codeName) {
         String keyName = getKeyName(userID, codeType);
         Jedis conn = pool.getResource();
-        // Since the key'd just be created again with hset, make sure to check
+        // Make sure there's something to delete.
         if (conn.hexists(keyName, codeName)) {
             conn.hdel(keyName, codeName);
             return true;

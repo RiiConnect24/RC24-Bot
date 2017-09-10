@@ -123,8 +123,12 @@ public class Codes extends Command {
                 // I guess all codes for it were deleted if we got here.
                 // Carry on!
             }
-
-            event.reply(codeEmbed.build());
+            // There won't be any fields if the types are all empty.
+            if (codeEmbed.getFields().isEmpty()) {
+                event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!\n");
+            } else {
+                event.reply(codeEmbed.build());
+            }
         }
     }
 
@@ -156,7 +160,6 @@ public class Codes extends Command {
                 event.replyError(errorMessage);
                 return;
             }
-            SimpleLog.getLog("Codes").info("Here you go: " + information[1] + ", also " +information[2]);
             if (information[1].isEmpty() || information[2].isEmpty()) {
                 event.replyError(errorMessage);
                 return;
@@ -193,14 +196,14 @@ public class Codes extends Command {
                 event.replyError(errorMessage);
                 return;
             }
-            SimpleLog.getLog("Codes").info("Removing " + information[1]);
+
             if (information[1].isEmpty()) {
                 event.replyError(errorMessage);
                 return;
             }
-            Boolean status = manager.deleteCode(event.getAuthor().getIdLong(), commonNames.get(type), information[1]);
+            Boolean status = manager.removeCode(event.getAuthor().getIdLong(), commonNames.get(type), information[1]);
             if (status) {
-                event.replySuccess("Edited the code for `" + information[1] + "`");
+                event.replySuccess("Removed the code for `" + information[1] + "`");
             } else {
                 event.replyError("A code for `" + information[1] + "` is not registered.");
             }
@@ -234,7 +237,7 @@ public class Codes extends Command {
                 event.replyError(errorMessage);
                 return;
             }
-            SimpleLog.getLog("Codes").info("Editing " + information[1] + " to " +information[2]);
+
             if (information[1].isEmpty() || information[2].isEmpty()) {
                 event.replyError(errorMessage);
                 return;
