@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.codes.Add;
 import xyz.rc24.bot.commands.codes.Codes;
+import xyz.rc24.bot.commands.tools.ErrorInfo;
 import xyz.rc24.bot.commands.tools.UserInfo;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.utils.CodeManager;
@@ -74,7 +75,8 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 new Codes(manager),
                 new Add(manager),
                 new Shutdown(manager),
-                new UserInfo()
+                new UserInfo(),
+                new ErrorInfo()
         );
 
         //JDA Connection
