@@ -76,7 +76,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 new Add(manager),
                 new Shutdown(manager),
                 new UserInfo(),
-                new ErrorInfo()
+                new ErrorInfo(config.isDebug())
         );
 
         //JDA Connection

@@ -24,14 +24,22 @@ package xyz.rc24.bot.commands.tools;
  * THE SOFTWARE.
  */
 
+import com.google.gson.Gson;
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
+import com.google.gson.annotations.SerializedName;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import xyz.rc24.bot.utils.CodeManager;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -39,12 +47,15 @@ import java.util.regex.Pattern;
 
 /**
  * Looks up errors using the Wiimmfi API.
+ *
  * @author Artu
  */
 
 public class ErrorInfo extends Command {
 
-    public ErrorInfo() {
+    private static Boolean debug;
+    public ErrorInfo(Boolean isInDebug) {
+        this.debug = isInDebug;
         this.name = "error";
         this.help = "Looks up errors using the Wiimmfi API.";
         this.category = new Command.Category("Wii-related");
@@ -56,7 +67,6 @@ public class ErrorInfo extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        SimpleLog.getLog("Errors").info(event.getArgs());
         Matcher channelCheck = Pattern.compile("(NEWS|FORE)0{4}\\d{2}").matcher(event.getArgs());
         // Check for Fore/News
         if (channelCheck.find()) {
@@ -69,7 +79,7 @@ public class ErrorInfo extends Command {
                     throw new NumberFormatException();
                 }
 
-                code = Integer.parseInt(codeCheck.group());
+                code = Integer.parseInt(codeCheck.group(0));
                 if (channelErrors.get(code) == null) {
                     throw new NumberFormatException();
                 }
@@ -84,9 +94,97 @@ public class ErrorInfo extends Command {
             builder.setFooter("All information provided by RC24 Developers.", null);
             event.reply(builder.build());
         } else {
+            Integer code;
+            try {
+                // Validate it is a number.
+                Matcher codeCheck = Pattern.compile("\\d{1,6}").matcher(event.getArgs());
+                if (!codeCheck.find()) {
+                    throw new NumberFormatException();
+                }
+                code = Integer.parseInt(codeCheck.group(0));
+                if (code == 0) {
+                    // 0 returns an empty array (see https://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680936)
+                    // We'll just treat it as an error.
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                event.replyError("Enter a valid error code!");
+                return;
+            }
 
+            // Get method
+            String method = "e=" + code;
+            if (debug) {
+                method = "t=" + code;
+            }
+
+            try {
+                URL jsonAPI = new URL("https://wiimmfi.de/error?" + method + "&m=json");
+                Gson gson = new Gson();
+                JSONFormat test = gson.fromJson(new InputStreamReader(jsonAPI.openStream()), JSONFormat[].class)[0];
+                if (!(test.found == 1)) {
+                    event.replyError("Could not find the specified error from Wiimmfi.");
+                    return;
+                }
+
+                StringBuilder infoBuilder = new StringBuilder();
+                for (InfoListFormat format : test.infolists) {
+                    String htmlToMarkdown = format.info;
+                    Document infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
+                    // Replace links with markdown format
+                    for (Element hRef : infoSegment.select("a[href]")) {
+                        // So, we have to transform &amp; back to &.
+                        // It's funny, the same issue happened with Nokogiri and Ruby.
+                        String realOuterHTML = hRef.outerHtml();
+                        realOuterHTML = realOuterHTML.replace("&amp;", "&");
+                        htmlToMarkdown = htmlToMarkdown.replace(realOuterHTML, "[" + hRef.text() + "](" + hRef.attr("href") + ")");
+                    }
+                    // Parse again to handle updates
+                    infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
+                    for (Element bold : infoSegment.select("b")) {
+                        htmlToMarkdown = htmlToMarkdown.replace(bold.outerHtml(), "**" + bold.text() + "**");
+                    }
+                    // ...and parse, once more.
+                    infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
+                    for (Element italics : infoSegment.select("i")) {
+                        htmlToMarkdown = htmlToMarkdown.replace(italics.outerHtml(), "*" + italics.text() + "*");
+                    }
+
+                    infoBuilder.append(format.type + " for error " + format.name + ": " + htmlToMarkdown + "\n");
+                }
+                // Check for dev note
+                if (codeNotes.get(code) != null) {
+                    infoBuilder.append("Note from RiiConnect24: " + codeNotes.get(code));
+                }
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Here's information about your error:");
+                builder.setDescription(infoBuilder.toString());
+                builder.setColor(Color.decode("#D32F2F"));
+                builder.setFooter("All information is from Wiimmfi unless noted.", null);
+
+                event.reply(builder.build());
+            } catch (IOException e) {
+                event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.");
+            }
         }
-//        String method = "t="
+    }
+
+    private class JSONFormat {
+        @SerializedName("error")
+        Integer error;
+        @SerializedName("found")
+        Integer found;
+        @SerializedName("infolist")
+        InfoListFormat[] infolists;
+    }
+
+    private class InfoListFormat {
+        @SerializedName("type")
+        String type;
+        @SerializedName("name")
+        String name;
+        @SerializedName("info")
+        String info;
     }
 
     private Map<Integer, String> channelErrors = new HashMap<Integer, String>() {{
@@ -97,5 +195,15 @@ public class ErrorInfo extends Command {
         put(5, "VFF processing error");
         put(6, "Invalid data");
         put(99, "Other error");
+    }};
+
+    private Map<Integer, String> codeNotes = new HashMap<Integer, String>() {{
+        put(102032, "The IOS your app uses is not patched for RiiConnect24. Try sending a message again but do it quickly, you need to do it in less than a minute.");
+        put(107245, "You either need to patch your IOS because you didn't follow instructions correctly or didn't update with the new patch to change the RSA key." +
+                "Visit https://rc24.xyz/instructions to learn how to patch it.");
+        put(107304, "Try again, or maybe play with your Internet settings. This may not be easy to fix for you.");
+        put(107305, "Try again.");
+        put(105409, "If you are getting this problem while doing something with Wii Mail - check if you patched nwc24msg.cfg correctly.");
+        put(20103, "Delete NWC_AUTHDATA file stored in nand:/shared2/. Delete it using WiiXplorer.");
     }};
 }
