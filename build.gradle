@@ -37,7 +37,7 @@ repositories {
      jcenter()
 }
 dependencies {
-    compile group: 'net.dv8tion', name: 'JDA', version: '3.2.0_242'
+    compile group: 'net.dv8tion', name: 'JDA', version: '3.3.0_265'
     compile group: 'com.jagrosh', name: 'JDA-Utilities', version: '1.4'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.0'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.0'

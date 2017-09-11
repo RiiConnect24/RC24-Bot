@@ -93,7 +93,7 @@ public class UserInfo extends Command {
             builder.addField("Nickname: ", (member.getNickname() == null ? "None" : "**" + member.getNickname() + "**"), false);
             builder.addField("Roles: ", roles, false);
             builder.addField(" Status: ", member.getOnlineStatus() + (member.getGame() == null ? "" : " ("
-                    + (member.getGame().getType() == Game.GameType.TWITCH ? "On Live at [*" + member.getGame().getName() + "*]"
+                    + (member.getGame().getType() == Game.GameType.STREAMING ? "On Live at [*" + member.getGame().getName() + "*]"
                     : "Playing **" + member.getGame().getName() + "**") + ")" + ""), false);
             builder.addField("Account Creation Date: ", "**" + member.getUser().getCreationTime().format(DateTimeFormatter.RFC_1123_DATE_TIME) + "**", false);
             builder.addField("Guild Join Date: ", "**" + member.getJoinDate().format(DateTimeFormatter.RFC_1123_DATE_TIME) + "**", false);
