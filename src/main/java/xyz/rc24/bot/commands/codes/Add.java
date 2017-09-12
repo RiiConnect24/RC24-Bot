@@ -93,6 +93,7 @@ public class Add extends Command {
                 (success) -> event.reactSuccess(),
                 (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
         ));
+        manager.destroy();
     }
 
     private String getAddMessage(Map<String, String> theirCodes, Member member, Boolean other) {

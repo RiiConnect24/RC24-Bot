@@ -128,6 +128,7 @@ public class Codes extends Command {
             } else {
                 event.reply(codeEmbed.build());
             }
+            manager.destroy();
         }
     }
 
@@ -165,6 +166,7 @@ public class Codes extends Command {
             }
             manager.addCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1], information[2]);
             event.replySuccess("Added a code for `" + information[1] + "`");
+            manager.destroy();
         }
     }
 
@@ -206,6 +208,7 @@ public class Codes extends Command {
             } else {
                 event.replyError("A code for `" + information[1] + "` is not registered.");
             }
+            manager.destroy();
         }
     }
 
@@ -247,6 +250,7 @@ public class Codes extends Command {
             } else {
                 event.replyError("A code for `" + information[1] + "` is not registered.");
             }
+            manager.destroy();
         }
     }
 
