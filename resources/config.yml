@@ -28,8 +28,11 @@ patch_mail: true
 # Set this to true to enable Morpher running.
 morpher_enabled: false
 
-# The server that Morpher will mirror to.
-morpher_server: 000000000000000000
+# The channel that Morpher will mirror messages from.
+morpher_root: 000000000000000000
+
+# The channel that Morpher will mirror messages to.
+morpher_mirror: 000000000000000000
 
 # Severs that should be logged
 logged_servers:

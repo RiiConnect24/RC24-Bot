@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Artu.
+ * Copyright 2017 Spotlight and Artu.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,8 @@ import xyz.rc24.bot.commands.codes.Add;
 import xyz.rc24.bot.commands.codes.Codes;
 import xyz.rc24.bot.commands.tools.ErrorInfo;
 import xyz.rc24.bot.commands.tools.UserInfo;
+import xyz.rc24.bot.events.Morpher;
+import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.utils.CodeManager;
 
@@ -45,7 +47,7 @@ import javax.security.auth.login.LoginException;
 import java.io.*;
 
 /**
- * @author Artu
+ * @author Spotlight and Artu
  */
 
 public class RiiConnect24Bot extends ListenerAdapter {
@@ -80,16 +82,18 @@ public class RiiConnect24Bot extends ListenerAdapter {
         );
 
         //JDA Connection
-        new JDABuilder(AccountType.BOT)
+        JDABuilder builder = new JDABuilder(AccountType.BOT)
                 .setToken(config.getToken())
                 .setStatus(config.getStatus())
                 .setGame(Game.of(Const.GAME_0))
                 .addEventListener(waiter)
                 .addEventListener(client.build())
-                //.addEventListener(new Bot())
                 .addEventListener(new RiiConnect24Bot())
-                //.addEventListener(new Logging())
-                .buildBlocking();
+                .addEventListener(new ServerLog());
+        if (config.isMorpherEnabled()) {
+            builder.addEventListener(new Morpher(config.getMorpherRoot(), config.getMorpherMirror()));
+        }
+        builder.buildBlocking();
     }
 
     @Override

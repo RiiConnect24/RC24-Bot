@@ -28,16 +28,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.util.List;
 
 /**
- * @author Artu
+ * @author Spotlight
  */
 
 public class Config {
@@ -98,8 +95,12 @@ public class Config {
         return format.morpher_enabled;
     }
 
-    public Long getMorpherServer() {
-        return format.morpher_server;
+    public Long getMorpherRoot() {
+        return format.morpher_root;
+    }
+
+    public Long getMorpherMirror() {
+        return format.morpher_mirror;
     }
 
     public List<Long> getLoggedServers() {

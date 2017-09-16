@@ -15,7 +15,8 @@ public class ConfigFormat {
     public Long root_server;
     public Boolean patch_mail;
     public Boolean morpher_enabled;
-    public Long morpher_server;
+    public Long morpher_root;
+    public Long morpher_mirror;
     public List<Long> logged_servers;
     public List<Long> ignore_ids;
 }
