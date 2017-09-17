@@ -80,9 +80,7 @@ public class Morpher extends ListenerAdapter {
             if (association != null) {
                 // Create a new embed, and edit the mirrored message to it.
                 mirror.getMessageById(association).queue(
-                        mirroredMessage -> {
-                            mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue();
-                        }
+                        mirroredMessage -> mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue()
                 );
             }
         }
@@ -94,9 +92,7 @@ public class Morpher extends ListenerAdapter {
             if (association != null) {
                 // Remove mirrored message.
                 mirror.getMessageById(association).complete().delete().queue(
-                        success -> {
-                            morpherManager.removeAssociation(event.getMessageIdLong());
-                        }
+                        success -> morpherManager.removeAssociation(event.getMessageIdLong())
                 );
             }
         }
