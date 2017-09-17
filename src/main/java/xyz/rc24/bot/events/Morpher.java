@@ -19,19 +19,18 @@ import java.awt.*;
  * Mirror messages from one server to another.
  */
 public class Morpher extends ListenerAdapter {
-    private Long rootID;
-    private Long mirrorID;
-    private Long ownerID;
-    private String keyName;
+    private final Long rootID;
+    private final Long mirrorID;
+    private final Long ownerID;
     private TextChannel mirror = null;
-    private MorpherManager morpherManager;
+    private final MorpherManager morpherManager;
 
     public Morpher(Long rootID, Long mirrorID, Long ownerID) {
         this.rootID = rootID;
         this.mirrorID = mirrorID;
         this.ownerID = ownerID;
         // We have to distinguish this set from others.
-        this.keyName = "morpher:" + rootID + ":" + mirrorID;
+        String keyName = "morpher:" + rootID + ":" + mirrorID;
         this.morpherManager = new MorpherManager(keyName);
     }
 

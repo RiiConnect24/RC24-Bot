@@ -55,11 +55,11 @@ public class UserInfo extends Command {
     @Override
     protected void execute(CommandEvent event) {
         String ranks = null;
-        String roles = null;
+        String roles;
         String emote = null;
         String status = null;
         EmbedBuilder builder = new EmbedBuilder();
-        Member member = null;
+        Member member;
 
         if (event.getArgs().isEmpty()) {
             member = event.getMessage().getMember();
@@ -100,7 +100,7 @@ public class UserInfo extends Command {
             builder.setThumbnail(member.getUser().getEffectiveAvatarUrl());
             builder.setColor(member.getColor());
             event.getChannel().sendMessage(new MessageBuilder().append(title).setEmbed(builder.build()).build()).queue();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 }

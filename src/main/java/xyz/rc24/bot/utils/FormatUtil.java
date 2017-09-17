@@ -33,38 +33,38 @@ import java.util.List;
 
 public class FormatUtil {
     public static String listOfMembers(List<Member> list, String query) {
-        String out = " Multiple members found matching \"" + query + "\":";
+        StringBuilder out = new StringBuilder(" Multiple members found matching \"" + query + "\":");
         for (int i = 0; i < 6 && i < list.size(); i++)
-            out += "\n - " + list.get(i).getUser().getName() + "#" + list.get(i).getUser().getDiscriminator() + " (ID:" + list.get(i).getUser().getId() + ")";
+            out.append("\n - ").append(list.get(i).getUser().getName()).append("#").append(list.get(i).getUser().getDiscriminator()).append(" (ID:").append(list.get(i).getUser().getId()).append(")");
         if (list.size() > 6)
-            out += "\n**And " + (list.size() - 6) + " more...**";
-        return out;
+            out.append("\n**And ").append(list.size() - 6).append(" more...**");
+        return out.toString();
     }
 
     public static String listOfRoles(List<Role> list, String query) {
-        String out = " Multiple roles found matching \"" + query + "\":";
+        StringBuilder out = new StringBuilder(" Multiple roles found matching \"" + query + "\":");
         for (int i = 0; i < 6 && i < list.size(); i++)
-            out += "\n - " + list.get(i).getName() + " (ID:" + list.get(i).getId() + ")";
+            out.append("\n - ").append(list.get(i).getName()).append(" (ID:").append(list.get(i).getId()).append(")");
         if (list.size() > 6)
-            out += "\n**And " + (list.size() - 6) + " more...**";
-        return out;
+            out.append("\n**And ").append(list.size() - 6).append(" more...**");
+        return out.toString();
     }
 
     public static String listOfTcChannels(List<TextChannel> list, String query) {
-        String out = " Multiple roles found matching \"" + query + "\":";
+        StringBuilder out = new StringBuilder(" Multiple roles found matching \"" + query + "\":");
         for (int i = 0; i < 6 && i < list.size(); i++)
-            out += "\n - " + list.get(i).getName() + " (ID:" + list.get(i).getId() + ")";
+            out.append("\n - ").append(list.get(i).getName()).append(" (ID:").append(list.get(i).getId()).append(")");
         if (list.size() > 6)
-            out += "\n**And " + (list.size() - 6) + " more...**";
-        return out;
+            out.append("\n**And ").append(list.size() - 6).append(" more...**");
+        return out.toString();
     }
 
     public static String listOfVcChannels(List<VoiceChannel> list, String query) {
-        String out = " Multiple roles found matching \"" + query + "\":";
+        StringBuilder out = new StringBuilder(" Multiple roles found matching \"" + query + "\":");
         for (int i = 0; i < 6 && i < list.size(); i++)
-            out += "\n - " + list.get(i).getName() + " (ID:" + list.get(i).getId() + ")";
+            out.append("\n - ").append(list.get(i).getName()).append(" (ID:").append(list.get(i).getId()).append(")");
         if (list.size() > 6)
-            out += "\n**And " + (list.size() - 6) + " more...**";
-        return out;
+            out.append("\n**And ").append(list.size() - 6).append(" more...**");
+        return out.toString();
     }
 }

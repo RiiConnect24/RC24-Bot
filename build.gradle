@@ -1,3 +1,5 @@
+import org.ajoberstar.grgit.Grgit
+
 buildscript {
     repositories {
         jcenter()
@@ -72,7 +74,7 @@ task createBuildInfoFile(dependsOn: processResources) {
     doLast {
         def buildInfoFile = new File("$buildDir/resources/info.properties")
         Properties props = new Properties()
-        props.setProperty('commit', org.ajoberstar.grgit.Grgit.open(file('.')).head().abbreviatedId)
+        props.setProperty('commit', Grgit.open(file('.')).head().abbreviatedId)
         props.store(buildInfoFile.newWriter(), null)
     }
 }
