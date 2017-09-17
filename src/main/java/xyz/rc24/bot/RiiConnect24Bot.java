@@ -69,8 +69,16 @@ public class RiiConnect24Bot extends ListenerAdapter {
 
         CommandClientBuilder client = new CommandClientBuilder();
         client.useDefaultGame();
-        client.setOwnerId(config.getPrimaryOwner());
-        client.setCoOwnerIds(config.getSecondaryOwners());
+        client.setOwnerId("" + config.getPrimaryOwner());
+
+        // Convert Long[] of secondary owners to String[]
+        Long[] owners = config.getSecondaryOwners();
+        String[] ownersString = new String[owners.length];
+
+        for(int i = 0; i < owners.length; i++){
+            ownersString[i] = String.valueOf(owners[i]);
+        }
+        client.setCoOwnerIds(ownersString);
         client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
         client.setPrefix(config.getPrefix());
         client.addCommands(
@@ -91,7 +99,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 .addEventListener(new RiiConnect24Bot())
                 .addEventListener(new ServerLog());
         if (config.isMorpherEnabled()) {
-            builder.addEventListener(new Morpher(config.getMorpherRoot(), config.getMorpherMirror()));
+            builder.addEventListener(new Morpher(config.getMorpherRoot(), config.getMorpherMirror(), config.getPrimaryOwner()));
         }
         builder.buildBlocking();
     }

@@ -1,22 +1,115 @@
 package xyz.rc24.bot.events;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.utils.SimpleLog;
+import xyz.rc24.bot.utils.MorpherManager;
+
+import java.awt.*;
 
 /**
  * Mirror messages from one server to another.
  */
 public class Morpher extends ListenerAdapter {
-    private Long root;
-    private Long mirror;
-    public Morpher(Long root, long mirror) {
-        this.root = root;
-        this.mirror = mirror;
+    private Long rootID;
+    private Long mirrorID;
+    private Long ownerID;
+    private String keyName;
+    private TextChannel mirror = null;
+    private MorpherManager morpherManager;
+
+    public Morpher(Long rootID, Long mirrorID, Long ownerID) {
+        this.rootID = rootID;
+        this.mirrorID = mirrorID;
+        this.ownerID = ownerID;
+        // We have to distinguish this set from others.
+        this.keyName = "morpher:" + rootID + ":" + mirrorID;
+        this.morpherManager = new MorpherManager(keyName);
     }
 
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {}
-    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {}
-    public void onGuildMessageDelete(GuildMessageDeleteEvent event) {}
+    private Boolean canUseMirror(JDA jda) {
+        if (mirror == null) {
+            // Maybe we can set it up
+            mirror = jda.getTextChannelById(mirrorID);
+        }
+
+        // Double check that I can still talk.
+        if (mirror.canTalk()) {
+            return true;
+        }
+
+        // Well, looks like we can't talk, or something.
+        String message = "I couldn't access the Morpher mirror channel... could you please check it out?";
+        jda.getUserById(ownerID).openPrivateChannel().queue(pc -> pc.sendMessage(message));
+        return false;
+    }
+
+    private MessageEmbed createMirrorEmbed(Message rootMessage) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("New announcement!");
+        embed.setDescription(rootMessage.getContent());
+        embed.setColor(Color.decode("#FFEB3B"));
+        User author = rootMessage.getAuthor();
+        embed.setFooter("#" + rootMessage.getChannel().getName(), null);
+        embed.setAuthor(author.getName(), "https://rc24.xyz", author.getEffectiveAvatarUrl());
+        embed.setTimestamp(rootMessage.getCreationTime());
+        return embed.build();
+    }
+
+    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+        if (event.getChannel().getIdLong() == rootID && canUseMirror(event.getJDA())) {
+            // Mirror message, and if successful store it.
+            mirror.sendMessage(createMirrorEmbed(event.getMessage())).queue(
+                    message -> morpherManager.setAssociation(event.getMessageIdLong(), message.getIdLong()
+                    ));
+        }
+    }
+
+    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
+        if (event.getMessage().getContent().isEmpty()) return;
+        SimpleLog.getLog("Test").info("Something updated... I think? " + event.getMessageIdLong());
+        if (event.getChannel().getIdLong() == rootID && canUseMirror(event.getJDA())) {
+            Long association = morpherManager.getAssociation(event.getMessageIdLong());
+            if (association != null) {
+                SimpleLog.getLog("Test").info("I also ran.");
+                // Create a new embed, and edit the mirrored message to it.
+                mirror.getMessageById(association).queue(
+                        mirroredMessage -> {
+                            mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue();
+                            SimpleLog.getLog("Test").info("I cared, and edited. " + event.getMessageIdLong());
+                        }
+                );
+            }
+        }
+    }
+
+    public void onGuildMessageDelete(GuildMessageDeleteEvent event) {
+        SimpleLog.getLog("Test").info("Something was deleted.");
+        if (event.getChannel().getIdLong() == rootID && canUseMirror(event.getJDA())) {
+            Long association = morpherManager.getAssociation(event.getMessageIdLong());
+            if (association != null) {
+                SimpleLog.getLog("Test").info("I should care about this!");
+                // Remove mirrored message.
+                mirror.getMessageById(association).complete().delete().queue(
+                        success -> {
+                            morpherManager.removeAssociation(event.getMessageIdLong());
+                            SimpleLog.getLog("Test").info("I cared. " + event.getMessageIdLong());
+                        }
+                );
+            }
+        }
+    }
+
+    public void onShutdown(ShutdownEvent event) {
+        morpherManager.destroy();
+    }
 }

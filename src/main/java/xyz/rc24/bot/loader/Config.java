@@ -67,11 +67,11 @@ public class Config {
         return format.playing;
     }
 
-    public String getPrimaryOwner() {
+    public Long getPrimaryOwner() {
         return format.primary_owner;
     }
 
-    public String[] getSecondaryOwners() {
+    public Long[] getSecondaryOwners() {
         return format.secondary_owners;
     }
 
