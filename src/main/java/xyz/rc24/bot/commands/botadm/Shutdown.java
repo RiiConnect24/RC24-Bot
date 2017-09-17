@@ -27,7 +27,6 @@ package xyz.rc24.bot.commands.botadm;
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
-import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.utils.CodeManager;
 
 /**
@@ -35,7 +34,7 @@ import xyz.rc24.bot.utils.CodeManager;
  */
 
 public class Shutdown extends Command {
-    private CodeManager manager;
+    private final CodeManager manager;
     public Shutdown(CodeManager manager) {
         this.manager = manager;
         this.name = "shutdown";

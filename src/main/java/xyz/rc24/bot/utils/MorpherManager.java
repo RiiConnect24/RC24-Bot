@@ -12,8 +12,8 @@ public class MorpherManager {
     /**
      * Redis for configuration use.
      */
-    private JedisPool pool;
-    private String keyName;
+    private final JedisPool pool;
+    private final String keyName;
 
     public MorpherManager(String keyName) {
         this.pool = new JedisPool(new JedisPoolConfig(), "localhost");

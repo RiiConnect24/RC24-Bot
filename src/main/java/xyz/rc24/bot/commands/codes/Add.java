@@ -41,7 +41,7 @@ import java.util.Map;
  */
 
 public class Add extends Command {
-    private CodeManager manager;
+    private final CodeManager manager;
     public Add(CodeManager manager) {
         this.manager = manager;
         this.name = "add";

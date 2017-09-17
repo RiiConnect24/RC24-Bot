@@ -46,7 +46,7 @@ import java.util.Map;
 
 public class Codes extends Command {
 
-    private CodeManager manager;
+    private final CodeManager manager;
 
     public Codes(CodeManager manager) {
         this.manager = manager;

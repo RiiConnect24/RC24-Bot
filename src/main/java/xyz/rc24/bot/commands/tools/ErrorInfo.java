@@ -30,7 +30,6 @@ import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import com.google.gson.annotations.SerializedName;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -39,7 +38,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -55,7 +53,7 @@ public class ErrorInfo extends Command {
 
     private static Boolean debug;
     public ErrorInfo(Boolean isInDebug) {
-        this.debug = isInDebug;
+        debug = isInDebug;
         this.name = "error";
         this.help = "Looks up errors using the Wiimmfi API.";
         this.category = new Command.Category("Wii-related");
@@ -150,11 +148,11 @@ public class ErrorInfo extends Command {
                         htmlToMarkdown = htmlToMarkdown.replace(italics.outerHtml(), "*" + italics.text() + "*");
                     }
 
-                    infoBuilder.append(format.type + " for error " + format.name + ": " + htmlToMarkdown + "\n");
+                    infoBuilder.append(format.type).append(" for error ").append(format.name).append(": ").append(htmlToMarkdown).append("\n");
                 }
                 // Check for dev note
                 if (codeNotes.get(code) != null) {
-                    infoBuilder.append("Note from RiiConnect24: " + codeNotes.get(code));
+                    infoBuilder.append("Note from RiiConnect24: ").append(codeNotes.get(code));
                 }
                 EmbedBuilder builder = new EmbedBuilder();
                 builder.setTitle("Here's information about your error:");
@@ -187,7 +185,7 @@ public class ErrorInfo extends Command {
         String info;
     }
 
-    private Map<Integer, String> channelErrors = new HashMap<Integer, String>() {{
+    private final Map<Integer, String> channelErrors = new HashMap<Integer, String>() {{
         put(1, "Can't open the VFF");
         put(2, "WiiConnect24 file problem");
         put(3, "VFF file corrupted");
@@ -197,7 +195,7 @@ public class ErrorInfo extends Command {
         put(99, "Other error");
     }};
 
-    private Map<Integer, String> codeNotes = new HashMap<Integer, String>() {{
+    private final Map<Integer, String> codeNotes = new HashMap<Integer, String>() {{
         put(102032, "The IOS your app uses is not patched for RiiConnect24. Try sending a message again but do it quickly, you need to do it in less than a minute.");
         put(107245, "You either need to patch your IOS because you didn't follow instructions correctly or didn't update with the new patch to change the RSA key." +
                 "Visit https://rc24.xyz/instructions to learn how to patch it.");

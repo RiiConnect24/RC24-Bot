@@ -6,7 +6,6 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Manages a single Redis instance, available across classes.
