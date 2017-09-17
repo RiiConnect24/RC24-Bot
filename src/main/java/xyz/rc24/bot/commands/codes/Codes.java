@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
+import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.utils.CodeManager;
 
@@ -48,8 +49,8 @@ public class Codes extends Command {
 
     private final CodeManager manager;
 
-    public Codes(CodeManager manager) {
-        this.manager = manager;
+    public Codes(JedisPool pool) {
+        this.manager = new CodeManager(pool);
         this.name = "code";
         this.help = "Manages codes for the user.";
         this.children = new Command[]{new Add(), new Remove(), new Edit(), new Lookup(), new Help()};
@@ -128,7 +129,6 @@ public class Codes extends Command {
             } else {
                 event.reply(codeEmbed.build());
             }
-            manager.destroy();
         }
     }
 
@@ -166,7 +166,6 @@ public class Codes extends Command {
             }
             manager.addCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1], information[2]);
             event.replySuccess("Added a code for `" + information[1] + "`");
-            manager.destroy();
         }
     }
 
@@ -208,7 +207,6 @@ public class Codes extends Command {
             } else {
                 event.replyError("A code for `" + information[1] + "` is not registered.");
             }
-            manager.destroy();
         }
     }
 
@@ -250,7 +248,6 @@ public class Codes extends Command {
             } else {
                 event.replyError("A code for `" + information[1] + "` is not registered.");
             }
-            manager.destroy();
         }
     }
 

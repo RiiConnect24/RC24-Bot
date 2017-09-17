@@ -30,9 +30,12 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.codes.Add;
 import xyz.rc24.bot.commands.codes.Codes;
@@ -42,6 +45,7 @@ import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.utils.CodeManager;
+import xyz.rc24.bot.utils.MorpherManager;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
@@ -53,6 +57,7 @@ import java.io.*;
 public class RiiConnect24Bot extends ListenerAdapter {
 
     private static Config config;
+    private static JedisPool pool;
 
     public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException {
         try {
@@ -62,29 +67,32 @@ public class RiiConnect24Bot extends ListenerAdapter {
             return;
         }
 
-        CodeManager manager = new CodeManager();
-
-        // Register commands and some other things
+        // Register commands
         EventWaiter waiter = new EventWaiter();
 
         CommandClientBuilder client = new CommandClientBuilder();
-        client.useDefaultGame();
+        client.setGame(Game.of("Loading..."));
         client.setOwnerId("" + config.getPrimaryOwner());
 
-        // Convert Long[] of secondary owners to String[]
+        // Convert Long[] of secondary owners to String[] so we can set later
         Long[] owners = config.getSecondaryOwners();
         String[] ownersString = new String[owners.length];
 
         for(int i = 0; i < owners.length; i++){
             ownersString[i] = String.valueOf(owners[i]);
         }
+
+        // Set all co-owners
         client.setCoOwnerIds(ownersString);
         client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
         client.setPrefix(config.getPrefix());
+
+        // Create JedisPool for usage elsewhere
+        pool = new JedisPool(new JedisPoolConfig(), "localhost");
         client.addCommands(
-                new Codes(manager),
-                new Add(manager),
-                new Shutdown(manager),
+                new Codes(pool),
+                new Add(pool),
+                new Shutdown(),
                 new UserInfo(),
                 new ErrorInfo(config.isDebug())
         );
@@ -99,7 +107,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 .addEventListener(new RiiConnect24Bot())
                 .addEventListener(new ServerLog());
         if (config.isMorpherEnabled()) {
-            builder.addEventListener(new Morpher(config.getMorpherRoot(), config.getMorpherMirror(), config.getPrimaryOwner()));
+            builder.addEventListener(new Morpher(config));
         }
         builder.buildBlocking();
     }
@@ -107,6 +115,17 @@ public class RiiConnect24Bot extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
         SimpleLog.getLog("Bot").info("Done loading!");
-        event.getJDA().getPresence().setGame(Game.of(config.getPlaying()));
+        // Check if we need to set a game
+        if (config.getPlaying().isEmpty()) {
+            event.getJDA().getPresence().setGame(Game.of("default"));
+        } else {
+            event.getJDA().getPresence().setGame(Game.of(config.getPlaying()));
+        }
+        // It'll default to Type <prefix>help, per using the default game above.
+    }
+
+    @Override
+    public void onShutdown(ShutdownEvent event) {
+        pool.destroy();
     }
 }

@@ -29,6 +29,7 @@ import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import com.jagrosh.jdautilities.utils.FinderUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
+import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.utils.CodeManager;
 
@@ -42,8 +43,8 @@ import java.util.Map;
 
 public class Add extends Command {
     private final CodeManager manager;
-    public Add(CodeManager manager) {
-        this.manager = manager;
+    public Add(JedisPool pool) {
+        this.manager = new CodeManager(pool);
         this.name = "add";
         this.help = "Sends your friend codes to another user.";
         this.category = new Command.Category("Wii-related");
@@ -93,7 +94,6 @@ public class Add extends Command {
                 (success) -> event.reactSuccess(),
                 (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
         ));
-        manager.destroy();
     }
 
     private String getAddMessage(Map<String, String> theirCodes, Member member, Boolean other) {

@@ -47,11 +47,4 @@ public class MorpherManager {
             }
         }
     }
-
-    /**
-     * Terminates Jedis connection.
-     */
-    public void destroy() {
-        pool.destroy();
-    }
 }

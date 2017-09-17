@@ -15,7 +15,7 @@ public class CodeManager {
     /**
      * Redis for configuration use.
      */
-    private static JedisPool pool;
+    private JedisPool pool;
 
     /**
      * Each int corresponds to the sorted level on Redis.
@@ -32,8 +32,8 @@ public class CodeManager {
         return userID.toString() + ":" + codeType.toString();
     }
 
-    public CodeManager() {
-        pool = new JedisPool(new JedisPoolConfig(), "localhost");
+    public CodeManager(JedisPool pool) {
+        this.pool = pool;
     }
 
     /**
@@ -62,43 +62,36 @@ public class CodeManager {
     public Boolean editCode(Long userID, Type codeType, String codeName, String newCode) {
         String keyName = getKeyName(userID, codeType);
         // Since the key'd just be created again with hset, make sure to check
+        Boolean result;
         try (Jedis conn = pool.getResource()) {
-            if (conn.hexists(keyName, codeName)) {
+            result = conn.hexists(keyName, codeName);
+            if (result) {
                 conn.hset(keyName, codeName, newCode);
-                return true;
-            } else {
-                return false;
             }
         }
+        return result;
     }
 
     public Boolean removeCode(Long userID, Type codeType, String codeName) {
         String keyName = getKeyName(userID, codeType);
+        Boolean result;
         // Make sure there's something to delete.
         try (Jedis conn = pool.getResource()) {
-            if (conn.hexists(keyName, codeName)) {
+            result = conn.hexists(keyName, codeName);
+            if (result){
                 conn.hdel(keyName, codeName);
-                return true;
-            } else {
-                return false;
             }
         }
+        return result;
     }
 
     public Map<Type, Map<String, String>> getAllCodes(Long userID) {
+        Map<Type, Map<String, String>> codes = new HashMap<>();
         try (Jedis conn = pool.getResource()) {
-            Map<Type, Map<String, String>> codes = new HashMap<>();
             for (Type currentType : Type.values()) {
                 codes.put(currentType, conn.hgetAll(getKeyName(userID, currentType)));
             }
-            return codes;
         }
-    }
-
-    /**
-     * Terminates Jedis connection.
-     */
-    public void destroy() {
-        pool.destroy();
+        return codes;
     }
 }

@@ -11,6 +11,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import redis.clients.jedis.JedisPool;
+import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.utils.MorpherManager;
 
 import java.awt.*;
@@ -25,10 +27,10 @@ public class Morpher extends ListenerAdapter {
     private TextChannel mirror = null;
     private final MorpherManager morpherManager;
 
-    public Morpher(Long rootID, Long mirrorID, Long ownerID) {
-        this.rootID = rootID;
-        this.mirrorID = mirrorID;
-        this.ownerID = ownerID;
+    public Morpher(Config config) {
+        this.rootID = config.getMorpherRoot();
+        this.mirrorID = config.getMorpherMirror();
+        this.ownerID = config.getPrimaryOwner();
         // We have to distinguish this set from others.
         String keyName = "morpher:" + rootID + ":" + mirrorID;
         this.morpherManager = new MorpherManager(keyName);
@@ -95,9 +97,5 @@ public class Morpher extends ListenerAdapter {
                 );
             }
         }
-    }
-
-    public void onShutdown(ShutdownEvent event) {
-        morpherManager.destroy();
     }
 }
