@@ -46,9 +46,9 @@ public class CodeManager {
      * @param code Value of the code
      */
     public void addCode(Long userID, Type codeType, String codeName, String code) {
-        Jedis conn = pool.getResource();
-        conn.hset(getKeyName(userID, codeType), codeName, code);
-        conn.close();
+        try (Jedis conn = pool.getResource()) {
+            conn.hset(getKeyName(userID, codeType), codeName, code);
+        }
     }
 
     /**
@@ -62,35 +62,38 @@ public class CodeManager {
      */
     public Boolean editCode(Long userID, Type codeType, String codeName, String newCode) {
         String keyName = getKeyName(userID, codeType);
-        Jedis conn = pool.getResource();
         // Since the key'd just be created again with hset, make sure to check
-        if (conn.hexists(keyName, codeName)) {
-            conn.hset(keyName, codeName, newCode);
-            return true;
-        } else {
-            return false;
+        try (Jedis conn = pool.getResource()) {
+            if (conn.hexists(keyName, codeName)) {
+                conn.hset(keyName, codeName, newCode);
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     public Boolean removeCode(Long userID, Type codeType, String codeName) {
         String keyName = getKeyName(userID, codeType);
-        Jedis conn = pool.getResource();
         // Make sure there's something to delete.
-        if (conn.hexists(keyName, codeName)) {
-            conn.hdel(keyName, codeName);
-            return true;
-        } else {
-            return false;
+        try (Jedis conn = pool.getResource()) {
+            if (conn.hexists(keyName, codeName)) {
+                conn.hdel(keyName, codeName);
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     public Map<Type, Map<String, String>> getAllCodes(Long userID) {
-        Map<Type, Map<String, String>> codes = new HashMap<>();
-        Jedis conn = pool.getResource();
-        for (Type currentType : Type.values()) {
-            codes.put(currentType, conn.hgetAll(getKeyName(userID, currentType)));
+        try (Jedis conn = pool.getResource()) {
+            Map<Type, Map<String, String>> codes = new HashMap<>();
+            for (Type currentType : Type.values()) {
+                codes.put(currentType, conn.hgetAll(getKeyName(userID, currentType)));
+            }
+            return codes;
         }
-        return codes;
     }
 
     /**

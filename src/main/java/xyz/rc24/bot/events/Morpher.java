@@ -11,7 +11,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import xyz.rc24.bot.utils.MorpherManager;
 
 import java.awt.*;
@@ -76,16 +75,13 @@ public class Morpher extends ListenerAdapter {
 
     public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
         if (event.getMessage().getContent().isEmpty()) return;
-        SimpleLog.getLog("Test").info("Something updated... I think? " + event.getMessageIdLong());
         if (event.getChannel().getIdLong() == rootID && canUseMirror(event.getJDA())) {
             Long association = morpherManager.getAssociation(event.getMessageIdLong());
             if (association != null) {
-                SimpleLog.getLog("Test").info("I also ran.");
                 // Create a new embed, and edit the mirrored message to it.
                 mirror.getMessageById(association).queue(
                         mirroredMessage -> {
                             mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue();
-                            SimpleLog.getLog("Test").info("I cared, and edited. " + event.getMessageIdLong());
                         }
                 );
             }
@@ -93,16 +89,13 @@ public class Morpher extends ListenerAdapter {
     }
 
     public void onGuildMessageDelete(GuildMessageDeleteEvent event) {
-        SimpleLog.getLog("Test").info("Something was deleted.");
         if (event.getChannel().getIdLong() == rootID && canUseMirror(event.getJDA())) {
             Long association = morpherManager.getAssociation(event.getMessageIdLong());
             if (association != null) {
-                SimpleLog.getLog("Test").info("I should care about this!");
                 // Remove mirrored message.
                 mirror.getMessageById(association).complete().delete().queue(
                         success -> {
                             morpherManager.removeAssociation(event.getMessageIdLong());
-                            SimpleLog.getLog("Test").info("I cared. " + event.getMessageIdLong());
                         }
                 );
             }

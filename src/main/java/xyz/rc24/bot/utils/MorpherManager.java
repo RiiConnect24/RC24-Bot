@@ -4,9 +4,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Manages a single Redis instance, available across classes.
  * Now that's intuitive.™
@@ -24,27 +21,30 @@ public class MorpherManager {
     }
 
     public void setAssociation(Long rootMessageID, Long mirroredMessageID) {
-        Jedis conn = pool.getResource();
-        conn.hset(keyName, "" + rootMessageID, "" + mirroredMessageID);
+        try (Jedis conn = pool.getResource()) {
+            conn.hset(keyName, "" + rootMessageID, "" + mirroredMessageID);
+        }
     }
 
     public void removeAssociation(Long rootMessageID) {
-        Jedis conn = pool.getResource();
-        // Make sure there's something to delete.
-        conn.hdel(keyName, "" + rootMessageID);
+        try (Jedis conn = pool.getResource()) {
+            conn.hdel(keyName, "" + rootMessageID);
+        }
     }
 
     public void deleteAllAssociations(Long serverID) {
-        Jedis conn = pool.getResource();
-        conn.del(keyName);
+        try (Jedis conn = pool.getResource()) {
+            conn.del(keyName);
+        }
     }
 
     public Long getAssociation(Long rootMessageID) {
-        Jedis conn = pool.getResource();
-        try {
-            return Long.parseLong(conn.hget(keyName, "" + rootMessageID));
-        } catch (NumberFormatException e) {
-            return null;
+        try (Jedis conn = pool.getResource()) {
+            try {
+                return Long.parseLong(conn.hget(keyName, "" + rootMessageID));
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
     }
 
