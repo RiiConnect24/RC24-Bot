@@ -104,6 +104,7 @@ public class Eval extends Command {
             else
                 event.replySuccess("Done! Output:\n```java\n" + out.toString().replaceAll(event.getJDA().getToken(), "Nice try.") + " ```");
         } catch (Exception e2) {
+            e2.printStackTrace();
             event.replyError("Error! Output:\n```java\n" + e2 + " ```");
         }
     }

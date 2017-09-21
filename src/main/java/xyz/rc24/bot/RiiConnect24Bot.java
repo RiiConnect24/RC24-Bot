@@ -51,6 +51,8 @@ import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Add all commands, and start all events.
+ *
  * @author Spotlight and Artu
  */
 
@@ -58,6 +60,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
 
     private static Config config;
     private static JedisPool pool;
+    private static String prefix;
 
     public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException {
         try {
@@ -85,7 +88,8 @@ public class RiiConnect24Bot extends ListenerAdapter {
         // Set all co-owners
         client.setCoOwnerIds(ownersString);
         client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
-        client.setPrefix(config.getPrefix());
+        prefix = config.getPrefix();
+        client.setPrefix(prefix);
 
         // Create JedisPool for usage elsewhere
         pool = new JedisPool(new JedisPoolConfig(), "localhost");
@@ -121,12 +125,12 @@ public class RiiConnect24Bot extends ListenerAdapter {
         SimpleLog.getLog("Bot").info("Done loading!");
         // Check if we need to set a game
         if (config.getPlaying().isEmpty()) {
-            event.getJDA().getPresence().setGame(Game.of("default"));
+            event.getJDA().getPresence().setGame(Game.of("Type " + prefix + "help"));
         } else {
             event.getJDA().getPresence().setGame(Game.of(config.getPlaying()));
         }
-        // It'll default to Type <prefix>help, per using the default game above.
 
+        // It'll default to Type <prefix>help, per using the default game above.
         if (config.birthdaysAreEnabled()) {
             // Set up birthday routine
             Calendar today = Calendar.getInstance();
