@@ -33,7 +33,7 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.utils.CodeManager;
+import xyz.rc24.bot.mangers.CodeManager;
 
 import java.awt.*;
 import java.util.List;

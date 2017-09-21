@@ -103,6 +103,14 @@ public class Config {
         return format.morpher_mirror;
     }
 
+    public Boolean birthdaysAreEnabled() {
+        return format.birthdays_enabled;
+    }
+
+    public Long getBirthdayChannel() {
+        return format.birthdays_channel;
+    }
+
     public List<Long> getLoggedServers() {
         return format.logged_servers;
     }

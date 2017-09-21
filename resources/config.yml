@@ -34,6 +34,12 @@ morpher_root: 000000000000000000
 # The channel that Morpher will mirror messages to.
 morpher_mirror: 000000000000000000
 
+# Set this to true to enable checking of Birthdays.
+birthdays_enabled: false
+
+# The channel that Birthdays will be sent in.
+birthdays_channel: 000000000000000000
+
 # Severs that should be logged
 logged_servers:
  - 000000000000000000

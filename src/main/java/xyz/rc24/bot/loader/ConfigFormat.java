@@ -19,6 +19,8 @@ public class ConfigFormat {
     public Boolean morpher_enabled;
     public Long morpher_root;
     public Long morpher_mirror;
+    public Boolean birthdays_enabled;
+    public Long birthdays_channel;
     public List<Long> logged_servers;
     public List<Long> ignore_ids;
 }

@@ -24,7 +24,7 @@
 
 package xyz.rc24.bot;
 
-import xyz.rc24.bot.utils.CodeManager;
+import xyz.rc24.bot.mangers.CodeManager;
 
 import java.util.HashMap;
 import java.util.Map;

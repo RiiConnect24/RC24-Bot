@@ -36,19 +36,19 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import xyz.rc24.bot.commands.botadm.Shutdown;
-import xyz.rc24.bot.commands.codes.Add;
-import xyz.rc24.bot.commands.codes.Codes;
-import xyz.rc24.bot.commands.tools.ErrorInfo;
-import xyz.rc24.bot.commands.tools.UserInfo;
+import xyz.rc24.bot.commands.botadm.*;
+import xyz.rc24.bot.commands.codes.*;
+import xyz.rc24.bot.commands.tools.*;
+import xyz.rc24.bot.events.BirthdayEvent;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
-import xyz.rc24.bot.utils.CodeManager;
-import xyz.rc24.bot.utils.MorpherManager;
 
 import javax.security.auth.login.LoginException;
 import java.io.*;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Spotlight and Artu
@@ -94,7 +94,11 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 new Add(pool),
                 new Shutdown(),
                 new UserInfo(),
-                new ErrorInfo(config.isDebug())
+                new Bash(),
+                new Eval(),
+                new ErrorInfo(config.isDebug()),
+                new SetBirthday(pool),
+                new Invite()
         );
 
         //JDA Connection
@@ -122,6 +126,20 @@ public class RiiConnect24Bot extends ListenerAdapter {
             event.getJDA().getPresence().setGame(Game.of(config.getPlaying()));
         }
         // It'll default to Type <prefix>help, per using the default game above.
+
+        if (config.birthdaysAreEnabled()) {
+            // Set up birthday routine
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 0);
+            today.set(Calendar.MINUTE, 0);
+            today.set(Calendar.SECOND, 0);
+
+            // Every day at midnight
+            // TODO: change to TimeUnit.DAYS
+            // And yes, we're assuming the channel exists. :fingers_crossed:
+            Timer timer = new Timer();
+            timer.schedule(new BirthdayEvent(config.getBirthdayChannel(), event.getJDA()), today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES)); // period: 1 day
+        }
     }
 
     @Override

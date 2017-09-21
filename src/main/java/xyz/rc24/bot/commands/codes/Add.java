@@ -31,14 +31,14 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.utils.CodeManager;
+import xyz.rc24.bot.mangers.CodeManager;
 
 import java.util.List;
 import java.util.Map;
 
 /**
  * Allows another user to share friend codes.
- * @author Artu
+ * @author Spotlight
  */
 
 public class Add extends Command {
