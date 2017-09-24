@@ -142,7 +142,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
             // TODO: change to TimeUnit.DAYS
             // And yes, we're assuming the channel exists. :fingers_crossed:
             Timer timer = new Timer();
-            timer.schedule(new BirthdayEvent(config.getBirthdayChannel(), event.getJDA()), today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES)); // period: 1 day
+            timer.schedule(new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()), today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES)); // period: 1 day
         }
     }
 
