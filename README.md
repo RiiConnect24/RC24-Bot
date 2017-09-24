@@ -5,15 +5,15 @@
 
 It took a while, but it's finally here... 🕑
 ## Introducing a JDA version of RiiConnect24 Bot
-or.. rather, what's on master. What is currently running, I can't quite say.
+...or rather, what's on master. What is currently running, I can't say.
 
-## why exactly did you make it in JDA lol
-While `discordrb` is awesome, it usually takes quite a bit for newly added API features to come out. That's fine for most bots, but most in the community wanted the latest as soon as possible.
+## Why did you make it in JDA?
+While `discordrb` (Ruby) is awesome, it usually takes quite a bit for newly added API features to come out. That's fine for most bots, but most people in the community wanted the latest as soon as possible.
 
-Also, the fact more users know Java in RiiConnect24's community helped the decision.
+Also, the fact that more users know Java in RiiConnect24's community along with the fact that Java is a more tried and tested language that works helped the decision.
 
-## ok ok ok stop wasting my time how do i set it up
-I'm glad you asked. A note: We no longer use YAML except for the config (which was just a Ruby class before), as Java really doesn't like YAML.
+## How do I set it up?
+I'm glad you asked. We no longer use YAML except for the config (which was just a Ruby class before), as Java really doesn't like YAML.
 
 Check out the following steps:
 1. You'll need to have Redis and Gradle installed. (PowerTip ⚡: You can always stick with what version of gradle is being used currently by substituting all usages of `gradle` with `./gradlew` or `./gradlew.bat`.)
@@ -22,4 +22,6 @@ Check out the following steps:
 4. It's time to start the 🔨... `gradle build`! And... tada! That's it. 🎉 You can find JAR(s) created in `build/libs`. Easy! 👌👍
 5. For running, make sure you have redis installed on whatever machine. Also, if `config.yml` can't be found, it'll copy a default copy to the current directory for you. 🏃
 
-If you don't like emoji in your README, you can blame `Spotlight 🐾#6209` (ID `239809536012058625`). You can also ask them for support. Similarly, if anything goes wrong, feel free to contact `Artuto#0424` (ID 264499432538505217) on Discord!
+-----
+
+If you don't like emoji in your README, you can blame `Spotlight 🐾#6209` (ID `239809536012058625`). You can also ask them for support. Similarly, if anything goes wrong, feel free to contact `Artuto#0424` (ID 264499432538505217) or maybe `TheMrIron2#9747` (ID 214470980402151424) on Discord!
