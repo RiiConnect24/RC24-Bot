@@ -31,7 +31,16 @@ public class BirthdayEvent extends TimerTask {
 
     @Override
     public void run() {
-        logger.info("i'm running stfu!");
+        try (Jedis conn = pool.getResource()) {
+            Map<String, String> birthdays = conn.hgetAll("birthdays");
+
+            TextChannel birthday = jda.getTextChannelById(birthdayChannelID);
+
+            // Get format of date used in stored dates
+            LocalDate test = LocalDate.now();
+            String today = test.getMonthValue() + " " + test.getDayOfMonth();
+
+            // Cycle through all birthdays.
             for (Map.Entry<String, String> userBirthday : birthdays.entrySet()) {
                 String userID = userBirthday.getKey();
                 // The map's in the format of <user ID, birth date>
