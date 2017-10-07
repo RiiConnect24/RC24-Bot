@@ -22,6 +22,8 @@ import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -35,10 +37,13 @@ import java.util.List;
 public class Eval extends Command {
     private ScriptEngine engine;
     private List<String> imports;
+    private JedisPool pool;
 
-    public Eval() {
+    public Eval(JedisPool pool) {
+        this.pool = pool;
         this.name = "eval";
         this.help = "Executes Groovy code";
+        this.category = new Category("Admin");
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = true;
@@ -73,10 +78,10 @@ public class Eval extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        StringBuilder importString = new StringBuilder();
+        String importString = "";
         String eval;
 
-        try {
+        try (Jedis conn = pool.getResource()) {
             engine.put("event", event);
             engine.put("jda", event.getJDA());
             engine.put("channel", event.getChannel());
@@ -84,6 +89,8 @@ public class Eval extends Command {
             engine.put("bot", event.getSelfUser());
             engine.put("client", event.getClient());
             engine.put("author", event.getAuthor());
+
+            engine.put("conn", conn);
             if (event.isFromType(ChannelType.TEXT)) {
                 engine.put("member", event.getMember());
                 engine.put("guild", event.getGuild());
@@ -92,7 +99,7 @@ public class Eval extends Command {
             }
 
             for (final String s : imports) {
-                importString.append("import ").append(s).append(".*;");
+                importString += "import " + s + ".*;";
             }
 
             eval = event.getArgs().replaceAll("getToken", "getSelfUser");
@@ -104,7 +111,6 @@ public class Eval extends Command {
             else
                 event.replySuccess("Done! Output:\n```java\n" + out.toString().replaceAll(event.getJDA().getToken(), "Nice try.") + " ```");
         } catch (Exception e2) {
-            e2.printStackTrace();
             event.replyError("Error! Output:\n```java\n" + e2 + " ```");
         }
     }

@@ -37,7 +37,7 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import xyz.rc24.bot.commands.botadm.*;
-import xyz.rc24.bot.commands.codes.*;
+import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.events.BirthdayEvent;
 import xyz.rc24.bot.events.Morpher;
@@ -99,7 +99,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 new Shutdown(),
                 new UserInfo(),
                 new Bash(),
-                new Eval(),
+                new Eval(pool),
                 new ErrorInfo(config.isDebug()),
                 new SetBirthday(pool),
                 new BotConfig(pool),
