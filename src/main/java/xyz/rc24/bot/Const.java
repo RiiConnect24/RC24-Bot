@@ -65,13 +65,30 @@ public class Const {
         put("don", "<:BadgeDonator:329712167983251458>");
         put("trn", "<:BadgeTranslator:329723303814234113>");
     }};
+
+    public static final Map<String, String> channelTypes = new HashMap<String, String>() {{
+        put("mod", "Moderation log. Shows bans/unbans.");
+        put("srv", "Server log. Shows bans/unbans, along with joins and leaves.");
+    }};
+
     // oops, a function in a constant file
-    public static String getTypes() {
+    public static String getCodeTypes() {
         StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
         for (String type : namesToType.keySet()) {
             response.append("`").append(type).append("`, ");
         }
         // Remove leftover comma + space
         return response.substring(0, response.length() - 2);
+    }
+
+    public static String getChannelTypes() {
+        StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
+        for (Map.Entry<String, String> type : channelTypes.entrySet()) {
+            // `type`: Definition\n
+            response.append("`").append(type.getKey())
+                    .append("`: ")
+                    .append(type.getValue()).append("\n");
+        }
+        return response.toString();
     }
 }

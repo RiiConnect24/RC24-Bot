@@ -102,7 +102,9 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 new Eval(),
                 new ErrorInfo(config.isDebug()),
                 new SetBirthday(pool),
-                new Invite()
+                new BotConfig(pool),
+                new Invite(),
+                new MassMessage(pool)
         );
 
         //JDA Connection
@@ -113,7 +115,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 .addEventListener(waiter)
                 .addEventListener(client.build())
                 .addEventListener(new RiiConnect24Bot())
-                .addEventListener(new ServerLog());
+                .addEventListener(new ServerLog(pool));
         if (config.isMorpherEnabled()) {
             builder.addEventListener(new Morpher(config));
         }

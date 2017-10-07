@@ -144,7 +144,7 @@ public class Codes extends Command {
         protected void execute(CommandEvent event) {
             String type = event.getArgs().split(" ")[0];
             if (!Const.namesToType.containsKey(type)) {
-                event.replyError(Const.getTypes());
+                event.replyError(Const.getCodeTypes());
                 return;
             }
 
@@ -181,7 +181,7 @@ public class Codes extends Command {
         protected void execute(CommandEvent event) {
             String type = event.getArgs().split(" ")[0];
             if (!Const.namesToType.containsKey(type)) {
-                event.replyError(Const.getTypes());
+                event.replyError(Const.getCodeTypes());
                 return;
             }
             // Begin the parsing.
@@ -222,7 +222,7 @@ public class Codes extends Command {
         protected void execute(CommandEvent event) {
             String type = event.getArgs().split(" ")[0];
             if (!Const.namesToType.containsKey(type)) {
-                event.replyError(Const.getTypes());
+                event.replyError(Const.getCodeTypes());
                 return;
             }
             // Begin the parsing.
