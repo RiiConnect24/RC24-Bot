@@ -36,7 +36,7 @@ public class Shutdown extends Command {
     public Shutdown() {
         this.name = "shutdown";
         this.help = "Turns the bot off.";
-        this.category = new Command.Category("Admins");
+        this.category = new Command.Category("Admin");
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = true;

@@ -1,4 +1,4 @@
-package xyz.rc24.bot.commands.codes;
+package xyz.rc24.bot.commands.wii;
 
 /*
  * The MIT License
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Manages codes for the user, stored on Redis.
+ * Manages wii for the user, stored on Redis.
  *
  * @author Spotlight
  */
@@ -52,7 +52,7 @@ public class Codes extends Command {
     public Codes(JedisPool pool) {
         this.manager = new CodeManager(pool);
         this.name = "code";
-        this.help = "Manages codes for the user.";
+        this.help = "Manages wii for the user.";
         this.children = new Command[]{new Add(), new Remove(), new Edit(), new Lookup(), new Help()};
         this.category = new Command.Category("Wii-related");
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
@@ -68,7 +68,7 @@ public class Codes extends Command {
     private class Lookup extends Command {
         Lookup() {
             this.name = "lookup";
-            this.help = "Displays codes for the user.";
+            this.help = "Displays wii for the user.";
             this.category = new Command.Category("Wii-related");
             this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
         }
@@ -120,12 +120,12 @@ public class Codes extends Command {
                     // Now that we have the code text set up, we'll just add it as a field.
                     codeEmbed.addField(Const.typesToReadableName.get(typeData.getKey()), fieldContents.toString(), true);
                 }
-                // I guess all codes for it were deleted if we got here.
+                // I guess all wii for it were deleted if we got here.
                 // Carry on!
             }
             // There won't be any fields if the types are all empty.
             if (codeEmbed.getFields().isEmpty()) {
-                event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
+                event.replyError("**" + member.getEffectiveName() + "** has not added any wii!");
             } else {
                 event.reply(codeEmbed.build());
             }
@@ -135,7 +135,7 @@ public class Codes extends Command {
     private class Add extends Command {
         Add() {
             this.name = "add";
-            this.help = "Adds codes for the user.";
+            this.help = "Adds wii for the user.";
             this.category = new Command.Category("Wii-related");
             this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
         }
@@ -172,7 +172,7 @@ public class Codes extends Command {
     private class Remove extends Command {
         Remove() {
             this.name = "remove";
-            this.help = "Removes codes for the user.";
+            this.help = "Removes wii for the user.";
             this.category = new Command.Category("Wii-related");
             this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
         }
@@ -213,7 +213,7 @@ public class Codes extends Command {
     private class Edit extends Command {
         Edit() {
             this.name = "edit";
-            this.help = "Edits codes for the user.";
+            this.help = "Edits wii for the user.";
             this.category = new Command.Category("Wii-related");
             this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
         }
@@ -254,7 +254,7 @@ public class Codes extends Command {
     private class Help extends Command {
         Help() {
             this.name = "help";
-            this.help = "Shows help regarding codes.";
+            this.help = "Shows help regarding wii.";
             this.category = new Command.Category("Wii-related");
             this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
         }
@@ -262,25 +262,25 @@ public class Codes extends Command {
         @Override
         protected void execute(CommandEvent event) {
             String help = "**__Using the bot__**\n\n" +
-                    "**Adding codes:**\n" +
+                    "**Adding wii:**\n" +
                     "`" + event.getClient().getPrefix() + "code add wii | Wii Name Goes here | 1234-5678-9012-3456`\n" +
                     "`" + event.getClient().getPrefix() + "code add game | Game Name | 1234-5678-9012`\n" +
                     "and many more types! Run `" + event.getClient().getPrefix() + "code add` " +
                     "to see all supported code types right now, such as the 3DS and Switch.\n\n" +
-                    "**Editing codes**\n" +
+                    "**Editing wii**\n" +
                     "`" + event.getClient().getPrefix() + "code edit wii | Wii Name | 1234-5678-9012-3456`\n" +
                     "`" + event.getClient().getPrefix() + "code edit game | Game Name | 1234-5678-9012`\n" +
                     "\n" +
-                    "**Removing codes**\n" +
+                    "**Removing wii**\n" +
                     "`" + event.getClient().getPrefix() + "code remove wii | Wii Name`\n" +
                     "`" + event.getClient().getPrefix() + "code remove game | Game Name`\n" +
                     "\n" +
-                    "**Looking up codes**\n" +
+                    "**Looking up wii**\n" +
                     "`" + event.getClient().getPrefix() + "code lookup @user`\n" +
                     "\n" +
                     "**Adding a user's Wii**\n" +
                     "`" + event.getClient().getPrefix() + "add @user`\n" +
-                    "This will send you their codes, and then DM them your Wii/game codes.";
+                    "This will send you their wii, and then DM them your Wii/game wii.";
             event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage(help).queue(
                     (success) -> event.reactSuccess(),
                     (failure) -> event.replyError("I couldn't DM you!")

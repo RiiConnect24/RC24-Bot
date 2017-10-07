@@ -1,4 +1,4 @@
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.commands.wii;
 
 /*
  * The MIT License
@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 /**
  * Looks up errors using the Wiimmfi API.
  *
- * @author Artu
+ * @author Spotlight
  */
 
 public class ErrorInfo extends Command {

@@ -1,4 +1,4 @@
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
@@ -21,7 +21,7 @@ public class SetBirthday extends Command {
         this.pool = pool;
         this.name = "birthday";
         this.help = "Sets your birthday.";
-        this.category = new Command.Category("Community");
+        this.category = new Command.Category("Wii-related");
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
     }
 

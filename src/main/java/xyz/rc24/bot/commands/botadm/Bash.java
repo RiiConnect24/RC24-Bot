@@ -34,6 +34,7 @@ public class Bash extends Command {
     public Bash() {
         this.name = "bash";
         this.help = "Runs a bash command.";
+        this.category = new Category("Admin");
         this.ownerCommand = true;
     }
 

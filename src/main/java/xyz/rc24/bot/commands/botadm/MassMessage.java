@@ -1,4 +1,4 @@
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.commands.botadm;
 
 import com.google.gson.Gson;
 import com.jagrosh.jdautilities.commandclient.Command;

@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.codes;
+package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Allows another user to share friend codes.
+ * Allows another user to share friend wii.
  * @author Spotlight
  */
 
@@ -46,7 +46,7 @@ public class Add extends Command {
     public Add(JedisPool pool) {
         this.manager = new CodeManager(pool);
         this.name = "add";
-        this.help = "Sends your friend codes to another user.";
+        this.help = "Sends your friend wii to another user.";
         this.category = new Command.Category("Wii-related");
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
@@ -69,19 +69,19 @@ public class Add extends Command {
             }
         }
 
-        // Get codes for the user running the command
+        // Get wii for the user running the command
         Map<CodeManager.Type, Map<String, String>> userCodes = manager.getAllCodes(event.getMember().getUser().getIdLong());
         // If it's empty/null, (something) will return an empty map.
         Map<String, String> authorWiiCodes = userCodes.get(CodeManager.Type.WII);
         if (authorWiiCodes.isEmpty()) {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend codes!");
+            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend wii!");
             return;
         }
 
         Map<CodeManager.Type, Map<String, String>> memberCodes = manager.getAllCodes(member.getUser().getIdLong());
         Map<String, String> memberWiiCodes = memberCodes.get(CodeManager.Type.WII);
         if (memberWiiCodes.isEmpty()) {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend codes!");
+            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend wii!");
             return;
         }
 
@@ -99,7 +99,7 @@ public class Add extends Command {
     private String getAddMessage(Map<String, String> theirCodes, Member member, Boolean other) {
         StringBuilder addMessage = new StringBuilder();
 
-        // Create a human-readable format of the user's Wii codes.
+        // Create a human-readable format of the user's Wii wii.
         StringBuilder theirCodesButString = new StringBuilder();
         for (Map.Entry<String, String> code : theirCodes.entrySet()) {
             theirCodesButString.append("`").append(code.getKey()).append("`:\n")
