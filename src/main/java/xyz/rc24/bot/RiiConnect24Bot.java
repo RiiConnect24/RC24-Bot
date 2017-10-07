@@ -94,17 +94,23 @@ public class RiiConnect24Bot extends ListenerAdapter {
         // Create JedisPool for usage elsewhere
         pool = new JedisPool(new JedisPoolConfig(), "localhost");
         client.addCommands(
-                new Codes(pool),
-                new Add(pool),
-                new Shutdown(),
-                new UserInfo(),
+                // Bot administration
                 new Bash(),
                 new Eval(pool),
-                new ErrorInfo(config.isDebug()),
-                new SetBirthday(pool),
+                new MassMessage(pool),
+                new Shutdown(),
+
+                // Tools
                 new BotConfig(pool),
+                new UserInfo(),
                 new Invite(),
-                new MassMessage(pool)
+                new MailParseCommand(),
+
+                // Wii-related
+                new Codes(pool),
+                new Add(pool),
+                new SetBirthday(pool),
+                new ErrorInfo(config.isDebug())
         );
 
         //JDA Connection

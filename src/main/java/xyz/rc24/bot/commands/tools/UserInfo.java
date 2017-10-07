@@ -47,7 +47,6 @@ public class UserInfo extends Command {
         this.name = "userinfo";
         this.help = "Shows info about the specified user";
         this.category = Categories.TOOLS;
-        this.category = new Command.Category("Specific commands");
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = false;
