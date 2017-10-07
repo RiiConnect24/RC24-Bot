@@ -22,6 +22,7 @@ import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
+import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.commands.Categories;
@@ -50,7 +51,7 @@ public class Eval extends Command {
         this.ownerCommand = true;
         this.guildOnly = false;
 
-        engine = new ScriptEngineManager().getEngineByName("Groovy");
+        engine = new GroovyScriptEngineFactory().getScriptEngine();
 
         try {
             imports = Arrays.asList( "com.jagrosh.jdautilities",
