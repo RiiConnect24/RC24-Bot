@@ -1,4 +1,4 @@
-package xyz.rc24.bot.commands.botadm;
+package xyz.rc24.bot.commands.tools;
 
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
+import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.LogManager;
 
 import java.time.LocalDate;
@@ -27,7 +28,7 @@ public class BotConfig extends Command {
         this.children = new Command[]{new ChannelConfig()};
         this.name = "config";
         this.help = "Change important bot settings.";
-        this.category = new Category("Admin");
+        this.category = Categories.TOOLS;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
     }
 

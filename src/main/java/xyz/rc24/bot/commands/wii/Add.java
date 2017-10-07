@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
+import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.CodeManager;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class Add extends Command {
         this.manager = new CodeManager(pool);
         this.name = "add";
         this.help = "Sends your friend wii to another user.";
-        this.category = new Command.Category("Wii-related");
+        this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = true;

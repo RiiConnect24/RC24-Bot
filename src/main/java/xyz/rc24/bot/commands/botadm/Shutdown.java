@@ -27,6 +27,7 @@ package xyz.rc24.bot.commands.botadm;
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
+import xyz.rc24.bot.commands.Categories;
 
 /**
  * @author Artu
@@ -36,7 +37,7 @@ public class Shutdown extends Command {
     public Shutdown() {
         this.name = "shutdown";
         this.help = "Turns the bot off.";
-        this.category = new Command.Category("Admin");
+        this.category = Categories.ADMIN;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = true;

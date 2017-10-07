@@ -20,6 +20,7 @@ package xyz.rc24.bot.commands.botadm;
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import xyz.rc24.bot.commands.Categories;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class Bash extends Command {
     public Bash() {
         this.name = "bash";
         this.help = "Runs a bash command.";
-        this.category = new Category("Admin");
+        this.category = Categories.ADMIN;
         this.ownerCommand = true;
     }
 

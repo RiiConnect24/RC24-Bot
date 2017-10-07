@@ -5,6 +5,7 @@ import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import xyz.rc24.bot.commands.Categories;
 
 import java.text.DateFormat;
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ public class SetBirthday extends Command {
         this.pool = pool;
         this.name = "birthday";
         this.help = "Sets your birthday.";
-        this.category = new Command.Category("Wii-related");
+        this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
     }
 

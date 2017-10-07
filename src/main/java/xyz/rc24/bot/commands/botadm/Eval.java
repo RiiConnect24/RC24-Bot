@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import xyz.rc24.bot.commands.Categories;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -43,7 +44,7 @@ public class Eval extends Command {
         this.pool = pool;
         this.name = "eval";
         this.help = "Executes Groovy code";
-        this.category = new Category("Admin");
+        this.category = Categories.ADMIN;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = true;
@@ -52,7 +53,7 @@ public class Eval extends Command {
         engine = new ScriptEngineManager().getEngineByName("Groovy");
 
         try {
-            imports = Arrays.asList("com.jagrosh.jdautilities",
+            imports = Arrays.asList( "com.jagrosh.jdautilities",
                     "com.jagrosh.jdautilities.commandclient",
                     "com.jagrosh.jdautilities.commandclient.impl",
                     "com.jagrosh.jdautilities.entities",
@@ -73,6 +74,7 @@ public class Eval extends Command {
                     "net.dv8tion.jda.core.utils",
                     "net.dv8tion.jda.webhook");
         } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
     }
 
@@ -111,6 +113,7 @@ public class Eval extends Command {
             else
                 event.replySuccess("Done! Output:\n```java\n" + out.toString().replaceAll(event.getJDA().getToken(), "Nice try.") + " ```");
         } catch (Exception e2) {
+            e2.printStackTrace();
             event.replyError("Error! Output:\n```java\n" + e2 + " ```");
         }
     }

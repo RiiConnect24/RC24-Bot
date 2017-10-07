@@ -32,6 +32,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
+import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.utils.FormatUtil;
 
 import java.time.format.DateTimeFormatter;
@@ -45,6 +46,7 @@ public class UserInfo extends Command {
     public UserInfo() {
         this.name = "userinfo";
         this.help = "Shows info about the specified user";
+        this.category = Categories.TOOLS;
         this.category = new Command.Category("Specific commands");
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};

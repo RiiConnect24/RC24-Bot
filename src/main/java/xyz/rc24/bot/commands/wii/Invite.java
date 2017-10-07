@@ -2,11 +2,12 @@ package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
+import xyz.rc24.bot.commands.Categories;
 
 public class Invite extends Command {
     public Invite() {
         this.name = "invite";
-        this.category = new Command.Category("Wii-related");
+        this.category = Categories.WII;
         this.help = "Invite me to your server?";
     }
 

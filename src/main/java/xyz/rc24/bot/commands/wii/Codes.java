@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
+import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.CodeManager;
 
 import java.awt.*;
@@ -54,7 +55,7 @@ public class Codes extends Command {
         this.name = "code";
         this.help = "Manages wii for the user.";
         this.children = new Command[]{new Add(), new Remove(), new Edit(), new Lookup(), new Help()};
-        this.category = new Command.Category("Wii-related");
+        this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = false;
     }

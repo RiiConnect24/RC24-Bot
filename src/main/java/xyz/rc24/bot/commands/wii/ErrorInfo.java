@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.Permission;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import xyz.rc24.bot.commands.Categories;
 
 import java.awt.*;
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class ErrorInfo extends Command {
         debug = isInDebug;
         this.name = "error";
         this.help = "Looks up errors using the Wiimmfi API.";
-        this.category = new Command.Category("Wii-related");
+        this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = false;

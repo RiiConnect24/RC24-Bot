@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.TextChannel;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.LogManager;
 
 import java.time.LocalDate;
@@ -23,7 +24,7 @@ public class MassMessage extends Command {
         this.pool = pool;
         this.name = "super_secret_server_message";
         this.help = "Sends a message to _every_ log on the bot. USE WITH CAUTION!";
-        this.category = new Category("Admin");
+        this.category = Categories.ADMIN;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = true;
     }
