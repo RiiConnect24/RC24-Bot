@@ -75,14 +75,14 @@ public class Add extends Command {
         // If it's empty/null, (something) will return an empty map.
         Map<String, String> authorWiiCodes = userCodes.get(CodeManager.Type.WII);
         if (authorWiiCodes.isEmpty()) {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend wii!");
+            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend codes!");
             return;
         }
 
         Map<CodeManager.Type, Map<String, String>> memberCodes = manager.getAllCodes(member.getUser().getIdLong());
         Map<String, String> memberWiiCodes = memberCodes.get(CodeManager.Type.WII);
         if (memberWiiCodes.isEmpty()) {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend wii!");
+            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend codes!");
             return;
         }
 
