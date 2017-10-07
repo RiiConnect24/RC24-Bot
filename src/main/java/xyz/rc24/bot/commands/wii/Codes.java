@@ -126,7 +126,7 @@ public class Codes extends Command {
             }
             // There won't be any fields if the types are all empty.
             if (codeEmbed.getFields().isEmpty()) {
-                event.replyError("**" + member.getEffectiveName() + "** has not added any wii!");
+                event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
             } else {
                 event.reply(codeEmbed.build());
             }
