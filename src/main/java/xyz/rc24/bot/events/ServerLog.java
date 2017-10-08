@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.events.guild.GuildBanEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +48,20 @@ public class ServerLog extends ListenerAdapter {
 
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
-        if (!event.getGuild().getBans().complete().contains(event.getUser())) {
-            EmbedBuilder builder = getEmbed("A user left the server!",
-                    "#FFEB3B",
-                    event.getUser());
+        try {
+            if (!event.getGuild().getBans().complete().contains(event.getUser())) {
+                EmbedBuilder builder = getEmbed("A user left the server!",
+                        "#FFEB3B",
+                        event.getUser());
 
+                sendEmbed(new LogType[]{LogType.SERVER}, builder, event);
+            }
+        } catch (InsufficientPermissionException e) {
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.setTitle("Warning!");
+            builder.setDescription("I don't have the Ban Members permission. I won't ban anyone, but without it I can't tell if anyone's leaving, or if it was a ban.");
+            builder.setFooter("Error generated at", null);
+            builder.setTimestamp(Instant.now());
             sendEmbed(new LogType[]{LogType.SERVER}, builder, event);
         }
         // Don't do anything if banned.
