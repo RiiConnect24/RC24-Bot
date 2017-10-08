@@ -36,7 +36,7 @@ public class SetBirthday extends Command {
 
             String userID = event.getAuthor().getId();
 
-            conn.hset("birthdays", userID, dateTime.getMonthValue() + " " + dateTime.getDayOfMonth());
+            conn.hset("birthdays", userID, dateTime.getMonthValue() + "-" + dateTime.getDayOfMonth());
             event.replySuccess("Updated successfully!");
         } catch (DateTimeParseException e) {
             e.printStackTrace();

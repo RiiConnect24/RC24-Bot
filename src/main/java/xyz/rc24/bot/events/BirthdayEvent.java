@@ -38,7 +38,7 @@ public class BirthdayEvent extends TimerTask {
 
             // Get format of date used in stored dates
             LocalDate test = LocalDate.now();
-            String today = test.getMonthValue() + " " + test.getDayOfMonth();
+            String today = test.getMonthValue() + "-" + test.getDayOfMonth();
 
             // Cycle through all birthdays.
             for (Map.Entry<String, String> userBirthday : birthdays.entrySet()) {
