@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Artu.
+ * Copyright 2017 Spotlight.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import net.dv8tion.jda.core.Permission;
 import xyz.rc24.bot.commands.Categories;
 
 /**
- * @author Artu
+ * @author Spotlight
  */
 
 public class Shutdown extends Command {
