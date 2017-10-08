@@ -10,10 +10,7 @@ import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.LogManager;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +30,7 @@ public class MassMessage extends Command {
     protected void execute(CommandEvent event) {
         try (Jedis conn = pool.getResource()) {
             Map<String, String> logConfigs = conn.hgetAll("logs");
-            List<TextChannel> serverList = Collections.emptyList();
+            List<TextChannel> serverList = new ArrayList<>();
             Gson gson = new Gson();
 
             // For every channel we have:
