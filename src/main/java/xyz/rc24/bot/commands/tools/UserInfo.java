@@ -44,7 +44,7 @@ import java.util.List;
 
 public class UserInfo extends Command {
     public UserInfo() {
-        this.name = "userinfo";
+        this.name = "info";
         this.help = "Shows info about the specified user";
         this.category = Categories.TOOLS;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
@@ -55,10 +55,7 @@ public class UserInfo extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        String ranks = null;
         String roles;
-        String emote = null;
-        String status = null;
         EmbedBuilder builder = new EmbedBuilder();
         Member member;
 

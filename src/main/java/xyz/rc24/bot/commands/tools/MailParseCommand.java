@@ -24,4 +24,3 @@ public class MailParseCommand extends Command {
         ));
     }
 }
-

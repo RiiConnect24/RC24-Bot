@@ -28,7 +28,6 @@ import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.commands.Categories;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,31 +51,26 @@ public class Eval extends Command {
         this.guildOnly = false;
 
         engine = new GroovyScriptEngineFactory().getScriptEngine();
-
-        try {
-            imports = Arrays.asList( "com.jagrosh.jdautilities",
-                    "com.jagrosh.jdautilities.commandclient",
-                    "com.jagrosh.jdautilities.commandclient.impl",
-                    "com.jagrosh.jdautilities.entities",
-                    "com.jagrosh.jdautilities.menu",
-                    "com.jagrosh.jdautilities.utils",
-                    "com.jagrosh.jdautilities.waiter",
-                    "java.io",
-                    "java.lang",
-                    "java.util",
-                    "net.dv8tion.jda.bot",
-                    "net.dv8tion.jda.bot.entities",
-                    "net.dv8tion.jda.bot.entities.impl",
-                    "net.dv8tion.jda.core",
-                    "net.dv8tion.jda.core.entities",
-                    "net.dv8tion.jda.core.entities.impl",
-                    "net.dv8tion.jda.core.managers",
-                    "net.dv8tion.jda.core.managers.impl",
-                    "net.dv8tion.jda.core.utils",
-                    "net.dv8tion.jda.webhook");
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
-        }
+        imports = Arrays.asList("com.jagrosh.jdautilities",
+                "com.jagrosh.jdautilities.commandclient",
+                "com.jagrosh.jdautilities.commandclient.impl",
+                "com.jagrosh.jdautilities.entities",
+                "com.jagrosh.jdautilities.menu",
+                "com.jagrosh.jdautilities.utils",
+                "com.jagrosh.jdautilities.waiter",
+                "java.io",
+                "java.lang",
+                "java.util",
+                "net.dv8tion.jda.bot",
+                "net.dv8tion.jda.bot.entities",
+                "net.dv8tion.jda.bot.entities.impl",
+                "net.dv8tion.jda.core",
+                "net.dv8tion.jda.core.entities",
+                "net.dv8tion.jda.core.entities.impl",
+                "net.dv8tion.jda.core.managers",
+                "net.dv8tion.jda.core.managers.impl",
+                "net.dv8tion.jda.core.utils",
+                "net.dv8tion.jda.webhook");
     }
 
     @Override
