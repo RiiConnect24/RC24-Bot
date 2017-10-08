@@ -39,14 +39,22 @@ public class MassMessage extends Command {
                 LogManager.StorageFormat format = gson.fromJson(serverJson, LogManager.StorageFormat.class);
                 if (format.serverLog != null) {
                     TextChannel serverChannel = event.getJDA().getTextChannelById(format.serverLog);
-                    if (serverChannel.canTalk()) {
-                        serverList.add(serverChannel);
+                    try {
+                        if (serverChannel.canTalk()) {
+                            serverList.add(serverChannel);
+                        }
+                    } catch (NullPointerException ignored) {
+
                     }
                 }
                 if (format.modLog != null) {
                     TextChannel serverChannel = event.getJDA().getTextChannelById(format.serverLog);
-                    if (serverChannel.canTalk()) {
-                        serverList.add(serverChannel);
+                    try {
+                        if (serverChannel.canTalk()) {
+                            serverList.add(serverChannel);
+                        }
+                    } catch (NullPointerException ignored) {
+                        
                     }
                 }
             }
