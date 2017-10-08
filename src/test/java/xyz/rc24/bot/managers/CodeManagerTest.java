@@ -1,4 +1,4 @@
-package xyz.rc24.bot.utils;
+package xyz.rc24.bot.managers;
 
 import org.junit.Test;
 import redis.clients.jedis.JedisPool;
