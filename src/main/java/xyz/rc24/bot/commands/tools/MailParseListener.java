@@ -1,18 +1,17 @@
 package xyz.rc24.bot.commands.tools;
 
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.rc24.bot.events.MailParser;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
 
 public class MailParseListener extends ListenerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(MailParseListener.class);
@@ -33,68 +32,32 @@ public class MailParseListener extends ListenerAdapter {
                         URLConnection connection = new URL(url).openConnection();
                         connection.addRequestProperty("User-Agent", "RiiConnect24/2.0.3.1");
                         InputStream inputStream = connection.getInputStream();
-                        // Yes, I used commons-io just for this.
-                        // I'm sorry.
-                        byte[] file = IOUtils.toByteArray(inputStream);
-                        inputStream.close();
+                        byte[] file = new MailParser().patchMail(inputStream);
+                        if (file.length == 1) {
+                            // Uh oh, something failed.
+                            // Error is set as the first byte.
 
-                        /*
-                         * The following is based off a specific format.
-                         * The developer writing this has tried to comment
-                         * appropriately given the current task.
-                         *
-                         * @see https://github.com/RiiConnect24/Kaitai-Files/blob/master/Kaitais/nwc24msg.ksy
-                         */
-
-
-                        System.out.println(DatatypeConverter.printHexBinary(file));
-
-                        // Simple file checks
-                        String invalidString = "Hm, that doesn't look like a valid `nwc24msg.cfg`.";
-
-                        logger.debug("Length: " + file.length);
-                        if (!(file.length == 1024)) {
-                            event.getChannel().sendMessage(invalidString).complete();
+                            // An enum would normally be used for this, but we can't
+                            // as they're not constants.
+                            // 0x21 - File size incorrect
+                            // 0x69 - File magic incorrect
+                            switch (file[0]) {
+                                case 0x21:
+                                    event.getChannel().sendMessage("Hm, that file doesn't seem the right size. Are you sure it's right?").complete();
+                                    break;
+                                case 0x69:
+                                    event.getChannel().sendMessage("That doesn't look like the right file type. Are you sure it's right?").complete();
+                                    break;
+                                default:
+                                    event.getChannel().sendMessage("Uh oh, something went wrong. Are you sure you're using the right file?").complete();
+                                    break;
+                            }
                             return;
                         }
 
-                        byte[] expectedMagic = "WcCf".getBytes();
-                        byte[] presentMagic = Arrays.copyOfRange(file, 0, 4);
-                        logger.debug("Expected magic: " + DatatypeConverter.printHexBinary(expectedMagic));
-                        logger.debug("Magic from file: " + DatatypeConverter.printHexBinary(presentMagic));
-                        if (!Arrays.equals(presentMagic, expectedMagic)) {
-                            event.getChannel().sendMessage(invalidString).complete();
-                            return;
-                        }
-
-                        byte[] mailDomain = new byte[40];
-                        byte[] mailString = "@rc24.xyz".getBytes();
-                        // We copy the string into the domain to preserve length.
-                        System.arraycopy(mailString, 0, mailDomain, 0, mailString.length);
-                        // Then, we copy the domain into its proper place in the file.
-                        // The entry for mail is 24 bytes into the file.
-                        System.arraycopy(mailDomain, 0, file, 24, mailDomain.length);
-
-                        // The following list is in order of engine type.
-                        String[] engineTypes = new String[]{"account", "check", "receive", "delete", "send"};
-                        // We start the list of offsets 156 bytes off into the file.
-                        Integer currentPos = 0x9C;
-                        for (String type : engineTypes) {
-                            // We create a byte[] with the proper length for the engine.
-                            byte[] sizedEngineURL = new byte[80];
-                            byte[] engineURL = ("http://mtw.rc24.xyz/cgi-bin/" + type + ".cgi").getBytes();
-                            // Then, we copy the engine URL (in string) to the proper length, to preserve size.
-                            System.arraycopy(engineURL, 0, sizedEngineURL, 0, engineURL.length);
-
-                            // Now, we copy it into its proper place in the file.
-                            System.arraycopy(sizedEngineURL, 0, file, currentPos, sizedEngineURL.length);
-                            // Increase position for next engine.
-                            currentPos += 0x80;
-                        }
-
-                        // Idek can I just dump this
-                        System.out.println(javax.xml.bind.DatatypeConverter.printHexBinary(file));
-
+                        // Upload patched file with caption
+                        event.getChannel().sendFile(file, test.getFileName(),
+                                new MessageBuilder().append("Here's your patched mail file, deleted from our server:").build()).complete();
                     } catch (IOException e) {
                         event.getChannel().sendMessage("Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").complete();
                         e.printStackTrace();
