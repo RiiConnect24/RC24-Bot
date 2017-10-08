@@ -36,16 +36,22 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import xyz.rc24.bot.commands.botadm.*;
-import xyz.rc24.bot.commands.wii.*;
+import xyz.rc24.bot.commands.botadm.Bash;
+import xyz.rc24.bot.commands.botadm.Eval;
+import xyz.rc24.bot.commands.botadm.MassMessage;
+import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.tools.*;
+import xyz.rc24.bot.commands.wii.Add;
+import xyz.rc24.bot.commands.wii.Codes;
+import xyz.rc24.bot.commands.wii.ErrorInfo;
+import xyz.rc24.bot.commands.wii.SetBirthday;
 import xyz.rc24.bot.events.BirthdayEvent;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 
 import javax.security.auth.login.LoginException;
-import java.io.*;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +87,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
         Long[] owners = config.getSecondaryOwners();
         String[] ownersString = new String[owners.length];
 
-        for(int i = 0; i < owners.length; i++){
+        for (int i = 0; i < owners.length; i++) {
             ownersString[i] = String.valueOf(owners[i]);
         }
 
@@ -121,7 +127,8 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 .addEventListener(waiter)
                 .addEventListener(client.build())
                 .addEventListener(new RiiConnect24Bot())
-                .addEventListener(new ServerLog(pool));
+                .addEventListener(new ServerLog(pool))
+                .addEventListener(new MailParseListener());
         if (config.isMorpherEnabled()) {
             builder.addEventListener(new Morpher(config));
         }
