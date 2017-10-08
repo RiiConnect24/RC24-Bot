@@ -43,12 +43,18 @@ public class LogManager {
     public Boolean isLogEnabled(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
             String storedJSON = conn.hget("logs", "" + serverID);
-            StorageFormat storedConfig = gson.fromJson(storedJSON, StorageFormat.class);
+            StorageFormat format;
+            if (storedJSON == null || storedJSON.isEmpty()) {
+                // I guess no config was created previously.
+                format = new StorageFormat();
+            } else {
+                format = gson.fromJson(storedJSON, StorageFormat.class);
+            }
             switch (type) {
                 case MOD:
-                    return !(storedConfig.modLog == null);
+                    return !(format.modLog == null);
                 case SERVER:
-                    return !(storedConfig.serverLog == null);
+                    return !(format.serverLog == null);
                 default:
                     // Other types we don't (yet) know of
                     return false;
@@ -66,12 +72,18 @@ public class LogManager {
     public Long getLog(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
             String storedJSON = conn.hget("logs", "" + serverID);
-            StorageFormat storedConfig = gson.fromJson(storedJSON, StorageFormat.class);
+            StorageFormat format;
+            if (storedJSON == null || storedJSON.isEmpty()) {
+                // I guess no config was created previously.
+                format = new StorageFormat();
+            } else {
+                format = gson.fromJson(storedJSON, StorageFormat.class);
+            }
             switch (type) {
                 case MOD:
-                    return storedConfig.modLog;
+                    return format.modLog;
                 case SERVER:
-                    return storedConfig.serverLog;
+                    return format.serverLog;
                 default:
                     // ????
                     return 0L;
