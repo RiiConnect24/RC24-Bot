@@ -48,13 +48,13 @@ public class MassMessage extends Command {
                     }
                 }
                 if (format.modLog != null) {
-                    TextChannel serverChannel = event.getJDA().getTextChannelById(format.serverLog);
+                    TextChannel modChannel = event.getJDA().getTextChannelById(format.modLog);
                     try {
-                        if (serverChannel.canTalk()) {
-                            serverList.add(serverChannel);
+                        if (modChannel.canTalk()) {
+                            serverList.add(modChannel);
                         }
                     } catch (NullPointerException ignored) {
-                        
+
                     }
                 }
             }
