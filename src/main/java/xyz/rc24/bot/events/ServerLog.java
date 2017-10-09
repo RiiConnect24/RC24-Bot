@@ -93,9 +93,14 @@ public class ServerLog extends ListenerAdapter {
 
         for (LogType logType : logTypes) {
             if (manager.isLogEnabled(logType, guildID)) {
-                guildEvent.getJDA()
-                        .getTextChannelById(manager.getLog(logType, guildID))
-                        .sendMessage(embed.build()).complete();
+                try {
+                    guildEvent.getJDA()
+                            .getTextChannelById(manager.getLog(logType, guildID))
+                            .sendMessage(embed.build()).complete();
+                } catch (InsufficientPermissionException e) {
+                    // Remove the log from the config, since it's invalid.
+                    manager.disableLog(logType, guildID);
+                }
             }
         }
     }
