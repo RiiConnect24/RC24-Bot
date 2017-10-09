@@ -59,7 +59,7 @@ public class BotConfig extends Command {
 
             String channelName = arguments[1];
             if (channelName.equals("off")) {
-                manager.disableLog(event.getGuild().getIdLong(), type);
+                manager.disableLog(type, event.getGuild().getIdLong());
                 event.replySuccess("Channel succesfully removed as a log.");
                 return;
             }

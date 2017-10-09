@@ -124,10 +124,10 @@ public class LogManager {
     /**
      * "Disables" a log type for a server.
      *
-     * @param serverID  Server ID to associate with
      * @param type      Type of log to associate
+     * @param serverID  Server ID to associate with
      */
-    public void disableLog(Long serverID, LogType type) {
+    public void disableLog(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
             String storedJSON = conn.hget("logs", "" + serverID);
             StorageFormat format;
