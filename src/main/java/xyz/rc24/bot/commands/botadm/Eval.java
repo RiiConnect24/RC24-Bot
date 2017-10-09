@@ -26,6 +26,7 @@ import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.loader.Config;
 
 import javax.script.ScriptEngine;
 import java.util.Arrays;
@@ -39,9 +40,11 @@ public class Eval extends Command {
     private ScriptEngine engine;
     private List<String> imports;
     private JedisPool pool;
+    private Config config;
 
-    public Eval(JedisPool pool) {
+    public Eval(JedisPool pool, Config config) {
         this.pool = pool;
+        this.config = config;
         this.name = "eval";
         this.help = "Executes Groovy code";
         this.category = Categories.ADMIN;
@@ -88,6 +91,7 @@ public class Eval extends Command {
             engine.put("author", event.getAuthor());
 
             engine.put("conn", conn);
+            engine.put("config", config);
             if (event.isFromType(ChannelType.TEXT)) {
                 engine.put("member", event.getMember());
                 engine.put("guild", event.getGuild());

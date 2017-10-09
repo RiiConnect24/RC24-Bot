@@ -102,7 +102,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
         client.addCommands(
                 // Bot administration
                 new Bash(),
-                new Eval(pool),
+                new Eval(pool, config),
                 new MassMessage(pool),
                 new Shutdown(),
 
