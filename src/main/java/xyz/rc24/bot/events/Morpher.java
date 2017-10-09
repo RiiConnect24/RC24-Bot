@@ -2,18 +2,21 @@ package xyz.rc24.bot.events;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.mangers.MorpherManager;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 
 /**
  * Mirror messages from one server to another.
@@ -24,6 +27,7 @@ public class Morpher extends ListenerAdapter {
     private final Long ownerID;
     private TextChannel mirror = null;
     private final MorpherManager morpherManager;
+    private static final Logger logger = LoggerFactory.getLogger(Morpher.class);
 
     public Morpher(Config config) {
         this.rootID = config.getMorpherRoot();
@@ -47,7 +51,7 @@ public class Morpher extends ListenerAdapter {
 
         // Well, looks like we can't talk, or something.
         String message = "I couldn't access the Morpher mirror channel... could you please check it out?";
-        jda.getUserById(ownerID).openPrivateChannel().queue(pc -> pc.sendMessage(message));
+        jda.getUserById(ownerID).openPrivateChannel().queue(pc -> pc.sendMessage(message).complete());
         return false;
     }
 
@@ -93,6 +97,41 @@ public class Morpher extends ListenerAdapter {
                 mirror.getMessageById(association).complete().delete().queue(
                         success -> morpherManager.removeAssociation(event.getMessageIdLong())
                 );
+            }
+        }
+    }
+
+    // For use with eval
+    // We set a
+    @SuppressWarnings("unused")
+    public void syncMessages(JDA jda) {
+        if (canUseMirror(jda)) {
+            TextChannel root = jda.getTextChannelById(rootID);
+            // Set current history
+            MessageHistory channelHistory = root.getHistory();
+            // Grab current 100 messages, and make the list mutable.
+            List<Message> history = new ArrayList<>(channelHistory.retrievePast(100).complete());
+            List<Message> retrievedHistory;
+            do {
+                // Get further 100 messages back.
+                retrievedHistory = channelHistory.retrievePast(100).complete();
+                history.addAll(retrievedHistory);
+                logger.info("Downloading another 100 messages for mirroring...");
+            } while (retrievedHistory.size() % 100 != 0);
+            // The above detects if it evenly fits into 100 or not.
+            // If it doesn't, we're done with messages.
+
+            // Add final messages from loop before.
+            history.addAll(retrievedHistory);
+
+            // Since our current history is from most recent message -> last, we need to reverse.
+            Collections.reverse(history);
+            for (Message toMirror : history) {
+                // Time to mirror!
+                // Create embed + store in database.
+                mirror.sendMessage(createMirrorEmbed(toMirror)).queue(
+                        message -> morpherManager.setAssociation(toMirror.getIdLong(), message.getIdLong()
+                ));
             }
         }
     }
