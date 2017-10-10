@@ -121,9 +121,6 @@ public class Morpher extends ListenerAdapter {
             // The above detects if it evenly fits into 100 or not.
             // If it doesn't, we're done with messages.
 
-            // Add final messages from loop before.
-            history.addAll(retrievedHistory);
-
             // Since our current history is from most recent message -> last, we need to reverse.
             Collections.reverse(history);
             for (Message toMirror : history) {
