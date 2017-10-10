@@ -1,50 +1,52 @@
 package xyz.rc24.bot.mangers;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.KeyFactory;
 
 /**
  * Manages a single Redis instance, available across classes.
  * Now that's intuitive.™
  */
 public class MorpherManager {
-    /**
-     * Redis for configuration use.
-     */
-    private final JedisPool pool;
-    private final String keyName;
+    private Datastore datastore;
+    private KeyFactory keyFactory;
+    private String keyName;
 
-    public MorpherManager(String keyName) {
-        this.pool = new JedisPool(new JedisPoolConfig(), "localhost");
+    public MorpherManager(String keyName, Datastore datastore) {
+        this.datastore = datastore;
+        this.keyFactory = datastore.newKeyFactory().setKind("morpher");
         this.keyName = keyName;
     }
 
     public void setAssociation(Long rootMessageID, Long mirroredMessageID) {
-        try (Jedis conn = pool.getResource()) {
-            conn.hset(keyName, "" + rootMessageID, "" + mirroredMessageID);
-        }
+        Key taskKey = keyFactory.newKey(keyName);
+        Entity entity = Entity.newBuilder(taskKey)
+                .set("" + rootMessageID, mirroredMessageID)
+                .build();
+        datastore.put(entity);
     }
 
     public void removeAssociation(Long rootMessageID) {
-        try (Jedis conn = pool.getResource()) {
-            conn.hdel(keyName, "" + rootMessageID);
+        Key taskKey = keyFactory.newKey(keyName);
+        Entity entity = datastore.get(taskKey);
+        if (!entity.isNull(rootMessageID + "")) {
+            Entity builder = Entity.newBuilder(taskKey)
+                    .remove(rootMessageID + "")
+                    .build();
+            datastore.put(builder);
         }
     }
 
     public void deleteAllAssociations(Long serverID) {
-        try (Jedis conn = pool.getResource()) {
-            conn.del(keyName);
-        }
+        Key taskKey = keyFactory.newKey(keyName);
+        datastore.delete(taskKey);
     }
 
     public Long getAssociation(Long rootMessageID) {
-        try (Jedis conn = pool.getResource()) {
-            try {
-                return Long.parseLong(conn.hget(keyName, "" + rootMessageID));
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
+        Key taskKey = keyFactory.newKey(keyName);
+        Entity entity = datastore.get(taskKey);
+        return entity.getLong("" + rootMessageID);
     }
 }

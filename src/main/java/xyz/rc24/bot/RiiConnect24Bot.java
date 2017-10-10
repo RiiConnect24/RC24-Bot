@@ -24,18 +24,19 @@
 
 package xyz.rc24.bot;
 
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
 import com.jagrosh.jdautilities.commandclient.CommandClientBuilder;
 import com.jagrosh.jdautilities.waiter.EventWaiter;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Eval;
 import xyz.rc24.bot.commands.botadm.MassMessage;
@@ -46,6 +47,8 @@ import xyz.rc24.bot.events.BirthdayEvent;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
+import xyz.rc24.bot.mangers.CodeManager;
+import xyz.rc24.bot.mangers.LogManager;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -62,7 +65,7 @@ import java.util.concurrent.TimeUnit;
 public class RiiConnect24Bot extends ListenerAdapter {
 
     private static Config config;
-    private static JedisPool pool;
+    private static Datastore datastore;
     private static String prefix;
 
     public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException {
@@ -78,6 +81,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
 
         CommandClientBuilder client = new CommandClientBuilder();
         client.setGame(Game.of("Loading..."));
+        client.setStatus(OnlineStatus.DO_NOT_DISTURB);
         client.setOwnerId("" + config.getPrimaryOwner());
 
         // Convert Long[] of secondary owners to String[] so we can set later
@@ -94,25 +98,27 @@ public class RiiConnect24Bot extends ListenerAdapter {
         prefix = config.getPrefix();
         client.setPrefix(prefix);
 
-        // Create JedisPool for usage elsewhere
-        pool = new JedisPool(new JedisPoolConfig(), "localhost");
+        // Connect to default Datastore for usage elsewhere
+        datastore = DatastoreOptions.getDefaultInstance().getService();
+        LogManager logManager = new LogManager(datastore);
+        CodeManager codeManager = new CodeManager(datastore);
         client.addCommands(
                 // Bot administration
                 new Bash(),
-                new Eval(pool, config),
-                new MassMessage(pool),
+                new Eval(datastore, config),
+                new MassMessage(logManager),
                 new Shutdown(),
 
                 // Tools
-                new BotConfig(pool),
+                new BotConfig(logManager),
                 new UserInfo(),
                 new Invite(),
                 new MailParseCommand(),
 
                 // Wii-related
-                new Codes(pool),
-                new Add(pool),
-                new SetBirthday(pool),
+                new Codes(codeManager),
+                new Add(codeManager),
+                new SetBirthday(datastore),
                 new ErrorInfo(config.isDebug()),
                 new DNS(),
                 new Wads()
@@ -126,10 +132,10 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 .addEventListener(waiter)
                 .addEventListener(client.build())
                 .addEventListener(new RiiConnect24Bot())
-                .addEventListener(new ServerLog(pool))
+                .addEventListener(new ServerLog(logManager))
                 .addEventListener(new MailParseListener());
         if (config.isMorpherEnabled()) {
-            builder.addEventListener(new Morpher(config));
+            builder.addEventListener(new Morpher(config, datastore));
         }
         builder.buildBlocking();
     }
@@ -143,6 +149,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
         } else {
             event.getJDA().getPresence().setGame(Game.of(config.getPlaying()));
         }
+        event.getJDA().getPresence().setStatus(OnlineStatus.ONLINE);
 
         // It'll default to Type <prefix>help, per using the default game above.
         if (config.birthdaysAreEnabled()) {
@@ -155,12 +162,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
             // Every day at midnight
             // And yes, we're assuming the channel exists. :fingers_crossed:
             Timer timer = new Timer();
-            timer.schedule(new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()), today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+            timer.schedule(new BirthdayEvent(config.getBirthdayChannel(), datastore, event.getJDA()), today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
         }
-    }
-
-    @Override
-    public void onShutdown(ShutdownEvent event) {
-        pool.destroy();
     }
 }

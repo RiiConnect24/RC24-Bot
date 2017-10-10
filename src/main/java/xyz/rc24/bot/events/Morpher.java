@@ -1,5 +1,6 @@
 package xyz.rc24.bot.events;
 
+import com.google.cloud.datastore.Datastore;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -29,13 +30,13 @@ public class Morpher extends ListenerAdapter {
     private final MorpherManager morpherManager;
     private static final Logger logger = LoggerFactory.getLogger(Morpher.class);
 
-    public Morpher(Config config) {
+    public Morpher(Config config, Datastore datastore) {
         this.rootID = config.getMorpherRoot();
         this.mirrorID = config.getMorpherMirror();
         this.ownerID = config.getPrimaryOwner();
         // We have to distinguish this set from others.
         String keyName = "morpher:" + rootID + ":" + mirrorID;
-        this.morpherManager = new MorpherManager(keyName);
+        this.morpherManager = new MorpherManager(keyName, datastore);
     }
 
     private Boolean canUseMirror(JDA jda) {

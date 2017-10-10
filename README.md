@@ -16,10 +16,10 @@ Also, the fact more users know Java in RiiConnect24's community helped the decis
 I'm glad you asked. A note: We no longer use YAML except for the config (which was just a Ruby class before), as Java really doesn't like YAML.
 
 Check out the following steps:
-1. You'll need to have Redis and Gradle installed. (PowerTip ⚡: You can always stick with what version of gradle is being used currently by substituting all usages of `gradle` with `./gradlew` or `./gradlew.bat`.)
-2. We'll create the Redis structures as we go, so no need to set anything up. Unless you're converting from the Ruby 💎 version, in which you'll want the *unwritten yaml -> Redis scripts*. They're coming, we promise! 🔜
-3. `git clone` the repo somewhere and `cd` into it. 💻
-4. It's time to start the 🔨... `gradle build`! And... tada! That's it. 🎉 You can find JAR(s) created in `build/libs`. Easy! 👌👍
+1. You'll need to have Gradle installed. (PowerTip: You can always stick with what version of gradle is being used currently by substituting all usages of `gradle` with `./gradlew` or `./gradlew.bat`.)
+2. We'll create the Redis structures as we go, so no need to set anything up. Unless you're converting from the Ruby version, in which you'll want the *unwritten yaml -> Redis scripts*. They're coming, we promise! 🔜
+3. `git clone` the repo somewhere and `cd` into it.
+4. It's time to go... `gradle build`! And... tada! That's it. 🎉 You can find JAR(s) created in `build/libs`. Easy! 👌👍
 5. For running, make sure you have redis installed on whatever machine. Also, if `config.yml` can't be found, it'll copy a default copy to the current directory for you. 🏃
 
-If you don't like emoji in your README, you can blame `Spotlight 🐾#6209` (ID `239809536012058625`). You can also ask them for support. Similarly, if anything goes wrong, feel free to contact `Artuto#0424` (ID `264499432538505217`) on Discord!
+If anything breaks, feel free to contact `Spotlight IsNSA 🐾#6209` (ID `239809536012058625`). You can also ask them for support. Similarly, if anything goes wrong, feel free to contact `Artuto#0424` (ID `264499432538505217`) on Discord!
