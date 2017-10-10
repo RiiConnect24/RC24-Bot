@@ -1,23 +1,30 @@
 package xyz.rc24.bot.commands.tools;
 
-import com.google.cloud.datastore.Datastore;
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import com.jagrosh.jdautilities.utils.FinderUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.LogManager;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BotConfig extends Command {
     private LogManager manager;
 
-    public BotConfig(LogManager manager) {
-        this.manager = manager;
+    public BotConfig(JedisPool pool) {
+        this.manager = new LogManager(pool);
         this.children = new Command[]{new ChannelConfig()};
         this.name = "config";
         this.help = "Change important bot settings.";
@@ -48,7 +55,7 @@ public class BotConfig extends Command {
             // I'm assuming way too much here.
             // TODO: Better checking of arguments?
             String channelType = arguments[0];
-            LogManager.LogType type = Const.channelTypes.get(channelType);
+            LogManager.LogType type = channelTypes.get(channelType);
 
             String channelName = arguments[1];
             if (channelName.equals("off")) {
@@ -65,13 +72,21 @@ public class BotConfig extends Command {
             } else {
                 if (type == null) {
                     event.replyError(Const.getChannelTypes());
-                } else {
+                }  else {
                     manager.setLog(event.getGuild().getIdLong(), type, channelID);
                     event.replySuccess("Successfully set!");
                 }
             }
         }
 
+        final Map<String, LogManager.LogType> channelTypes = new HashMap<String, LogManager.LogType>() {{
+            put("mod", LogManager.LogType.MOD);
+            put("mod-log", LogManager.LogType.MOD);
+
+            put("srv", LogManager.LogType.SERVER);
+            put("server", LogManager.LogType.SERVER);
+            put("server-log", LogManager.LogType.SERVER);
+        }};
 
         private Long getChannelId(String name, Guild currentGuild) {
             List<TextChannel> potentialChannels = FinderUtil.findTextChannels(name, currentGuild);

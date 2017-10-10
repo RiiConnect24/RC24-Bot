@@ -25,7 +25,6 @@
 package xyz.rc24.bot;
 
 import xyz.rc24.bot.mangers.CodeManager;
-import xyz.rc24.bot.mangers.LogManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,16 +66,7 @@ public class Const {
         put("trn", "<:BadgeTranslator:329723303814234113>");
     }};
 
-    public static final Map<String, LogManager.LogType> channelTypes = new HashMap<String, LogManager.LogType>() {{
-        put("mod", LogManager.LogType.MOD);
-        put("mod-log", LogManager.LogType.MOD);
-
-        put("srv", LogManager.LogType.SERVER);
-        put("server", LogManager.LogType.SERVER);
-        put("server-log", LogManager.LogType.SERVER);
-    }};
-
-    public static final Map<String, String> channelTypeHelp = new HashMap<String, String>() {{
+    public static final Map<String, String> channelTypes = new HashMap<String, String>() {{
         put("mod", "Moderation log. Shows bans/unbans.");
         put("srv", "Server log. Shows bans/unbans, along with joins and leaves.");
     }};
@@ -93,7 +83,7 @@ public class Const {
 
     public static String getChannelTypes() {
         StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
-        for (Map.Entry<String, String> type : channelTypeHelp.entrySet()) {
+        for (Map.Entry<String, String> type : channelTypes.entrySet()) {
             // `type`: Definition\n
             response.append("`").append(type.getKey())
                     .append("`: ")

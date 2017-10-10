@@ -31,6 +31,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
+import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.CodeManager;
@@ -49,8 +50,8 @@ public class Codes extends Command {
 
     private final CodeManager manager;
 
-    public Codes(CodeManager manager) {
-        this.manager = manager;
+    public Codes(JedisPool pool) {
+        this.manager = new CodeManager(pool);
         this.name = "code";
         this.help = "Manages wii for the user.";
         this.children = new Command[]{new Add(), new Remove(), new Edit(), new Lookup(), new Help()};

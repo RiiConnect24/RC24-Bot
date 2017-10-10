@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.mangers.LogManager;
 import xyz.rc24.bot.mangers.LogManager.LogType;
 
@@ -22,8 +23,8 @@ public class ServerLog extends ListenerAdapter {
     private LogManager manager;
     private static final Logger logger = LoggerFactory.getLogger(ServerLog.class);
 
-    public ServerLog(LogManager manager) {
-        this.manager = manager;
+    public ServerLog(JedisPool pool) {
+        this.manager = new LogManager(pool);
         logger.info("Tracking :eyes:");
     }
 

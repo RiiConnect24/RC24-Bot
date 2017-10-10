@@ -18,12 +18,13 @@ package xyz.rc24.bot.commands.botadm;
  */
 
 
-import com.google.cloud.datastore.Datastore;
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.loader.Config;
 
@@ -38,11 +39,11 @@ import java.util.List;
 public class Eval extends Command {
     private ScriptEngine engine;
     private List<String> imports;
-    private Datastore datastore;
+    private JedisPool pool;
     private Config config;
 
-    public Eval(Datastore datastore, Config config) {
-        this.datastore = datastore;
+    public Eval(JedisPool pool, Config config) {
+        this.pool = pool;
         this.config = config;
         this.name = "eval";
         this.help = "Executes Groovy code";
@@ -80,7 +81,7 @@ public class Eval extends Command {
         String importString = "";
         String eval;
 
-        try {
+        try (Jedis conn = pool.getResource()) {
             engine.put("event", event);
             engine.put("jda", event.getJDA());
             engine.put("channel", event.getChannel());
@@ -89,7 +90,7 @@ public class Eval extends Command {
             engine.put("client", event.getClient());
             engine.put("author", event.getAuthor());
 
-            engine.put("datastore", datastore);
+            engine.put("conn", conn);
             engine.put("config", config);
             if (event.isFromType(ChannelType.TEXT)) {
                 engine.put("member", event.getMember());

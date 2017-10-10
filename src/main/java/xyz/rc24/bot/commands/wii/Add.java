@@ -29,6 +29,7 @@ import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import com.jagrosh.jdautilities.utils.FinderUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
+import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.CodeManager;
@@ -38,15 +39,13 @@ import java.util.Map;
 
 /**
  * Allows another user to share friend wii.
- *
  * @author Spotlight
  */
 
 public class Add extends Command {
     private final CodeManager manager;
-
-    public Add(CodeManager manager) {
-        this.manager = manager;
+    public Add(JedisPool pool) {
+        this.manager = new CodeManager(pool);
         this.name = "add";
         this.help = "Sends your friend wii to another user.";
         this.category = Categories.WII;

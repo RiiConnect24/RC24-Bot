@@ -1,7 +1,9 @@
 package xyz.rc24.bot.mangers;
 
-
-import com.google.cloud.datastore.*;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 /**
  * Manages a single Redis instance, available across classes.
@@ -11,12 +13,12 @@ public class LogManager {
     /**
      * Redis for configuration use.
      */
-    private Datastore datastore;
-    private KeyFactory keyFactory;
+    private JedisPool pool;
+    private Gson gson;
 
-    public LogManager(Datastore datastore) {
-        this.datastore = datastore;
-        keyFactory = datastore.newKeyFactory().setKind("logs");
+    public LogManager(JedisPool pool) {
+        this.pool = pool;
+        this.gson = new Gson();
     }
 
     public enum LogType {
@@ -24,6 +26,12 @@ public class LogManager {
         SERVER
     }
 
+    public class StorageFormat {
+        @SerializedName("mod")
+        public Long modLog;
+        @SerializedName("server")
+        public Long serverLog;
+    }
 
     /**
      * Checks if a channel is enabled.
@@ -33,12 +41,24 @@ public class LogManager {
      * @return Boolean of state
      */
     public Boolean isLogEnabled(LogType type, Long serverID) {
-        Key taskKey = keyFactory.newKey(serverID);
-        Entity retrieved = datastore.get(taskKey);
-        try {
-            return retrieved.isNull(type.name().toLowerCase());
-        } catch (NullPointerException e) {
-            return false;
+        try (Jedis conn = pool.getResource()) {
+            String storedJSON = conn.hget("logs", "" + serverID);
+            StorageFormat format;
+            if (storedJSON == null || storedJSON.isEmpty()) {
+                // I guess no config was created previously.
+                format = new StorageFormat();
+            } else {
+                format = gson.fromJson(storedJSON, StorageFormat.class);
+            }
+            switch (type) {
+                case MOD:
+                    return !(format.modLog == null);
+                case SERVER:
+                    return !(format.serverLog == null);
+                default:
+                    // Other types we don't (yet) know of
+                    return false;
+            }
         }
     }
 
@@ -50,13 +70,24 @@ public class LogManager {
      * @return Long with ID of server-log
      */
     public Long getLog(LogType type, Long serverID) {
-        Key taskKey = keyFactory.newKey(serverID);
-        Entity retrieved = datastore.get(taskKey);
-        // We consider a log being null "disabled".
-        try {
-            return retrieved.getLong(type.name().toLowerCase());
-        } catch (DatastoreException e) {
-            return 0L;
+        try (Jedis conn = pool.getResource()) {
+            String storedJSON = conn.hget("logs", "" + serverID);
+            StorageFormat format;
+            if (storedJSON == null || storedJSON.isEmpty()) {
+                // I guess no config was created previously.
+                format = new StorageFormat();
+            } else {
+                format = gson.fromJson(storedJSON, StorageFormat.class);
+            }
+            switch (type) {
+                case MOD:
+                    return format.modLog;
+                case SERVER:
+                    return format.serverLog;
+                default:
+                    // ????
+                    return 0L;
+            }
         }
     }
 
@@ -68,23 +99,54 @@ public class LogManager {
      * @param channelID Channel ID to set
      */
     public void setLog(Long serverID, LogType type, Long channelID) {
-        Key taskKey = keyFactory.newKey(serverID);
-        Entity.Builder toStore = Entity.newBuilder(taskKey);
-        toStore.set(type.name().toLowerCase(), channelID);
-        datastore.put(toStore.build());
+        try (Jedis conn = pool.getResource()) {
+            String storedJSON = conn.hget("logs", "" + serverID);
+            StorageFormat format;
+            if (storedJSON == null || storedJSON.isEmpty()) {
+                // I guess no config was created previously.
+                format = new StorageFormat();
+            } else {
+                format = gson.fromJson(storedJSON, StorageFormat.class);
+            }
+            switch (type) {
+                case MOD:
+                    format.modLog = channelID;
+                    break;
+                case SERVER:
+                    format.serverLog = channelID;
+                    break;
+            }
+            String JSONtoStore = gson.toJson(format);
+            conn.hset("logs", "" + serverID, JSONtoStore);
+        }
     }
 
     /**
      * "Disables" a log type for a server.
      *
-     * @param type     Type of log to associate
-     * @param serverID Server ID to associate with
+     * @param type      Type of log to associate
+     * @param serverID  Server ID to associate with
      */
     public void disableLog(LogType type, Long serverID) {
-        Key taskKey = keyFactory.newKey(serverID);
-        Entity.Builder toStore = Entity.newBuilder(taskKey);
-        // We consider a log being null "disabled".
-        toStore.remove(type.name().toLowerCase());
-        datastore.put(toStore.build());
+        try (Jedis conn = pool.getResource()) {
+            String storedJSON = conn.hget("logs", "" + serverID);
+            StorageFormat format;
+            if (storedJSON == null || storedJSON.isEmpty()) {
+                // I guess no config was created previously.
+                format = new StorageFormat();
+            } else {
+                format = gson.fromJson(storedJSON, StorageFormat.class);
+            }
+            switch (type) {
+                case MOD:
+                    format.modLog = null;
+                    break;
+                case SERVER:
+                    format.serverLog = null;
+                    break;
+            }
+            String JSONtoStore = gson.toJson(format);
+            conn.hset("logs", "" + serverID, JSONtoStore);
+        }
     }
 }
