@@ -41,10 +41,7 @@ import xyz.rc24.bot.commands.botadm.Eval;
 import xyz.rc24.bot.commands.botadm.MassMessage;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.tools.*;
-import xyz.rc24.bot.commands.wii.Add;
-import xyz.rc24.bot.commands.wii.Codes;
-import xyz.rc24.bot.commands.wii.ErrorInfo;
-import xyz.rc24.bot.commands.wii.SetBirthday;
+import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.events.BirthdayEvent;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
@@ -116,7 +113,9 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 new Codes(pool),
                 new Add(pool),
                 new SetBirthday(pool),
-                new ErrorInfo(config.isDebug())
+                new ErrorInfo(config.isDebug()),
+                new DNS(),
+                new Wads()
         );
 
         //JDA Connection
