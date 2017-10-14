@@ -22,4 +22,4 @@ Check out the following steps:
 4. It's time to start the 🔨... `gradle build`! And... tada! That's it. 🎉 You can find JAR(s) created in `build/libs`. Easy! 👌👍
 5. For running, make sure you have redis installed on whatever machine. Also, if `config.yml` can't be found, it'll copy a default copy to the current directory for you. 🏃
 
-If you don't like emoji in your README, you can blame `Spotlight 🐾#6209` (ID `239809536012058625`). You can also ask them for support. Similarly, if anything goes wrong, feel free to contact `Artuto#0424` (ID `264499432538505217`) on Discord!
+If you don't like emoji in your README, you can blame `Snowlight 🐾🌲#6209` (ID `239809536012058625`). You can also ask them for support. Similarly, if anything goes wrong, feel free to contact `👻 Artuto 🎃#0424` (ID `264499432538505217`) on Discord!
