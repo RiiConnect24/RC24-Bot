@@ -30,6 +30,7 @@ public class BotConfig extends Command {
         this.help = "Change important bot settings.";
         this.category = Categories.TOOLS;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
+        this.userPermissions = new Permission[]{Permission.MANAGE_SERVER};
     }
 
     @Override
@@ -42,6 +43,7 @@ public class BotConfig extends Command {
         ChannelConfig() {
             this.name = "setchannel";
             this.help = "Changes the channel for the given log.";
+            this.userPermissions = new Permission[]{Permission.MANAGE_SERVER};
         }
 
         @Override
