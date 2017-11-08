@@ -4,7 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -37,8 +36,6 @@ public class MailParser {
 
         byte[] expectedMagic = "WcCf".getBytes();
         byte[] presentMagic = Arrays.copyOfRange(file, 0, 4);
-        logger.debug("Expected magic: " + DatatypeConverter.printHexBinary(expectedMagic));
-        logger.debug("Magic from file: " + DatatypeConverter.printHexBinary(presentMagic));
         if (!Arrays.equals(presentMagic, expectedMagic)) {
             return new byte[]{0x69};
         }
@@ -78,7 +75,6 @@ public class MailParser {
             byte[] toWorkWith = new byte[4];
             // Copy 4 bytes at offset toWorkWith.
             System.arraycopy(file, offset, toWorkWith, 0, 4);
-            System.out.println(DatatypeConverter.printHexBinary(toWorkWith));
             // Convert bytes to big endian int.
             // (yes, it's big endian by default, but maybe the jdk will change some day?)
             Integer checksumAddition = ByteBuffer.wrap(toWorkWith).order(ByteOrder.BIG_ENDIAN).getInt();
