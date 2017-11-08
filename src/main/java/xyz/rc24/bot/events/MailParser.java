@@ -78,7 +78,6 @@ public class MailParser {
             // Convert bytes to big endian int.
             // (yes, it's big endian by default, but maybe the jdk will change some day?)
             Integer checksumAddition = ByteBuffer.wrap(toWorkWith).order(ByteOrder.BIG_ENDIAN).getInt();
-            System.out.println(checksumAddition);
             checksum += checksumAddition;
             // Increase offset for next usage.
             offset += 4;
