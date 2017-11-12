@@ -4,6 +4,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.net.URI;
+
 /**
  * Manages a single Redis instance, available across classes.
  * Now that's intuitive.™
@@ -16,12 +18,13 @@ public class MorpherManager {
     private final String keyName;
 
     public MorpherManager(String keyName) {
-        this.pool = new JedisPool(new JedisPoolConfig(), "localhost");
+        this.pool = new JedisPool(new JedisPoolConfig(), URI.create("redis://localhost:6379/2"));
         this.keyName = keyName;
     }
 
     public void setAssociation(Long rootMessageID, Long mirroredMessageID) {
         try (Jedis conn = pool.getResource()) {
+            conn.select(2);
             conn.hset(keyName, "" + rootMessageID, "" + mirroredMessageID);
         }
     }

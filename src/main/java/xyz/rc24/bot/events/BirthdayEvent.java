@@ -32,6 +32,7 @@ public class BirthdayEvent extends TimerTask {
     @Override
     public void run() {
         try (Jedis conn = pool.getResource()) {
+            conn.select(2);
             Map<String, String> birthdays = conn.hgetAll("birthdays");
 
             TextChannel birthday = jda.getTextChannelById(birthdayChannelID);

@@ -23,8 +23,8 @@ public class ServerLog extends ListenerAdapter {
     private LogManager manager;
     private static final Logger logger = LoggerFactory.getLogger(ServerLog.class);
 
-    public ServerLog(JedisPool pool) {
-        this.manager = new LogManager(pool);
+    public ServerLog() {
+        this.manager = new LogManager();
         logger.info("Tracking :eyes:");
     }
 

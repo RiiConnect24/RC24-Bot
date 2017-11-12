@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Manages a single Redis instance, available across classes.
@@ -16,8 +20,8 @@ public class LogManager {
     private JedisPool pool;
     private Gson gson;
 
-    public LogManager(JedisPool pool) {
-        this.pool = pool;
+    public LogManager() {
+        this.pool = new JedisPool(new JedisPoolConfig(), URI.create("redis://localhost:6379/1"));
         this.gson = new Gson();
     }
 
@@ -124,8 +128,8 @@ public class LogManager {
     /**
      * "Disables" a log type for a server.
      *
-     * @param type      Type of log to associate
-     * @param serverID  Server ID to associate with
+     * @param type     Type of log to associate
+     * @param serverID Server ID to associate with
      */
     public void disableLog(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {

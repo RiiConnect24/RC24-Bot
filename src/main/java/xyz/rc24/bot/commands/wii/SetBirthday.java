@@ -29,6 +29,7 @@ public class SetBirthday extends Command {
     @Override
     protected void execute(CommandEvent event) {
         try (Jedis conn = pool.getResource()) {
+            conn.select(2);
             // We only want the day and the month. We don't want the year, but
             // for user accessibility we'll leave it optional and never use it.
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd[/yyyy]");

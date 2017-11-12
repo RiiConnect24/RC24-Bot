@@ -5,17 +5,11 @@ import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import com.jagrosh.jdautilities.utils.FinderUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.mangers.LogManager;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +17,8 @@ import java.util.Map;
 public class BotConfig extends Command {
     private LogManager manager;
 
-    public BotConfig(JedisPool pool) {
-        this.manager = new LogManager(pool);
+    public BotConfig() {
+        this.manager = new LogManager();
         this.children = new Command[]{new ChannelConfig()};
         this.name = "config";
         this.help = "Change important bot settings.";
@@ -36,7 +30,7 @@ public class BotConfig extends Command {
     @Override
     protected void execute(CommandEvent event) {
         event.replyError("Please enter a valid option for the command.\n" +
-                            "Valid commands are: `setchannel`.");
+                "Valid commands are: `setchannel`.");
     }
 
     private class ChannelConfig extends Command {
@@ -62,7 +56,7 @@ public class BotConfig extends Command {
             String channelName = arguments[1];
             if (channelName.equals("off")) {
                 manager.disableLog(type, event.getGuild().getIdLong());
-                event.replySuccess("Channel succesfully removed as a log.");
+                event.replySuccess("Channel successfully removed as a log.");
                 return;
             }
 
@@ -74,7 +68,7 @@ public class BotConfig extends Command {
             } else {
                 if (type == null) {
                     event.replyError(Const.getChannelTypes());
-                }  else {
+                } else {
                     manager.setLog(event.getGuild().getIdLong(), type, channelID);
                     event.replySuccess("Successfully set!");
                 }
