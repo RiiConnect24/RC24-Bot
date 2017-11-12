@@ -39,7 +39,6 @@ public class SetBirthday extends Command {
             conn.hset("birthdays", userID, dateTime.getMonthValue() + "-" + dateTime.getDayOfMonth());
             event.replySuccess("Updated successfully!");
         } catch (DateTimeParseException e) {
-            e.printStackTrace();
             event.replyError("I couldn't parse your date.\n" +
             "Due to a bug that I keep having, I require a year. Please don't give out your full birth year!\n" +
             "Try something like: `" + event.getClient().getPrefix() + "birthday 04/20/1970` or some random year.");
