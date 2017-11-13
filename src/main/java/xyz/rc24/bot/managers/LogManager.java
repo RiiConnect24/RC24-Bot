@@ -1,4 +1,4 @@
-package xyz.rc24.bot.mangers;
+package xyz.rc24.bot.managers;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -26,20 +26,6 @@ public class LogManager {
     }
 
     /**
-     * Checks if a channel is enabled.
-     *
-     * @param type     Type of log to look for
-     * @param serverID Server ID to check with
-     * @return Boolean of state
-     */
-    public Boolean isLogEnabled(LogType type, Long serverID) {
-        try (Jedis conn = pool.getResource()) {
-            String logID = conn.hget(serverID + "", type.toString());
-            return logID == null || logID.isEmpty();
-        }
-    }
-
-    /**
      * Gets the ID of the channel by type.
      *
      * @param serverID Server ID to look up with
@@ -48,7 +34,12 @@ public class LogManager {
      */
     public Long getLog(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
-            return Long.parseLong(conn.hget(serverID + "", type.toString()));
+            String logID = conn.hget(serverID + "", type.toString());
+            if (logID == null || logID.isEmpty()) {
+                return null;
+            } else {
+                return Long.parseLong(logID);
+            }
         }
     }
 
