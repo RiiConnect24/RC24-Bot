@@ -11,9 +11,8 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.JedisPool;
-import xyz.rc24.bot.mangers.LogManager;
-import xyz.rc24.bot.mangers.LogManager.LogType;
+import xyz.rc24.bot.managers.LogManager;
+import xyz.rc24.bot.managers.LogManager.LogType;
 
 import java.awt.*;
 import java.time.Instant;

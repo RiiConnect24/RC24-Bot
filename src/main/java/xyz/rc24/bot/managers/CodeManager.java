@@ -1,8 +1,7 @@
-package xyz.rc24.bot.mangers;
+package xyz.rc24.bot.managers;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.HashMap;
 import java.util.Map;

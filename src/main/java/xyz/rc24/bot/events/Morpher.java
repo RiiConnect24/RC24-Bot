@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.loader.Config;
-import xyz.rc24.bot.mangers.MorpherManager;
+import xyz.rc24.bot.managers.MorpherManager;
 
 import java.awt.*;
 import java.util.ArrayList;

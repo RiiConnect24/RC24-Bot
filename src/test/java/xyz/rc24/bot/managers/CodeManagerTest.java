@@ -3,7 +3,6 @@ package xyz.rc24.bot.managers;
 import org.junit.Test;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import xyz.rc24.bot.mangers.CodeManager;
 
 import static org.junit.Assert.assertEquals;
 

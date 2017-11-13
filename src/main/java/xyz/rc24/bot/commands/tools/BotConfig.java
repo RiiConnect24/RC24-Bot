@@ -8,7 +8,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.mangers.LogManager;
+import xyz.rc24.bot.managers.LogManager;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,18 +1,11 @@
 package xyz.rc24.bot.commands.botadm;
 
-import com.google.gson.Gson;
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.TextChannel;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.mangers.LogManager;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class MassMessage extends Command {
     private JedisPool pool;

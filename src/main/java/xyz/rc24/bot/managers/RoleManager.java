@@ -1,4 +1,4 @@
-package xyz.rc24.bot.mangers;
+package xyz.rc24.bot.managers;
 
 /**
  * Think of it as the old Ruby yaml helper, but 1000x less painful.
