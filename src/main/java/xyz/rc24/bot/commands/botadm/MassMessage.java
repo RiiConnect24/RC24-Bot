@@ -29,40 +29,41 @@ public class MassMessage extends Command {
     @Override
     protected void execute(CommandEvent event) {
         try (Jedis conn = pool.getResource()) {
-            Map<String, String> logConfigs = conn.hgetAll("logs");
-            List<TextChannel> serverList = new ArrayList<>();
-            Gson gson = new Gson();
-
-            // For every channel we have:
-            // If we can speak, add it to the growing total.
-            for (String serverJson : logConfigs.values()) {
-                LogManager.StorageFormat format = gson.fromJson(serverJson, LogManager.StorageFormat.class);
-                if (format.serverLog != null) {
-                    TextChannel serverChannel = event.getJDA().getTextChannelById(format.serverLog);
-                    try {
-                        if (serverChannel.canTalk()) {
-                            serverList.add(serverChannel);
-                        }
-                    } catch (NullPointerException ignored) {
-
-                    }
-                }
-                if (format.modLog != null) {
-                    TextChannel modChannel = event.getJDA().getTextChannelById(format.modLog);
-                    try {
-                        if (modChannel.canTalk()) {
-                            serverList.add(modChannel);
-                        }
-                    } catch (NullPointerException ignored) {
-
-                    }
-                }
-            }
-
-            // Actually send
-            for (TextChannel logChannel : serverList) {
-                logChannel.sendMessage(event.getArgs()).complete();
-            }
+            // TODO: update to using keys* on redis db 2
+//            Map<String, String> logConfigs = conn.hgetAll("logs");
+//            List<TextChannel> serverList = new ArrayList<>();
+//            Gson gson = new Gson();
+//
+//            // For every channel we have:
+//            // If we can speak, add it to the growing total.
+//            for (String serverJson : logConfigs.values()) {
+//                LogManager.StorageFormat format = gson.fromJson(serverJson, LogManager.StorageFormat.class);
+//                if (format.serverLog != null) {
+//                    TextChannel serverChannel = event.getJDA().getTextChannelById(format.serverLog);
+//                    try {
+//                        if (serverChannel.canTalk()) {
+//                            serverList.add(serverChannel);
+//                        }
+//                    } catch (NullPointerException ignored) {
+//
+//                    }
+//                }
+//                if (format.modLog != null) {
+//                    TextChannel modChannel = event.getJDA().getTextChannelById(format.modLog);
+//                    try {
+//                        if (modChannel.canTalk()) {
+//                            serverList.add(modChannel);
+//                        }
+//                    } catch (NullPointerException ignored) {
+//
+//                    }
+//                }
+//            }
+//
+//            // Actually send
+//            for (TextChannel logChannel : serverList) {
+//                logChannel.sendMessage(event.getArgs()).complete();
+//            }
         }
     }
 }

@@ -1,13 +1,10 @@
 package xyz.rc24.bot.mangers;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Manages a single Redis instance, available across classes.
@@ -18,23 +15,14 @@ public class LogManager {
      * Redis for configuration use.
      */
     private JedisPool pool;
-    private Gson gson;
 
     public LogManager() {
         this.pool = new JedisPool(new JedisPoolConfig(), URI.create("redis://localhost:6379/1"));
-        this.gson = new Gson();
     }
 
     public enum LogType {
         MOD,
         SERVER
-    }
-
-    public class StorageFormat {
-        @SerializedName("mod")
-        public Long modLog;
-        @SerializedName("server")
-        public Long serverLog;
     }
 
     /**
@@ -46,23 +34,8 @@ public class LogManager {
      */
     public Boolean isLogEnabled(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
-            String storedJSON = conn.hget("logs", "" + serverID);
-            StorageFormat format;
-            if (storedJSON == null || storedJSON.isEmpty()) {
-                // I guess no config was created previously.
-                format = new StorageFormat();
-            } else {
-                format = gson.fromJson(storedJSON, StorageFormat.class);
-            }
-            switch (type) {
-                case MOD:
-                    return !(format.modLog == null);
-                case SERVER:
-                    return !(format.serverLog == null);
-                default:
-                    // Other types we don't (yet) know of
-                    return false;
-            }
+            String logID = conn.hget(serverID + "", type.toString());
+            return logID == null || logID.isEmpty();
         }
     }
 
@@ -75,23 +48,7 @@ public class LogManager {
      */
     public Long getLog(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
-            String storedJSON = conn.hget("logs", "" + serverID);
-            StorageFormat format;
-            if (storedJSON == null || storedJSON.isEmpty()) {
-                // I guess no config was created previously.
-                format = new StorageFormat();
-            } else {
-                format = gson.fromJson(storedJSON, StorageFormat.class);
-            }
-            switch (type) {
-                case MOD:
-                    return format.modLog;
-                case SERVER:
-                    return format.serverLog;
-                default:
-                    // ????
-                    return 0L;
-            }
+            return Long.decode(conn.hget(serverID + "", type.toString()));
         }
     }
 
@@ -104,24 +61,7 @@ public class LogManager {
      */
     public void setLog(Long serverID, LogType type, Long channelID) {
         try (Jedis conn = pool.getResource()) {
-            String storedJSON = conn.hget("logs", "" + serverID);
-            StorageFormat format;
-            if (storedJSON == null || storedJSON.isEmpty()) {
-                // I guess no config was created previously.
-                format = new StorageFormat();
-            } else {
-                format = gson.fromJson(storedJSON, StorageFormat.class);
-            }
-            switch (type) {
-                case MOD:
-                    format.modLog = channelID;
-                    break;
-                case SERVER:
-                    format.serverLog = channelID;
-                    break;
-            }
-            String JSONtoStore = gson.toJson(format);
-            conn.hset("logs", "" + serverID, JSONtoStore);
+            conn.hset(serverID + "", type.toString(), channelID.toString());
         }
     }
 
@@ -133,24 +73,7 @@ public class LogManager {
      */
     public void disableLog(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
-            String storedJSON = conn.hget("logs", "" + serverID);
-            StorageFormat format;
-            if (storedJSON == null || storedJSON.isEmpty()) {
-                // I guess no config was created previously.
-                format = new StorageFormat();
-            } else {
-                format = gson.fromJson(storedJSON, StorageFormat.class);
-            }
-            switch (type) {
-                case MOD:
-                    format.modLog = null;
-                    break;
-                case SERVER:
-                    format.serverLog = null;
-                    break;
-            }
-            String JSONtoStore = gson.toJson(format);
-            conn.hset("logs", "" + serverID, JSONtoStore);
+            conn.hdel(serverID + "", type.toString());
         }
     }
 }
