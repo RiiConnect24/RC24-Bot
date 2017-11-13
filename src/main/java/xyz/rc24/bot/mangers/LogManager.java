@@ -48,7 +48,7 @@ public class LogManager {
      */
     public Long getLog(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
-            return Long.decode(conn.hget(serverID + "", type.toString()));
+            return Long.parseLong(conn.hget(serverID + "", type.toString()));
         }
     }
 
