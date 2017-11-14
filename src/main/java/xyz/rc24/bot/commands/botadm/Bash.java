@@ -19,7 +19,8 @@ package xyz.rc24.bot.commands.botadm;
 
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.commands.Categories;
 
 import java.io.BufferedReader;
@@ -38,6 +39,7 @@ public class Bash extends Command {
         this.category = Categories.ADMIN;
         this.ownerCommand = true;
     }
+    private static Logger logger = LoggerFactory.getLogger(Bash.class);
 
     @Override
     protected void execute(CommandEvent event) {
@@ -72,7 +74,7 @@ public class Bash extends Command {
             event.replyError("I wasn't able to find the command `" + event.getArgs() + "`!");
             return;
         } catch (Exception e) {
-            SimpleLog.getLog("Bash").warn("An unknown error occurred!");
+            logger.warn("An unknown error occurred!");
             e.printStackTrace();
             event.replyError("An unknown error occurred! Check the bot console.");
             return;
@@ -82,7 +84,7 @@ public class Bash extends Command {
         try {
             event.replySuccess("Input: ```\n" + event.getArgs() + "``` Output: \n```\n" + finalOutput + "```");
         } catch (IllegalArgumentException e) {
-            SimpleLog.getLog("Bash").info("Input: " + event.getArgs() + "\nOutput: " + finalOutput);
+            logger.info("Input: " + event.getArgs() + "\nOutput: " + finalOutput);
             event.replySuccess("Command output too long! Output sent in console.");
         }
     }

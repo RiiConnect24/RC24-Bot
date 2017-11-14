@@ -27,7 +27,6 @@ package xyz.rc24.bot.loader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -38,8 +37,6 @@ import java.util.List;
  */
 
 public class Config {
-
-    private final SimpleLog LOG = SimpleLog.getLog("Config");
     private static ConfigFormat format;
 
     public Config() throws Exception {

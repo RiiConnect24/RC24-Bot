@@ -33,7 +33,8 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.utils.SimpleLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import xyz.rc24.bot.commands.botadm.Bash;
@@ -64,12 +65,13 @@ public class RiiConnect24Bot extends ListenerAdapter {
     private static Config config;
     private static JedisPool pool;
     private static String prefix;
+    private static Logger logger = LoggerFactory.getLogger(RiiConnect24Bot.class);
 
     public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException {
         try {
             config = new Config();
         } catch (Exception e) {
-            SimpleLog.getLog("Config").fatal(e);
+            logger.error(e.toString());
             return;
         }
 
@@ -136,7 +138,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent event) {
-        SimpleLog.getLog("Bot").info("Done loading!");
+        logger.info("Done loading!");
         // Check if we need to set a game
         if (config.getPlaying().isEmpty()) {
             event.getJDA().getPresence().setGame(Game.of("Type " + prefix + "help"));
