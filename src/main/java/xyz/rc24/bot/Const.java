@@ -36,6 +36,9 @@ import java.util.Map;
 
 public class Const {
     public static String VERSION = ("1.0.0");
+    public static final String DONE_E = ("✅");
+    public static final String WARN_E = ("⚠");
+    public static final String FAIL_E = ("❌");
     static final String GAME_0 = ("Loading...");
     public static final Map<CodeManager.Type, String> typesToDisplayName = new HashMap<>() {{
         put(CodeManager.Type.WII, "<:Wii:259081748007223296> **Wii**");

@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.managers.CodeManager;
 import xyz.rc24.bot.managers.ServerConfigManager;
 
 import java.util.HashMap;
@@ -19,7 +20,7 @@ public class BotConfig extends Command {
 
     public BotConfig() {
         this.manager = new ServerConfigManager();
-        this.children = new Command[]{new ChannelConfig()};
+        this.children = new Command[]{new ChannelConfig(), new AddConfig()};
         this.name = "config";
         this.help = "Change important bot settings.";
         this.category = Categories.TOOLS;
@@ -30,7 +31,7 @@ public class BotConfig extends Command {
     @Override
     protected void execute(CommandEvent event) {
         event.replyError("Please enter a valid option for the command.\n" +
-                "Valid commands are: `setchannel`.");
+                "Valid commands are: `setchannel`, `defaultadd`.");
     }
 
     private class ChannelConfig extends Command {
@@ -70,7 +71,7 @@ public class BotConfig extends Command {
                     event.replyError(Const.getChannelTypes());
                 } else {
                     manager.setLog(event.getGuild().getIdLong(), type, channelID);
-                    event.replySuccess("Successfully set!");
+                    event.replySuccess("Successfully set " + event.getJDA().getTextChannelById(channelID).getAsMention() + " as " + channelType + "!");
                 }
             }
         }
@@ -91,6 +92,26 @@ public class BotConfig extends Command {
             } else {
                 // Grab the first text channel's Long, and return.
                 return potentialChannels.get(0).getIdLong();
+            }
+        }
+    }
+
+    private class AddConfig extends Command {
+        AddConfig() {
+            this.name = "defaultadd";
+            this.help = "Changes the default `add` command's type.";
+            this.userPermissions = new Permission[]{Permission.MANAGE_SERVER};
+        }
+
+        @Override
+        protected void execute(CommandEvent event) {
+            String channelType = event.getArgs();
+            try {
+                CodeManager.Type addType = Const.namesToType.get(channelType);
+                manager.setDefaultAddType(event.getGuild().getIdLong(), addType);
+                event.replySuccess("Successfully set " + Const.typesToProductName.get(addType) + " as default `add` type!");
+            } catch (NullPointerException unused) {
+                event.replyError(Const.getCodeTypes());
             }
         }
     }

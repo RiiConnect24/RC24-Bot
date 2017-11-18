@@ -80,6 +80,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
 
         CommandClientBuilder client = new CommandClientBuilder();
         client.setGame(Game.of("Loading..."));
+        client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
         client.setOwnerId("" + config.getPrimaryOwner());
 
         // Convert Long[] of secondary owners to String[] so we can set later
