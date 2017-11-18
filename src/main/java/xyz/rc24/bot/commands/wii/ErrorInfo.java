@@ -199,7 +199,7 @@ public class ErrorInfo extends Command {
     private final Map<Integer, String> codeNotes = new HashMap<Integer, String>() {{
         put(102032, "The IOS your app uses is not patched for RiiConnect24. Try sending a message again but do it quickly, you need to do it in less than a minute.");
         put(107245, "You either need to patch your IOS because you didn't follow instructions correctly or didn't update with the new patch to change the RSA key." +
-                "Visit https://rc24.xyz/instructions to learn how to patch it.");
+                "Visit https://wii.guide/ to learn how to patch it.");
         put(107304, "Try again, or maybe play with your Internet settings. This may not be easy to fix for you.");
         put(107305, "Try again.");
         put(105409, "If you are getting this problem while doing something with Wii Mail - check if you patched nwc24msg.cfg correctly.");
