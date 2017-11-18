@@ -50,8 +50,11 @@ import xyz.rc24.bot.loader.Config;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Timer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -149,16 +152,15 @@ public class RiiConnect24Bot extends ListenerAdapter {
 
         // It'll default to Type <prefix>help, per using the default game above.
         if (config.birthdaysAreEnabled()) {
-            // Set up birthday routine
-            Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 0);
-            today.set(Calendar.MINUTE, 0);
-            today.set(Calendar.SECOND, 0);
-
             // Every day at midnight
             // And yes, we're assuming the channel exists. :fingers_crossed:
-            Timer timer = new Timer();
-            timer.schedule(new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()), today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+            Long midnight = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay(), ChronoUnit.MINUTES);
+            ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+            scheduler.scheduleAtFixedRate(
+                    new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()),
+                    midnight, TimeUnit.MINUTES.toMinutes(1), TimeUnit.MINUTES
+
+            );
         }
     }
 
