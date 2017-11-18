@@ -8,17 +8,17 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.managers.LogManager;
+import xyz.rc24.bot.managers.ServerConfigManager;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class BotConfig extends Command {
-    private LogManager manager;
+    private ServerConfigManager manager;
 
     public BotConfig() {
-        this.manager = new LogManager();
+        this.manager = new ServerConfigManager();
         this.children = new Command[]{new ChannelConfig()};
         this.name = "config";
         this.help = "Change important bot settings.";
@@ -51,7 +51,7 @@ public class BotConfig extends Command {
             // I'm assuming way too much here.
             // TODO: Better checking of arguments?
             String channelType = arguments[0];
-            LogManager.LogType type = channelTypes.get(channelType);
+            ServerConfigManager.LogType type = channelTypes.get(channelType);
 
             String channelName = arguments[1];
             if (channelName.equals("off")) {
@@ -75,13 +75,13 @@ public class BotConfig extends Command {
             }
         }
 
-        final Map<String, LogManager.LogType> channelTypes = new HashMap<>() {{
-            put("mod", LogManager.LogType.MOD);
-            put("mod-log", LogManager.LogType.MOD);
+        final Map<String, ServerConfigManager.LogType> channelTypes = new HashMap<>() {{
+            put("mod", ServerConfigManager.LogType.MOD);
+            put("mod-log", ServerConfigManager.LogType.MOD);
 
-            put("srv", LogManager.LogType.SERVER);
-            put("server", LogManager.LogType.SERVER);
-            put("server-log", LogManager.LogType.SERVER);
+            put("srv", ServerConfigManager.LogType.SERVER);
+            put("server", ServerConfigManager.LogType.SERVER);
+            put("server-log", ServerConfigManager.LogType.SERVER);
         }};
 
         private Long getChannelId(String name, Guild currentGuild) {

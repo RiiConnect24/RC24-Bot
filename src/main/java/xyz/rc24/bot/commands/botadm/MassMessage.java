@@ -30,7 +30,7 @@ public class MassMessage extends Command {
 //            // For every channel we have:
 //            // If we can speak, add it to the growing total.
 //            for (String serverJson : logConfigs.values()) {
-//                LogManager.StorageFormat format = gson.fromJson(serverJson, LogManager.StorageFormat.class);
+//                ServerConfigManager.StorageFormat format = gson.fromJson(serverJson, ServerConfigManager.StorageFormat.class);
 //                if (format.serverLog != null) {
 //                    TextChannel serverChannel = event.getJDA().getTextChannelById(format.serverLog);
 //                    try {

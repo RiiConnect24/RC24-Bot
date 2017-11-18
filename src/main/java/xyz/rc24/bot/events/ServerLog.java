@@ -11,19 +11,19 @@ import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.rc24.bot.managers.LogManager;
-import xyz.rc24.bot.managers.LogManager.LogType;
+import xyz.rc24.bot.managers.ServerConfigManager;
+import xyz.rc24.bot.managers.ServerConfigManager.LogType;
 
 import java.awt.*;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 public class ServerLog extends ListenerAdapter {
-    private LogManager manager;
+    private ServerConfigManager manager;
     private static final Logger logger = LoggerFactory.getLogger(ServerLog.class);
 
     public ServerLog() {
-        this.manager = new LogManager();
+        this.manager = new ServerConfigManager();
         logger.info("Tracking :eyes:");
     }
 

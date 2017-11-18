@@ -10,13 +10,13 @@ import java.net.URI;
  * Manages a single Redis instance, available across classes.
  * Now that's intuitive.™
  */
-public class LogManager {
+public class ServerConfigManager {
     /**
      * Redis for configuration use.
      */
     private JedisPool pool;
 
-    public LogManager() {
+    public ServerConfigManager() {
         this.pool = new JedisPool(new JedisPoolConfig(), URI.create("redis://localhost:6379/1"));
     }
 
@@ -65,6 +65,35 @@ public class LogManager {
     public void disableLog(LogType type, Long serverID) {
         try (Jedis conn = pool.getResource()) {
             conn.hdel(serverID + "", type.toString());
+        }
+    }
+
+    /**
+     * Sets the default `add` command type for a server
+     *
+     * @param serverID Server ID to look up with
+     * @param setType Type to default `add` command to
+     */
+    public void setDefaultAddType(Long serverID, CodeManager.Type setType) {
+        try (Jedis conn = pool.getResource()) {
+            conn.hset(serverID + "", "addType", setType.toString());
+        }
+    }
+
+    /**
+     * Gets the default `add` command type for a server
+     *
+     * @param serverID Server ID to associate with
+     * @return Type of code to default `add` command with
+     */
+    public CodeManager.Type getDefaultAddType(Long serverID) {
+        try (Jedis conn = pool.getResource()) {
+            try {
+                return CodeManager.Type.valueOf(conn.hget(serverID + "", "addType"));
+            } catch (NullPointerException unused) {
+                // Default to Wii
+                return CodeManager.Type.WII;
+            }
         }
     }
 }

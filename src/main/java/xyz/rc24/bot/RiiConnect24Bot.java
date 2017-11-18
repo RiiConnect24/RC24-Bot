@@ -92,7 +92,6 @@ public class RiiConnect24Bot extends ListenerAdapter {
 
         // Set all co-owners
         client.setCoOwnerIds(ownersString);
-        client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
         prefix = config.getPrefix();
         client.setPrefix(prefix);
 

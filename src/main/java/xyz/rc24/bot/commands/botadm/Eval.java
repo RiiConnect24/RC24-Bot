@@ -73,7 +73,8 @@ public class Eval extends Command {
                 "net.dv8tion.jda.core.managers",
                 "net.dv8tion.jda.core.managers.impl",
                 "net.dv8tion.jda.core.utils",
-                "net.dv8tion.jda.webhook");
+                "net.dv8tion.jda.webhook",
+                "xyz.rc24.bot.managers");
     }
 
     @Override
