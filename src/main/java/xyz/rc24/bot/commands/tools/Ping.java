@@ -22,32 +22,35 @@
  * THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.botadm;
+package xyz.rc24.bot.commands.tools;
 
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Message;
 import xyz.rc24.bot.commands.Categories;
 
 /**
  * @author Spotlight
  */
 
-public class Shutdown extends Command {
-    public Shutdown() {
-        this.name = "shutdown";
-        this.help = "Turns the bot off.";
+public class Ping extends Command {
+    public Ping() {
+        this.name = "ping";
+        this.help = "Checks the bot's connection to Discord's servers.";
         this.category = Categories.ADMIN;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.ownerCommand = true;
+        this.ownerCommand = false;
         this.guildOnly = false;
     }
 
     @Override
     protected void execute(CommandEvent event) {
-        event.getTextChannel().sendMessage("Done! Cya \uD83D\uDC4B").complete();
-        event.getJDA().shutdown();
-        System.exit(0);
+        long currentTime = System.currentTimeMillis();
+        event.getTextChannel().sendMessage("Pinging...").queue(
+                (message) -> message.editMessage("Discord API Ping: " + event.getJDA().getPing() +
+                        "ms, message edit latency: " + (System.currentTimeMillis() - currentTime) + "ms").complete()
+        );
     }
 }
