@@ -119,7 +119,7 @@ public class Codes extends Command {
                                 .append(codeData.getValue()).append("\n");
                     }
                     // Now that we have the code text set up, we'll just add it as a field.
-                    codeEmbed.addField(Const.typesToReadableName.get(typeData.getKey()), fieldContents.toString(), true);
+                    codeEmbed.addField(Const.typesToDisplayName.get(typeData.getKey()), fieldContents.toString(), true);
                 }
                 // I guess all wii for it were deleted if we got here.
                 // Carry on!

@@ -33,25 +33,29 @@ import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.managers.CodeManager;
+import xyz.rc24.bot.managers.ServerConfigManager;
 
 import java.util.List;
 import java.util.Map;
 
 /**
  * Allows another user to share friend wii.
+ *
  * @author Spotlight
  */
 
 public class Add extends Command {
     private final CodeManager manager;
+    private final ServerConfigManager configManager;
+
     public Add(JedisPool pool) {
         this.manager = new CodeManager(pool);
+        this.configManager = new ServerConfigManager();
         this.name = "add";
         this.help = "Sends your friend wii to another user.";
         this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.ownerCommand = true;
         this.guildOnly = false;
     }
 
@@ -70,51 +74,55 @@ public class Add extends Command {
             }
         }
 
+        CodeManager.Type serverAddType = configManager.getDefaultAddType(event.getGuild().getIdLong());
+
         // Get wii for the user running the command
-        Map<CodeManager.Type, Map<String, String>> userCodes = manager.getAllCodes(event.getMember().getUser().getIdLong());
+        Map<CodeManager.Type, Map<String, String>> authorCodes = manager.getAllCodes(event.getMember().getUser().getIdLong());
         // If it's empty/null, (something) will return an empty map.
-        Map<String, String> authorWiiCodes = userCodes.get(CodeManager.Type.WII);
-        if (authorWiiCodes.isEmpty()) {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend codes!");
+        Map<String, String> authorTypeCodes = authorCodes.get(serverAddType);
+        if (authorTypeCodes.isEmpty()) {
+            event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
             return;
         }
 
         Map<CodeManager.Type, Map<String, String>> memberCodes = manager.getAllCodes(member.getUser().getIdLong());
-        Map<String, String> memberWiiCodes = memberCodes.get(CodeManager.Type.WII);
-        if (memberWiiCodes.isEmpty()) {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any Wii friend codes!");
+        Map<String, String> memberTypeCodes = memberCodes.get(serverAddType);
+        if (memberTypeCodes.isEmpty()) {
+            event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
             return;
         }
 
-        event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage(getAddMessage(memberWiiCodes, member, false)).queue(
+        event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage(
+                getAddMessageHeader(serverAddType, member, true) + "\n\n" + getCodeLayout(memberTypeCodes)
+        ).queue(
                 (success) -> event.reactSuccess(),
                 (failure) -> event.replyError("Hey, " + event.getMember().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
         ));
 
-        member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(getAddMessage(authorWiiCodes, event.getMember(), true)).queue(
+        member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(
+                getAddMessageHeader(serverAddType, event.getMember(), false) + "\n\n" + getCodeLayout(authorTypeCodes)
+        ).queue(
                 (success) -> event.reactSuccess(),
                 (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
         ));
     }
 
-    private String getAddMessage(Map<String, String> theirCodes, Member member, Boolean other) {
-        StringBuilder addMessage = new StringBuilder();
+    private String getAddMessageHeader(CodeManager.Type type, Member member, Boolean isCommandRunner) {
+        if (isCommandRunner) {
+            return "**" + member.getEffectiveName() + "** has requested to add your " + Const.typesToProductName.get(type) + " friend code(s)!";
+        } else {
+            return "You have requested to add **" + member.getEffectiveName() + "**'s " + Const.typesToProductName.get(type) + " friend code(s).";
+        }
+    }
 
+    private String getCodeLayout(Map<String, String> theirCodes) {
         // Create a human-readable format of the user's Wii wii.
         StringBuilder theirCodesButString = new StringBuilder();
         for (Map.Entry<String, String> code : theirCodes.entrySet()) {
             theirCodesButString.append("`").append(code.getKey()).append("`:\n")
                     .append(code.getValue()).append("\n");
         }
-
-        if (other) {
-            addMessage.append("**").append(member.getEffectiveName()).append("** has requested to add your Wii's friend code!\n");
-        } else {
-            addMessage.append("You have requested to add **").append(member.getEffectiveName()).append("**'s Wii.\n");
-        }
-        addMessage.append(Const.typesToReadableName.get(CodeManager.Type.WII)).append(":\n");
-        addMessage.append(theirCodesButString.toString());
-        return addMessage.toString();
+        return theirCodesButString.toString();
     }
 
 }
