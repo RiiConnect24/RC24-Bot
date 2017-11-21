@@ -1,7 +1,7 @@
 # RC24 Bot
 ![License](https://img.shields.io/github/license/riiconnect24/rc24-bot.svg)
 ![Production List](https://img.shields.io/discord/206934458954153984.svg)
-[![CircleCI](https://circleci.com/gh/RiiConnect24/RC24-Bot/tree/java.svg?style=svg)](https://circleci.com/gh/RiiConnect24/RC24-Bot/tree/java)
+[![CircleCI](https://circleci.com/gh/RiiConnect24-Bot/RC24-Bot/tree/java.svg?style=svg)](https://circleci.com/gh/RiiConnect24/RC24-Bot/tree/java)
 
 It took a while, but it's finally here... 🕑
 ## Introducing a JDA version of RiiConnect24 Bot
