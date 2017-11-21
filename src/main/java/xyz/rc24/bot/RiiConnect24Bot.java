@@ -158,8 +158,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
             ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
             scheduler.scheduleAtFixedRate(
                     new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()),
-                    midnight, TimeUnit.MINUTES.toMinutes(1), TimeUnit.MINUTES
-
+                    midnight, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES
             );
         }
     }
