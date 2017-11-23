@@ -145,9 +145,9 @@ public class RiiConnect24Bot extends ListenerAdapter {
         logger.info("Done loading!");
         // Check if we need to set a game
         if (config.getPlaying().isEmpty()) {
-            event.getJDA().getPresence().setGame(Game.of("Type " + prefix + "help"));
+            event.getJDA().getPresence().setGame(Game.playing("Type " + prefix + "help"));
         } else {
-            event.getJDA().getPresence().setGame(Game.of(config.getPlaying()));
+            event.getJDA().getPresence().setGame(Game.playing(config.getPlaying()));
         }
 
         // It'll default to Type <prefix>help, per using the default game above.

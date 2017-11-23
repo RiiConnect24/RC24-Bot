@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Manages wii for the user, stored on Redis.
+ * Manages friend codes for the user, stored on Redis.
  *
  * @author Spotlight
  */
@@ -53,7 +53,7 @@ public class Codes extends Command {
     public Codes(JedisPool pool) {
         this.manager = new CodeManager(pool);
         this.name = "code";
-        this.help = "Manages wii for the user.";
+        this.help = "Manages friend codes for the user.";
         this.children = new Command[]{new Add(), new Remove(), new Edit(), new Lookup(), new Help()};
         this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
