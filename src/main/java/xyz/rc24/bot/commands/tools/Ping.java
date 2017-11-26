@@ -38,7 +38,7 @@ public class Ping extends Command {
     public Ping() {
         this.name = "ping";
         this.help = "Checks the bot's connection to Discord's servers.";
-        this.category = Categories.ADMIN;
+        this.category = Categories.TOOLS;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.ownerCommand = false;
