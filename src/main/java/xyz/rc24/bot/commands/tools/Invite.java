@@ -14,6 +14,6 @@ public class Invite extends Command {
     @Override
     protected void execute(CommandEvent event) {
         event.reply("Aw, you want to invite me? <3\n" +
-                "Invite me here: " + event.getJDA().asBot().getInviteUrl());
+                "Invite me here: https://bot.rc24.xyz/");
     }
 }
