@@ -1,8 +1,5 @@
 # Netbeans says hello.
 /target/
-/.nb-gradle/
-/build/
-/.gradle/
 # IntelliJ agrees.
 /.idea
 /*.iml
