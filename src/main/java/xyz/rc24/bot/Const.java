@@ -40,7 +40,7 @@ public class Const {
     public static final String WARN_E = ("⚠");
     public static final String FAIL_E = ("❌");
     static final String GAME_0 = ("Loading...");
-    public static final Map<CodeManager.Type, String> typesToDisplayName = new HashMap<>() {{
+    public static final Map<CodeManager.Type, String> typesToDisplayName = new HashMap<CodeManager.Type, String>() {{
         put(CodeManager.Type.WII, "<:Wii:259081748007223296> **Wii**");
         put(CodeManager.Type.THREE_DS, "<:New3DSXL:287651327763283968> **3DS**");
         put(CodeManager.Type.NNID, "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**");
@@ -48,7 +48,7 @@ public class Const {
         put(CodeManager.Type.GAME, "🎮 **Games**");
     }};
 
-    public static final Map<CodeManager.Type, String> typesToProductName = new HashMap<>() {{
+    public static final Map<CodeManager.Type, String> typesToProductName = new HashMap<CodeManager.Type, String>() {{
         put(CodeManager.Type.WII, "Wii");
         put(CodeManager.Type.THREE_DS, "3DS");
         put(CodeManager.Type.NNID, "Nintendo Network ID");
@@ -56,7 +56,7 @@ public class Const {
         put(CodeManager.Type.GAME, "Game");
     }};
 
-    public static final Map<String, CodeManager.Type> namesToType = new HashMap<>() {{
+    public static final Map<String, CodeManager.Type> namesToType = new HashMap<String, CodeManager.Type>() {{
         put("wii", CodeManager.Type.WII);
         put("3ds", CodeManager.Type.THREE_DS);
         put("nnid", CodeManager.Type.NNID);
@@ -64,7 +64,7 @@ public class Const {
         put("game", CodeManager.Type.GAME);
     }};
 
-    public static final Map<String, String> badgeTypes = new HashMap<>() {{
+    public static final Map<String, String> badgeTypes = new HashMap<String, String>() {{
         put("owner", "<:BadgeBotDev:331597705472114688>");
         put("dev", "<:BadgeDeveloper:338399284376633367>");
         put("adm", "<:BadgeAdmin:338398740727726081>");
@@ -74,7 +74,7 @@ public class Const {
         put("trn", "<:BadgeTranslator:329723303814234113>");
     }};
 
-    public static final Map<String, String> channelTypes = new HashMap<>() {{
+    public static final Map<String, String> channelTypes = new HashMap<String, String>() {{
         put("mod", "Moderation log. Shows bans/unbans.");
         put("srv", "Server log. Shows bans/unbans, along with joins and leaves.");
     }};
