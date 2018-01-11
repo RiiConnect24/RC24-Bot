@@ -76,7 +76,7 @@ public class BotConfig extends Command {
             }
         }
 
-        final Map<String, ServerConfigManager.LogType> channelTypes = new HashMap<>() {{
+        final Map<String, ServerConfigManager.LogType> channelTypes = new HashMap<String, ServerConfigManager.LogType>() {{
             put("mod", ServerConfigManager.LogType.MOD);
             put("mod-log", ServerConfigManager.LogType.MOD);
 
