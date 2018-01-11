@@ -58,7 +58,7 @@ public class Morpher extends ListenerAdapter {
     private MessageEmbed createMirrorEmbed(Message rootMessage) {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("New announcement!");
-        embed.setDescription(rootMessage.getContent());
+        embed.setDescription(rootMessage.getContentRaw());
         embed.setColor(Color.decode("#FFEB3B"));
         User author = rootMessage.getAuthor();
         embed.setFooter("#" + rootMessage.getChannel().getName(), null);
@@ -77,7 +77,7 @@ public class Morpher extends ListenerAdapter {
     }
 
     public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {
-        if (event.getMessage().getContent().isEmpty()) return;
+        if (event.getMessage().getContentRaw().isEmpty()) return;
         if (event.getChannel().getIdLong() == rootID && canUseMirror(event.getJDA())) {
             Long association = morpherManager.getAssociation(event.getMessageIdLong());
             if (association != null) {
