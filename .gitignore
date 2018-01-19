@@ -1,13 +1,6 @@
-# Netbeans says hello.
-/target/
-# IntelliJ agrees.
 /.idea
 /*.iml
-# For Eclipse, who doesn't really say hello. (Who uses Eclipse)
-/.project
-/.classpath
-/bin
-/.settings
+target/
 
 # Configuration
 /data
