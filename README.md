@@ -19,7 +19,7 @@ Check out the following steps:
 1. You'll need to have Redis and Maven installed.
 2. We'll create the Redis structures as we go, so no need to set anything up.
 3. `git clone` the repo somewhere and `cd` into it. 💻
-4. It's time to start the 🔨... Run `maven install`! And... tada! That's it. 🎉 You can find JAR(s) created in `target`. Easy! 👌👍
+4. It's time to start the 🔨... Run `mvn install`! And... tada! That's it. 🎉 You can find JAR(s) created in `target`. Easy! 👌👍
 5. For running, make sure you have redis installed on whatever machine. Also, if `config.yml` can't be found, it'll copy a default copy to the current directory for you. 🏃
 
 If you need support for the bot, head on over to https://discord.gg/PVsh4jP (the bot's official support server) or DM `Artuto#0424 | 264499432538505217` in Discord.
