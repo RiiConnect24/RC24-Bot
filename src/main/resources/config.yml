@@ -8,10 +8,9 @@ playing: "type !help"
 
 # These users will have full access to the bot's admin commands, and by extension, the server it is hosted on.
 # Give this power with care!!
-primary_owner: 239809536012058625
+primary_owner: 264499432538505217
 secondary_owners:
-  - 228574821590499329
-  - 264499432538505217
+  - 302534881370439681
 
 # Status of the bot
 status: ONLINE
