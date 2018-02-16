@@ -112,7 +112,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 new BotConfig(),
                 new UserInfo(),
                 new Invite(),
-                new MailParseCommand(),
+                new MailParseCommand(config),
                 new Ping(),
 
                 // Wii-related
@@ -158,7 +158,7 @@ public class RiiConnect24Bot extends ListenerAdapter {
             ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
             scheduler.scheduleAtFixedRate(
                     new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()),
-                    midnight, TimeUnit.DAYS.toMinutes(1), TimeUnit.MINUTES
+                    0, TimeUnit.DAYS.toMicros(1), TimeUnit.MICROSECONDS
             );
         }
     }

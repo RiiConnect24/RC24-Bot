@@ -4,9 +4,15 @@ import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.loader.Config;
 
-public class MailParseCommand extends Command {
-    public MailParseCommand() {
+public class MailParseCommand extends Command
+{
+    private final Config config;
+
+    public MailParseCommand(Config config)
+    {
+        this.config = config;
         this.name = "patch";
         this.help = "Patches your `nwc24msg.cfg` for use with RiiConnect24.";
         this.category = Categories.TOOLS;
@@ -17,10 +23,14 @@ public class MailParseCommand extends Command {
     }
 
     @Override
-    public void execute(CommandEvent event) {
-        event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage("Drag and drop your `nwc24msg.cfg` here, and I'll patch it!").queue(
-                (success) -> event.reactSuccess(),
-                (failure) -> event.replyError("Hey, " + event.getMember().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
-        ));
+    public void execute(CommandEvent event)
+    {
+        if(config.isMailPatchEnabled())
+            event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage("Drag and drop your `nwc24msg.cfg` here, and I'll patch it!").queue(
+                    (success) -> event.reactSuccess(),
+                    (failure) -> event.replyError("Hey, " + event.getMember().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
+            ));
+        else
+            event.replyError("The `patch` command has been disabled by the bot owner!");
     }
 }
