@@ -32,8 +32,8 @@ public class SetBirthday extends Command {
             conn.select(2);
             // We only want the day and the month. We don't want the year, but
             // for user accessibility we'll leave it optional and never use it.
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd[/yyyy]");
-            LocalDate dateTime = LocalDate.parse(event.getArgs(), formatter);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
+            LocalDate dateTime = LocalDate.parse(event.getArgs()+"/2018", formatter);
 
             String userID = event.getAuthor().getId();
 
@@ -41,8 +41,7 @@ public class SetBirthday extends Command {
             event.replySuccess("Updated successfully!");
         } catch (DateTimeParseException e) {
             event.replyError("I couldn't parse your date.\n" +
-            "Due to a bug that I keep having, I require a year. Please don't give out your full birth year!\n" +
-            "Try something like: `" + event.getClient().getPrefix() + "birthday 04/20/1970` or some random year.");
+            "Try something like: `" + event.getClient().getPrefix() + "birthday 14/04.");
         }
     }
 }
