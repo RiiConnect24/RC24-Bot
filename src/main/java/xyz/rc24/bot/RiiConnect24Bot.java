@@ -71,9 +71,12 @@ public class RiiConnect24Bot extends ListenerAdapter {
     private static Logger logger = LoggerFactory.getLogger(RiiConnect24Bot.class);
 
     public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException {
-        try {
+        try
+        {
             config = new Config();
-        } catch (Exception e) {
+        }
+        catch(Exception e)
+        {
             logger.error(e.toString());
             return;
         }
@@ -90,9 +93,8 @@ public class RiiConnect24Bot extends ListenerAdapter {
         Long[] owners = config.getSecondaryOwners();
         String[] ownersString = new String[owners.length];
 
-        for (int i = 0; i < owners.length; i++) {
+        for (int i = 0; i < owners.length; i++)
             ownersString[i] = String.valueOf(owners[i]);
-        }
 
         // Set all co-owners
         client.setCoOwnerIds(ownersString);
@@ -134,9 +136,8 @@ public class RiiConnect24Bot extends ListenerAdapter {
                 .addEventListener(new RiiConnect24Bot())
                 .addEventListener(new ServerLog())
                 .addEventListener(new MailParseListener());
-        if (config.isMorpherEnabled()) {
+        if(config.isMorpherEnabled())
             builder.addEventListener(new Morpher(config));
-        }
         builder.buildBlocking();
     }
 
@@ -144,27 +145,27 @@ public class RiiConnect24Bot extends ListenerAdapter {
     public void onReady(ReadyEvent event) {
         logger.info("Done loading!");
         // Check if we need to set a game
-        if (config.getPlaying().isEmpty()) {
+        if(config.getPlaying().isEmpty())
             event.getJDA().getPresence().setGame(Game.playing("Type " + prefix + "help"));
-        } else {
+        else
             event.getJDA().getPresence().setGame(Game.playing(config.getPlaying()));
-        }
 
         // It'll default to Type <prefix>help, per using the default game above.
-        if (config.birthdaysAreEnabled()) {
+        if(config.birthdaysAreEnabled())
+        {
             // Every day at midnight
             // And yes, we're assuming the channel exists. :fingers_crossed:
             Long midnight = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay(), ChronoUnit.MINUTES);
             ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
             scheduler.scheduleAtFixedRate(
                     new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()),
-                    0, TimeUnit.DAYS.toMicros(1), TimeUnit.MICROSECONDS
-            );
+                    0, TimeUnit.DAYS.toMicros(1), TimeUnit.MICROSECONDS);
         }
     }
 
     @Override
-    public void onShutdown(ShutdownEvent event) {
+    public void onShutdown(ShutdownEvent event)
+    {
         pool.destroy();
     }
 }
