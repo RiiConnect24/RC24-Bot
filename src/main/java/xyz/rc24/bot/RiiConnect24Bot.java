@@ -24,6 +24,8 @@
 
 package xyz.rc24.bot;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.jagrosh.jdautilities.commandclient.CommandClientBuilder;
 import com.jagrosh.jdautilities.waiter.EventWaiter;
 import net.dv8tion.jda.core.AccountType;
@@ -31,9 +33,7 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -48,8 +48,6 @@ import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 
-import javax.security.auth.login.LoginException;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -65,14 +63,16 @@ import java.util.concurrent.TimeUnit;
 
 public class RiiConnect24Bot extends ListenerAdapter
 {
-
     private static Config config;
     private static JedisPool pool;
     private static String prefix;
-    private static Logger logger = LoggerFactory.getLogger(RiiConnect24Bot.class);
+    private static Logger LOGGER = (Logger)(Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    private static Logger logger = (Logger)(Logger)LoggerFactory.getLogger("RiiConnect24 Bot");
 
-    public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException
+    public static void main(String[] args) throws Exception
     {
+        LOGGER.setLevel(Level.INFO);
+
         try
         {
             config = new Config();

@@ -19,7 +19,7 @@ package xyz.rc24.bot.commands.botadm;
 
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
-import org.slf4j.Logger;
+import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.commands.Categories;
 
@@ -34,7 +34,7 @@ import java.io.InputStreamReader;
  */
 public class Bash extends Command
 {
-    private static Logger logger = LoggerFactory.getLogger(Bash.class);
+    private static Logger logger = (Logger)LoggerFactory.getLogger(Bash.class);
 
     public Bash()
     {

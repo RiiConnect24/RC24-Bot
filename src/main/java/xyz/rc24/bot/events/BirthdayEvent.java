@@ -4,7 +4,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
-import org.slf4j.Logger;
+import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -21,7 +21,7 @@ public class BirthdayEvent extends TimerTask {
     private static Long birthdayChannelID;
     private static JDA jda;
     private static JedisPool pool;
-    private static final Logger logger = LoggerFactory.getLogger(BirthdayEvent.class);
+    private static final Logger logger = (Logger)LoggerFactory.getLogger(BirthdayEvent.class);
 
     public BirthdayEvent(Long birthdayChannelID, JedisPool pool, JDA jda) {
         BirthdayEvent.pool = pool;

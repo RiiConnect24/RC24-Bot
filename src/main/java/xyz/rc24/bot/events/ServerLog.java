@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.slf4j.Logger;
+import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.managers.ServerConfigManager;
 import xyz.rc24.bot.managers.ServerConfigManager.LogType;
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 public class ServerLog extends ListenerAdapter
 {
     private ServerConfigManager manager;
-    private static final Logger logger = LoggerFactory.getLogger(ServerLog.class);
+    private static final Logger logger = (Logger)LoggerFactory.getLogger(ServerLog.class);
 
     public ServerLog()
     {

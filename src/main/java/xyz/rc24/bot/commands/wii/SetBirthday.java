@@ -46,7 +46,7 @@ public class SetBirthday extends Command
         catch(DateTimeParseException e)
         {
             event.replyError("I couldn't parse your date.\n" +
-            "Try something like: `" + event.getClient().getPrefix() + "birthday 14/04.");
+            "Try something like: `" + event.getClient().getPrefix() + "birthday 14/04`.");
         }
     }
 }

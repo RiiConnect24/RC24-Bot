@@ -4,7 +4,7 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.slf4j.Logger;
+import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.events.MailParser;
 
@@ -15,7 +15,7 @@ import java.net.URLConnection;
 
 public class MailParseListener extends ListenerAdapter
 {
-    private static final Logger logger = LoggerFactory.getLogger(MailParseListener.class);
+    private static final Logger logger = (Logger)LoggerFactory.getLogger(MailParseListener.class);
 
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)

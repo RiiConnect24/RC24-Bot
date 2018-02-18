@@ -7,7 +7,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.slf4j.Logger;
+import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.managers.MorpherManager;
@@ -27,7 +27,7 @@ public class Morpher extends ListenerAdapter {
     private final Long ownerID;
     private TextChannel mirror = null;
     private final MorpherManager morpherManager;
-    private static final Logger logger = LoggerFactory.getLogger(Morpher.class);
+    private static final Logger logger = (Logger)LoggerFactory.getLogger(Morpher.class);
 
     public Morpher(Config config) {
         this.rootID = config.getMorpherRoot();

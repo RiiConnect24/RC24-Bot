@@ -1,7 +1,7 @@
 package xyz.rc24.bot.events;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
+import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 public class MailParser {
-    private static final Logger logger = LoggerFactory.getLogger(MailParser.class);
+    private static final Logger logger = (Logger)(Logger)LoggerFactory.getLogger(MailParser.class);
 
     /**
      * The following is based off a specific format.
