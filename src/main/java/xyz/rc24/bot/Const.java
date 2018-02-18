@@ -36,7 +36,7 @@ import java.util.Map;
 
 public class Const
 {
-    public static String VERSION = ("3.1.0");
+    public static String VERSION = ("3.1.1");
     public static final String DONE_E = ("✅");
     public static final String WARN_E = ("⚠");
     public static final String FAIL_E = ("❌");
