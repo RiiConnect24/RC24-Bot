@@ -33,8 +33,10 @@ import xyz.rc24.bot.commands.Categories;
  * @author Spotlight
  */
 
-public class Wads extends Command {
-    public Wads() {
+public class Wads extends Command
+{
+    public Wads()
+    {
         this.name = "wads";
         this.help = "Lets you know the URL to the IOS Patcher.";
         this.category = Categories.WII;
@@ -44,7 +46,8 @@ public class Wads extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event) {
-        event.getTextChannel().sendMessage("Check out the patcher here: https://github.com/RiiConnect24/IOS-Patcher/releases").complete();
+    protected void execute(CommandEvent event)
+    {
+       event.replyInDm("Check out the patcher here: https://github.com/RiiConnect24/IOS-Patcher/releases");
     }
 }

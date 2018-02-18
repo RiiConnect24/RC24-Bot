@@ -27,15 +27,16 @@ package xyz.rc24.bot.commands.tools;
 import com.jagrosh.jdautilities.commandclient.Command;
 import com.jagrosh.jdautilities.commandclient.CommandEvent;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Message;
 import xyz.rc24.bot.commands.Categories;
 
 /**
  * @author Spotlight
  */
 
-public class Ping extends Command {
-    public Ping() {
+public class Ping extends Command
+{
+    public Ping()
+    {
         this.name = "ping";
         this.help = "Checks the bot's connection to Discord's servers.";
         this.category = Categories.TOOLS;
@@ -46,11 +47,11 @@ public class Ping extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event) {
+    protected void execute(CommandEvent event)
+    {
         long currentTime = System.currentTimeMillis();
-        event.getTextChannel().sendMessage("Pinging...").queue(
-                (message) -> message.editMessage("Discord API Ping: " + event.getJDA().getPing() +
-                        "ms, message edit latency: " + (System.currentTimeMillis() - currentTime) + "ms").complete()
+        event.reply("Pinging...", (message) -> message.editMessage("Discord API Ping: " + event.getJDA().getPing() +
+                        "ms, message edit latency: " + (System.currentTimeMillis() - currentTime) + "ms").queue()
         );
     }
 }

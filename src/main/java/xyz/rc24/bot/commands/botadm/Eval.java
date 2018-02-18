@@ -36,13 +36,15 @@ import java.util.List;
  * @author Artu
  */
 
-public class Eval extends Command {
+public class Eval extends Command
+{
     private ScriptEngine engine;
     private List<String> imports;
     private JedisPool pool;
     private Config config;
 
-    public Eval(JedisPool pool, Config config) {
+    public Eval(JedisPool pool, Config config)
+    {
         this.pool = pool;
         this.config = config;
         this.name = "eval";
@@ -78,11 +80,13 @@ public class Eval extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event) {
+    protected void execute(CommandEvent event)
+    {
         String importString = "";
         String eval;
 
-        try (Jedis conn = pool.getResource()) {
+        try(Jedis conn = pool.getResource())
+        {
             engine.put("event", event);
             engine.put("jda", event.getJDA());
             engine.put("channel", event.getChannel());
@@ -93,27 +97,27 @@ public class Eval extends Command {
 
             engine.put("conn", conn);
             engine.put("config", config);
-            if (event.isFromType(ChannelType.TEXT)) {
+            if (event.isFromType(ChannelType.TEXT))
+            {
                 engine.put("member", event.getMember());
                 engine.put("guild", event.getGuild());
                 engine.put("tc", event.getTextChannel());
                 engine.put("selfmember", event.getGuild().getSelfMember());
             }
 
-            for (final String s : imports) {
+            for (final String s : imports)
                 importString += "import " + s + ".*;";
-            }
 
             eval = event.getArgs().replaceAll("getToken", "getSelfUser");
-
             Object out = engine.eval(importString + eval);
 
             if (out == null || String.valueOf(out).isEmpty())
                 event.reactSuccess();
             else
                 event.replySuccess("Done! Output:\n```java\n" + out.toString().replaceAll(event.getJDA().getToken(), "Nice try.") + " ```");
-        } catch (Exception e2) {
-            e2.printStackTrace();
+        }
+        catch(Exception e2)
+        {
             event.replyError("Error! Output:\n```java\n" + e2 + " ```");
         }
     }

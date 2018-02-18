@@ -33,8 +33,10 @@ import xyz.rc24.bot.commands.Categories;
  * @author Spotlight
  */
 
-public class Shutdown extends Command {
-    public Shutdown() {
+public class Shutdown extends Command
+{
+    public Shutdown()
+    {
         this.name = "shutdown";
         this.help = "Turns the bot off.";
         this.category = Categories.ADMIN;
@@ -45,7 +47,8 @@ public class Shutdown extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event) {
+    protected void execute(CommandEvent event)
+    {
         event.getTextChannel().sendMessage("Done! Cya \uD83D\uDC4B").complete();
         event.getJDA().shutdown();
         System.exit(0);

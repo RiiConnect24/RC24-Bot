@@ -46,11 +46,12 @@ import java.util.Map;
  * @author Spotlight
  */
 
-public class Codes extends Command {
-
+public class Codes extends Command
+{
     private final CodeManager manager;
 
-    public Codes(JedisPool pool) {
+    public Codes(JedisPool pool)
+    {
         this.manager = new CodeManager(pool);
         this.name = "code";
         this.help = "Manages friend codes for the user.";
@@ -61,63 +62,70 @@ public class Codes extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event) {
+    protected void execute(CommandEvent event)
+    {
         event.replyError("Please enter a valid option for the command.\n" +
                 "Valid options: `add`, `edit`, `remove`, `lookup`, `help`.");
     }
 
-    private class Lookup extends Command {
-        Lookup() {
+    private class Lookup extends Command
+    {
+        Lookup()
+        {
             this.name = "lookup";
             this.help = "Displays wii for the user.";
             this.category = new Command.Category("Wii-related");
             this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
+            this.guildOnly = true;
         }
 
         @Override
         protected void execute(CommandEvent event) {
             Member member;
-            if (event.getArgs().isEmpty()) {
+            if (event.getArgs().isEmpty())
                 member = event.getMember();
-            } else {
+            else
+            {
                 List<Member> potentialMembers = FinderUtil.findMembers(event.getArgs(), event.getGuild());
-                if (potentialMembers.isEmpty()) {
+                if (potentialMembers.isEmpty())
+                {
                     event.replyError("I couldn't find a user by that name!");
                     return;
-                } else {
-                    member = potentialMembers.get(0);
                 }
+                else
+                    member = potentialMembers.get(0);
             }
             // If there wasn't a user found, just halt execution.
-            if (member == null) {
+            if(member==null)
+            {
                 event.replyError("I couldn't find that user!");
                 return;
             }
             EmbedBuilder codeEmbed = new EmbedBuilder();
             // Set a default color for non-role usage.
             Color embedColor = Color.decode("#0083e2");
-            if (!(event.getChannelType() == ChannelType.PRIVATE)) {
+            if(!(event.getChannelType()==ChannelType.PRIVATE))
                 embedColor = member.getColor();
-            }
+
             codeEmbed.setColor(embedColor);
-            codeEmbed.setAuthor("Profile for " + member.getEffectiveName(),
-                    null, member.getUser().getEffectiveAvatarUrl());
+            codeEmbed.setAuthor("Profile for " + member.getEffectiveName(), null, member.getUser().getEffectiveAvatarUrl());
 
             // Map: Type, then a further map of name/value.
             Map<CodeManager.Type, Map<String, String>> userCodes = manager.getAllCodes(member.getUser().getIdLong());
 
-            for (Map.Entry<CodeManager.Type, Map<String, String>> typeData : userCodes.entrySet()) {
+            for (Map.Entry<CodeManager.Type, Map<String, String>> typeData : userCodes.entrySet())
+            {
                 // We define each code as the name (key) and the code (value) itself.
                 Map<String, String> codes = typeData.getValue();
                 // Make sure it's not null or empty and such
-                if (codes != null && !codes.isEmpty()) {
+                if(!(codes==null) && !(codes.isEmpty()))
+                {
                     StringBuilder fieldContents = new StringBuilder();
-                    for (Map.Entry<String, String> codeData : codes.entrySet()) {
+                    for (Map.Entry<String, String> codeData : codes.entrySet())
                         // Add in the format `nameOfCode`:
                         //                   value
-                        fieldContents.append("`").append(codeData.getKey()).append("`:\n")
-                                .append(codeData.getValue()).append("\n");
-                    }
+                        fieldContents.append("`").append(codeData.getKey()).append("`:\n").append(codeData.getValue()).append("\n");
+
                     // Now that we have the code text set up, we'll just add it as a field.
                     codeEmbed.addField(Const.typesToDisplayName.get(typeData.getKey()), fieldContents.toString(), true);
                 }
@@ -125,16 +133,17 @@ public class Codes extends Command {
                 // Carry on!
             }
             // There won't be any fields if the types are all empty.
-            if (codeEmbed.getFields().isEmpty()) {
+            if (codeEmbed.getFields().isEmpty())
                 event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
-            } else {
+            else
                 event.reply(codeEmbed.build());
-            }
         }
     }
 
-    private class Add extends Command {
-        Add() {
+    private class Add extends Command
+    {
+        Add()
+        {
             this.name = "add";
             this.help = "Adds wii for the user.";
             this.category = new Command.Category("Wii-related");
@@ -142,9 +151,11 @@ public class Codes extends Command {
         }
 
         @Override
-        protected void execute(CommandEvent event) {
+        protected void execute(CommandEvent event)
+        {
             String type = event.getArgs().split(" ")[0];
-            if (!Const.namesToType.containsKey(type)) {
+            if(!Const.namesToType.containsKey(type))
+            {
                 event.replyError(Const.getCodeTypes());
                 return;
             }
@@ -157,11 +168,13 @@ public class Codes extends Command {
             String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
                     "`" + event.getClient().getPrefix() + "code add " + type + " | name | code`.";
             // The array should have 3 (empty, name, and code).
-            if (information.length != 3) {
+            if(!(information.length==3))
+            {
                 event.replyError(errorMessage);
                 return;
             }
-            if (information[1].isEmpty() || information[2].isEmpty()) {
+            if(information[1].isEmpty() || information[2].isEmpty())
+            {
                 event.replyError(errorMessage);
                 return;
             }
@@ -170,8 +183,10 @@ public class Codes extends Command {
         }
     }
 
-    private class Remove extends Command {
-        Remove() {
+    private class Remove extends Command
+    {
+        Remove()
+        {
             this.name = "remove";
             this.help = "Removes wii for the user.";
             this.category = new Command.Category("Wii-related");
@@ -179,9 +194,11 @@ public class Codes extends Command {
         }
 
         @Override
-        protected void execute(CommandEvent event) {
+        protected void execute(CommandEvent event)
+        {
             String type = event.getArgs().split(" ")[0];
-            if (!Const.namesToType.containsKey(type)) {
+            if ((!Const.namesToType.containsKey(type)))
+            {
                 event.replyError(Const.getCodeTypes());
                 return;
             }
@@ -193,26 +210,29 @@ public class Codes extends Command {
             String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
                     "`" + event.getClient().getPrefix() + "code remove " + type + " | code name`.";
             // The array should have 2 (empty, name).
-            if (information.length != 2) {
+            if(!(information.length==2))
+            {
                 event.replyError(errorMessage);
                 return;
             }
 
-            if (information[1].isEmpty()) {
+            if(information[1].isEmpty())
+            {
                 event.replyError(errorMessage);
                 return;
             }
             Boolean status = manager.removeCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1]);
-            if (status) {
+            if(status)
                 event.replySuccess("Removed the code for `" + information[1] + "`");
-            } else {
+            else
                 event.replyError("A code for `" + information[1] + "` is not registered.");
-            }
         }
     }
 
-    private class Edit extends Command {
-        Edit() {
+    private class Edit extends Command
+    {
+        Edit()
+        {
             this.name = "edit";
             this.help = "Edits wii for the user.";
             this.category = new Command.Category("Wii-related");
@@ -220,9 +240,11 @@ public class Codes extends Command {
         }
 
         @Override
-        protected void execute(CommandEvent event) {
+        protected void execute(CommandEvent event)
+        {
             String type = event.getArgs().split(" ")[0];
-            if (!Const.namesToType.containsKey(type)) {
+            if(!(Const.namesToType.containsKey(type)))
+            {
                 event.replyError(Const.getCodeTypes());
                 return;
             }
@@ -234,26 +256,29 @@ public class Codes extends Command {
             String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
                     "`" + event.getClient().getPrefix() + "code edit " + type + " | code name | new code`.";
             // The array should have 3 (empty, name, and code).
-            if (information.length != 3) {
+            if(!(information.length==3))
+            {
                 event.replyError(errorMessage);
                 return;
             }
 
-            if (information[1].isEmpty() || information[2].isEmpty()) {
+            if(information[1].isEmpty() || information[2].isEmpty())
+            {
                 event.replyError(errorMessage);
                 return;
             }
             Boolean status = manager.editCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1], information[2]);
-            if (status) {
+            if(status)
                 event.replySuccess("Edited the code for `" + information[1] + "`");
-            } else {
+            else
                 event.replyError("A code for `" + information[1] + "` is not registered.");
-            }
         }
     }
 
-    private class Help extends Command {
-        Help() {
+    private class Help extends Command
+    {
+        Help()
+        {
             this.name = "help";
             this.help = "Shows help regarding wii.";
             this.category = new Command.Category("Wii-related");
@@ -261,7 +286,8 @@ public class Codes extends Command {
         }
 
         @Override
-        protected void execute(CommandEvent event) {
+        protected void execute(CommandEvent event)
+        {
             String help = "**__Using the bot__**\n\n" +
                     "**Adding wii:**\n" +
                     "`" + event.getClient().getPrefix() + "code add wii | Wii Name Goes here | 1234-5678-9012-3456`\n" +
@@ -282,10 +308,8 @@ public class Codes extends Command {
                     "**Adding a user's Wii**\n" +
                     "`" + event.getClient().getPrefix() + "add @user`\n" +
                     "This will send you their wii, and then DM them your Wii/game wii.";
-            event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage(help).queue(
-                    (success) -> event.reactSuccess(),
-                    (failure) -> event.replyError("I couldn't DM you!")
-            ));
+
+            event.replyInDm(help);
         }
     }
 }

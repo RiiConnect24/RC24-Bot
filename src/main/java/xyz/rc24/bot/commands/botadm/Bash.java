@@ -32,25 +32,31 @@ import java.io.InputStreamReader;
  *
  * @author Spotlight
  */
-public class Bash extends Command {
-    public Bash() {
+public class Bash extends Command
+{
+    private static Logger logger = LoggerFactory.getLogger(Bash.class);
+
+    public Bash()
+    {
         this.name = "bash";
         this.help = "Runs a bash command.";
         this.category = Categories.ADMIN;
         this.ownerCommand = true;
     }
-    private static Logger logger = LoggerFactory.getLogger(Bash.class);
 
     @Override
-    protected void execute(CommandEvent event) {
-        if (event.getArgs().isEmpty()) {
+    protected void execute(CommandEvent event)
+    {
+        if(event.getArgs().isEmpty())
+        {
             event.replyError("Cannot execute a empty command!");
             return;
         }
 
         StringBuilder output = new StringBuilder();
         String finalOutput;
-        try {
+        try
+        {
             ProcessBuilder builder = new ProcessBuilder(event.getArgs().split(" "));
             Process p = builder.start();
 
@@ -58,11 +64,11 @@ public class Bash extends Command {
                     new BufferedReader(new InputStreamReader(p.getInputStream()));
 
             String runningLineOutput;
-            while ((runningLineOutput = reader.readLine()) != null) {
+            while ((runningLineOutput = reader.readLine()) != null)
                 output.append(runningLineOutput).append("\n");
-            }
 
-            if (output.toString().isEmpty()) {
+            if(output.toString().isEmpty())
+            {
                 event.replySuccess("Done, with no output!");
                 return;
             }
@@ -70,22 +76,20 @@ public class Bash extends Command {
             // Remove linebreak
             finalOutput = output.substring(0, output.length() - 1);
             reader.close();
-        } catch (IOException e) {
+        }
+        catch(IOException e)
+        {
             event.replyError("I wasn't able to find the command `" + event.getArgs() + "`!");
             return;
-        } catch (Exception e) {
+        }
+        catch(Exception e)
+        {
             logger.warn("An unknown error occurred!");
             e.printStackTrace();
             event.replyError("An unknown error occurred! Check the bot console.");
             return;
         }
 
-        // Actually send
-        try {
-            event.replySuccess("Input: ```\n" + event.getArgs() + "``` Output: \n```\n" + finalOutput + "```");
-        } catch (IllegalArgumentException e) {
-            logger.info("Input: " + event.getArgs() + "\nOutput: " + finalOutput);
-            event.replySuccess("Command output too long! Output sent in console.");
-        }
+        event.replySuccess("Input: ```\n" + event.getArgs() + "``` Output: \n```\n" + finalOutput + "```");
     }
 }

@@ -63,14 +63,16 @@ import java.util.concurrent.TimeUnit;
  * @author Spotlight and Artu
  */
 
-public class RiiConnect24Bot extends ListenerAdapter {
+public class RiiConnect24Bot extends ListenerAdapter
+{
 
     private static Config config;
     private static JedisPool pool;
     private static String prefix;
     private static Logger logger = LoggerFactory.getLogger(RiiConnect24Bot.class);
 
-    public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException {
+    public static void main(String[] args) throws IOException, LoginException, IllegalArgumentException, RateLimitedException, InterruptedException
+    {
         try
         {
             config = new Config();
@@ -142,7 +144,8 @@ public class RiiConnect24Bot extends ListenerAdapter {
     }
 
     @Override
-    public void onReady(ReadyEvent event) {
+    public void onReady(ReadyEvent event)
+    {
         logger.info("Done loading!");
         // Check if we need to set a game
         if(config.getPlaying().isEmpty())

@@ -33,8 +33,10 @@ import xyz.rc24.bot.commands.Categories;
  * @author Spotlight
  */
 
-public class DNS extends Command {
-    public DNS() {
+public class DNS extends Command
+{
+    public DNS()
+    {
         this.name = "dns";
         this.help = "Lets you know the current DNS settings.";
         this.category = Categories.WII;
@@ -44,8 +46,9 @@ public class DNS extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event) {
-        event.getTextChannel().sendMessage("`164.132.44.106` should be your primary DNS.\n" +
-                "`8.8.8.8` (Google's DNS) can be your secondary DNS server.").complete();
+    protected void execute(CommandEvent event)
+    {
+        event.reply("`164.132.44.106` should be your primary DNS.\n" +
+                "`8.8.8.8` (Google's DNS) can be your secondary DNS server.");
     }
 }

@@ -42,8 +42,10 @@ import java.util.List;
  * @author Artu
  */
 
-public class UserInfo extends Command {
-    public UserInfo() {
+public class UserInfo extends Command
+{
+    public UserInfo()
+    {
         this.name = "info";
         this.help = "Shows info about the specified user";
         this.category = Categories.TOOLS;
@@ -54,25 +56,30 @@ public class UserInfo extends Command {
     }
 
     @Override
-    protected void execute(CommandEvent event) {
+    protected void execute(CommandEvent event)
+    {
         String roles;
         EmbedBuilder builder = new EmbedBuilder();
         Member member;
 
-        if (event.getArgs().isEmpty()) {
+        if (event.getArgs().isEmpty())
             member = event.getMessage().getMember();
-        } else {
+        else
+        {
             List<Member> list = FinderUtil.findMembers(event.getArgs(), event.getGuild());
 
-            if (list.isEmpty()) {
+            if (list.isEmpty())
+            {
                 event.replyWarning("I was not able to found a user with the provided arguments: '" + event.getArgs() + "'");
                 return;
-            } else if (list.size() > 1) {
+            }
+            else if (list.size() > 1)
+            {
                 event.replyWarning(FormatUtil.listOfMembers(list, event.getArgs()));
                 return;
-            } else {
-                member = list.get(0);
             }
+            else
+                member = list.get(0);
         }
 
         StringBuilder rolesbldr = new StringBuilder();
@@ -80,13 +87,13 @@ public class UserInfo extends Command {
 
         String title = (member.getUser().isBot() ? ":information_source: Information about the bot **" + member.getUser().getName() + "**" + "#" + "**" + member.getUser().getDiscriminator() + "** <:bot:334859813915983872>" : ":information_source: Information about the user **" + member.getUser().getName() + "**" + "#" + "**" + member.getUser().getDiscriminator() + "**");
 
-        if (rolesbldr.toString().isEmpty()) {
+        if(rolesbldr.toString().isEmpty())
             roles = "**None**";
-        } else {
+        else
             roles = rolesbldr.toString();
-        }
 
-        try {
+        try
+        {
             builder.addField("ID: ", "**" + member.getUser().getId() + "**", false);
             builder.addField("Nickname: ", (member.getNickname() == null ? "None" : "**" + member.getNickname() + "**"), false);
             builder.addField("Roles: ", roles, false);
@@ -98,7 +105,7 @@ public class UserInfo extends Command {
             builder.setThumbnail(member.getUser().getEffectiveAvatarUrl());
             builder.setColor(member.getColor());
             event.getChannel().sendMessage(new MessageBuilder().append(title).setEmbed(builder.build()).build()).queue();
-        } catch (Exception ignored) {
         }
+        catch(Exception ignored) { }
     }
 }

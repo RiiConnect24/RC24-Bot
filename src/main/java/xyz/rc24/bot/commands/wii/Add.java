@@ -44,11 +44,13 @@ import java.util.Map;
  * @author Spotlight
  */
 
-public class Add extends Command {
+public class Add extends Command
+{
     private final CodeManager manager;
     private final ServerConfigManager configManager;
 
-    public Add(JedisPool pool) {
+    public Add(JedisPool pool)
+    {
         this.manager = new CodeManager(pool);
         this.configManager = new ServerConfigManager();
         this.name = "add";
@@ -56,22 +58,25 @@ public class Add extends Command {
         this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.guildOnly = false;
+        this.guildOnly = true;
     }
 
     @Override
-    protected void execute(CommandEvent event) {
+    protected void execute(CommandEvent event)
+    {
         Member member;
-        if (event.getArgs().isEmpty()) {
+        if(event.getArgs().isEmpty())
             member = event.getMember();
-        } else {
+        else
+        {
             List<Member> potentialMembers = FinderUtil.findMembers(event.getArgs(), event.getGuild());
-            if (potentialMembers.isEmpty()) {
+            if(potentialMembers.isEmpty())
+            {
                 event.replyError("I couldn't find a user by that name!");
                 return;
-            } else {
-                member = potentialMembers.get(0);
             }
+            else
+                member = potentialMembers.get(0);
         }
 
         CodeManager.Type serverAddType = configManager.getDefaultAddType(event.getGuild().getIdLong());
@@ -80,49 +85,44 @@ public class Add extends Command {
         Map<CodeManager.Type, Map<String, String>> authorCodes = manager.getAllCodes(event.getMember().getUser().getIdLong());
         // If it's empty/null, (something) will return an empty map.
         Map<String, String> authorTypeCodes = authorCodes.get(serverAddType);
-        if (authorTypeCodes.isEmpty()) {
+        if(authorTypeCodes.isEmpty())
+        {
             event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
             return;
         }
 
         Map<CodeManager.Type, Map<String, String>> memberCodes = manager.getAllCodes(member.getUser().getIdLong());
         Map<String, String> memberTypeCodes = memberCodes.get(serverAddType);
-        if (memberTypeCodes.isEmpty()) {
+        if(memberTypeCodes.isEmpty())
+        {
             event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
             return;
         }
 
-        event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage(
-                getAddMessageHeader(serverAddType, member, true) + "\n\n" + getCodeLayout(memberTypeCodes)
-        ).queue(
-                (success) -> event.reactSuccess(),
-                (failure) -> event.replyError("Hey, " + event.getMember().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
-        ));
+        event.replyInDm(getAddMessageHeader(serverAddType, member, true) + "\n\n" + getCodeLayout(memberTypeCodes));
 
         member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(
                 getAddMessageHeader(serverAddType, event.getMember(), false) + "\n\n" + getCodeLayout(authorTypeCodes)
-        ).queue(
-                (success) -> event.reactSuccess(),
+        ).queue((success) -> event.reactSuccess(),
                 (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
         ));
     }
 
-    private String getAddMessageHeader(CodeManager.Type type, Member member, Boolean isCommandRunner) {
-        if (isCommandRunner) {
+    private String getAddMessageHeader(CodeManager.Type type, Member member, Boolean isCommandRunner)
+    {
+        if(isCommandRunner)
             return "**" + member.getEffectiveName() + "** has requested to add your " + Const.typesToProductName.get(type) + " friend code(s)!";
-        } else {
+        else
             return "You have requested to add **" + member.getEffectiveName() + "**'s " + Const.typesToProductName.get(type) + " friend code(s).";
-        }
     }
 
-    private String getCodeLayout(Map<String, String> theirCodes) {
+    private String getCodeLayout(Map<String, String> theirCodes)
+    {
         // Create a human-readable format of the user's Wii wii.
         StringBuilder theirCodesButString = new StringBuilder();
-        for (Map.Entry<String, String> code : theirCodes.entrySet()) {
-            theirCodesButString.append("`").append(code.getKey()).append("`:\n")
-                    .append(code.getValue()).append("\n");
-        }
+        for (Map.Entry<String, String> code : theirCodes.entrySet())
+            theirCodesButString.append("`").append(code.getKey()).append("`:\n").append(code.getValue()).append("\n");
+
         return theirCodesButString.toString();
     }
-
 }

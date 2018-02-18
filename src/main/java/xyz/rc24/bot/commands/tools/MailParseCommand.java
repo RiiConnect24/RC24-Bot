@@ -26,10 +26,7 @@ public class MailParseCommand extends Command
     public void execute(CommandEvent event)
     {
         if(config.isMailPatchEnabled())
-            event.getAuthor().openPrivateChannel().queue(pc -> pc.sendMessage("Drag and drop your `nwc24msg.cfg` here, and I'll patch it!").queue(
-                    (success) -> event.reactSuccess(),
-                    (failure) -> event.replyError("Hey, " + event.getMember().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
-            ));
+            event.replyInDm("Drag and drop your `nwc24msg.cfg` here, and I'll patch it!");
         else
             event.replyError("The `patch` command has been disabled by the bot owner!");
     }
