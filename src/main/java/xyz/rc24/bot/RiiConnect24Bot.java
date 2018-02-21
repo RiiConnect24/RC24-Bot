@@ -102,6 +102,7 @@ public class RiiConnect24Bot extends ListenerAdapter
         client.setCoOwnerIds(ownersString);
         prefix = config.getPrefix();
         client.setPrefix(prefix);
+         client.setServerInvite("https://discord.gg/5rw6Tur");
 
         // Create JedisPool for usage elsewhere
         pool = new JedisPool(new JedisPoolConfig(), "localhost");
