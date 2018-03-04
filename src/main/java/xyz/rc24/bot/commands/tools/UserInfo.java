@@ -24,9 +24,9 @@
 
 package xyz.rc24.bot.commands.tools;
 
-import com.jagrosh.jdautilities.commandclient.Command;
-import com.jagrosh.jdautilities.commandclient.CommandEvent;
-import com.jagrosh.jdautilities.utils.FinderUtil;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;

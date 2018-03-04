@@ -24,9 +24,9 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.commandclient.Command;
-import com.jagrosh.jdautilities.commandclient.CommandEvent;
-import com.jagrosh.jdautilities.utils.FinderUtil;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import redis.clients.jedis.JedisPool;
@@ -99,13 +99,14 @@ public class Add extends Command
             return;
         }
 
-        event.replyInDm(getAddMessageHeader(serverAddType, member, true) + "\n\n" + getCodeLayout(memberTypeCodes));
+        event.replyInDm(getAddMessageHeader(serverAddType, member, true) + "\n\n" + getCodeLayout(memberTypeCodes),
+                (success) -> event.reactSuccess(),
+                (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled."));
 
         member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(
                 getAddMessageHeader(serverAddType, event.getMember(), false) + "\n\n" + getCodeLayout(authorTypeCodes)
         ).queue((success) -> event.reactSuccess(),
-                (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")
-        ));
+                (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")));
     }
 
     private String getAddMessageHeader(CodeManager.Type type, Member member, Boolean isCommandRunner)

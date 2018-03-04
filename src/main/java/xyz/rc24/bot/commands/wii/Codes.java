@@ -24,9 +24,9 @@ package xyz.rc24.bot.commands.wii;
  * THE SOFTWARE.
  */
 
-import com.jagrosh.jdautilities.commandclient.Command;
-import com.jagrosh.jdautilities.commandclient.CommandEvent;
-import com.jagrosh.jdautilities.utils.FinderUtil;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -309,7 +309,8 @@ public class Codes extends Command
                     "`" + event.getClient().getPrefix() + "add @user`\n" +
                     "This will send you their wii, and then DM them your Wii/game wii.";
 
-            event.replyInDm(help);
+            event.replyInDm(help, (success) -> event.reactSuccess(),
+                    (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled."));
         }
     }
 }

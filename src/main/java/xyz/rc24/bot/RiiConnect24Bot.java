@@ -26,8 +26,8 @@ package xyz.rc24.bot;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import com.jagrosh.jdautilities.commandclient.CommandClientBuilder;
-import com.jagrosh.jdautilities.waiter.EventWaiter;
+import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
@@ -37,10 +37,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import xyz.rc24.bot.commands.botadm.Bash;
-import xyz.rc24.bot.commands.botadm.Eval;
-import xyz.rc24.bot.commands.botadm.MassMessage;
-import xyz.rc24.bot.commands.botadm.Shutdown;
+import xyz.rc24.bot.commands.botadm.*;
 import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.events.BirthdayEvent;
@@ -48,11 +45,6 @@ import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.*;
 
 /**

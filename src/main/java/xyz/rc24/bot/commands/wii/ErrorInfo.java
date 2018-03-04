@@ -25,8 +25,8 @@ package xyz.rc24.bot.commands.wii;
  */
 
 import com.google.gson.Gson;
-import com.jagrosh.jdautilities.commandclient.Command;
-import com.jagrosh.jdautilities.commandclient.CommandEvent;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import com.google.gson.annotations.SerializedName;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;

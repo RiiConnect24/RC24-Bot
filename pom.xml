@@ -25,12 +25,12 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.5.1_339</version>
+            <version>3.5.1_343</version>
         </dependency>
         <dependency>
             <groupId>com.jagrosh</groupId>
-            <artifactId>JDA-Utilities</artifactId>
-            <version>1.9</version>
+            <artifactId>jda-utilities</artifactId>
+            <version>2.1</version>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>

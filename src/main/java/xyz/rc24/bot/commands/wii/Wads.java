@@ -24,8 +24,8 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.commandclient.Command;
-import com.jagrosh.jdautilities.commandclient.CommandEvent;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import xyz.rc24.bot.commands.Categories;
 
@@ -48,6 +48,6 @@ public class Wads extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-       event.replyInDm("Check out the patcher here: https://github.com/RiiConnect24/IOS-Patcher/releases");
+       event.reply("Check out the patcher here: https://github.com/RiiConnect24/IOS-Patcher/releases");
     }
 }

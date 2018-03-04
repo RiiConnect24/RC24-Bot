@@ -17,8 +17,8 @@ package xyz.rc24.bot.commands.botadm;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.jagrosh.jdautilities.commandclient.Command;
-import com.jagrosh.jdautilities.commandclient.CommandEvent;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.commands.Categories;
