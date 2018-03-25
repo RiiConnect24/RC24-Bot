@@ -6,7 +6,7 @@
 
     <groupId>xyz.rc24.bot</groupId>
     <artifactId>RC24-Bot</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.1</version>
 
     <repositories>
         <repository>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.5.1_343</version>
+            <version>3.5.1_353</version>
         </dependency>
         <dependency>
             <groupId>com.jagrosh</groupId>
@@ -126,6 +126,8 @@
                     <archive>
                         <manifest>
                             <mainClass>xyz.rc24.bot.RiiConnect24Bot</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -135,4 +137,9 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 </project>
