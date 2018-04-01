@@ -49,6 +49,6 @@ public class DNS extends Command
     protected void execute(CommandEvent event)
     {
         event.reply("`164.132.44.106` should be your primary DNS.\n" +
-                "`8.8.8.8` (Google's DNS) can be your secondary DNS server.");
+                "`1.1.1.1` can be your secondary DNS.");
     }
 }
