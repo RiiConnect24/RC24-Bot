@@ -3,7 +3,7 @@ package xyz.rc24.bot.commands.wii;
 /*
  * The MIT License
  *
- * Copyright 2017 Spotlight, Artu, Seriel.
+ * Copyright 2017 RiiConnect24 and its contributors.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * Manages friend codes for the user, stored on Redis.
  *
- * @author Spotlight
+ * @author Spotlight, Artu, Seriel
  */
 
 public class Codes extends Command
