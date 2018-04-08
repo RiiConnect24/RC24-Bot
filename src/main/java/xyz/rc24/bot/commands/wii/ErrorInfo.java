@@ -3,7 +3,7 @@ package xyz.rc24.bot.commands.wii;
 /*
  * The MIT License
  *
- * Copyright 2017 Artu.
+ * Copyright 2017 RiiConnect24 and its contributors.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 /**
  * Looks up errors using the Wiimmfi API.
  *
- * @author Spotlight
+ * @author Spotlight, Artu
  */
 
 public class ErrorInfo extends Command
