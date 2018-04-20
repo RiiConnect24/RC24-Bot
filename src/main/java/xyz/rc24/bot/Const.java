@@ -40,6 +40,7 @@ public class Const
     public static final String WARN_E = ("⚠");
     public static final String FAIL_E = ("❌");
     static final String GAME_0 = ("Loading...");
+    public static final String PATCHING_URL = "http://mtw.rc24.xyz/patch";
     public static final Map<CodeManager.Type, String> typesToDisplayName = new HashMap<CodeManager.Type, String>()
     {{
         put(CodeManager.Type.WII, "<:Wii:259081748007223296> **Wii**");

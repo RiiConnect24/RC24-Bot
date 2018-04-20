@@ -24,41 +24,79 @@ package xyz.rc24.bot.commands.tools;
  * THE SOFTWARE.
  */
 
+import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import ch.qos.logback.classic.Logger;
+import net.dv8tion.jda.core.utils.IOUtil;
+import okhttp3.*;
 import org.slf4j.LoggerFactory;
-import xyz.rc24.bot.events.MailParser;
+import xyz.rc24.bot.Const;
+import xyz.rc24.bot.loader.Config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.*;
 
 /**
- * @author Spotlight
+ * @author Spotlight - original patching code
+ * @author Artuto - updated patching code (wrapper)
  */
 
 public class MailParseListener extends ListenerAdapter
 {
     private static final Logger logger = (Logger)LoggerFactory.getLogger(MailParseListener.class);
+    private final Config config;
+
+    public MailParseListener(Config config)
+    {
+        this.config = config;
+    }
 
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
     {
+        if(!(config.isMailPatchEnabled())) return;
+
         Message message = event.getMessage();
         // Make sure we're not patching our own uploaded file again.
         if(!(message.getAuthor().isBot()))
         {
-            for(Message.Attachment test : message.getAttachments())
+            for(Message.Attachment att : message.getAttachments())
             {
                 // nwc24msg.cfg and nwc24msg.cbk are meant to be covered.
-                if(test.getFileName().contains("nwc24msg.c"))
+                if(att.getFileName().contains("nwc24msg.c"))
                 {
                     // Let's begin! :D
                     try
+                    {
+                        OkHttpClient client = new OkHttpClient();
+                        RequestBody formBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("uploaded_config",
+                                null, RequestBody.create(MediaType.parse("application/octet-stream"), IOUtil.readFully(att.getInputStream()))).build();
+                        Request request = new Request.Builder().url(Const.PATCHING_URL).build();
+                        Response response = client.newCall(request).execute();
+
+                        if(response.code()==400)
+                            throw new IOException("Invalid file! Make sure you sent the correct file!");
+
+                        String content = response.body().string();
+                        Writer output = new BufferedWriter(new FileWriter("nwc24msg.cfg", true));
+                        output.append(content).close();
+                        File file = new File("nwc24msg.cfg");
+
+                        event.getChannel().sendFile(file, att.getFileName(),
+                                new MessageBuilder().append("Here's your patched mail file, deleted from our server:").build()).queue(s -> file.delete(), e -> file.delete());
+                    }
+                    catch(IOException e)
+                    {
+                        if(e.getMessage()==null)
+                        {
+                            event.getChannel().sendMessage(Const.FAIL_E+" Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
+                            e.printStackTrace();
+                        }
+                        else event.getChannel().sendMessage(Const.FAIL_E+" "+e.getMessage()).queue();
+                    }
+
+                    /*try
                     {
                         String url = test.getUrl();
                         logger.debug("Downloaded from: " + url);
@@ -99,7 +137,7 @@ public class MailParseListener extends ListenerAdapter
                     {
                         event.getChannel().sendMessage("Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
                         e.printStackTrace();
-                    }
+                    }*/
                 }
             }
         }
