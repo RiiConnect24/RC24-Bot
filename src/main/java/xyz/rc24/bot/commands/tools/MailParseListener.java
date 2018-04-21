@@ -77,6 +77,8 @@ public class MailParseListener extends ListenerAdapter
 
                         if(response.code()==400)
                             throw new IOException("Invalid file! Make sure you sent the correct file!");
+                        if(response.code()==503)
+                             throw new IOException("The server is now currently under maintenance. Please wait some time and try again.");
 
                         String content = response.body().string();
                         Writer output = new BufferedWriter(new FileWriter("nwc24msg.cfg", true));
