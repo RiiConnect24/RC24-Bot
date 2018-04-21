@@ -72,7 +72,7 @@ public class MailParseListener extends ListenerAdapter
                         OkHttpClient client = new OkHttpClient();
                         RequestBody formBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("uploaded_config",
                                 null, RequestBody.create(MediaType.parse("application/octet-stream"), IOUtil.readFully(att.getInputStream()))).build();
-                        Request request = new Request.Builder().url(Const.PATCHING_URL).build();
+                        Request request = new Request.Builder().url(Const.PATCHING_URL).post(formBody).build();
                         Response response = client.newCall(request).execute();
 
                         if(response.code()==400)
@@ -94,9 +94,7 @@ public class MailParseListener extends ListenerAdapter
                     {
                         e.printStackTrace();
                         if(e.getMessage()==null)
-                        {
-                            event.getChannel().sendMessage(Const.FAIL_E+" Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
-                        }
+                                                 event.getChannel().sendMessage(Const.FAIL_E+" Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
                         else event.getChannel().sendMessage(Const.FAIL_E+" "+e.getMessage()).queue();
                     }
 
