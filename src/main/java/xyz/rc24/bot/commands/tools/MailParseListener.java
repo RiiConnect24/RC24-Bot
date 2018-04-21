@@ -79,7 +79,7 @@ public class MailParseListener extends ListenerAdapter
                             throw new IOException("Invalid file! Make sure you sent the correct file!");
                         if(response.code()==503)
                             throw new IOException("The server is now currently under maintenance. Please wait some time and try again.");
-                        if(!(response.isSuccessful())
+                        if(!(response.isSuccessful()))
                             throw new IOException();
 
                         String content = response.body().string();
