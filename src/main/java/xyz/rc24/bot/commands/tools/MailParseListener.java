@@ -72,7 +72,7 @@ public class MailParseListener extends ListenerAdapter
                         OkHttpClient client = new OkHttpClient();
                         RequestBody formBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("uploaded_config",
                                 null, RequestBody.create(MediaType.parse("application/octet-stream"), IOUtil.readFully(att.getInputStream()))).build();
-                        Request request = new Request.Builder().url(Const.PATCHING_URL).build();
+                        Request request = new Request.Builder().url(Const.PATCHING_URL).post(formBody).build();
                         Response response = client.newCall(request).execute();
 
                         if(response.code()==400)
