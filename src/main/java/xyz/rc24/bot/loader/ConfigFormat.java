@@ -30,7 +30,8 @@ import java.util.List;
 
 // We have to keep this public due to Jackson.
 @SuppressWarnings("WeakerAccess")
-public class ConfigFormat {
+public class ConfigFormat
+{
     public String token;
     public String prefix;
     public String playing;
@@ -47,4 +48,6 @@ public class ConfigFormat {
     public Long birthdays_channel;
     public List<Long> logged_servers;
     public List<Long> ignore_ids;
+    public String sentry_dsn;
+    public boolean sentry_enabled;
 }

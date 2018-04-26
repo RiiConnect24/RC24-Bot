@@ -28,8 +28,10 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import io.sentry.Sentry;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
@@ -37,7 +39,10 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import xyz.rc24.bot.commands.botadm.*;
+import xyz.rc24.bot.commands.botadm.Bash;
+import xyz.rc24.bot.commands.botadm.Eval;
+import xyz.rc24.bot.commands.botadm.MassMessage;
+import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.events.BirthdayEvent;
@@ -45,12 +50,13 @@ import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Timer;
 
 /**
  * Add all commands, and start all events.
  *
- * @author Spotlight and Artu
+ * @author Spotlight and Artuto
  */
 
 public class RiiConnect24Bot extends ListenerAdapter
@@ -75,11 +81,16 @@ public class RiiConnect24Bot extends ListenerAdapter
             return;
         }
 
+        // Start Sentry (if enabled)
+        if(config.isSentryEnabled() && !(config.getSentryDSN()==null || config.getSentryDSN().isEmpty()))
+            Sentry.init(config.getSentryDSN());
+
         // Register commands
         EventWaiter waiter = new EventWaiter();
 
         CommandClientBuilder client = new CommandClientBuilder();
-        client.setGame(Game.playing("Loading..."));
+        client.setGame(Game.playing(config.getPlaying()));
+        client.setStatus(config.getStatus());
         client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
         client.setOwnerId("" + config.getPrimaryOwner());
 
@@ -94,7 +105,7 @@ public class RiiConnect24Bot extends ListenerAdapter
         client.setCoOwnerIds(ownersString);
         prefix = config.getPrefix();
         client.setPrefix(prefix);
-         client.setServerInvite("https://discord.gg/5rw6Tur");
+        client.setServerInvite("https://discord.gg/5rw6Tur");
 
         // Create JedisPool for usage elsewhere
         pool = new JedisPool(new JedisPoolConfig(), "localhost");
@@ -124,7 +135,7 @@ public class RiiConnect24Bot extends ListenerAdapter
         //JDA Connection
         JDABuilder builder = new JDABuilder(AccountType.BOT)
                 .setToken(config.getToken())
-                .setStatus(config.getStatus())
+                .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setGame(Game.playing(Const.GAME_0))
                 .addEventListener(waiter)
                 .addEventListener(client.build())
@@ -143,15 +154,15 @@ public class RiiConnect24Bot extends ListenerAdapter
         // Check if we need to set a game
         if(config.getPlaying().isEmpty())
             event.getJDA().getPresence().setGame(Game.playing("Type " + prefix + "help"));
-        else
-            event.getJDA().getPresence().setGame(Game.playing(config.getPlaying()));
+        /*else
+            event.getJDA().getPresence().setGame(Game.playing(config.getPlaying()));*/
 
         // It'll default to Type <prefix>help, per using the default game above.
         if(config.birthdaysAreEnabled())
         {
             // Every day at midnight
             // And yes, we're assuming the channel exists. :fingers_crossed:
-           Calendar today = Calendar.getInstance(); today.set(Calendar.HOUR_OF_DAY, 8); today.set(Calendar.MINUTE, 0); today.set(Calendar.SECOND, 0);
+            Calendar today = Calendar.getInstance(); today.set(Calendar.HOUR_OF_DAY, 8); today.set(Calendar.MINUTE, 0); today.set(Calendar.SECOND, 0);
             Timer bdays = new Timer();
             bdays.scheduleAtFixedRate(
                    new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()),

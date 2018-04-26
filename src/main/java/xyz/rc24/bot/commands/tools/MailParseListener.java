@@ -69,11 +69,9 @@ public class MailParseListener extends ListenerAdapter
                     // Let's begin! :D
                     try
                     {
-                        File input = new File(att.getIdLong()+att.getFileName());
-                        att.download(input);
                         OkHttpClient client = new OkHttpClient();
                         RequestBody formBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("uploaded_config",
-                                "nwc24msg.cfg", RequestBody.create(MediaType.parse("application/octet-stream"), IOUtil.readFully(input))).build();
+                                "nwc24msg.cfg", RequestBody.create(MediaType.parse("application/octet-stream"), IOUtil.readFully(att.getInputStream()))).build();
                         Request request = new Request.Builder().url(Const.PATCHING_URL).post(formBody).build();
                         Response response = client.newCall(request).execute();
 
@@ -90,15 +88,8 @@ public class MailParseListener extends ListenerAdapter
                         File file = new File("nwc24msg.cfg");
 
                         event.getChannel().sendFile(file, att.getFileName(),
-                                new MessageBuilder().append("Here's your patched mail file, deleted from our server:").build()).queue(s ->
-                        {
-                            file.delete();
-                            input.delete();
-                        }, e ->
-                        {
-                            file.delete();
-                            input.delete();
-                        });
+                                new MessageBuilder().append("Here's your patched mail file, deleted from our server:").build()).queue(s -> file.delete(), e ->
+                            file.delete());
                     }
                     catch(IOException e)
                     {

@@ -46,3 +46,9 @@ logged_servers:
 # Block specific channel IDs from being logged.
 ignore_ids:
   - 000000000000000000
+
+# Set this to true to enable Sentry, if you don't know what is this leave it on false.
+sentry_enabled: false
+
+# Sentry DSN.
+sentry_dsn: ""

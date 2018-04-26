@@ -30,7 +30,6 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.loader.Config;
@@ -92,7 +91,7 @@ public class Eval extends Command
         String importString = "";
         String eval;
 
-        try(Jedis conn = pool.getResource())
+        try
         {
             engine.put("event", event);
             engine.put("jda", event.getJDA());
@@ -102,7 +101,7 @@ public class Eval extends Command
             engine.put("client", event.getClient());
             engine.put("author", event.getAuthor());
 
-            engine.put("conn", conn);
+            //engine.put("conn", pool.getResource());
             engine.put("config", config);
             if (event.isFromType(ChannelType.TEXT))
             {

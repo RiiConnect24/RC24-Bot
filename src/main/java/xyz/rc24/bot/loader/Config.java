@@ -39,16 +39,17 @@ import java.util.List;
 public class Config {
     private static ConfigFormat format;
 
-    public Config() throws Exception {
+    public Config() throws Exception
+    {
         // TODO: copy sample file
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         format = mapper.readValue(new File("data/config.yml"), ConfigFormat.class);
         // Check config
-        for (Field field : format.getClass().getDeclaredFields()) {
+        for(Field field : format.getClass().getDeclaredFields())
+        {
             // For each field defined in the class, check if null.
-            if (field.get(format) == null) {
+            if(field.get(format) == null)
                 throw new Exception(field.getName() + " in your config was null!");
-            }
         }
     }
 
@@ -114,5 +115,15 @@ public class Config {
 
     public List<Long> getIgnoredIDs() {
         return format.ignore_ids;
+    }
+
+    public boolean isSentryEnabled()
+    {
+        return format.sentry_enabled;
+    }
+
+    public String getSentryDSN()
+    {
+        return format.sentry_dsn;
     }
 }
