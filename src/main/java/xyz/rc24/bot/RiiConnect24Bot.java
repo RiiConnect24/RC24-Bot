@@ -129,7 +129,8 @@ public class RiiConnect24Bot extends ListenerAdapter
                 new SetBirthday(pool),
                 new ErrorInfo(config.isDebug()),
                 new DNS(),
-                new Wads()
+                new Wads(),
+                new WiiWare()
         );
 
         //JDA Connection
