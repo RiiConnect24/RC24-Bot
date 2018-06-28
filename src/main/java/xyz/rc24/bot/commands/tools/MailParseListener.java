@@ -33,6 +33,7 @@ import net.dv8tion.jda.core.utils.IOUtil;
 import okhttp3.*;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.Const;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.loader.Config;
 
 import java.io.*;
@@ -55,7 +56,10 @@ public class MailParseListener extends ListenerAdapter
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
     {
-        if(!(config.isMailPatchEnabled())) return;
+        if(!(config.isMailPatchEnabled()))
+            return;
+        if(RiiConnect24Bot.bManager.isBlacklisted(event.getAuthor().getId()))
+            return;
 
         Message message = event.getMessage();
         // Make sure we're not patching our own uploaded file again.

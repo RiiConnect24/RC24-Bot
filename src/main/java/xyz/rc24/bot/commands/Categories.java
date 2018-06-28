@@ -25,20 +25,19 @@ package xyz.rc24.bot.commands;
  */
 
 import com.jagrosh.jdautilities.command.Command.Category;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import xyz.rc24.bot.managers.BlacklistManager;
 
 public class Categories
 {
+    private static BlacklistManager bManager;
 
-    public static final Category ADMIN = new Category("Bot Administration", event -> {
-        if(event.isOwner())
-            return true;
-        else
-        {
-            event.replyError("You don't have access to this command!");
-            return false;
-        }
-    });
+    public Categories(BlacklistManager bManager)
+    {
+        Categories.bManager = bManager;
+    }
 
-    public static final Category TOOLS = new Category("Tools");
-    public static final Category WII = new Category("Wii-related");
+    public static final Category ADMIN = new Category("Bot Administration", CommandEvent::isOwner);
+    public static final Category TOOLS = new Category("Tools", event -> !(bManager.isBlacklisted(event.getAuthor().getId())));
+    public static final Category WII = new Category("Wii-related", event -> !(bManager.isBlacklisted(event.getAuthor().getId())));
 }

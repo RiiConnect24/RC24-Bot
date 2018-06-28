@@ -39,6 +39,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Eval;
 import xyz.rc24.bot.commands.botadm.MassMessage;
@@ -49,6 +50,7 @@ import xyz.rc24.bot.events.BirthdayEvent;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
+import xyz.rc24.bot.managers.BlacklistManager;
 
 import java.util.Calendar;
 import java.util.Timer;
@@ -61,6 +63,7 @@ import java.util.Timer;
 
 public class RiiConnect24Bot extends ListenerAdapter
 {
+    public static BlacklistManager bManager;
     private static Config config;
     private static JedisPool pool;
     private static String prefix;
@@ -81,12 +84,15 @@ public class RiiConnect24Bot extends ListenerAdapter
             return;
         }
 
+        bManager = new BlacklistManager();
+
         // Start Sentry (if enabled)
         if(config.isSentryEnabled() && !(config.getSentryDSN()==null || config.getSentryDSN().isEmpty()))
             Sentry.init(config.getSentryDSN());
 
         // Register commands
         EventWaiter waiter = new EventWaiter();
+        new Categories(bManager);
 
         CommandClientBuilder client = new CommandClientBuilder();
         client.setGame(Game.playing(config.getPlaying()));
