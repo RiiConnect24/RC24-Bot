@@ -206,28 +206,30 @@ public class ErrorInfo extends Command
 
     private final Map<Integer, String> channelErrors = new HashMap<Integer, String>()
     {{
-        put(1, "Can't open the VFF");
-        put(2, "WiiConnect24 file problem");
-        put(3, "VFF file corrupted");
-        put(4, "Unknown (it probably doesn't exist)");
-        put(5, "VFF processing error");
-        put(6, "Invalid data");
-        put(99, "Other error");
+        put(1, "Can't open the VFF Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
+        put(2, "WiiConnect24 file problem.");
+        put(3, "VFF file corrupted. Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
+        put(4, "Unknown (it probably doesn't exist).");
+        put(5, "VFF processing error. Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
+        put(6, "Invalid data. If getting this on the Forecast Channel, try again in a few minutes. If you're still getting this error, follow https://wii.guide/riiconnect24-batteryfix and it might fix it.");
+        put(99, "Other error. Follow https://wii.guide/riiconnect24-troubleshooting to potentially fix it.");
     }};
 
     private final Map<Integer, String> codeNotes = new HashMap<Integer, String>()
     {{
         put(102032, "The IOS your app uses is not patched for RiiConnect24. Try sending a message again but do it quickly, you need to do it in less than a minute. We hope to improve Wii Mail to stop getting this error.");
         put(107006, "Are you getting this on the News Channel? If so, please tell Larsenv you're getting this error and tell him your country and language your Wii is set to.");
-        put(107245, "You either need to patch your IOS because you didn't follow instructions correctly or didn't update with the new patch to change the RSA key." +
-                "Visit https://wii.guide/ to learn how to patch it.");
-        put(107304, "Try again, or maybe play with your Internet settings. This may not be easy to fix.");
+        put(107245, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch it.");
+        put(107304, "Try again, or maybe play with your Internet settings (change your secondary DNS to 164.132.44.106 as a test). This may not be easy to fix. If you still are having problems, try making requests to wapp.wii.com redirect to 164.132.44.106 on your router.");
         put(107305, "Try again. If it still doesn't work, it might be a problem with your Internet or RiiConnect24's servers.");
         put(105409, "If you are getting this problem while doing something with Wii Mail - check if you patched nwc24msg.cfg correctly.");
-        put(117404, "This is a 404 Not Found error.");
-        put(20103, "Delete DWC_AUTHDATA file stored in nand:/shared2/. Delete it using WiiXplorer.");
+        put(110220, "Looks like the password your Wii uses isn't matching the one on the server. If you're getting this, tell Larsenv your Wii Number and he will delete it from the database so you can reregister with the mail patcher.");
+        put(117404, "This is a 404 Not Found error. If you're getting this on the Everybody Votes Channel, we are aware of this error and hope to get it fixed soon.");
+        put(117500, "This is a 500 Internal Server error. If you're getting this, tell Larsenv where you're getting this error on.");
+        put(20103, "Delete DWC_AUTHDATA file stored in nand:/shared2/ using WiiXplorer.");
         put(231000, "Restart the Channel or your Wii then try again. We hope to fix this error from happening in the future, sorry for the inconvenience!");
         put(231401, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial. https://wii.guide/riiconnect24-evc");
-        put(239001, "This error means Everybody Votes Channel data file is invalid. Please tell Larsenv you're getting this error and tell him your country your Wii is set to.");
+        put(231409, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial. https://wii.guide/riiconnect24-evc");
+        put(239001, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch it. Occasionally, this error can mean it downloaded invalid data");
     }};
 }
