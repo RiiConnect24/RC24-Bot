@@ -214,7 +214,7 @@ public class RiiConnect24Bot extends ListenerAdapter
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             // Get format of date used in stored dates
-            LocalDate date = LocalDate.now();
+            LocalDate date = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6")).toLocalDate();
             String today = date.getMonthValue()+"-"+date.getDayOfMonth();
 
             // Cycle through all birthdays.
