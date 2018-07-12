@@ -55,10 +55,7 @@ import xyz.rc24.bot.managers.BlacklistManager;
 import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.Calendar;
+import java.time.*;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -185,10 +182,16 @@ public class RiiConnect24Bot extends ListenerAdapter
         {
             // Every day at 8AM
             // And yes, we're assuming the channel exists. :fingers_crossed:
-            Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 8); today.set(Calendar.MINUTE, 0); today.set(Calendar.SECOND, 0);
-            Duration duration = Duration.between(OffsetDateTime.now(), OffsetDateTime.from(today.toInstant()));
-            bdaysScheduler.scheduleWithFixedDelay(() -> updateBirthdays(event.getJDA(), config.getBirthdayChannel()), duration.getSeconds(),
+            ZonedDateTime localNow = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6"));
+            ZoneId currentZone = ZoneId.of("UTC-6");
+            ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
+            ZonedDateTime zonedNext8 = zonedNow.withHour(8).withMinute(0).withSecond(0);
+            if(zonedNow.compareTo(zonedNext8) > 0)
+                zonedNext8 = zonedNext8.plusDays(1);
+            Duration duration = Duration.between(zonedNow, zonedNext8);
+            long initialDelay = duration.getSeconds();
+
+            bdaysScheduler.scheduleWithFixedDelay(() -> updateBirthdays(event.getJDA(), config.getBirthdayChannel()), initialDelay,
                     86400, TimeUnit.SECONDS);
         }
     }
