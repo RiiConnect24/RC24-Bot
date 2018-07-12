@@ -29,14 +29,15 @@ import ch.qos.logback.classic.Logger;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import io.sentry.Sentry;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.*;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import xyz.rc24.bot.commands.Categories;
@@ -46,14 +47,21 @@ import xyz.rc24.bot.commands.botadm.MassMessage;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
-import xyz.rc24.bot.events.BirthdayEvent;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.managers.BlacklistManager;
 
+import java.awt.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
-import java.util.Timer;
+import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Add all commands, and start all events.
@@ -67,6 +75,7 @@ public class RiiConnect24Bot extends ListenerAdapter
     private static Config config;
     private static JedisPool pool;
     private static String prefix;
+    private static ScheduledExecutorService bdaysScheduler;
     private static Logger LOGGER = (Logger)(Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     private static Logger logger = (Logger)(Logger)LoggerFactory.getLogger("RiiConnect24 Bot");
 
@@ -85,6 +94,7 @@ public class RiiConnect24Bot extends ListenerAdapter
         }
 
         bManager = new BlacklistManager();
+        bdaysScheduler = new ScheduledThreadPoolExecutor(2);
 
         // Start Sentry (if enabled)
         if(config.isSentryEnabled() && !(config.getSentryDSN()==null || config.getSentryDSN().isEmpty()))
@@ -167,13 +177,12 @@ public class RiiConnect24Bot extends ListenerAdapter
         // It'll default to Type <prefix>help, per using the default game above.
         if(config.birthdaysAreEnabled())
         {
-            // Every day at midnight
+            // Every day at 8AM
             // And yes, we're assuming the channel exists. :fingers_crossed:
             Calendar today = Calendar.getInstance(); today.set(Calendar.HOUR_OF_DAY, 8); today.set(Calendar.MINUTE, 0); today.set(Calendar.SECOND, 0);
-            Timer bdays = new Timer();
-            bdays.scheduleAtFixedRate(
-                   new BirthdayEvent(config.getBirthdayChannel(), pool, event.getJDA()),
-                    today.getTime(), 86400000);
+            Duration duration = Duration.between(OffsetDateTime.now(), today.toInstant());
+            bdaysScheduler.scheduleWithFixedDelay(() -> updateBirthdays(event.getJDA(), config.getBirthdayChannel()), duration.getSeconds(),
+                    86400, TimeUnit.SECONDS);
         }
     }
 
@@ -181,5 +190,43 @@ public class RiiConnect24Bot extends ListenerAdapter
     public void onShutdown(ShutdownEvent event)
     {
         pool.destroy();
+    }
+
+    private void updateBirthdays(JDA jda, long birthdayChannelId)
+    {
+        try(Jedis conn = pool.getResource())
+        {
+            TextChannel tc = jda.getTextChannelById(birthdayChannelId);
+
+            conn.select(2);
+            Map<String, String> birthdays = conn.hgetAll("birthdays").entrySet().stream().filter(b -> !(tc.getGuild().getMemberById(b.getKey())==null))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            // Get format of date used in stored dates
+            LocalDate date = LocalDate.now();
+            String today = date.getMonthValue()+"-"+date.getDayOfMonth();
+
+            // Cycle through all birthdays.
+            for (Map.Entry<String, String> userBirthday : birthdays.entrySet())
+            {
+                String userId = userBirthday.getKey();
+                // The map's in the format of <user ID, birth date>
+                if(userBirthday.getValue().equals(today))
+                {
+                    Member birthdayMember = tc.getGuild().getMemberById(userId);
+                    EmbedBuilder builder = new EmbedBuilder();
+                    builder.setTitle("Happy birthday! \uD83C\uDF82");
+                    builder.setDescription("Please send them messages wishing them a happy birthday here on Discord and/or birthday mail on their Wii if" +
+                            " you've registered them!");
+                    builder.setColor(Color.decode("#00a6e9"));
+                    builder.setAuthor("It's " + birthdayMember.getEffectiveName() + "'s birthday!",
+                            "https://rc24.xyz/", birthdayMember.getUser().getEffectiveAvatarUrl());
+
+                    tc.sendMessage(builder.build()).queue();
+                }
+                else
+                    logger.debug("I considered " + userBirthday.getKey() + ", but their birthday isn't today.");
+            }
+        }
     }
 }
