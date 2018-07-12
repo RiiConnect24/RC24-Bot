@@ -34,7 +34,6 @@ import okhttp3.*;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.loader.Config;
 
 import java.io.*;
 
@@ -46,19 +45,19 @@ import java.io.*;
 public class MailParseListener extends ListenerAdapter
 {
     private static final Logger logger = (Logger)LoggerFactory.getLogger(MailParseListener.class);
-    private final Config config;
+    private final RiiConnect24Bot bot;
 
-    public MailParseListener(Config config)
+    public MailParseListener(RiiConnect24Bot bot)
     {
-        this.config = config;
+        this.bot = bot;
     }
 
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
     {
-        if(!(config.isMailPatchEnabled()))
+        if(!(bot.config.isMailPatchEnabled()))
             return;
-        if(RiiConnect24Bot.bManager.isBlacklisted(event.getAuthor().getId()))
+        if(bot.bManager.isBlacklisted(event.getAuthor().getId()))
             return;
 
         Message message = event.getMessage();

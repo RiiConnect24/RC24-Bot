@@ -73,10 +73,10 @@ import java.util.stream.Collectors;
 
 public class RiiConnect24Bot extends ListenerAdapter
 {
-    private BlacklistManager bManager;
-    private Config config;
-    private JedisPool pool;
-    private ScheduledExecutorService bdaysScheduler;
+    public BlacklistManager bManager;
+    public Config config;
+    public JedisPool pool;
+    public ScheduledExecutorService bdaysScheduler;
 
     private final Logger LOGGER = (Logger)(Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     private final Logger logger = (Logger)(Logger)LoggerFactory.getLogger("RiiConnect24 Bot");
@@ -164,7 +164,7 @@ public class RiiConnect24Bot extends ListenerAdapter
                 .addEventListener(client.build())
                 .addEventListener(this)
                 .addEventListener(new ServerLog())
-                .addEventListener(new MailParseListener(config));
+                .addEventListener(new MailParseListener(this));
         if(config.isMorpherEnabled())
             builder.addEventListener(new Morpher(config));
         builder.buildAsync();
