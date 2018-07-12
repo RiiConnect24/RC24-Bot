@@ -185,8 +185,9 @@ public class RiiConnect24Bot extends ListenerAdapter
         {
             // Every day at 8AM
             // And yes, we're assuming the channel exists. :fingers_crossed:
-            Calendar today = Calendar.getInstance(); today.set(Calendar.HOUR_OF_DAY, 8); today.set(Calendar.MINUTE, 0); today.set(Calendar.SECOND, 0);
-            Duration duration = Duration.between(OffsetDateTime.now(), today.toInstant());
+            Calendar today = Calendar.getInstance();
+            today.set(Calendar.HOUR_OF_DAY, 8); today.set(Calendar.MINUTE, 0); today.set(Calendar.SECOND, 0);
+            Duration duration = Duration.between(OffsetDateTime.now(), OffsetDateTime.from(today.toInstant()));
             bdaysScheduler.scheduleWithFixedDelay(() -> updateBirthdays(event.getJDA(), config.getBirthdayChannel()), duration.getSeconds(),
                     86400, TimeUnit.SECONDS);
         }
