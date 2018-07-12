@@ -52,7 +52,9 @@ import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.managers.BlacklistManager;
 
+import javax.security.auth.login.LoginException;
 import java.awt.*;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -71,15 +73,20 @@ import java.util.stream.Collectors;
 
 public class RiiConnect24Bot extends ListenerAdapter
 {
-    public static BlacklistManager bManager;
-    private static Config config;
-    private static JedisPool pool;
-    private static String prefix;
-    private static ScheduledExecutorService bdaysScheduler;
-    private static Logger LOGGER = (Logger)(Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    private static Logger logger = (Logger)(Logger)LoggerFactory.getLogger("RiiConnect24 Bot");
+    private BlacklistManager bManager;
+    private Config config;
+    private JedisPool pool;
+    private ScheduledExecutorService bdaysScheduler;
 
-    public static void main(String[] args) throws Exception
+    private final Logger LOGGER = (Logger)(Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    private final Logger logger = (Logger)(Logger)LoggerFactory.getLogger("RiiConnect24 Bot");
+
+    public static void main(String[] args) throws LoginException, IOException
+    {
+        new RiiConnect24Bot().run();
+    }
+
+    private void run() throws IOException, LoginException
     {
         LOGGER.setLevel(Level.INFO);
 
@@ -119,8 +126,7 @@ public class RiiConnect24Bot extends ListenerAdapter
 
         // Set all co-owners
         client.setCoOwnerIds(ownersString);
-        prefix = config.getPrefix();
-        client.setPrefix(prefix);
+        client.setPrefix(config.getPrefix());
         client.setServerInvite("https://discord.gg/5rw6Tur");
 
         // Create JedisPool for usage elsewhere
@@ -128,7 +134,7 @@ public class RiiConnect24Bot extends ListenerAdapter
         client.addCommands(
                 // Bot administration
                 new Bash(),
-                new Eval(pool, config),
+                new Eval(this),
                 new MassMessage(pool),
                 new Shutdown(),
 
@@ -156,12 +162,12 @@ public class RiiConnect24Bot extends ListenerAdapter
                 .setGame(Game.playing(Const.GAME_0))
                 .addEventListener(waiter)
                 .addEventListener(client.build())
-                .addEventListener(new RiiConnect24Bot())
+                .addEventListener(this)
                 .addEventListener(new ServerLog())
                 .addEventListener(new MailParseListener(config));
         if(config.isMorpherEnabled())
             builder.addEventListener(new Morpher(config));
-        builder.buildBlocking();
+        builder.buildAsync();
     }
 
     @Override
@@ -170,7 +176,7 @@ public class RiiConnect24Bot extends ListenerAdapter
         logger.info("Done loading!");
         // Check if we need to set a game
         if(config.getPlaying().isEmpty())
-            event.getJDA().getPresence().setGame(Game.playing("Type " + prefix + "help"));
+            event.getJDA().getPresence().setGame(Game.playing("Type " + config.getPrefix() + "help"));
         /*else
             event.getJDA().getPresence().setGame(Game.playing(config.getPlaying()));*/
 
@@ -189,6 +195,7 @@ public class RiiConnect24Bot extends ListenerAdapter
     @Override
     public void onShutdown(ShutdownEvent event)
     {
+        bdaysScheduler.shutdown();
         pool.destroy();
     }
 

@@ -30,9 +30,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
-import redis.clients.jedis.JedisPool;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.loader.Config;
 
 import javax.script.ScriptEngine;
 import java.util.Arrays;
@@ -46,13 +45,11 @@ public class Eval extends Command
 {
     private ScriptEngine engine;
     private List<String> imports;
-    private JedisPool pool;
-    private Config config;
+    private RiiConnect24Bot bot;
 
-    public Eval(JedisPool pool, Config config)
+    public Eval(RiiConnect24Bot bot)
     {
-        this.pool = pool;
-        this.config = config;
+        this.bot = bot;
         this.name = "eval";
         this.help = "Executes Groovy code";
         this.category = Categories.ADMIN;
@@ -82,7 +79,11 @@ public class Eval extends Command
                 "net.dv8tion.jda.core.managers.impl",
                 "net.dv8tion.jda.core.utils",
                 "net.dv8tion.jda.webhook",
-                "xyz.rc24.bot.managers");
+                "xyz.rc24.bot",
+                "xyz.rc24.bot.events",
+                "xyz.rc24.bot.loader",
+                "xyz.rc24.bot.managers",
+                "xyz.rc24.bot.utils");
     }
 
     @Override
@@ -100,9 +101,7 @@ public class Eval extends Command
             engine.put("bot", event.getSelfUser());
             engine.put("client", event.getClient());
             engine.put("author", event.getAuthor());
-
-            //engine.put("conn", pool.getResource());
-            engine.put("config", config);
+            engine.put("bot", bot);
             if (event.isFromType(ChannelType.TEXT))
             {
                 engine.put("member", event.getMember());
