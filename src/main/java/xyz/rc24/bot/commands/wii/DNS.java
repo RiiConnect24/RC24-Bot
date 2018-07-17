@@ -46,9 +46,25 @@ public class DNS extends Command
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(CommandEvent event, string service)
     {
-        event.reply("`164.132.44.106` should be your primary DNS.\n" +
+        if (service == "rc24")
+        {
+            event.reply("`164.132.44.106` should be your primary DNS.\n" +
                 "`8.8.8.8` can be your secondary DNS.");
+            return;
+        }
+        if (service == "wiimmfi")
+        {
+            event.reply("`46.4.79.141` is the DNS for Wiimmfi.");
+            return;
+        }
+        if (service == null)
+        {
+            event.reply("You need to specify a service. Available options are:\n" +
+                "`rc24` for RiiConnect24.\n" +
+                "`wiimmfi` for Wiimmfi.");
+            return;
+        }
     }
 }
