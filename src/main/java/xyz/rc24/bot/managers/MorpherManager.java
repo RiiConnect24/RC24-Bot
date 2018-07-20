@@ -65,12 +65,17 @@ public class MorpherManager {
         }
     }
 
-    public Long getAssociation(Long rootMessageID) {
-        try (Jedis conn = pool.getResource()) {
-            try {
+    public long getAssociation(Long rootMessageID)
+    {
+        try (Jedis conn = pool.getResource())
+        {
+            try
+            {
                 return Long.parseLong(conn.hget(keyName, "" + rootMessageID));
-            } catch (NumberFormatException e) {
-                return null;
+            }
+            catch (NumberFormatException e)
+            {
+                return 0L;
             }
         }
     }
