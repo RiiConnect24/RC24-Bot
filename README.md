@@ -5,11 +5,11 @@
 
 It took a while, but it's finally here...
 
-## Introducing a [JDA](https://github.com/DV8FromTheWorld/JDA) version of RiiConnect24 Bot
+## Introducing a JDA version of RiiConnect24 Bot
 or.. rather, what's on master. What is currently running, I can't quite say.
 
-## Why does this bot use [JDA](https://github.com/DV8FromTheWorld/JDA)
-While [discordrb](https://github.com/meew0/discordrb) is awesome, it usually takes quite a bit for newly added API features to come out. That's fine for most bots, but most in the community wanted the latest as soon as possible.
+## Why does this bot use JDA
+While discordrb is awesome, it usually takes quite a bit for newly added API features to come out. That's fine for most bots, but most in the community wanted the latest as soon as possible.
 
 Also, the fact more users know Java in RiiConnect24's community helped the decision.
 
@@ -25,3 +25,5 @@ Check out the following steps:
 5. For running, make sure you have redis installed on whatever machine. Also, if `config.yml` can't be found, it'll copy a default copy to the current directory for you.
 
 If you need support for the bot, head on over to [the bot's official support server](https://discord.gg/PVsh4jP) or DM `Artuto#0424 | 264499432538505217` in Discord.
+
+For more infos about JDA, [click here](https://github.com/DV8FromTheWorld/JDA).
