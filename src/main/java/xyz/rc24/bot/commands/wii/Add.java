@@ -122,7 +122,11 @@ public class Add extends Command
             event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
             return;
         }
-
+        if(member.equals(event.getMember()))
+        {
+            event.replyError("You can't add yourself!");
+            return;
+        }
         if(member.getUser().isBot() && !(member.equals(event.getSelfMember())))
         {
             event.replyError("You can't add bots!");
