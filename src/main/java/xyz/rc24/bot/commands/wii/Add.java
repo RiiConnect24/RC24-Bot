@@ -123,14 +123,23 @@ public class Add extends Command
             return;
         }
 
+        if(member.getUser().isBot() && !(member.equals(event.getSelfMember())))
+        {
+            event.replyError("You can't add bots!");
+            return;
+        }
+
         event.replyInDm(getAddMessageHeader(serverAddType, member, true) + "\n\n" + getCodeLayout(memberTypeCodes),
                 (success) -> event.reactSuccess(),
                 (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled."));
 
-        member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(
-                getAddMessageHeader(serverAddType, event.getMember(), false) + "\n\n" + getCodeLayout(authorTypeCodes)
-        ).queue((success) -> event.reactSuccess(),
-                (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")));
+        if(!(member.getUser().isBot()))
+        {
+            member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(
+                    getAddMessageHeader(serverAddType, event.getMember(), false) + "\n\n" + getCodeLayout(authorTypeCodes)
+            ).queue((success) -> event.reactSuccess(),
+                    (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")));
+        }
     }
 
     private String getAddMessageHeader(CodeManager.Type type, Member member, Boolean isCommandRunner)
