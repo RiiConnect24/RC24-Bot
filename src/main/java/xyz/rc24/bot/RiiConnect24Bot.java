@@ -51,6 +51,7 @@ import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.managers.BlacklistManager;
+import xyz.rc24.bot.managers.ServerConfigManager;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
@@ -73,6 +74,7 @@ public class RiiConnect24Bot extends ListenerAdapter
     public BlacklistManager bManager;
     public Config config;
     public JedisPool pool;
+    public ServerConfigManager scm;
     public ScheduledExecutorService bdaysScheduler;
 
     private final Logger LOGGER = (Logger)(Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -128,6 +130,7 @@ public class RiiConnect24Bot extends ListenerAdapter
 
         // Create JedisPool for usage elsewhere
         pool = new JedisPool(new JedisPoolConfig(), "localhost");
+        scm = new ServerConfigManager(pool);
         client.addCommands(
                 // Bot administration
                 new Bash(),
@@ -136,7 +139,7 @@ public class RiiConnect24Bot extends ListenerAdapter
                 new Shutdown(),
 
                 // Tools
-                new BotConfig(),
+                new BotConfig(this),
                 new UserInfo(),
                 new Invite(),
                 new MailParseCommand(config),
@@ -144,7 +147,7 @@ public class RiiConnect24Bot extends ListenerAdapter
 
                 // Wii-related
                 new Codes(pool),
-                new Add(pool),
+                new Add(this),
                 new SetBirthday(pool),
                 new ErrorInfo(config.isDebug()),
                 new DNS(),
@@ -160,11 +163,11 @@ public class RiiConnect24Bot extends ListenerAdapter
                 .addEventListener(waiter)
                 .addEventListener(client.build())
                 .addEventListener(this)
-                .addEventListener(new ServerLog())
+                .addEventListener(new ServerLog(this))
                 .addEventListener(new MailParseListener(this));
         if(config.isMorpherEnabled())
             builder.addEventListener(new Morpher(config));
-        builder.buildAsync();
+        builder.build();
     }
 
     @Override

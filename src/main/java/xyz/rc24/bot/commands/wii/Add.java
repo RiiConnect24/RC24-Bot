@@ -53,8 +53,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
-import redis.clients.jedis.JedisPool;
 import xyz.rc24.bot.Const;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.managers.CodeManager;
 import xyz.rc24.bot.managers.ServerConfigManager;
@@ -65,7 +65,7 @@ import java.util.Map;
 /**
  * Allows another user to share friend codes.
  *
- * @author Spotlight
+ * @author Spotlight and Artuto
  */
 
 public class Add extends Command
@@ -73,10 +73,10 @@ public class Add extends Command
     private final CodeManager manager;
     private final ServerConfigManager configManager;
 
-    public Add(JedisPool pool)
+    public Add(RiiConnect24Bot bot)
     {
-        this.manager = new CodeManager(pool);
-        this.configManager = new ServerConfigManager();
+        this.manager = new CodeManager(bot.pool);
+        this.configManager = bot.scm;
         this.name = "add";
         this.help = "Sends your friend wii to another user.";
         this.category = Categories.WII;

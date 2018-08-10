@@ -36,6 +36,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.LoggerFactory;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.managers.ServerConfigManager;
 import xyz.rc24.bot.managers.ServerConfigManager.LogType;
 
@@ -52,9 +53,9 @@ public class ServerLog extends ListenerAdapter
     private ServerConfigManager manager;
     private static final Logger logger = (Logger)LoggerFactory.getLogger(ServerLog.class);
 
-    public ServerLog()
+    public ServerLog(RiiConnect24Bot bot)
     {
-        this.manager = new ServerConfigManager();
+        this.manager = bot.scm;
         logger.info("Tracking :eyes:");
     }
 
