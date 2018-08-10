@@ -24,7 +24,9 @@ package xyz.rc24.bot.events;
  * THE SOFTWARE.
  */
 
+import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
@@ -33,7 +35,6 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.managers.ServerConfigManager;
 import xyz.rc24.bot.managers.ServerConfigManager.LogType;
@@ -42,10 +43,10 @@ import java.awt.*;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
-
 /**
- * @author Spotlight
+ * @author Spotlight and Artuto
  */
+
 public class ServerLog extends ListenerAdapter
 {
     private ServerConfigManager manager;
@@ -78,27 +79,10 @@ public class ServerLog extends ListenerAdapter
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent event)
     {
-        try
-        {
-            if (!(event.getGuild().getBanList().complete().contains(event.getUser())))
-            {
-                EmbedBuilder builder = getEmbed("A user left the server!",
-                        "#FFEB3B", event.getUser());
+        EmbedBuilder builder = getEmbed("A user left the server!",
+                "#FFEB3B", event.getUser());
 
-                sendEmbed(new LogType[]{LogType.SERVER}, builder, event);
-            }
-        }
-        catch(InsufficientPermissionException e)
-        {
-            EmbedBuilder builder = new EmbedBuilder();
-            builder.setTitle("Warning!");
-            builder.setDescription("I don't have the Ban Members permission. I won't ban anyone, but without it I can't tell if anyone's leaving, or if it was a ban.");
-            builder.setFooter("Error generated at", null);
-            builder.setTimestamp(Instant.now());
-            sendEmbed(new LogType[]{LogType.SERVER}, builder, event);
-        }
-        // Don't do anything if banned.
-        // Bans send both a leave event + ban event.
+        sendEmbed(new LogType[]{LogType.SERVER}, builder, event);
     }
 
     @Override
@@ -125,20 +109,25 @@ public class ServerLog extends ListenerAdapter
 
     private void sendEmbed(LogType[] logTypes, EmbedBuilder embed, GenericGuildEvent guildEvent)
     {
-        Long guildID = guildEvent.getGuild().getIdLong();
+        long guildId = guildEvent.getGuild().getIdLong();
 
         for(LogType logType : logTypes)
         {
             try
             {
-                Long channelID = manager.getLog(logType, guildID);
-                if(channelID==null) return;
-                guildEvent.getJDA().getTextChannelById(channelID).sendMessage(embed.build()).queue();
+                long channelId = manager.getLog(logType, guildId);
+                TextChannel tc = guildEvent.getGuild().getTextChannelById(channelId);
+                if(tc==null)
+                {
+                    manager.disableLog(logType, guildId);
+                    return;
+                }
+                tc.sendMessage(embed.build()).queue();
             }
-            catch (InsufficientPermissionException e)
+            catch(InsufficientPermissionException e)
             {
                 // Remove the log from the config, since it's invalid.
-                manager.disableLog(logType, guildID);
+                manager.disableLog(logType, guildId);
             }
         }
     }

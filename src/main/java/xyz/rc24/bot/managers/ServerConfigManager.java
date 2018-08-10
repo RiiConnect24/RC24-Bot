@@ -52,18 +52,19 @@ public class ServerConfigManager {
     /**
      * Gets the ID of the channel by type.
      *
-     * @param serverID Server ID to look up with
+     * @param serverId Server ID to look up with
      * @param type     Type of log to look for
      * @return Long with ID of server-log
      */
-    public Long getLog(LogType type, Long serverID) {
-        try (Jedis conn = pool.getResource()) {
-            String logID = conn.hget(serverID + "", type.toString());
-            if (logID == null || logID.isEmpty()) {
-                return null;
-            } else {
+    public long getLog(LogType type, long serverId)
+    {
+        try(Jedis conn = pool.getResource())
+        {
+            String logID = conn.hget(serverId + "", type.toString());
+            if(logID==null || logID.isEmpty())
+                return 0L;
+            else
                 return Long.parseLong(logID);
-            }
         }
     }
 
