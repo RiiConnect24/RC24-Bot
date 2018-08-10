@@ -6,7 +6,7 @@
 
     <groupId>xyz.rc24.bot</groupId>
     <artifactId>RC24-Bot</artifactId>
-    <version>3.4.2</version>
+    <version>3.4.3</version>
 
     <repositories>
         <repository>
