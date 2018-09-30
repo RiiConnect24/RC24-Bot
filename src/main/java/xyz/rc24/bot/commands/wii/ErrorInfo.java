@@ -60,8 +60,7 @@ public class ErrorInfo extends Command
         this.name = "error";
         this.help = "Looks up errors using the Wiimmfi API.";
         this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
+        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.ownerCommand = false;
         this.guildOnly = false;
     }
