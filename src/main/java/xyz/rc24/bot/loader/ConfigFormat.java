@@ -50,4 +50,5 @@ public class ConfigFormat
     public List<Long> ignore_ids;
     public String sentry_dsn;
     public boolean sentry_enabled;
+    public boolean music_night_reminder;
 }

@@ -52,3 +52,6 @@ sentry_enabled: false
 
 # Sentry DSN.
 sentry_dsn: ""
+
+# Reminder for the Music Night @ RC24
+music_night_reminder: false

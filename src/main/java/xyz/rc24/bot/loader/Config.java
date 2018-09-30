@@ -126,4 +126,9 @@ public class Config {
     {
         return format.sentry_dsn;
     }
+
+    public Boolean isMusicNightReminderEnabled()
+    {
+        return format.music_night_reminder;
+    }
 }

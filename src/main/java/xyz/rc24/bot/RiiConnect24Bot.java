@@ -57,6 +57,8 @@ import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.IOException;
 import java.time.*;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -73,12 +75,15 @@ public class RiiConnect24Bot extends ListenerAdapter
 {
     public BlacklistManager bManager;
     public Config config;
+
     public JedisPool pool;
     public ServerConfigManager scm;
-    public ScheduledExecutorService bdaysScheduler;
 
-    private final Logger LOGGER = (Logger)(Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    private final Logger logger = (Logger)(Logger)LoggerFactory.getLogger("RiiConnect24 Bot");
+    private ScheduledExecutorService bdaysScheduler;
+    private ScheduledExecutorService musicNightScheduler;
+
+    private final Logger LOGGER = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    private final Logger logger = (Logger)LoggerFactory.getLogger("RiiConnect24 Bot");
 
     public static void main(String[] args) throws LoginException, IOException
     {
@@ -101,6 +106,7 @@ public class RiiConnect24Bot extends ListenerAdapter
 
         bManager = new BlacklistManager();
         bdaysScheduler = new ScheduledThreadPoolExecutor(2);
+        musicNightScheduler = new ScheduledThreadPoolExecutor(2);
 
         // Start Sentry (if enabled)
         if(config.isSentryEnabled() && !(config.getSentryDSN()==null || config.getSentryDSN().isEmpty()))
@@ -197,12 +203,27 @@ public class RiiConnect24Bot extends ListenerAdapter
             bdaysScheduler.scheduleWithFixedDelay(() -> updateBirthdays(event.getJDA(), config.getBirthdayChannel()), initialDelay,
                     86400, TimeUnit.SECONDS);
         }
+
+        if(config.isMusicNightReminderEnabled())
+        {
+            ZonedDateTime localNow = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6"));
+            ZoneId currentZone = ZoneId.of("UTC-6");
+            ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
+            ZonedDateTime zonedNext = zonedNow.withHour(19).withMinute(55).withSecond(0);
+            if(zonedNow.compareTo(zonedNext) > 0)
+                zonedNext = zonedNext.plusDays(1);
+            Duration duration = Duration.between(zonedNow, zonedNext);
+            long initialDelay = duration.getSeconds();
+
+            musicNightScheduler.scheduleWithFixedDelay(() -> reminderMusicNight(event.getJDA()), initialDelay, 86400, TimeUnit.SECONDS);
+        }
     }
 
     @Override
     public void onShutdown(ShutdownEvent event)
     {
         bdaysScheduler.shutdown();
+        musicNightScheduler.shutdown();
         pool.destroy();
     }
 
@@ -242,5 +263,22 @@ public class RiiConnect24Bot extends ListenerAdapter
                     logger.debug("I considered " + userBirthday.getKey() + ", but their birthday isn't today.");
             }
         }
+    }
+
+    private void reminderMusicNight(JDA jda)
+    {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        if(!(c.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY))
+        {
+            // Not today, m8
+            return;
+        }
+
+        TextChannel general = jda.getTextChannelById(258999527783137280L);
+        if(general==null || !(general.canTalk()))
+            return;
+
+        general.sendMessage("\u23F0 <@98938149316599808> **Music night in 5 minutes!**").queue();
     }
 }
