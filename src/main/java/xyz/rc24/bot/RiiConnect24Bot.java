@@ -209,7 +209,7 @@ public class RiiConnect24Bot extends ListenerAdapter
             ZonedDateTime localNow = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6"));
             ZoneId currentZone = ZoneId.of("UTC-6");
             ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
-            ZonedDateTime zonedNext = zonedNow.withHour(19).withMinute(55).withSecond(0);
+            ZonedDateTime zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
             if(zonedNow.compareTo(zonedNext) > 0)
                 zonedNext = zonedNext.plusDays(1);
             Duration duration = Duration.between(zonedNow, zonedNext);
@@ -279,6 +279,6 @@ public class RiiConnect24Bot extends ListenerAdapter
         if(general==null || !(general.canTalk()))
             return;
 
-        general.sendMessage("\u23F0 <@98938149316599808> **Music night in 5 minutes!**").queue();
+        general.sendMessage("\u23F0 <@98938149316599808> **Music night in 15 minutes!**").queue();
     }
 }
