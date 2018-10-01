@@ -279,6 +279,6 @@ public class RiiConnect24Bot extends ListenerAdapter
         if(general==null || !(general.canTalk()))
             return;
 
-        general.sendMessage("\u23F0 <@98938149316599808> **Music night in 5 minutes!**").queue();
+        general.sendMessage("\u23F0 <@98938149316599808> **Music night in 15 minutes!**").queue();
     }
 }
