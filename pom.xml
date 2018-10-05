@@ -6,7 +6,7 @@
 
     <groupId>xyz.rc24.bot</groupId>
     <artifactId>RC24-Bot</artifactId>
-    <version>3.4.4</version>
+    <version>3.4.5</version>
 
     <repositories>
         <repository>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.8.0_428</version>
+            <version>3.8.0_434</version>
         </dependency>
         <dependency>
             <groupId>com.jagrosh</groupId>
