@@ -171,7 +171,8 @@ public class RiiConnect24Bot extends ListenerAdapter
                 .addEventListener(client.build())
                 .addEventListener(this)
                 .addEventListener(new ServerLog(this))
-                .addEventListener(new MailParseListener(this));
+                .addEventListener(new MailParseListener(this))
+                .setAudioEnabled(false);
         if(config.isMorpherEnabled())
             builder.addEventListener(new Morpher(config));
         builder.build();
