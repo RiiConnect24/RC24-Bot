@@ -211,7 +211,7 @@ public class RiiConnect24Bot extends ListenerAdapter
             ZonedDateTime localNow = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6"));
             ZoneId currentZone = ZoneId.of("UTC-6");
             ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
-            ZonedDateTime zonedNext = zonedNow.withHour(18).withMinute(45).withSecond(0);
+            ZonedDateTime zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
             if(zonedNow.compareTo(zonedNext) > 0)
                 zonedNext = zonedNext.plusDays(1);
             Duration duration = Duration.between(zonedNow, zonedNext);
