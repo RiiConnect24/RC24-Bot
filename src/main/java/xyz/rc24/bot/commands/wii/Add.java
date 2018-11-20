@@ -148,7 +148,7 @@ public class Add extends Command
 
     private String getAddMessageHeader(CodeManager.Type type, Member member, Boolean isCommandRunner)
     {
-        if(isCommandRunner)
+        if(!isCommandRunner)
             return "**" + member.getEffectiveName() + "** has requested to add your " + Const.typesToProductName.get(type) + " friend code(s)!";
         else
             return "You have requested to add **" + member.getEffectiveName() + "**'s " + Const.typesToProductName.get(type) + " friend code(s).";
