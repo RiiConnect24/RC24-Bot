@@ -151,6 +151,7 @@ public class RiiConnect24Bot extends ListenerAdapter
                 new Invite(),
                 new MailParseCommand(config),
                 new Ping(),
+                new StatsCmd(),
 
                 // Wii-related
                 new Codes(pool),
