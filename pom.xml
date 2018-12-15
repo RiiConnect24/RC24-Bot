@@ -6,7 +6,7 @@
 
     <groupId>xyz.rc24.bot</groupId>
     <artifactId>RC24-Bot</artifactId>
-    <version>3.4.7</version>
+    <version>3.5.0</version>
 
     <repositories>
         <repository>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.8.1_439</version>
+            <version>3.8.1_448</version>
             <!-- We dont need audio in this bot ~~use endless instead~~-->
             <exclusions>
                 <exclusion>
