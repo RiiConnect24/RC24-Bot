@@ -51,7 +51,6 @@ public class Morpher extends ListenerAdapter
     private final Long rootID;
     private final Long mirrorID;
     private final Long ownerID;
-    private TextChannel mirror = null;
     private final MorpherManager morpherManager;
     private static final Logger logger = (Logger)LoggerFactory.getLogger(Morpher.class);
 
@@ -67,8 +66,7 @@ public class Morpher extends ListenerAdapter
 
     private boolean canUseMirror(JDA jda)
     {
-        if(mirror==null)
-            mirror = jda.getTextChannelById(mirrorID);
+        TextChannel mirror = jda.getTextChannelById(mirrorID);
 
         // Double check that I can still talk.
         if(mirror.canTalk())
@@ -104,39 +102,44 @@ public class Morpher extends ListenerAdapter
 
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
-        if(event.getChannel().getIdLong() == rootID && canUseMirror(event.getJDA()))
+        JDA jda = event.getJDA();
+        if(event.getChannel().getIdLong() == rootID && canUseMirror(jda))
         {
             // Mirror message, and if successful store it.
-            mirror.sendMessage(createMirrorEmbed(event.getMessage())).queue(
-                    message -> morpherManager.setAssociation(event.getMessageIdLong(), message.getIdLong()
-                    ));
+            jda.getTextChannelById(mirrorID).sendMessage(createMirrorEmbed(event.getMessage())).queue(message ->
+                morpherManager.setAssociation(event.getMessageIdLong(), message.getIdLong()));
         }
     }
 
     public void onGuildMessageUpdate(GuildMessageUpdateEvent event)
     {
+        JDA jda = event.getJDA();
         if(event.getMessage().getContentRaw().isEmpty())
             return;
-        if(event.getChannel().getIdLong()==rootID && canUseMirror(event.getJDA()))
+        if(event.getChannel().getIdLong()==rootID && canUseMirror(jda))
         {
             long association = morpherManager.getAssociation(event.getMessageIdLong());
             if(!(association==0L))
             {
                 // Create a new embed, and edit the mirrored message to it.
-                mirror.getMessageById(association).queue(mirroredMessage -> mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue());
+                jda.getTextChannelById(mirrorID).getMessageById(association).queue(mirroredMessage ->
+                    mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue());
             }
         }
     }
 
     public void onGuildMessageDelete(GuildMessageDeleteEvent event)
     {
-        if(event.getChannel().getIdLong() == rootID && canUseMirror(event.getJDA()))
+        JDA jda = event.getJDA();
+        if(event.getChannel().getIdLong() == rootID && canUseMirror(jda))
         {
             long association = morpherManager.getAssociation(event.getMessageIdLong());
             if(!(association==0L))
             {
                 // Remove mirrored message.
-                mirror.getMessageById(association).complete().delete().queue(success -> morpherManager.removeAssociation(event.getMessageIdLong()));
+                jda.getTextChannelById(mirrorID).getMessageById(association).queue(s -> {
+                    s.delete().queue(s2 -> morpherManager.removeAssociation(event.getMessageIdLong()));
+                });
             }
         }
     }
@@ -171,7 +174,7 @@ public class Morpher extends ListenerAdapter
             {
                 // Time to mirror!
                 // Create embed + store in database.
-                mirror.sendMessage(createMirrorEmbed(toMirror)).queue(
+                jda.getTextChannelById(mirrorID).sendMessage(createMirrorEmbed(toMirror)).queue(
                         message -> morpherManager.setAssociation(toMirror.getIdLong(), message.getIdLong()
                 ));
             }
