@@ -1,7 +1,10 @@
 # RC24 Bot
-![License](https://img.shields.io/github/license/riiconnect24/rc24-bot.svg)
-![Production List](https://img.shields.io/discord/206934458954153984.svg)
-[![CircleCI](https://circleci.com/gh/RiiConnect24-Bot/RC24-Bot/tree/java.svg?style=svg)](https://circleci.com/gh/RiiConnect24/RC24-Bot/tree/java)
+[![License](https://img.shields.io/github/license/riiconnect24-bot/rc24-bot.svg)](https://github.com/RiiConnect24-Bot/RC24-Bot/blob/java/LICENSE)
+[![Discord Server](https://img.shields.io/discord/206934458954153984.svg)](https://discord.gg/b4Y7jfD)
+[![Support Server](https://img.shields.io/discord/366320450114158593.svg)](https://discord.gg/5rw6Tur)
+[![Jenkins](https://img.shields.io/jenkins/s/https/jenkins.artuto.tk/view/Discord/job/RC24-Bot.svg)](https://jenkins.artuto.tk/job/RC24-Bot)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/1a9aguk9nityhil0?svg=true)](https://ci.appveyor.com/project/Artuto/rc24-bot)
+
 
 It took a while, but it's finally here...
 
