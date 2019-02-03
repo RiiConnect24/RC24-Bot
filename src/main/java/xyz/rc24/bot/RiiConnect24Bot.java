@@ -138,7 +138,8 @@ public class RiiConnect24Bot extends ListenerAdapter
                 new BotConfig(this), new UserInfo(), new Invite(), new MailParseCommand(config), new Ping(), new StatsCmd(),
 
                 // Wii-related
-                new Codes(pool), new Add(this), new SetBirthday(pool), new ErrorInfo(config.isDebug()), new DNS(), new Wads(), new WiiWare());
+                new Codes(pool), new Add(this), new BlocksCmd(), new SetBirthday(pool), new ErrorInfo(config.isDebug()),
+                new DNS(), new Wads(), new WiiWare());
 
         //JDA Connection
         JDABuilder builder = new JDABuilder().setToken(config.getToken()).setStatus(OnlineStatus.DO_NOT_DISTURB).setGame(Game.playing(Const.GAME_0)).addEventListener(client.build(), this, new ServerLog(this), new MailParseListener(this)).setAudioEnabled(false);
