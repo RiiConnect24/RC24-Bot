@@ -18,6 +18,8 @@ import xyz.rc24.bot.commands.Categories;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class StatsCmd extends Command
 {
@@ -62,14 +64,15 @@ public class StatsCmd extends Command
     private String parseJSON(Response response)
     {
         JSONObject json = new JSONObject(new JSONTokener(response.body().byteStream()));
+        Set<String> keys = new TreeSet<>(json.keySet());
 
         StringBuilder green = new StringBuilder("```diff\n");
         StringBuilder yellow = new StringBuilder("```fix\n");
         StringBuilder red = new StringBuilder("```diff\n");
         StringBuilder sb = new StringBuilder();
 
-        json.toMap().forEach((k, v) -> {
-            String status = (String)v;
+        keys.forEach(k -> {
+            String status = json.getString(k);
 
             switch(status)
             {
@@ -77,7 +80,7 @@ public class StatsCmd extends Command
                     green.append("+ ").append(k).append("\n");
                     break;
                 case "yellow":
-                    yellow.append(k).append("\n");
+                    yellow.append("* ").append(k).append("\n");
                     break;
                 default:
                     red.append("- ").append(k).append("\n");

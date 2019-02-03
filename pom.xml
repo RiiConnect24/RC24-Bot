@@ -8,6 +8,51 @@
     <artifactId>RC24-Bot</artifactId>
     <version>3.5.0</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <defaultGoal>clean package</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>xyz.rc24.bot.RiiConnect24Bot</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
     <repositories>
         <repository>
             <id>central</id>
@@ -17,16 +62,22 @@
         <repository>
             <id>bintray-jagrosh-maven</id>
             <name>bintray</name>
-             <url>https://dl.bintray.com/jagrosh/maven</url>
+            <url>https://dl.bintray.com/jagrosh/maven</url>
+        </repository>
+        <repository> <!-- Required for OkHTTP 3.13.0-SNAPSHOT -->
+            <id>sonatype</id>
+            <name>sonatype-snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
     <dependencies>
+        <!-- JDA -->
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.8.1_448</version>
-            <!-- We dont need audio in this bot ~~use endless instead~~-->
+            <version>3.8.2_459</version>
+            <!-- We dont need audio in this bot ~~use endless instead~~ -->
             <exclusions>
                 <exclusion>
                     <groupId>club.minced</groupId>
@@ -36,10 +87,15 @@
         </dependency>
         <dependency>
             <groupId>com.jagrosh</groupId>
-            <artifactId>jda-utilities</artifactId>
+            <artifactId>jda-utilities-command</artifactId>
             <version>2.1.4</version>
-            <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>com.jagrosh</groupId>
+            <artifactId>jda-utilities-commons</artifactId>
+            <version>2.1.4</version>
+        </dependency>
+
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
@@ -49,8 +105,8 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>1.2.3</version>
-         </dependency>
-         <dependency>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
@@ -75,7 +131,7 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.9.5</version>
         </dependency>
-        <dependency> 
+        <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry-logback</artifactId>
             <version>1.7.3</version>
@@ -86,57 +142,4 @@
             <version>2.9.0</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <resources>
-            <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
-                <directory>${basedir}/src/main/resources</directory>
-                <includes>
-                    <include>*</include>
-                </includes>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>xyz.rc24.bot.RiiConnect24Bot</mainClass>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
 </project>
