@@ -1,35 +1,32 @@
-package xyz.rc24.bot;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import ch.qos.logback.classic.Level;
+package xyz.rc24.bot;
+
 import ch.qos.logback.classic.Logger;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import io.sentry.Sentry;
-import net.dv8tion.jda.core.*;
+import javax.security.auth.login.LoginException;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -53,8 +50,7 @@ import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.managers.BlacklistManager;
 import xyz.rc24.bot.managers.ServerConfigManager;
 
-import javax.security.auth.login.LoginException;
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.time.*;
 import java.util.Calendar;
@@ -83,8 +79,7 @@ public class RiiConnect24Bot extends ListenerAdapter
     private ScheduledExecutorService bdaysScheduler;
     private ScheduledExecutorService musicNightScheduler;
 
-    private final Logger LOGGER = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    private final Logger logger = (Logger)LoggerFactory.getLogger("RiiConnect24 Bot");
+    private final Logger logger = (Logger) LoggerFactory.getLogger("RiiConnect24 Bot");
 
     public static void main(String[] args) throws LoginException, IOException
     {
@@ -93,8 +88,6 @@ public class RiiConnect24Bot extends ListenerAdapter
 
     private void run() throws IOException, LoginException
     {
-        LOGGER.setLevel(Level.INFO);
-
         try
         {
             config = new Config();
@@ -106,28 +99,27 @@ public class RiiConnect24Bot extends ListenerAdapter
         }
 
         bManager = new BlacklistManager();
-        bdaysScheduler = new ScheduledThreadPoolExecutor(2);
-        musicNightScheduler = new ScheduledThreadPoolExecutor(2);
+        bdaysScheduler = new ScheduledThreadPoolExecutor(40);
+        musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
         // Start Sentry (if enabled)
-        if(config.isSentryEnabled() && !(config.getSentryDSN()==null || config.getSentryDSN().isEmpty()))
+        if(config.isSentryEnabled() && ! (config.getSentryDSN() == null || config.getSentryDSN().isEmpty()))
             Sentry.init(config.getSentryDSN());
 
         // Register commands
-        EventWaiter waiter = new EventWaiter();
         new Categories(bManager);
 
         CommandClientBuilder client = new CommandClientBuilder();
         client.setGame(Game.playing(config.getPlaying()));
         client.setStatus(config.getStatus());
         client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
-        client.setOwnerId("" + config.getPrimaryOwner());
+        client.setOwnerId(String.valueOf(config.getPrimaryOwner()));
 
         // Convert Long[] of secondary owners to String[] so we can set later
         Long[] owners = config.getSecondaryOwners();
         String[] ownersString = new String[owners.length];
 
-        for (int i = 0; i < owners.length; i++)
+        for(int i = 0; i < owners.length; i++)
             ownersString[i] = String.valueOf(owners[i]);
 
         // Set all co-owners
@@ -140,42 +132,18 @@ public class RiiConnect24Bot extends ListenerAdapter
         scm = new ServerConfigManager(pool);
         client.addCommands(
                 // Bot administration
-                new Bash(),
-                new Eval(this),
-                new MassMessage(pool),
-                new Shutdown(),
+                new Bash(), new Eval(this), new MassMessage(pool), new Shutdown(),
 
                 // Tools
-                new BotConfig(this),
-                new UserInfo(),
-                new Invite(),
-                new MailParseCommand(config),
-                new Ping(),
-                new StatsCmd(),
+                new BotConfig(this), new UserInfo(), new Invite(), new MailParseCommand(config), new Ping(), new StatsCmd(),
 
                 // Wii-related
-                new Codes(pool),
-                new Add(this),
-                new SetBirthday(pool),
-                new ErrorInfo(config.isDebug()),
-                new DNS(),
-                new Wads(),
-                new WiiWare()
-        );
+                new Codes(pool), new Add(this), new SetBirthday(pool), new ErrorInfo(config.isDebug()), new DNS(), new Wads(), new WiiWare());
 
         //JDA Connection
-        JDABuilder builder = new JDABuilder(AccountType.BOT)
-                .setToken(config.getToken())
-                .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .setGame(Game.playing(Const.GAME_0))
-                .addEventListener(waiter)
-                .addEventListener(client.build())
-                .addEventListener(this)
-                .addEventListener(new ServerLog(this))
-                .addEventListener(new MailParseListener(this))
-                .setAudioEnabled(false);
-        if(config.isMorpherEnabled())
-            builder.addEventListener(new Morpher(config));
+        JDABuilder builder = new JDABuilder().setToken(config.getToken()).setStatus(OnlineStatus.DO_NOT_DISTURB).setGame(Game.playing(Const.GAME_0)).addEventListener(client.build(), this, new ServerLog(this), new MailParseListener(this)).setAudioEnabled(false);
+
+        if(config.isMorpherEnabled()) builder.addEventListener(new Morpher(config));
         builder.build();
     }
 
@@ -198,13 +166,11 @@ public class RiiConnect24Bot extends ListenerAdapter
             ZoneId currentZone = ZoneId.of("UTC-6");
             ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
             ZonedDateTime zonedNext8 = zonedNow.withHour(8).withMinute(0).withSecond(0);
-            if(zonedNow.compareTo(zonedNext8) > 0)
-                zonedNext8 = zonedNext8.plusDays(1);
+            if(zonedNow.compareTo(zonedNext8) > 0) zonedNext8 = zonedNext8.plusDays(1);
             Duration duration = Duration.between(zonedNow, zonedNext8);
             long initialDelay = duration.getSeconds();
 
-            bdaysScheduler.scheduleWithFixedDelay(() -> updateBirthdays(event.getJDA(), config.getBirthdayChannel()), initialDelay,
-                    86400, TimeUnit.SECONDS);
+            bdaysScheduler.scheduleWithFixedDelay(() -> updateBirthdays(event.getJDA(), config.getBirthdayChannel()), initialDelay, 86400, TimeUnit.SECONDS);
         }
 
         if(config.isMusicNightReminderEnabled())
@@ -213,8 +179,7 @@ public class RiiConnect24Bot extends ListenerAdapter
             ZoneId currentZone = ZoneId.of("UTC-6");
             ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
             ZonedDateTime zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
-            if(zonedNow.compareTo(zonedNext) > 0)
-                zonedNext = zonedNext.plusDays(1);
+            if(zonedNow.compareTo(zonedNext) > 0) zonedNext = zonedNext.plusDays(1);
             Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
@@ -237,15 +202,14 @@ public class RiiConnect24Bot extends ListenerAdapter
             TextChannel tc = jda.getTextChannelById(birthdayChannelId);
 
             conn.select(2);
-            Map<String, String> birthdays = conn.hgetAll("birthdays").entrySet().stream().filter(b -> !(tc.getGuild().getMemberById(b.getKey())==null))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            Map<String, String> birthdays = conn.hgetAll("birthdays").entrySet().stream().filter(b -> ! (tc.getGuild().getMemberById(b.getKey()) == null)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             // Get format of date used in stored dates
             LocalDate date = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6")).toLocalDate();
-            String today = date.getMonthValue()+"-"+date.getDayOfMonth();
+            String today = date.getMonthValue() + "-" + date.getDayOfMonth();
 
             // Cycle through all birthdays.
-            for (Map.Entry<String, String> userBirthday : birthdays.entrySet())
+            for(Map.Entry<String, String> userBirthday : birthdays.entrySet())
             {
                 String userId = userBirthday.getKey();
                 // The map's in the format of <user ID, birth date>
@@ -254,16 +218,13 @@ public class RiiConnect24Bot extends ListenerAdapter
                     Member birthdayMember = tc.getGuild().getMemberById(userId);
                     EmbedBuilder builder = new EmbedBuilder();
                     builder.setTitle("Happy birthday! \uD83C\uDF82");
-                    builder.setDescription("Please send them messages wishing them a happy birthday here on Discord and/or birthday mail on their Wii if" +
-                            " you've registered them!");
+                    builder.setDescription("Please send them messages wishing them a happy birthday here on Discord and/or birthday mail on their Wii if" + " you've registered them!");
                     builder.setColor(Color.decode("#00a6e9"));
-                    builder.setAuthor("It's " + birthdayMember.getEffectiveName() + "'s birthday!",
-                            "https://rc24.xyz/", birthdayMember.getUser().getEffectiveAvatarUrl());
+                    builder.setAuthor("It's " + birthdayMember.getEffectiveName() + "'s birthday!", "https://rc24.xyz/", birthdayMember.getUser().getEffectiveAvatarUrl());
 
                     tc.sendMessage(builder.build()).queue();
                 }
-                else
-                    logger.debug("I considered " + userBirthday.getKey() + ", but their birthday isn't today.");
+                else logger.debug("I considered " + userBirthday.getKey() + ", but their birthday isn't today.");
             }
         }
     }
@@ -272,15 +233,14 @@ public class RiiConnect24Bot extends ListenerAdapter
     {
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("CST"));
         c.setTime(new Date());
-        if(!(c.get(Calendar.DAY_OF_WEEK)==Calendar.FRIDAY))
+        if(! (c.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY))
         {
             // Not today, m8
             return;
         }
 
         TextChannel general = jda.getTextChannelById(258999527783137280L);
-        if(general==null || !(general.canTalk()))
-            return;
+        if(general == null || ! (general.canTalk())) return;
 
         general.sendMessage("\u23F0 <@98938149316599808> **Music night in 15 minutes!**").queue();
     }

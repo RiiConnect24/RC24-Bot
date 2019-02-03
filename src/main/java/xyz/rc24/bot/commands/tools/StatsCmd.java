@@ -1,3 +1,22 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package xyz.rc24.bot.commands.tools;
 
 import com.jagrosh.jdautilities.command.Command;
@@ -16,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
@@ -39,9 +58,8 @@ public class StatsCmd extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        OkHttpClient client = ((JDAImpl)event.getJDA()).getHttpClient();
-        Request request = new Request.Builder().url(STATS_URL).addHeader("User-Agent",
-                "RC24-Bot "+Const.VERSION).build();
+        OkHttpClient client = ((JDAImpl) event.getJDA()).getHttpClient();
+        Request request = new Request.Builder().url(STATS_URL).addHeader("User-Agent", "RC24-Bot " + Const.VERSION).build();
 
         try(Response response = client.newCall(request).execute())
         {
@@ -71,7 +89,8 @@ public class StatsCmd extends Command
         StringBuilder red = new StringBuilder("```diff\n");
         StringBuilder sb = new StringBuilder();
 
-        keys.forEach(k -> {
+        keys.forEach(k ->
+        {
             String status = json.getString(k);
 
             switch(status)
@@ -87,8 +106,7 @@ public class StatsCmd extends Command
             }
         });
 
-        sb.append("Supported by RiiConnect24:\n").append(green).append("```\nIn progress...\n").append(yellow)
-                .append("```\nNot supported:\n").append(red).append("```");
+        sb.append("Supported by RiiConnect24:\n").append(green).append("```\nIn progress...\n").append(yellow).append("```\nNot supported:\n").append(red).append("```");
 
         return sb.toString();
     }

@@ -1,29 +1,25 @@
-package xyz.rc24.bot.events;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package xyz.rc24.bot.events;
+
+import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -31,12 +27,11 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.managers.MorpherManager;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +47,7 @@ public class Morpher extends ListenerAdapter
     private final Long mirrorID;
     private final Long ownerID;
     private final MorpherManager morpherManager;
-    private static final Logger logger = (Logger)LoggerFactory.getLogger(Morpher.class);
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(Morpher.class);
 
     public Morpher(Config config)
     {
@@ -69,8 +64,7 @@ public class Morpher extends ListenerAdapter
         TextChannel mirror = jda.getTextChannelById(mirrorID);
 
         // Double check that I can still talk.
-        if(mirror.canTalk())
-            return true;
+        if(mirror.canTalk()) return true;
 
         // Well, looks like we can't talk, or something.
         String message = "I couldn't access the Morpher mirror channel... could you please check it out?";
@@ -84,11 +78,9 @@ public class Morpher extends ListenerAdapter
         List<Message.Attachment> attachments = rootMessage.getAttachments();
         StringBuilder descrp = new StringBuilder(rootMessage.getContentRaw());
 
-        if(attachments.size()==1 && attachments.get(0).isImage())
-            embed.setImage(attachments.get(0).getUrl());
+        if(attachments.size() == 1 && attachments.get(0).isImage()) embed.setImage(attachments.get(0).getUrl());
         else
-            attachments.forEach(att -> descrp.append("\n\n:paperclip: **[").append(att.getFileName()).append("](")
-                    .append(att.getUrl()).append(")**"));
+            attachments.forEach(att -> descrp.append("\n\n:paperclip: **[").append(att.getFileName()).append("](").append(att.getUrl()).append(")**"));
 
         embed.setTitle("New announcement!");
         embed.setDescription(descrp);
@@ -106,24 +98,21 @@ public class Morpher extends ListenerAdapter
         if(event.getChannel().getIdLong() == rootID && canUseMirror(jda))
         {
             // Mirror message, and if successful store it.
-            jda.getTextChannelById(mirrorID).sendMessage(createMirrorEmbed(event.getMessage())).queue(message ->
-                morpherManager.setAssociation(event.getMessageIdLong(), message.getIdLong()));
+            jda.getTextChannelById(mirrorID).sendMessage(createMirrorEmbed(event.getMessage())).queue(message -> morpherManager.setAssociation(event.getMessageIdLong(), message.getIdLong()));
         }
     }
 
     public void onGuildMessageUpdate(GuildMessageUpdateEvent event)
     {
         JDA jda = event.getJDA();
-        if(event.getMessage().getContentRaw().isEmpty())
-            return;
-        if(event.getChannel().getIdLong()==rootID && canUseMirror(jda))
+        if(event.getMessage().getContentRaw().isEmpty()) return;
+        if(event.getChannel().getIdLong() == rootID && canUseMirror(jda))
         {
             long association = morpherManager.getAssociation(event.getMessageIdLong());
-            if(!(association==0L))
+            if(! (association == 0L))
             {
                 // Create a new embed, and edit the mirrored message to it.
-                jda.getTextChannelById(mirrorID).getMessageById(association).queue(mirroredMessage ->
-                    mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue());
+                jda.getTextChannelById(mirrorID).getMessageById(association).queue(mirroredMessage -> mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue());
             }
         }
     }
@@ -134,10 +123,11 @@ public class Morpher extends ListenerAdapter
         if(event.getChannel().getIdLong() == rootID && canUseMirror(jda))
         {
             long association = morpherManager.getAssociation(event.getMessageIdLong());
-            if(!(association==0L))
+            if(! (association == 0L))
             {
                 // Remove mirrored message.
-                jda.getTextChannelById(mirrorID).getMessageById(association).queue(s -> {
+                jda.getTextChannelById(mirrorID).getMessageById(association).queue(s ->
+                {
                     s.delete().queue(s2 -> morpherManager.removeAssociation(event.getMessageIdLong()));
                 });
             }
@@ -164,7 +154,7 @@ public class Morpher extends ListenerAdapter
                 history.addAll(retrievedHistory);
                 logger.info("Downloading another 100 messages for mirroring...");
             }
-            while(!(retrievedHistory.size() % 100==0));
+            while(! (retrievedHistory.size() % 100 == 0));
             // The above detects if it evenly fits into 100 or not.
             // If it doesn't, we're done with messages.
 
@@ -174,9 +164,7 @@ public class Morpher extends ListenerAdapter
             {
                 // Time to mirror!
                 // Create embed + store in database.
-                jda.getTextChannelById(mirrorID).sendMessage(createMirrorEmbed(toMirror)).queue(
-                        message -> morpherManager.setAssociation(toMirror.getIdLong(), message.getIdLong()
-                ));
+                jda.getTextChannelById(mirrorID).sendMessage(createMirrorEmbed(toMirror)).queue(message -> morpherManager.setAssociation(toMirror.getIdLong(), message.getIdLong()));
             }
         }
     }

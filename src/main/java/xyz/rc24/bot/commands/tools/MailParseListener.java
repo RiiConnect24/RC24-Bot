@@ -1,28 +1,23 @@
-package xyz.rc24.bot.commands.tools;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+package xyz.rc24.bot.commands.tools;
 
 import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -44,7 +39,7 @@ import java.io.*;
 
 public class MailParseListener extends ListenerAdapter
 {
-    private static final Logger logger = (Logger)LoggerFactory.getLogger(MailParseListener.class);
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(MailParseListener.class);
     private final RiiConnect24Bot bot;
 
     public MailParseListener(RiiConnect24Bot bot)
@@ -55,14 +50,12 @@ public class MailParseListener extends ListenerAdapter
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
     {
-        if(!(bot.config.isMailPatchEnabled()))
-            return;
-        if(bot.bManager.isBlacklisted(event.getAuthor().getId()))
-            return;
+        if(! (bot.config.isMailPatchEnabled())) return;
+        if(bot.bManager.isBlacklisted(event.getAuthor().getId())) return;
 
         Message message = event.getMessage();
         // Make sure we're not patching our own uploaded file again.
-        if(!(message.getAuthor().isBot()))
+        if(! (message.getAuthor().isBot()))
         {
             for(Message.Attachment att : message.getAttachments())
             {
@@ -73,35 +66,31 @@ public class MailParseListener extends ListenerAdapter
                     try
                     {
                         OkHttpClient client = new OkHttpClient();
-                        RequestBody formBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("uploaded_config",
-                                "nwc24msg.cfg", RequestBody.create(MediaType.parse("application/octet-stream"), IOUtil.readFully(att.getInputStream()))).build();
+                        RequestBody formBody = new MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart("uploaded_config", "nwc24msg.cfg", RequestBody.create(MediaType.parse("application/octet-stream"), IOUtil.readFully(att.getInputStream()))).build();
                         Request request = new Request.Builder().url(Const.PATCHING_URL).post(formBody).build();
                         Response response = client.newCall(request).execute();
 
-                        if(response.code()==400)
+                        if(response.code() == 400)
                             throw new IOException("Invalid file! Make sure you sent the correct file!");
-                        if(response.code()==503)
+                        if(response.code() == 503)
                             throw new IOException("The server is now currently under maintenance. Please wait some time and try again.");
-                        if(!(response.isSuccessful()))
-                            throw new IOException();
+                        if(! (response.isSuccessful())) throw new IOException();
 
                         String content = response.body().string();
                         Writer output = new BufferedWriter(new FileWriter("nwc24msg.cfg", true));
                         output.append(content).close();
                         File file = new File("nwc24msg.cfg");
 
-                        event.getChannel().sendFile(file, att.getFileName(),
-                                new MessageBuilder().append("Here's your patched mail file, deleted from our server:").build()).queue(s -> file.delete(), e ->
-                            file.delete());
+                        event.getChannel().sendFile(file, att.getFileName(), new MessageBuilder().append("Here's your patched mail file, deleted from our server:").build()).queue(s -> file.delete(), e -> file.delete());
                     }
                     catch(IOException e)
                     {
-                        if(e.getMessage()==null)
+                        if(e.getMessage() == null)
                         {
-                            event.getChannel().sendMessage(Const.FAIL_E+" Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
+                            event.getChannel().sendMessage(Const.FAIL_E + " Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
                             e.printStackTrace();
                         }
-                        else event.getChannel().sendMessage(Const.FAIL_E+" "+e.getMessage()).queue();
+                        else event.getChannel().sendMessage(Const.FAIL_E + " " + e.getMessage()).queue();
                     }
 
                     /*try

@@ -1,28 +1,23 @@
-package xyz.rc24.bot.managers;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+package xyz.rc24.bot.managers;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -58,10 +53,8 @@ public class ServerConfigManager
         try(Jedis conn = pool.getResource())
         {
             String logID = conn.hget(serverId + "", type.toString());
-            if(logID==null || logID.isEmpty())
-                return 0L;
-            else
-                return Long.parseLong(logID);
+            if(logID == null || logID.isEmpty()) return 0L;
+            else return Long.parseLong(logID);
         }
     }
 
@@ -98,7 +91,7 @@ public class ServerConfigManager
      * Sets the default `add` command type for a server
      *
      * @param serverID Server ID to look up with
-     * @param setType Type to default `add` command to
+     * @param setType  Type to default `add` command to
      */
     public void setDefaultAddType(Long serverID, CodeManager.Type setType)
     {
@@ -132,7 +125,6 @@ public class ServerConfigManager
 
     public enum LogType
     {
-        MOD,
-        SERVER
+        MOD, SERVER
     }
 }

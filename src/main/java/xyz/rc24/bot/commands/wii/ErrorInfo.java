@@ -1,33 +1,28 @@
-package xyz.rc24.bot.commands.wii;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package xyz.rc24.bot.commands.wii;
+
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.google.gson.annotations.SerializedName;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import org.jsoup.Jsoup;
@@ -35,7 +30,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import xyz.rc24.bot.commands.Categories;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -78,12 +73,10 @@ public class ErrorInfo extends Command
             {
                 // Make sure the code's actually a code.
                 Matcher codeCheck = Pattern.compile("0{4}\\d{2}").matcher(channelCheck.group());
-                if (!(codeCheck.find()))
-                    throw new NumberFormatException();
+                if(! (codeCheck.find())) throw new NumberFormatException();
 
                 code = Integer.parseInt(codeCheck.group(0));
-                if(channelErrors.get(code)==null)
-                    throw new NumberFormatException();
+                if(channelErrors.get(code) == null) throw new NumberFormatException();
             }
             catch(NumberFormatException e)
             {
@@ -106,15 +99,14 @@ public class ErrorInfo extends Command
             {
                 // Validate it is a number.
                 Matcher codeCheck = Pattern.compile("\\d{1,6}").matcher(event.getArgs());
-                if (!codeCheck.find())
-                    throw new NumberFormatException();
+                if(! codeCheck.find()) throw new NumberFormatException();
                 code = Integer.parseInt(codeCheck.group(0));
-                if(code==0)
+                if(code == 0)
                     // 0 returns an empty array (see https://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680936)
                     // We'll just treat it as an error.
                     throw new NumberFormatException();
             }
-            catch (NumberFormatException e)
+            catch(NumberFormatException e)
             {
                 event.replyError("Enter a valid error code!");
                 return;
@@ -122,8 +114,7 @@ public class ErrorInfo extends Command
 
             // Get method
             String method = "e=" + code;
-            if(debug)
-                method = "t=" + code;
+            if(debug) method = "t=" + code;
 
             // TODO: Rewrite using OkHttp3
 
@@ -132,7 +123,7 @@ public class ErrorInfo extends Command
                 URL jsonAPI = new URL("https://wiimmfi.de/error?" + method + "&m=json");
                 Gson gson = new Gson();
                 JSONFormat test = gson.fromJson(new InputStreamReader(jsonAPI.openStream()), JSONFormat[].class)[0];
-                if(!(test.found==1))
+                if(! (test.found == 1))
                 {
                     event.replyError("Could not find the specified error from Wiimmfi.");
                     return;
@@ -164,7 +155,7 @@ public class ErrorInfo extends Command
                     infoBuilder.append(format.type).append(" for error ").append(format.name).append(": ").append(htmlToMarkdown).append("\n");
                 }
                 // Check for dev note
-                if(!(codeNotes.get(code)==null))
+                if(! (codeNotes.get(code) == null))
                     infoBuilder.append("Note from RiiConnect24: ").append(codeNotes.get(code));
 
                 EmbedBuilder builder = new EmbedBuilder();

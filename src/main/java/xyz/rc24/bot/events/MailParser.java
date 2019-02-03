@@ -1,31 +1,26 @@
-package xyz.rc24.bot.events;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import org.apache.commons.io.IOUtils;
+package xyz.rc24.bot.events;
+
 import ch.qos.logback.classic.Logger;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -38,8 +33,9 @@ import java.util.Arrays;
  * @author Spotlight
  */
 
-public class MailParser {
-    private static final Logger logger = (Logger)(Logger)LoggerFactory.getLogger(MailParser.class);
+public class MailParser
+{
+    private static final Logger logger = (Logger) (Logger) LoggerFactory.getLogger(MailParser.class);
 
     /**
      * The following is based off a specific format.
@@ -50,7 +46,8 @@ public class MailParser {
      * @throws IOException Only when a stream cannot be closed/read.
      * @docs https://github.com/RiiConnect24/Kaitai-Files/blob/master/Kaitais/nwc24msg.ksy
      */
-    public byte[] patchMail(InputStream stream) throws IOException {
+    public byte[] patchMail(InputStream stream) throws IOException
+    {
         // Yes, I used commons-io just for this.
         // I'm sorry.
         byte[] file = IOUtils.toByteArray(stream);
@@ -58,13 +55,15 @@ public class MailParser {
 
         // Simple file checks
         logger.debug("Length: " + file.length);
-        if (!(file.length == 1024)) {
+        if(! (file.length == 1024))
+        {
             return new byte[]{0x21};
         }
 
         byte[] expectedMagic = "WcCf".getBytes();
         byte[] presentMagic = Arrays.copyOfRange(file, 0, 4);
-        if (!Arrays.equals(presentMagic, expectedMagic)) {
+        if(! Arrays.equals(presentMagic, expectedMagic))
+        {
             return new byte[]{0x69};
         }
 
@@ -80,7 +79,8 @@ public class MailParser {
         String[] engineTypes = new String[]{"account", "check", "receive", "delete", "send"};
         // We start the list of offsets 156 bytes off into the file.
         Integer currentPos = 0x9C;
-        for (String type : engineTypes) {
+        for(String type : engineTypes)
+        {
             // We create a byte[] with the proper length for the engine.
             byte[] sizedEngineURL = new byte[80];
             byte[] engineURL = ("http://mtw.rc24.xyz/cgi-bin/" + type + ".cgi").getBytes();
@@ -99,7 +99,8 @@ public class MailParser {
         Integer checksum = 0;
         Integer offset = 0;
 
-        do {
+        do
+        {
             byte[] toWorkWith = new byte[4];
             // Copy 4 bytes at offset toWorkWith.
             System.arraycopy(file, offset, toWorkWith, 0, 4);
@@ -110,7 +111,8 @@ public class MailParser {
             // Increase offset for next usage.
             offset += 4;
             loops--;
-        } while (loops > 0);
+        }
+        while(loops > 0);
 
         // Get lower 32 bits
         Integer finalChecksum = checksum & 0xFFFFFFFF;

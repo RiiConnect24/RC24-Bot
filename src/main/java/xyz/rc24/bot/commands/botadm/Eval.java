@@ -1,39 +1,33 @@
-package xyz.rc24.bot.commands.botadm;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package xyz.rc24.bot.commands.botadm;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import javax.script.ScriptEngine;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Categories;
 
-import javax.script.ScriptEngine;
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,12 +57,8 @@ public class Eval extends Command
                 "com.jagrosh.jdautilities.commandclient",
                 "com.jagrosh.jdautilities.commandclient.impl",
                 "com.jagrosh.jdautilities.entities",
-                "com.jagrosh.jdautilities.menu",
                 "com.jagrosh.jdautilities.utils",
-                "com.jagrosh.jdautilities.waiter",
-                "java.io",
-                "java.lang",
-                "java.util",
+                "java.io", "java.lang", "java.util",
                 "net.dv8tion.jda.bot",
                 "net.dv8tion.jda.bot.entities",
                 "net.dv8tion.jda.bot.entities.impl",
@@ -79,11 +69,8 @@ public class Eval extends Command
                 "net.dv8tion.jda.core.managers.impl",
                 "net.dv8tion.jda.core.utils",
                 "net.dv8tion.jda.webhook",
-                "xyz.rc24.bot",
-                "xyz.rc24.bot.events",
-                "xyz.rc24.bot.loader",
-                "xyz.rc24.bot.managers",
-                "xyz.rc24.bot.utils");
+                "xyz.rc24.bot", "xyz.rc24.bot.events", "xyz.rc24.bot.loader",
+                "xyz.rc24.bot.managers", "xyz.rc24.bot.utils");
     }
 
     @Override
@@ -102,7 +89,7 @@ public class Eval extends Command
             engine.put("client", event.getClient());
             engine.put("author", event.getAuthor());
             engine.put("bot", bot);
-            if (event.isFromType(ChannelType.TEXT))
+            if(event.isFromType(ChannelType.TEXT))
             {
                 engine.put("member", event.getMember());
                 engine.put("guild", event.getGuild());
@@ -110,13 +97,13 @@ public class Eval extends Command
                 engine.put("selfmember", event.getGuild().getSelfMember());
             }
 
-            for (final String s : imports)
+            for(final String s : imports)
                 importString += "import " + s + ".*;";
 
             eval = event.getArgs().replaceAll("getToken", "getSelfUser");
             Object out = engine.eval(importString + eval);
 
-            if (out == null || String.valueOf(out).isEmpty())
+            if(out == null || String.valueOf(out).isEmpty())
                 event.reactSuccess();
             else
                 event.replySuccess("Done! Output:\n```java\n" + out.toString().replaceAll(event.getJDA().getToken(), "Nice try.") + " ```");

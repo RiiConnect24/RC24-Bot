@@ -1,28 +1,23 @@
-package xyz.rc24.bot.commands.wii;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -36,7 +31,7 @@ import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.managers.CodeManager;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.Map;
 
@@ -64,8 +59,7 @@ public class Codes extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        event.replyError("Please enter a valid option for the command.\n" +
-                "Valid options: `add`, `edit`, `remove`, `lookup`, `help`.");
+        event.replyError("Please enter a valid option for the command.\n" + "Valid options: `add`, `edit`, `remove`, `lookup`, `help`.");
     }
 
     private class Lookup extends Command
@@ -80,23 +74,22 @@ public class Codes extends Command
         }
 
         @Override
-        protected void execute(CommandEvent event) {
+        protected void execute(CommandEvent event)
+        {
             Member member;
-            if (event.getArgs().isEmpty())
-                member = event.getMember();
+            if(event.getArgs().isEmpty()) member = event.getMember();
             else
             {
                 List<Member> potentialMembers = FinderUtil.findMembers(event.getArgs(), event.getGuild());
-                if (potentialMembers.isEmpty())
+                if(potentialMembers.isEmpty())
                 {
                     event.replyError("I couldn't find a user by that name!");
                     return;
                 }
-                else
-                    member = potentialMembers.get(0);
+                else member = potentialMembers.get(0);
             }
             // If there wasn't a user found, just halt execution.
-            if(member==null)
+            if(member == null)
             {
                 event.replyError("I couldn't find that user!");
                 return;
@@ -104,8 +97,7 @@ public class Codes extends Command
             EmbedBuilder codeEmbed = new EmbedBuilder();
             // Set a default color for non-role usage.
             Color embedColor = Color.decode("#0083e2");
-            if(!(event.getChannelType()==ChannelType.PRIVATE))
-                embedColor = member.getColor();
+            if(! (event.getChannelType() == ChannelType.PRIVATE)) embedColor = member.getColor();
 
             codeEmbed.setColor(embedColor);
             codeEmbed.setAuthor("Profile for " + member.getEffectiveName(), null, member.getUser().getEffectiveAvatarUrl());
@@ -113,15 +105,15 @@ public class Codes extends Command
             // Map: Type, then a further map of name/value.
             Map<CodeManager.Type, Map<String, String>> userCodes = manager.getAllCodes(member.getUser().getIdLong());
 
-            for (Map.Entry<CodeManager.Type, Map<String, String>> typeData : userCodes.entrySet())
+            for(Map.Entry<CodeManager.Type, Map<String, String>> typeData : userCodes.entrySet())
             {
                 // We define each code as the name (key) and the code (value) itself.
                 Map<String, String> codes = typeData.getValue();
                 // Make sure it's not null or empty and such
-                if(!(codes==null) && !(codes.isEmpty()))
+                if(! (codes == null) && ! (codes.isEmpty()))
                 {
                     StringBuilder fieldContents = new StringBuilder();
-                    for (Map.Entry<String, String> codeData : codes.entrySet())
+                    for(Map.Entry<String, String> codeData : codes.entrySet())
                         // Add in the format `nameOfCode`:
                         //                   value
                         fieldContents.append("`").append(codeData.getKey()).append("`:\n").append(codeData.getValue()).append("\n");
@@ -133,10 +125,9 @@ public class Codes extends Command
                 // Carry on!
             }
             // There won't be any fields if the types are all empty.
-            if (codeEmbed.getFields().isEmpty())
+            if(codeEmbed.getFields().isEmpty())
                 event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
-            else
-                event.reply(codeEmbed.build());
+            else event.reply(codeEmbed.build());
         }
     }
 
@@ -154,7 +145,7 @@ public class Codes extends Command
         protected void execute(CommandEvent event)
         {
             String type = event.getArgs().split(" ")[0].toLowerCase();
-            if(!Const.namesToType.containsKey(type))
+            if(! Const.namesToType.containsKey(type))
             {
                 event.replyError(Const.getCodeTypes());
                 return;
@@ -165,10 +156,9 @@ public class Codes extends Command
             // For example, we might have | Name | code
             // We need to determine the name and code.
             String[] information = toAdd.split(" \\| ");
-            String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
-                    "`" + event.getClient().getPrefix() + "code add " + type + " | name | code`.";
+            String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " + "`" + event.getClient().getPrefix() + "code add " + type + " | name | code`.";
             // The array should have 3 (empty, name, and code).
-            if(!(information.length==3))
+            if(! (information.length == 3))
             {
                 event.replyError(errorMessage);
                 return;
@@ -197,7 +187,7 @@ public class Codes extends Command
         protected void execute(CommandEvent event)
         {
             String type = event.getArgs().split(" ")[0].toLowerCase();
-            if ((!Const.namesToType.containsKey(type)))
+            if((! Const.namesToType.containsKey(type)))
             {
                 event.replyError(Const.getCodeTypes());
                 return;
@@ -207,10 +197,9 @@ public class Codes extends Command
             // For example, we might have | Name | code
             // We need to determine the name and code.
             String[] information = toAdd.split(" \\| ");
-            String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
-                    "`" + event.getClient().getPrefix() + "code remove " + type + " | code name`.";
+            String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " + "`" + event.getClient().getPrefix() + "code remove " + type + " | code name`.";
             // The array should have 2 (empty, name).
-            if(!(information.length==2))
+            if(! (information.length == 2))
             {
                 event.replyError(errorMessage);
                 return;
@@ -222,10 +211,8 @@ public class Codes extends Command
                 return;
             }
             Boolean status = manager.removeCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1]);
-            if(status)
-                event.replySuccess("Removed the code for `" + information[1] + "`");
-            else
-                event.replyError("A code for `" + information[1] + "` is not registered.");
+            if(status) event.replySuccess("Removed the code for `" + information[1] + "`");
+            else event.replyError("A code for `" + information[1] + "` is not registered.");
         }
     }
 
@@ -243,7 +230,7 @@ public class Codes extends Command
         protected void execute(CommandEvent event)
         {
             String type = event.getArgs().split(" ")[0].toLowerCase();
-            if(!(Const.namesToType.containsKey(type)))
+            if(! (Const.namesToType.containsKey(type)))
             {
                 event.replyError(Const.getCodeTypes());
                 return;
@@ -253,10 +240,9 @@ public class Codes extends Command
             // For example, we might have | Name | code
             // We need to determine the name and code.
             String[] information = toAdd.split(" \\| ");
-            String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " +
-                    "`" + event.getClient().getPrefix() + "code edit " + type + " | code name | new code`.";
+            String errorMessage = "Hm, I couldn't parse that.\nThe correct format is " + "`" + event.getClient().getPrefix() + "code edit " + type + " | code name | new code`.";
             // The array should have 3 (empty, name, and code).
-            if(!(information.length==3))
+            if(! (information.length == 3))
             {
                 event.replyError(errorMessage);
                 return;
@@ -268,10 +254,8 @@ public class Codes extends Command
                 return;
             }
             Boolean status = manager.editCode(event.getAuthor().getIdLong(), Const.namesToType.get(type), information[1], information[2]);
-            if(status)
-                event.replySuccess("Edited the code for `" + information[1] + "`");
-            else
-                event.replyError("A code for `" + information[1] + "` is not registered.");
+            if(status) event.replySuccess("Edited the code for `" + information[1] + "`");
+            else event.replyError("A code for `" + information[1] + "` is not registered.");
         }
     }
 
@@ -288,29 +272,9 @@ public class Codes extends Command
         @Override
         protected void execute(CommandEvent event)
         {
-            String help = "**__Using the bot__**\n\n" +
-                    "**Adding wii:**\n" +
-                    "`" + event.getClient().getPrefix() + "code add wii | Wii Name Goes here | 1234-5678-9012-3456`\n" +
-                    "`" + event.getClient().getPrefix() + "code add game | Game Name | 1234-5678-9012`\n" +
-                    "and many more types! Run `" + event.getClient().getPrefix() + "code add` " +
-                    "to see all supported code types right now, such as the 3DS and Switch.\n\n" +
-                    "**Editing wii**\n" +
-                    "`" + event.getClient().getPrefix() + "code edit wii | Wii Name | 1234-5678-9012-3456`\n" +
-                    "`" + event.getClient().getPrefix() + "code edit game | Game Name | 1234-5678-9012`\n" +
-                    "\n" +
-                    "**Removing wii**\n" +
-                    "`" + event.getClient().getPrefix() + "code remove wii | Wii Name`\n" +
-                    "`" + event.getClient().getPrefix() + "code remove game | Game Name`\n" +
-                    "\n" +
-                    "**Looking up wii**\n" +
-                    "`" + event.getClient().getPrefix() + "code lookup @user`\n" +
-                    "\n" +
-                    "**Adding a user's Wii**\n" +
-                    "`" + event.getClient().getPrefix() + "add @user`\n" +
-                    "This will send you their wii, and then DM them your Wii/game wii.";
+            String help = "**__Using the bot__**\n\n" + "**Adding wii:**\n" + "`" + event.getClient().getPrefix() + "code add wii | Wii Name Goes here | 1234-5678-9012-3456`\n" + "`" + event.getClient().getPrefix() + "code add game | Game Name | 1234-5678-9012`\n" + "and many more types! Run `" + event.getClient().getPrefix() + "code add` " + "to see all supported code types right now, such as the 3DS and Switch.\n\n" + "**Editing wii**\n" + "`" + event.getClient().getPrefix() + "code edit wii | Wii Name | 1234-5678-9012-3456`\n" + "`" + event.getClient().getPrefix() + "code edit game | Game Name | 1234-5678-9012`\n" + "\n" + "**Removing wii**\n" + "`" + event.getClient().getPrefix() + "code remove wii | Wii Name`\n" + "`" + event.getClient().getPrefix() + "code remove game | Game Name`\n" + "\n" + "**Looking up wii**\n" + "`" + event.getClient().getPrefix() + "code lookup @user`\n" + "\n" + "**Adding a user's Wii**\n" + "`" + event.getClient().getPrefix() + "add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
 
-            event.replyInDm(help, (success) -> event.reactSuccess(),
-                    (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled."));
+            event.replyInDm(help, (success) -> event.reactSuccess(), (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled."));
         }
     }
 }

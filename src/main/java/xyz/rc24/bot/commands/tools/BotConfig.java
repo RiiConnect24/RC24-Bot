@@ -1,28 +1,23 @@
-package xyz.rc24.bot.commands.tools;
-
 /*
- * The MIT License
+ * MIT License
  *
- * Copyright 2017 RiiConnect24 and its contributors.
+ * Copyright (c) 2017-2019 RiiConnect24 and its contributors
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+ * EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+package xyz.rc24.bot.commands.tools;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -62,8 +57,7 @@ public class BotConfig extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        event.replyError("Please enter a valid option for the command.\n" +
-                "Valid commands are: `setchannel`, `defaultadd`.");
+        event.replyError("Please enter a valid option for the command.\n" + "Valid commands are: `setchannel`, `defaultadd`.");
     }
 
     private class ChannelConfig extends Command
@@ -79,10 +73,9 @@ public class BotConfig extends Command
         protected void execute(CommandEvent event)
         {
             String[] arguments = event.getArgs().split(" ");
-            if(!(arguments.length == 2))
+            if(! (arguments.length == 2))
             {
-                event.replyError("Invalid syntax!\n The correct format is " +
-                        "`" + event.getClient().getPrefix() + "config setchannel <type> <#channel-mention/off>`.");
+                event.replyError("Invalid syntax!\n The correct format is " + "`" + event.getClient().getPrefix() + "config setchannel <type> <#channel-mention/off>`.");
                 return;
             }
             // I'm assuming way too much here.
@@ -101,12 +94,11 @@ public class BotConfig extends Command
             // Set (potentially) obtained channel
             Long channelID = getChannelId(channelName, event.getGuild());
 
-            if(channelID==0L)
+            if(channelID == 0L)
                 event.replyError("I wasn't able to find that channel on this server! No changes have been made to your server's config.");
             else
             {
-                if (type==null)
-                    event.replyError(Const.getChannelTypes());
+                if(type == null) event.replyError(Const.getChannelTypes());
                 else
                 {
                     manager.setLog(event.getGuild().getIdLong(), type, channelID);
@@ -128,8 +120,7 @@ public class BotConfig extends Command
         private Long getChannelId(String name, Guild currentGuild)
         {
             List<TextChannel> potentialChannels = FinderUtil.findTextChannels(name, currentGuild);
-            if(potentialChannels.isEmpty())
-                return 0L;
+            if(potentialChannels.isEmpty()) return 0L;
             else
                 // Grab the first text channel's Long, and return.
                 return potentialChannels.get(0).getIdLong();

@@ -41,7 +41,7 @@ birthdays_channel: 000000000000000000
 
 # Severs that should be logged
 logged_servers:
- - 000000000000000000
+  - 000000000000000000
 
 # Block specific channel IDs from being logged.
 ignore_ids:
