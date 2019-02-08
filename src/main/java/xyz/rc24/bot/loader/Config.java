@@ -142,4 +142,25 @@ public class Config
     {
         return format.music_night_reminder;
     }
+
+    // Database
+    public String getDatabaseHost()
+    {
+        return format.dbHost;
+    }
+
+    public String getDatabaseUser()
+    {
+        return format.dbUser;
+    }
+
+    public String getDatabasePassword()
+    {
+        return format.dbPassword;
+    }
+
+    public String getDatabase()
+    {
+        return format.db;
+    }
 }

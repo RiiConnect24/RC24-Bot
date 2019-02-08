@@ -46,4 +46,10 @@ public class ConfigFormat
     public String sentry_dsn;
     public boolean sentry_enabled;
     public boolean music_night_reminder;
+
+    // Database
+    public String dbHost;
+    public String dbUser;
+    public String dbPassword;
+    public String db;
 }

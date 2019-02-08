@@ -20,6 +20,10 @@
 package xyz.rc24.bot;
 
 import ch.qos.logback.classic.Logger;
+import co.aikar.idb.DB;
+import co.aikar.idb.Database;
+import co.aikar.idb.DatabaseOptions;
+import co.aikar.idb.PooledDatabaseOptions;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import io.sentry.Sentry;
 import javax.security.auth.login.LoginException;
@@ -88,22 +92,22 @@ public class RiiConnect24Bot extends ListenerAdapter
 
     private void run() throws IOException, LoginException
     {
-        try
-        {
-            config = new Config();
-        }
+        try {config = new Config();}
         catch(Exception e)
         {
             logger.error(e.toString());
             return;
         }
 
+        // Start database
+        initDatabase();
+
         bManager = new BlacklistManager();
         bdaysScheduler = new ScheduledThreadPoolExecutor(40);
         musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
         // Start Sentry (if enabled)
-        if(config.isSentryEnabled() && ! (config.getSentryDSN() == null || config.getSentryDSN().isEmpty()))
+        if(config.isSentryEnabled() && !(config.getSentryDSN() == null || config.getSentryDSN().isEmpty()))
             Sentry.init(config.getSentryDSN());
 
         // Register commands
@@ -194,6 +198,14 @@ public class RiiConnect24Bot extends ListenerAdapter
         bdaysScheduler.shutdown();
         musicNightScheduler.shutdown();
         pool.destroy();
+    }
+
+    private void initDatabase()
+    {
+        DatabaseOptions options = DatabaseOptions.builder().mysql(config.getDatabaseUser(), config.getDatabasePassword(),
+                config.getDatabase(), config.getDatabaseHost()).build();
+        Database db = PooledDatabaseOptions.builder().options(options).createHikariDatabase();
+        DB.setGlobalDatabase(db);
     }
 
     private void updateBirthdays(JDA jda, long birthdayChannelId)
