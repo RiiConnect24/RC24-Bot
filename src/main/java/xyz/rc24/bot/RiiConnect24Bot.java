@@ -145,10 +145,16 @@ public class RiiConnect24Bot extends ListenerAdapter
                 new Codes(pool), new Add(this), new BlocksCmd(), new SetBirthday(pool), new ErrorInfo(config.isDebug()),
                 new DNS(), new Wads(), new WiiWare());
 
-        //JDA Connection
-        JDABuilder builder = new JDABuilder().setToken(config.getToken()).setStatus(OnlineStatus.DO_NOT_DISTURB).setGame(Game.playing(Const.GAME_0)).addEventListener(client.build(), this, new ServerLog(this), new MailParseListener(this)).setAudioEnabled(false);
+        // JDA Connection
+        JDABuilder builder = new JDABuilder(config.getToken())
+                .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .setGame(Game.playing(Const.GAME_0))
+                .addEventListener(this, client.build(), new ServerLog(this), new MailParseListener(this))
+                .setAudioEnabled(false);
 
-        if(config.isMorpherEnabled()) builder.addEventListener(new Morpher(config));
+        if(config.isMorpherEnabled())
+            builder.addEventListener(new Morpher(config));
+
         builder.build();
     }
 
@@ -202,8 +208,12 @@ public class RiiConnect24Bot extends ListenerAdapter
 
     private void initDatabase()
     {
-        DatabaseOptions options = DatabaseOptions.builder().mysql(config.getDatabaseUser(), config.getDatabasePassword(),
-                config.getDatabase(), config.getDatabaseHost()).build();
+        DatabaseOptions options = DatabaseOptions.builder()
+                .mysql(config.getDatabaseUser(), config.getDatabasePassword(), config.getDatabase(), config.getDatabaseHost())
+                .driverClassName("com.mysql.cj.jdbc.Driver")
+                .dataSourceClassName("com.mysql.cj.jdbc.Driver")
+                .build();
+
         Database db = PooledDatabaseOptions.builder().options(options).createHikariDatabase();
         DB.setGlobalDatabase(db);
     }
