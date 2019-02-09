@@ -23,7 +23,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.loader.Config;
+import xyz.rc24.bot.Config;
 
 /**
  * @author Spotlight

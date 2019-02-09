@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.LoggerFactory;
-import xyz.rc24.bot.loader.Config;
+import xyz.rc24.bot.Config;
 import xyz.rc24.bot.managers.MorpherManager;
 
 import java.awt.Color;

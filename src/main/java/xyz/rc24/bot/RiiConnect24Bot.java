@@ -50,17 +50,13 @@ import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
-import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.managers.BlacklistManager;
 import xyz.rc24.bot.managers.ServerConfigManager;
 
 import java.awt.Color;
 import java.io.IOException;
 import java.time.*;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -120,14 +116,14 @@ public class RiiConnect24Bot extends ListenerAdapter
         client.setOwnerId(String.valueOf(config.getPrimaryOwner()));
 
         // Convert Long[] of secondary owners to String[] so we can set later
-        Long[] owners = config.getSecondaryOwners();
-        String[] ownersString = new String[owners.length];
+        List<Long> owners = config.getSecondaryOwners();
+        String[] coOwners = new String[owners.size()];
 
-        for(int i = 0; i < owners.length; i++)
-            ownersString[i] = String.valueOf(owners[i]);
+        for(int i = 0; i < owners.size(); i++)
+            coOwners[i] = String.valueOf(owners.get(i));
 
         // Set all co-owners
-        client.setCoOwnerIds(ownersString);
+        client.setCoOwnerIds(coOwners);
         client.setPrefix(config.getPrefix());
         client.setServerInvite("https://discord.gg/5rw6Tur");
 
@@ -208,10 +204,14 @@ public class RiiConnect24Bot extends ListenerAdapter
 
     private void initDatabase()
     {
+        if(config.getDatabaseUser().isEmpty() || config.getDatabasePassword().isEmpty() ||
+                config.getDatabase().isEmpty() || config.getDatabaseHost().isEmpty())
+            throw new IllegalStateException("You haven't configured database details in the config file!");
+
         DatabaseOptions options = DatabaseOptions.builder()
                 .mysql(config.getDatabaseUser(), config.getDatabasePassword(), config.getDatabase(), config.getDatabaseHost())
                 .driverClassName("com.mysql.cj.jdbc.Driver")
-                .dataSourceClassName("com.mysql.cj.jdbc.Driver")
+                .dataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource")
                 .build();
 
         Database db = PooledDatabaseOptions.builder().options(options).createHikariDatabase();

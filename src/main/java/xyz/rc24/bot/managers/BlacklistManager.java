@@ -19,10 +19,7 @@
 
 package xyz.rc24.bot.managers;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
+import java.io.IOException;
 
 /**
  * @author Artuto
@@ -30,29 +27,27 @@ import java.util.List;
 
 public class BlacklistManager
 {
-    private List<String> lines;
-    private final String fileName = "blacklist.txt";
-
     public BlacklistManager() throws IOException
     {
-        this.lines = Files.readAllLines(Paths.get(fileName));
+        // this.lines = Files.readAllLines(Paths.get(fileName));
     }
 
     public boolean isBlacklisted(String id)
     {
-        return lines.contains(id);
+        // return lines.contains(id);
+        return false;
     }
 
     public void addBlacklist(String id) throws IOException
     {
-        Writer w = new FileWriter(fileName, true);
+        /*Writer w = new FileWriter(fileName, true);
         w.append(id).close();
-        lines.add(id);
+        lines.add(id);*/
     }
 
     public void removeBlacklist(String id) throws IOException
     {
-        File file = new File(fileName);
+        /*File file = new File(fileName);
         File tempFile = new File("tempBl.txt");
         String currentLine;
         if(! (file.exists())) return;
@@ -71,13 +66,13 @@ public class BlacklistManager
         }
         w.close();
         reader.close();
-        tempFile.renameTo(file);
+        tempFile.renameTo(file);*/
     }
 
     public void updateList() throws IOException
     {
-        File file = new File(fileName);
+        /*File file = new File(fileName);
         if(file.exists()) this.lines = Files.readAllLines(Paths.get(fileName));
-        else lines.clear();
+        else lines.clear();*/
     }
 }
