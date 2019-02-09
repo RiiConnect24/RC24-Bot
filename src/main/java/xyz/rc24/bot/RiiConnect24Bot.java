@@ -107,7 +107,7 @@ public class RiiConnect24Bot extends ListenerAdapter
         CommandClientBuilder client = new CommandClientBuilder()
                 .setGame(Game.playing(config.getPlaying()))
                 .setStatus(config.getStatus())
-                .setEmojis("✅", "⚠", "❌")
+                .setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E)
                 .setLinkedCacheSize(10)
                 .setOwnerId(String.valueOf(config.getPrimaryOwner()));
 
