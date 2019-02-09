@@ -34,9 +34,9 @@ public class Const
 {
     public static String VERSION = Const.class.getPackage().getImplementationVersion();
     public static final String PATCHING_URL = "http://mtw.rc24.xyz/patch";
-	public static final String SUCCESS_E = "?";
-	public static final String WARN_E = "?";
-	public static final String ERROR_E = "?";
+	public static final String SUCCESS_E = "\\u2705";
+	public static final String WARN_E = "\\u26A0";
+	public static final String ERROR_E = "\\u274C";
 	
     public static final Map<CodeManager.Type, String> typesToDisplayName = new HashMap<CodeManager.Type, String>()
     {{
