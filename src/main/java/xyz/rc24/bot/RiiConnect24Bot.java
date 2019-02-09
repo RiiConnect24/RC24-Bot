@@ -88,12 +88,7 @@ public class RiiConnect24Bot extends ListenerAdapter
 
     private void run() throws IOException, LoginException
     {
-        try {config = new Config();}
-        catch(Exception e)
-        {
-            logger.error(e.toString());
-            return;
-        }
+        config = new Config();
 
         // Start database
         initDatabase();
@@ -103,19 +98,20 @@ public class RiiConnect24Bot extends ListenerAdapter
         musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
         // Start Sentry (if enabled)
-        if(config.isSentryEnabled() && !(config.getSentryDSN() == null || config.getSentryDSN().isEmpty()))
+        if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
             Sentry.init(config.getSentryDSN());
 
         // Register commands
         new Categories(bManager);
 
-        CommandClientBuilder client = new CommandClientBuilder();
-        client.setGame(Game.playing(config.getPlaying()));
-        client.setStatus(config.getStatus());
-        client.setEmojis(Const.DONE_E, Const.WARN_E, Const.FAIL_E);
-        client.setOwnerId(String.valueOf(config.getPrimaryOwner()));
+        CommandClientBuilder client = new CommandClientBuilder()
+                .setGame(Game.playing(config.getPlaying()))
+                .setStatus(config.getStatus())
+                .setEmojis("✅", "⚠", "❌")
+                .setLinkedCacheSize(10)
+                .setOwnerId(String.valueOf(config.getPrimaryOwner()));
 
-        // Convert Long[] of secondary owners to String[] so we can set later
+        // Convert List<Long> of secondary owners to String[] so we can set later
         List<Long> owners = config.getSecondaryOwners();
         String[] coOwners = new String[owners.size()];
 
@@ -123,9 +119,9 @@ public class RiiConnect24Bot extends ListenerAdapter
             coOwners[i] = String.valueOf(owners.get(i));
 
         // Set all co-owners
-        client.setCoOwnerIds(coOwners);
-        client.setPrefix(config.getPrefix());
-        client.setServerInvite("https://discord.gg/5rw6Tur");
+        client.setCoOwnerIds(coOwners)
+                .setPrefix(config.getPrefix())
+                .setServerInvite("https://discord.gg/5rw6Tur");
 
         // Create JedisPool for usage elsewhere
         pool = new JedisPool(new JedisPoolConfig(), "localhost");
@@ -144,7 +140,7 @@ public class RiiConnect24Bot extends ListenerAdapter
         // JDA Connection
         JDABuilder builder = new JDABuilder(config.getToken())
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .setGame(Game.playing(Const.GAME_0))
+                .setGame(Game.playing("Loading..."))
                 .addEventListener(this, client.build(), new ServerLog(this), new MailParseListener(this))
                 .setAudioEnabled(false);
 
