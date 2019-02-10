@@ -53,9 +53,7 @@ public class Config
             {Files.copy(is, file.toPath());}
             catch(IOException e)
             {
-                e.printStackTrace();
-                System.exit(-1);
-                return;
+                throw new RuntimeException(e);
             }
         }
 
@@ -66,8 +64,7 @@ public class Config
         }
         catch(Exception e)
         {
-            e.printStackTrace();
-            System.exit(-1);
+            throw new RuntimeException(e);
         }
     }
 

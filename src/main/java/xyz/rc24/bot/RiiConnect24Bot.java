@@ -198,6 +198,16 @@ public class RiiConnect24Bot extends ListenerAdapter
         pool.destroy();
     }
 
+    public Logger getLogger()
+    {
+        return logger;
+    }
+
+    public Logger getLogger(Class clazz)
+    {
+        return (Logger) LoggerFactory.getLogger(clazz);
+    }
+
     private void initDatabase()
     {
         if(config.getDatabaseUser().isEmpty() || config.getDatabasePassword().isEmpty() ||
