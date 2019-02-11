@@ -25,7 +25,7 @@ import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.managers.CodeManager;
 import xyz.rc24.bot.managers.ServerConfigManager;
@@ -44,7 +44,7 @@ public class Add extends Command
     private final CodeManager manager;
     private final ServerConfigManager configManager;
 
-    public Add(RiiConnect24Bot bot)
+    public Add(Bot bot)
     {
         this.manager = new CodeManager(bot.pool);
         this.configManager = bot.scm;

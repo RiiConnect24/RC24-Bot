@@ -17,36 +17,39 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.database;
+package xyz.rc24.bot.utils;
 
-import co.aikar.idb.DbRow;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.commons.utils.FinderUtil;
+import net.dv8tion.jda.core.entities.Member;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
- * Data manager for Birthdays
+ * JDA Utils' FinderUtil implementation with special case handling
  *
  * @author Artuto
  */
 
-public class BirthdayDataManager
+public class SearcherUtil
 {
-    private final Database db;
-
-    public BirthdayDataManager(Database db)
+    public static Member findMember(CommandEvent event, String args)
     {
-        this.db = db;
-    }
+        if(args.isEmpty())
+            return event.getMember();
 
-    public boolean setBirthday(long userId, String date)
-    {
-        return db.doInsert("INSERT INTO birthdays VALUES(?, ?)", userId, date);
-    }
+        List<Member> found = FinderUtil.findMembers(args, event.getGuild());
+        if(found.isEmpty())
+        {
+            event.replyWarning("No members found matching \"" + args + "\"");
+            return null;
+        }
+        else if(found.size() > 1)
+        {
+            event.replyWarning(FormatUtil.listOfMembers(found, args));
+            return null;
+        }
 
-    public String getBirthday(long userId)
-    {
-        Optional<DbRow> optRow = db.getRow("SELECT * FROM birthdays WHERE user_id = ?", userId);
-
-        return optRow.map(dbRow -> dbRow.getString("day")).orElse(null);
+        return found.get(0);
     }
 }

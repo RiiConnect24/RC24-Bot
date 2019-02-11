@@ -17,52 +17,65 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.wii;
+package xyz.rc24.bot.commands.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.Permission;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.database.BirthdayDataManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class SetBirthday extends Command
-{
-    private JedisPool pool;
+/**
+ * @author Artuto
+ */
 
-    public SetBirthday(JedisPool pool)
+public class SetBirthdayCmd extends Command
+{
+    private BirthdayDataManager dataManager;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
+
+    public SetBirthdayCmd()
     {
-        this.pool = pool;
-        this.name = "birthday";
+        this.dataManager = RiiConnect24Bot.getInstance().getBirthdayDataManager();
+        this.name = "setbirthday";
         this.help = "Sets your birthday.";
-        this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
+        this.category = Categories.GENERAL;
+        this.guildOnly = false;
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        try(Jedis conn = pool.getResource())
+        long id = event.getAuthor().getIdLong();
+        LocalDate dateTime = parseDate(event.getArgs());
+
+        if(dateTime == null)
         {
-            conn.select(2);
-            // We only want the day and the month. We don't want the year, but
-            // for user accessibility we'll leave it optional and never use it.
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
-            LocalDate dateTime;
+            event.replyError("I couldn't parse your date.\n" +
+                    "Try something like: `" + event.getClient().getPrefix() + "setbirthday 25/12`.");
+            return;
+        }
 
-            if(event.getArgs().endsWith("/\\d{4}/")) dateTime = LocalDate.parse(event.getArgs(), formatter);
-            else dateTime = LocalDate.parse(event.getArgs() + "/2018", formatter);
+        boolean success = dataManager.setBirthday(id, dateTime.getDayOfMonth() + "-" + dateTime.getMonthValue());
 
-            conn.hset("birthdays", event.getAuthor().getId(), dateTime.getMonthValue() + "-" + dateTime.getDayOfMonth());
+        if(success)
             event.replySuccess("Updated successfully!");
-        }
-        catch(DateTimeParseException e)
+        else
+            event.replyError("Error whilst updating your birthday! Please contact a developer.");
+    }
+
+    private LocalDate parseDate(String args)
+    {
+        try
         {
-            event.replyError("I couldn't parse your date.\n" + "Try something like: `" + event.getClient().getPrefix() + "birthday 14/04`.");
+            return args.endsWith("/\\d{4}/") ? LocalDate.parse(args, formatter) : LocalDate.parse(args + "/2019", formatter);
         }
+        catch(DateTimeParseException ignored) {}
+
+        return null;
     }
 }

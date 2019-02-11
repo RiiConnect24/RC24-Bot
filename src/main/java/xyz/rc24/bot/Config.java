@@ -49,7 +49,7 @@ public class Config
 
         if(!(file.exists()))
         {
-            try(InputStream is = RiiConnect24Bot.class.getResourceAsStream("/config.yml"))
+            try(InputStream is = Bot.class.getResourceAsStream("/config.yml"))
             {Files.copy(is, file.toPath());}
             catch(IOException e)
             {

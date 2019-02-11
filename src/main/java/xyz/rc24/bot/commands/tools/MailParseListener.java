@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.utils.IOUtil;
 import okhttp3.*;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.Bot;
 
 import java.io.*;
 
@@ -40,9 +40,9 @@ import java.io.*;
 public class MailParseListener extends ListenerAdapter
 {
     private static final Logger logger = (Logger) LoggerFactory.getLogger(MailParseListener.class);
-    private final RiiConnect24Bot bot;
+    private final Bot bot;
 
-    public MailParseListener(RiiConnect24Bot bot)
+    public MailParseListener(Bot bot)
     {
         this.bot = bot;
     }

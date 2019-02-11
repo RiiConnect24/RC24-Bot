@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.managers.CodeManager;
 import xyz.rc24.bot.managers.ServerConfigManager;
@@ -43,7 +43,7 @@ public class BotConfig extends Command
 {
     private ServerConfigManager manager;
 
-    public BotConfig(RiiConnect24Bot bot)
+    public BotConfig(Bot bot)
     {
         this.manager = bot.scm;
         this.children = new Command[]{new ChannelConfig(), new AddConfig()};

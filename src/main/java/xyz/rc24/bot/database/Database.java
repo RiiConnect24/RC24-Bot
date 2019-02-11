@@ -35,12 +35,7 @@ import java.util.Optional;
 
 public class Database
 {
-    private final Logger logger;
-
-    public Database(RiiConnect24Bot bot)
-    {
-        this.logger = bot.getLogger(getClass());
-    }
+    private final Logger logger = RiiConnect24Bot.getLogger(getClass());
 
     boolean doInsert(@Language("MySQL") String query, Object... params)
     {
