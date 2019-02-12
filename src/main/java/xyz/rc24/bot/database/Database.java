@@ -25,6 +25,7 @@ import co.aikar.idb.DbRow;
 import org.intellij.lang.annotations.Language;
 import xyz.rc24.bot.RiiConnect24Bot;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -63,5 +64,19 @@ public class Database
         }
 
         return Optional.ofNullable(row);
+    }
+
+    Optional<List<DbRow>> getRows(@Language("MySQL") String query, Object... params)
+    {
+        List<DbRow> rows;
+
+        try {rows = DB.getResults(query, params);}
+        catch(Exception e)
+        {
+            logger.error("Exception while getting info from the database: " + e.getMessage(), e);
+            rows = null;
+        }
+
+        return Optional.ofNullable(rows);
     }
 }

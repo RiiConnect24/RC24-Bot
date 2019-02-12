@@ -21,6 +21,9 @@ package xyz.rc24.bot.database;
 
 import co.aikar.idb.DbRow;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -48,5 +51,18 @@ public class BirthdayDataManager
         Optional<DbRow> optRow = db.getRow("SELECT * FROM birthdays WHERE user_id = ?", userId);
 
         return optRow.map(dbRow -> dbRow.getString("day")).orElse(null);
+    }
+
+    public List<Long> getPeopleWithDate(String date)
+    {
+        Optional<List<DbRow>> optRows = db.getRows("SELECT * FROM birthdays WHERE day = ?", date);
+        if(!(optRows.isPresent()))
+            return Collections.emptyList();
+
+        List<Long> ids = new ArrayList<>();
+        for(DbRow row : optRows.get())
+            ids.add(row.getLong("user_id"));
+
+        return ids;
     }
 }

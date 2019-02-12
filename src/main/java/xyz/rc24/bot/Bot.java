@@ -26,17 +26,14 @@ import co.aikar.idb.PooledDatabaseOptions;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import io.sentry.Sentry;
 import javax.security.auth.login.LoginException;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import xyz.rc24.bot.commands.botadm.Bash;
@@ -51,17 +48,22 @@ import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.database.Database;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
+import xyz.rc24.bot.managers.BirthdayManager;
 import xyz.rc24.bot.managers.BlacklistManager;
 import xyz.rc24.bot.managers.ServerConfigManager;
 
-import java.awt.Color;
 import java.io.IOException;
-import java.time.*;
-import java.util.*;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * Add all commands, and start all events.
@@ -84,10 +86,14 @@ public class Bot extends ListenerAdapter
     private Database db;
     private BirthdayDataManager birthdayDataManager;
 
+    // Managers
+    private BirthdayManager birthdayManager;
+
     private final Logger logger = RiiConnect24Bot.getLogger();
 
     void run() throws IOException, LoginException
     {
+        RiiConnect24Bot.setInstance(this);
         this.config = new Config();
 
         // Start database
@@ -97,6 +103,9 @@ public class Bot extends ListenerAdapter
         bManager = new BlacklistManager();
         bdaysScheduler = new ScheduledThreadPoolExecutor(40);
         musicNightScheduler = new ScheduledThreadPoolExecutor(40);
+
+        // Start managers
+        this.birthdayManager = new BirthdayManager(getBirthdayDataManager());
 
         // Start Sentry (if enabled)
         if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
@@ -156,39 +165,39 @@ public class Bot extends ListenerAdapter
     public void onReady(ReadyEvent event)
     {
         logger.info("Done loading!");
+
         // Check if we need to set a game
         if(config.getPlaying().isEmpty())
             event.getJDA().getPresence().setGame(Game.playing("Type " + config.getPrefix() + "help"));
-        /*else
-            event.getJDA().getPresence().setGame(Game.playing(config.getPlaying()));*/
+
+        ZonedDateTime localNow = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6"));
+        ZoneId currentZone = ZoneId.of("UTC-6"); // CST FTW
+        ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
 
         // It'll default to Type <prefix>help, per using the default game above.
         if(config.birthdaysAreEnabled())
         {
             // Every day at 8AM
-            // And yes, we're assuming the channel exists. :fingers_crossed:
-            ZonedDateTime localNow = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6"));
-            ZoneId currentZone = ZoneId.of("UTC-6");
-            ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
             ZonedDateTime zonedNext8 = zonedNow.withHour(8).withMinute(0).withSecond(0);
-            if(zonedNow.compareTo(zonedNext8) > 0) zonedNext8 = zonedNext8.plusDays(1);
+            if(zonedNow.compareTo(zonedNext8) > 0)
+                zonedNext8 = zonedNext8.plusDays(1);
             Duration duration = Duration.between(zonedNow, zonedNext8);
             long initialDelay = duration.getSeconds();
 
-            bdaysScheduler.scheduleWithFixedDelay(() -> updateBirthdays(event.getJDA(), config.getBirthdayChannel()), initialDelay, 86400, TimeUnit.SECONDS);
+            bdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(),
+                    config.getBirthdayChannel()), initialDelay, 86400, TimeUnit.SECONDS);
         }
 
         if(config.isMusicNightReminderEnabled())
         {
-            ZonedDateTime localNow = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6"));
-            ZoneId currentZone = ZoneId.of("UTC-6");
-            ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
             ZonedDateTime zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
-            if(zonedNow.compareTo(zonedNext) > 0) zonedNext = zonedNext.plusDays(1);
+            if(zonedNow.compareTo(zonedNext) > 0)
+                zonedNext = zonedNext.plusDays(1);
             Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
-            musicNightScheduler.scheduleWithFixedDelay(() -> reminderMusicNight(event.getJDA()), initialDelay, 86400, TimeUnit.SECONDS);
+            musicNightScheduler.scheduleWithFixedDelay(() -> reminderMusicNight(event.getJDA()),
+                    initialDelay, 86400, TimeUnit.SECONDS);
         }
     }
 
@@ -218,40 +227,6 @@ public class Bot extends ListenerAdapter
         return new Database();
     }
 
-    private void updateBirthdays(JDA jda, long birthdayChannelId)
-    {
-        try(Jedis conn = pool.getResource())
-        {
-            TextChannel tc = jda.getTextChannelById(birthdayChannelId);
-
-            conn.select(2);
-            Map<String, String> birthdays = conn.hgetAll("birthdays").entrySet().stream().filter(b -> ! (tc.getGuild().getMemberById(b.getKey()) == null)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-            // Get format of date used in stored dates
-            LocalDate date = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6")).toLocalDate();
-            String today = date.getMonthValue() + "-" + date.getDayOfMonth();
-
-            // Cycle through all birthdays.
-            for(Map.Entry<String, String> userBirthday : birthdays.entrySet())
-            {
-                String userId = userBirthday.getKey();
-                // The map's in the format of <user ID, birth date>
-                if(userBirthday.getValue().equals(today))
-                {
-                    Member birthdayMember = tc.getGuild().getMemberById(userId);
-                    EmbedBuilder builder = new EmbedBuilder();
-                    builder.setTitle("Happy birthday! \uD83C\uDF82");
-                    builder.setDescription("Please send them messages wishing them a happy birthday here on Discord and/or birthday mail on their Wii if" + " you've registered them!");
-                    builder.setColor(Color.decode("#00a6e9"));
-                    builder.setAuthor("It's " + birthdayMember.getEffectiveName() + "'s birthday!", "https://rc24.xyz/", birthdayMember.getUser().getEffectiveAvatarUrl());
-
-                    tc.sendMessage(builder.build()).queue();
-                }
-                else logger.debug("I considered " + userBirthday.getKey() + ", but their birthday isn't today.");
-            }
-        }
-    }
-
     private void reminderMusicNight(JDA jda)
     {
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("CST"));
@@ -268,9 +243,18 @@ public class Bot extends ListenerAdapter
         general.sendMessage("\u23F0 <@98938149316599808> **Music night in 15 minutes!**").queue();
     }
 
+    // Data managers
+
     public BirthdayDataManager getBirthdayDataManager()
     {
         return birthdayDataManager;
+    }
+
+    // Managers
+
+    public BirthdayManager getBirthdayManager()
+    {
+        return birthdayManager;
     }
 
     public BlacklistManager getBlacklistManager()
