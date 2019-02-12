@@ -26,6 +26,8 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Seriously, stop.
@@ -36,6 +38,7 @@ import java.time.temporal.ChronoUnit;
 public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
 {
     private boolean enabled;
+    private final List<Long> allowed = new ArrayList<>();
 
     public StopRaidingUsForFucksSakeListener(boolean enabled)
     {
@@ -48,7 +51,8 @@ public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
         Guild guild = event.getGuild();
         Member member = event.getMember();
 
-        if(!(guild.getIdLong() == 206934458954153984L) || !(enabled))
+        if(!(guild.getIdLong() == 206934458954153984L) || !(enabled) ||
+                allowed.contains(member.getUser().getIdLong()))
         {
             // Nothing to see here guys
             return;
@@ -79,5 +83,7 @@ public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
     {
         member.getGuild().getController().ban(member, 1, "[AutoBan]")
                 .reason("[AutoBan]").queue(null, e -> {});
+
+        allowed.add(member.getUser().getIdLong());
     }
 }
