@@ -244,14 +244,12 @@ public class Bot extends ListenerAdapter
     }
 
     // Data managers
-
     public BirthdayDataManager getBirthdayDataManager()
     {
         return birthdayDataManager;
     }
 
     // Managers
-
     public BirthdayManager getBirthdayManager()
     {
         return birthdayManager;

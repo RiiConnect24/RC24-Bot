@@ -43,7 +43,8 @@ public class BirthdayDataManager
 
     public boolean setBirthday(long userId, String date)
     {
-        return db.doInsert("INSERT INTO birthdays VALUES(?, ?)", userId, date);
+        return db.doInsert("INSERT INTO birthdays VALUES(?, ?) " +
+                "ON DUPLICATE KEY UPDATE day = ?", userId, date, date);
     }
 
     public String getBirthday(long userId)
