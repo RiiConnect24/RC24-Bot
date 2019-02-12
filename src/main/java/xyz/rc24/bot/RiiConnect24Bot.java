@@ -46,6 +46,7 @@ import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
+import xyz.rc24.bot.events.StopRaidingUsForFucksSakeListener;
 import xyz.rc24.bot.loader.Config;
 import xyz.rc24.bot.managers.BlacklistManager;
 import xyz.rc24.bot.managers.ServerConfigManager;
@@ -142,7 +143,13 @@ public class RiiConnect24Bot extends ListenerAdapter
                 new DNS(), new Wads(), new WiiWare());
 
         //JDA Connection
-        JDABuilder builder = new JDABuilder().setToken(config.getToken()).setStatus(OnlineStatus.DO_NOT_DISTURB).setGame(Game.playing(Const.GAME_0)).addEventListener(client.build(), this, new ServerLog(this), new MailParseListener(this)).setAudioEnabled(false);
+        JDABuilder builder = new JDABuilder()
+                .setToken(config.getToken())
+                .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .setGame(Game.playing(Const.GAME_0))
+                .addEventListener(client.build(), this, new ServerLog(this), new MailParseListener(this),
+                        new StopRaidingUsForFucksSakeListener())
+                .setAudioEnabled(false);
 
         if(config.isMorpherEnabled()) builder.addEventListener(new Morpher(config));
         builder.build();
