@@ -35,13 +35,20 @@ import java.time.temporal.ChronoUnit;
 
 public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
 {
+    private boolean enabled;
+
+    public StopRaidingUsForFucksSakeListener(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event)
     {
         Guild guild = event.getGuild();
         Member member = event.getMember();
 
-        if(!(guild.getIdLong() == 206934458954153984L))
+        if(!(guild.getIdLong() == 206934458954153984L) || !(enabled))
         {
             // Nothing to see here guys
             return;
@@ -55,9 +62,22 @@ public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
 
         try
         {
-            guild.getController().ban(member, 1, "[AutoBan]")
-                    .reason("[AutoBan]").queue(null, e -> {});
+            String dm = "Hello,\n\n" +
+                    "For security reasons, you've been kicked from RiiConnect24. " +
+                    "If you are a legit user, please contact one of our admins: \n" +
+                    "KcrPL#4625, Larsenv#2020, iDroid#2002, thejsa#7237 and Artuto#0424\n\n" +
+                    "Cheers,\n" +
+                    "RiiConnect24 Staff";
+
+            member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(dm)
+                    .queue(s -> ban(member), e -> ban(member)));
         }
         catch(Exception ignored) {}
+    }
+
+    private void ban(Member member)
+    {
+        member.getGuild().getController().ban(member, 1, "[AutoBan]")
+                .reason("[AutoBan]").queue(null, e -> {});
     }
 }

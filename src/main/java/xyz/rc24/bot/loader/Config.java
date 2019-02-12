@@ -142,4 +142,9 @@ public class Config
     {
         return format.music_night_reminder;
     }
+
+    public boolean preventRaids()
+    {
+        return format.raid_prevention;
+    }
 }

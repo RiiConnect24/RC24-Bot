@@ -46,4 +46,5 @@ public class ConfigFormat
     public String sentry_dsn;
     public boolean sentry_enabled;
     public boolean music_night_reminder;
+    public boolean raid_prevention;
 }

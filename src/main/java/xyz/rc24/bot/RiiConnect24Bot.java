@@ -148,7 +148,7 @@ public class RiiConnect24Bot extends ListenerAdapter
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setGame(Game.playing(Const.GAME_0))
                 .addEventListener(client.build(), this, new ServerLog(this), new MailParseListener(this),
-                        new StopRaidingUsForFucksSakeListener())
+                        new StopRaidingUsForFucksSakeListener(config.preventRaids()))
                 .setAudioEnabled(false);
 
         if(config.isMorpherEnabled()) builder.addEventListener(new Morpher(config));
