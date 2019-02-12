@@ -87,10 +87,10 @@ public class MailParseListener extends ListenerAdapter
                     {
                         if(e.getMessage() == null)
                         {
-                            event.getChannel().sendMessage(Const.ERROR_E + " Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
+                            event.getChannel().sendMessage(Const.FAIL_E + " Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
                             e.printStackTrace();
                         }
-                        else event.getChannel().sendMessage(Const.ERROR_E + " " + e.getMessage()).queue();
+                        else event.getChannel().sendMessage(Const.FAIL_E + " " + e.getMessage()).queue();
                     }
 
                     /*try
