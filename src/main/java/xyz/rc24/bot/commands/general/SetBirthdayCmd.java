@@ -60,7 +60,7 @@ public class SetBirthdayCmd extends Command
             return;
         }
 
-        boolean success = dataManager.setBirthday(id, dateTime.getDayOfMonth() + "-" + dateTime.getMonthValue());
+        boolean success = dataManager.setBirthday(id, dateTime.getDayOfMonth() + "/" + dateTime.getMonthValue());
 
         if(success)
             event.replySuccess("Updated successfully!");
