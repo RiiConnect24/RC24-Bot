@@ -20,11 +20,45 @@
 package xyz.rc24.bot.core.entities;
 
 import co.aikar.idb.DbRow;
+import com.google.gson.Gson;
+import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.core.entities.impl.GuildSettingsImpl;
+
+import java.util.Collections;
+import java.util.Set;
+
+/**
+ * Builder for common entities
+ *
+ * @author Artuto
+ */
 
 public class EntityBuilder
 {
+    private final Gson gson = new Gson();
+
+    @SuppressWarnings("unchecked")
     public GuildSettings buildGuildSettings(DbRow row)
     {
-        return null;
+        CodeType defAdd = CodeType.fromId(row.getInt("default_add", 5));
+        String prefixesRaw = row.getString("prefixes");
+
+        if(prefixesRaw == null)
+        {
+            String defPrefix = RiiConnect24Bot.getInstance().getConfig().getPrefix();
+            prefixesRaw = gson.toJson(new String[]{defPrefix});
+        }
+
+        return new GuildSettingsImpl(defAdd,
+                row.getLong("birthdays_id", 0L),
+                row.getLong("guild_id", 0L),
+                row.getLong("modlog_id", 0L),
+                row.getLong("serverlog_id", 0L),
+                gson.fromJson(prefixesRaw, Set.class));
+    }
+
+    public GuildSettings buildDefaultGuildSettings(long id)
+    {
+        return new GuildSettingsImpl(CodeType.WII, 0L, id, 0L, 0L, Collections.emptySet());
     }
 }

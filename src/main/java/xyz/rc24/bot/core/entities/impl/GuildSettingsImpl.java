@@ -19,9 +19,60 @@
 
 package xyz.rc24.bot.core.entities.impl;
 
+import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
+
+import java.util.Set;
 
 public class GuildSettingsImpl implements GuildSettings
 {
+    private CodeType defaultAddType;
     private long birthdaysId, guildId, modlogId, serverlogId;
+    private Set<String> prefixes;
+
+    public GuildSettingsImpl(CodeType defAddType, long bId, long gId, long mId, long sId, Set<String> prefixes)
+    {
+        this.defaultAddType = defAddType;
+        this.birthdaysId = bId;
+        this.guildId = gId;
+        this.modlogId = mId;
+        this.serverlogId = sId;
+        this.prefixes = prefixes;
+    }
+
+    @Override
+    public CodeType getDefaultAddType()
+    {
+        return defaultAddType;
+    }
+
+    @Override
+    public long getBirthdaysChannelId()
+    {
+        return birthdaysId;
+    }
+
+    @Override
+    public long getGuildId()
+    {
+        return guildId;
+    }
+
+    @Override
+    public long getModlogChannelId()
+    {
+        return modlogId;
+    }
+
+    @Override
+    public long getServerlogChannelId()
+    {
+        return serverlogId;
+    }
+
+    @Override
+    public Set<String> getPrefixes()
+    {
+        return prefixes;
+    }
 }

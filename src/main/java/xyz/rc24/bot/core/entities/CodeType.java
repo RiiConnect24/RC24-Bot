@@ -54,7 +54,7 @@ public enum CodeType
         return name;
     }
 
-    public CodeType fromId(int id)
+    public static CodeType fromId(int id)
     {
         for(CodeType type : values())
         {

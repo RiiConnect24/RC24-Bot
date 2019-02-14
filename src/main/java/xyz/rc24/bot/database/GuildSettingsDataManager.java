@@ -17,40 +17,35 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.core.entities.impl;
+package xyz.rc24.bot.database;
 
-import com.google.common.cache.Cache;
-import net.dv8tion.jda.core.entities.Guild;
-import xyz.rc24.bot.core.BotCore;
-import xyz.rc24.bot.core.SimpleCacheBuilder;
+import co.aikar.idb.DbRow;
 import xyz.rc24.bot.core.entities.EntityBuilder;
 import xyz.rc24.bot.core.entities.GuildSettings;
 
+import java.util.Optional;
+
 /**
+ * Data manager for Guild settings
+ *
  * @author Artuto
  */
 
-public class BotCoreImpl implements BotCore
+public class GuildSettingsDataManager
 {
-    // Caches
-    private final Cache<Long, GuildSettings> gsCache = new SimpleCacheBuilder<>().build();
+    private final EntityBuilder entityBuilder;
+    private final Database db;
 
-    private final EntityBuilder entityBuilder = new EntityBuilder();
-
-    @Override
-    public GuildSettings getGuildSettings(Guild guild)
+    public GuildSettingsDataManager(Database db, EntityBuilder entityBuilder)
     {
-        return getGuildSettings(guild.getIdLong());
+        this.db = db;
+        this.entityBuilder = entityBuilder;
     }
 
-    @Override
-    public GuildSettings getGuildSettings(long guild)
+    public GuildSettings getGuildSettings(long id)
     {
-        return null; /*gsCache.get(guild, id -> );*/
-    }
+        Optional<DbRow> optRow = db.getRow("SELECT * FROM settings WHERE guild_id = ?", id);
 
-    public EntityBuilder getEntityBuilder()
-    {
-        return entityBuilder;
+        return optRow.map(entityBuilder::buildGuildSettings).orElse(entityBuilder.buildDefaultGuildSettings(id));
     }
 }

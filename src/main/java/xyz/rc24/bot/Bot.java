@@ -44,6 +44,8 @@ import xyz.rc24.bot.commands.general.BirthdayCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
 import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
+import xyz.rc24.bot.core.BotCore;
+import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.database.Database;
 import xyz.rc24.bot.events.Morpher;
@@ -73,6 +75,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Bot extends ListenerAdapter
 {
+    public BotCore core;
+
     public BlacklistManager bManager;
     public Config config;
 
@@ -159,6 +163,8 @@ public class Bot extends ListenerAdapter
             builder.addEventListener(new Morpher(config));
 
         builder.build();
+
+        this.core = new BotCoreImpl();
     }
 
     @Override
@@ -241,6 +247,16 @@ public class Bot extends ListenerAdapter
         if(general == null || ! (general.canTalk())) return;
 
         general.sendMessage("\u23F0 <@98938149316599808> **Music night in 15 minutes!**").queue();
+    }
+
+    public BotCore getBot()
+    {
+        return core;
+    }
+
+    public Config getConfig()
+    {
+        return config;
     }
 
     // Data managers
