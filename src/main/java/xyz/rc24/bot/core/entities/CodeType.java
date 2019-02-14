@@ -23,10 +23,11 @@ public enum CodeType
 {
     GAME(0, "🎮 **Games**", "game"),
     NNID(1, "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**", "nnid"),
-    SWITCH(2, "<:Switch:287652338791874560> **Switch**", "switch"),
-    THREEDS(3, "<:New3DSXL:287651327763283968> **3DS**", "3ds"),
-    WII(4, "<:Wii:259081748007223296> **Wii**", "wii"),
-    PSN(5, "<:psn:545097818319224832> **PlayStation Network ID**", "psn"),
+    PSN(2, "<:psn:545097818319224832> **PlayStation Network ID**", "psn"),
+    SWITCH(3, "<:Switch:287652338791874560> **Switch**", "switch"),
+    THREEDS(4, "<:New3DSXL:287651327763283968> **3DS**", "3ds"),
+    WII(5, "<:Wii:259081748007223296> **Wii**", "wii"),
+
     UNKNOWN(-1, "", "");
 
     private final int id;
