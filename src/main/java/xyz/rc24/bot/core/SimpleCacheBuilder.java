@@ -34,7 +34,7 @@ public class SimpleCacheBuilder<K, V>
 {
     public <K1 extends K, V1 extends V> Cache<K1, V1> build()
     {
-        return new CacheBuilder<>()
+        return CacheBuilder.newBuilder()
                 .expireAfterAccess(1, TimeUnit.HOURS)
                 .maximumSize(500).build();
     }
