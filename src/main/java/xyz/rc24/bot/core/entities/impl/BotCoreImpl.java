@@ -21,10 +21,13 @@ package xyz.rc24.bot.core.entities.impl;
 
 import com.google.common.cache.Cache;
 import net.dv8tion.jda.core.entities.Guild;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.SimpleCacheBuilder;
 import xyz.rc24.bot.core.entities.EntityBuilder;
 import xyz.rc24.bot.core.entities.GuildSettings;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Artuto
@@ -35,18 +38,25 @@ public class BotCoreImpl implements BotCore
     // Caches
     private final Cache<Long, GuildSettings> gsCache = new SimpleCacheBuilder<>().build();
 
-    private final EntityBuilder entityBuilder = new EntityBuilder();
+    private final Bot bot;
+    private final EntityBuilder entityBuilder;
+
+    public BotCoreImpl(Bot bot)
+    {
+        this.bot = bot;
+        this.entityBuilder = new EntityBuilder();
+    }
 
     @Override
-    public GuildSettings getGuildSettings(Guild guild)
+    public GuildSettings getGuildSettings(Guild guild) throws ExecutionException
     {
         return getGuildSettings(guild.getIdLong());
     }
 
     @Override
-    public GuildSettings getGuildSettings(long guild)
+    public GuildSettings getGuildSettings(long guild) throws ExecutionException
     {
-        return null; /*gsCache.get(guild, id -> );*/
+        return gsCache.get(guild, () -> bot.getGuildSettingsDataManager().getGuildSettings(guild));
     }
 
     public EntityBuilder getEntityBuilder()

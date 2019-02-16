@@ -29,6 +29,7 @@ import redis.clients.jedis.JedisPool;
  * @author Artuto
  */
 
+@Deprecated
 public class ServerConfigManager
 {
     /**

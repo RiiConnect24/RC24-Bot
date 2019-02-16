@@ -48,6 +48,7 @@ import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.database.Database;
+import xyz.rc24.bot.database.GuildSettingsDataManager;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
@@ -89,6 +90,7 @@ public class Bot extends ListenerAdapter
     // Database & Data managers
     private Database db;
     private BirthdayDataManager birthdayDataManager;
+    private GuildSettingsDataManager guildSettingsDataManager;
 
     // Managers
     private BirthdayManager birthdayManager;
@@ -99,10 +101,12 @@ public class Bot extends ListenerAdapter
     {
         RiiConnect24Bot.setInstance(this);
         this.config = new Config();
+        this.core = new BotCoreImpl(this);
 
         // Start database
         this.db = initDatabase();
         this.birthdayDataManager = new BirthdayDataManager(db);
+        this.guildSettingsDataManager = new GuildSettingsDataManager(db, ((BotCoreImpl) getCore()).getEntityBuilder());
 
         bManager = new BlacklistManager();
         bdaysScheduler = new ScheduledThreadPoolExecutor(40);
@@ -163,8 +167,6 @@ public class Bot extends ListenerAdapter
             builder.addEventListener(new Morpher(config));
 
         builder.build();
-
-        this.core = new BotCoreImpl();
     }
 
     @Override
@@ -249,7 +251,7 @@ public class Bot extends ListenerAdapter
         general.sendMessage("\u23F0 <@98938149316599808> **Music night in 15 minutes!**").queue();
     }
 
-    public BotCore getBot()
+    public BotCore getCore()
     {
         return core;
     }
@@ -263,6 +265,11 @@ public class Bot extends ListenerAdapter
     public BirthdayDataManager getBirthdayDataManager()
     {
         return birthdayDataManager;
+    }
+
+    public GuildSettingsDataManager getGuildSettingsDataManager()
+    {
+        return guildSettingsDataManager;
     }
 
     // Managers

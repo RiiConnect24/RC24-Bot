@@ -22,9 +22,11 @@ package xyz.rc24.bot.core;
 import net.dv8tion.jda.core.entities.Guild;
 import xyz.rc24.bot.core.entities.GuildSettings;
 
+import java.util.concurrent.ExecutionException;
+
 public interface BotCore
 {
-    GuildSettings getGuildSettings(Guild guild);
+    GuildSettings getGuildSettings(Guild guild) throws ExecutionException;
 
-    GuildSettings getGuildSettings(long guild);
+    GuildSettings getGuildSettings(long guild) throws ExecutionException;
 }
