@@ -21,110 +21,98 @@ package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.commons.utils.FinderUtil;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
-import xyz.rc24.bot.Const;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.managers.CodeManager;
-import xyz.rc24.bot.managers.ServerConfigManager;
+import xyz.rc24.bot.core.entities.CodeType;
+import xyz.rc24.bot.core.entities.GuildSettings;
+import xyz.rc24.bot.database.CodeDataManager;
+import xyz.rc24.bot.utils.SearcherUtil;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- * Allows another user to share friend codes.
- *
- * @author Spotlight and Artuto
+ * @author Artuto
  */
 
 public class Add extends Command
 {
-    private final CodeManager manager;
-    private final ServerConfigManager configManager;
+    private final CodeDataManager dataManager;
 
     public Add(Bot bot)
     {
-        this.manager = new CodeManager(bot.pool);
-        this.configManager = bot.scm;
+        this.dataManager = bot.getCodeDataManager();
         this.name = "add";
-        this.help = "Sends your friend wii to another user.";
+        this.help = "Sends your friend code to another user.";
         this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.guildOnly = true;
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        Member member;
-        if(event.getArgs().isEmpty()) member = event.getMember();
-        else
-        {
-            List<Member> potentialMembers = FinderUtil.findMembers(event.getArgs(), event.getGuild());
-            if(potentialMembers.isEmpty())
-            {
-                event.replyError("I couldn't find a user by that name!");
-                return;
-            }
-            else member = potentialMembers.get(0);
-        }
-
-        CodeManager.Type serverAddType = configManager.getDefaultAddType(event.getGuild().getIdLong());
-
-        // Get wii for the user running the command
-        Map<CodeManager.Type, Map<String, String>> authorCodes = manager.getAllCodes(event.getMember().getUser().getIdLong());
-        // If it's empty/null, (something) will return an empty map.
-        Map<String, String> authorTypeCodes = authorCodes.get(serverAddType);
-        if(authorTypeCodes.isEmpty())
-        {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
+        Member member = SearcherUtil.findMember(event, event.getArgs());
+        if(member == null)
             return;
-        }
 
-        Map<CodeManager.Type, Map<String, String>> memberCodes = manager.getAllCodes(member.getUser().getIdLong());
-        Map<String, String> memberTypeCodes = memberCodes.get(serverAddType);
-        if(memberTypeCodes.isEmpty())
-        {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
-            return;
-        }
+        GuildSettings gs = event.getClient().getSettingsFor(event.getGuild());
+        CodeType defaultAddType = gs.getDefaultAddType();
+
         if(member.equals(event.getMember()))
         {
             event.replyError("You can't add yourself!");
             return;
         }
-        if(member.getUser().isBot() && ! (member.equals(event.getSelfMember())))
+        if(member.getUser().isBot())
         {
             event.replyError("You can't add bots!");
             return;
         }
 
-        event.replyInDm(getAddMessageHeader(serverAddType, member, true) + "\n\n" + getCodeLayout(memberTypeCodes), (success) -> event.reactSuccess(), (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled."));
-
-        if(! (member.getUser().isBot()))
+        Map<CodeType, Map<String, String>> authorCodes = dataManager.getAllCodes(event.getAuthor().getIdLong());
+        Map<String, String> authorTypeCodes = authorCodes.get(defaultAddType);
+        if(authorTypeCodes.isEmpty())
         {
-            member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(getAddMessageHeader(serverAddType, event.getMember(), false) + "\n\n" + getCodeLayout(authorTypeCodes)).queue((success) -> event.reactSuccess(), (failure) -> event.replyError("Hey, " + member.getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled.")));
+            event.replyError("**" + event.getMember().getEffectiveName() + "** has not added any friend codes!");
+            return;
         }
+
+        Map<CodeType, Map<String, String>> targetCodes = dataManager.getAllCodes(member.getUser().getIdLong());
+        Map<String, String> targetTypeCodes = targetCodes.get(defaultAddType);
+        if(targetTypeCodes.isEmpty())
+        {
+            event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
+            return;
+        }
+
+        // Send target's code to author
+        event.replyInDm(getAddMessageHeader(defaultAddType, event.getMember(), true) +
+                "\n\n" + getCodeLayout(targetTypeCodes), (success) -> event.reactSuccess(),
+                (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() +
+                        ": I couldn't DM you. Make sure your DMs are enabled."));
+
+        // Send author's code to target
+        member.getUser().openPrivateChannel().queue(pc ->
+                pc.sendMessage(getAddMessageHeader(defaultAddType, event.getMember(), false) +
+                        "\n\n" + getCodeLayout(authorTypeCodes)).queue(null,
+                        (failure) -> event.replyError("Hey, " + member.getAsMention() +
+                                ": I couldn't DM you. Make sure your DMs are enabled.")));
     }
 
-    private String getAddMessageHeader(CodeManager.Type type, Member member, Boolean isCommandRunner)
+    private String getAddMessageHeader(CodeType type, Member member, boolean isCommandRunner)
     {
-        if(! isCommandRunner)
-            return "**" + member.getEffectiveName() + "** has requested to add your " + Const.typesToProductName.get(type) + " friend code(s)!";
+        if(!(isCommandRunner))
+            return "**" + member.getEffectiveName() + "** has requested to add your " + type.getDisplayName() + " friend code(s)!";
         else
-            return "You have requested to add **" + member.getEffectiveName() + "**'s " + Const.typesToProductName.get(type) + " friend code(s).";
+            return "You have requested to add **" + member.getEffectiveName() + "**'s " + type.getDisplayName() + " friend code(s).";
     }
 
-    private String getCodeLayout(Map<String, String> theirCodes)
+    private String getCodeLayout(Map<String, String> codes)
     {
         // Create a human-readable format of the user's Wii wii.
-        StringBuilder theirCodesButString = new StringBuilder();
-        for(Map.Entry<String, String> code : theirCodes.entrySet())
-            theirCodesButString.append("`").append(code.getKey()).append("`:\n").append(code.getValue()).append("\n");
+        StringBuilder codesString = new StringBuilder();
+        for(Map.Entry<String, String> code : codes.entrySet())
+            codesString.append("`").append(code.getKey()).append("`:\n").append(code.getValue()).append("\n");
 
-        return theirCodesButString.toString();
+        return codesString.toString();
     }
 }

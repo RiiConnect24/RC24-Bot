@@ -21,22 +21,23 @@ package xyz.rc24.bot.core.entities;
 
 public enum CodeType
 {
-    GAME(0, "🎮 **Games**", "game"),
-    NNID(1, "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**", "nnid"),
-    PSN(2, "<:psn:545097818319224832> **PlayStation Network ID**", "psn"),
-    SWITCH(3, "<:Switch:287652338791874560> **Switch**", "switch"),
-    THREEDS(4, "<:New3DSXL:287651327763283968> **3DS**", "3ds"),
-    WII(5, "<:Wii:259081748007223296> **Wii**", "wii"),
+    GAME(0, "Game", "🎮 **Games**", "game"),
+    NNID(1, "Nintendo Network ID", "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**", "nnid"),
+    PSN(2, "PlayStation Network ID", "<:psn:545097818319224832> **PlayStation Network ID**", "psn"),
+    SWITCH(3, "Switch", "<:Switch:287652338791874560> **Switch**", "switch"),
+    THREEDS(4, "3DS", "<:New3DSXL:287651327763283968> **3DS**", "3ds"),
+    WII(5, "Wii", "<:Wii:259081748007223296> **Wii**", "wii"),
 
-    UNKNOWN(-1, "", "");
+    UNKNOWN(-1, null, null, null);
 
     private final int id;
-    private final String displayName, name;
+    private final String displayName, formattedName, name;
 
-    CodeType(int id, String displayName, String name)
+    CodeType(int id, String displayName, String formattedName, String name)
     {
         this.id = id;
         this.displayName = displayName;
+        this.formattedName = formattedName;
         this.name = name;
     }
 
@@ -48,6 +49,11 @@ public enum CodeType
     public String getDisplayName()
     {
         return displayName;
+    }
+
+    public String getFormattedName()
+    {
+        return formattedName;
     }
 
     public String getName()

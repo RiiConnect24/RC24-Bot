@@ -44,11 +44,15 @@ import xyz.rc24.bot.commands.general.BirthdayCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
-import xyz.rc24.bot.commands.tools.*;
+import xyz.rc24.bot.commands.tools.MailParseListener;
+import xyz.rc24.bot.commands.tools.MailPatchCmd;
+import xyz.rc24.bot.commands.tools.ServerSettingsCmd;
+import xyz.rc24.bot.commands.tools.StatsCmd;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.database.BirthdayDataManager;
+import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.database.Database;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
 import xyz.rc24.bot.events.Morpher;
@@ -92,6 +96,7 @@ public class Bot extends ListenerAdapter
     // Database & Data managers
     private Database db;
     private BirthdayDataManager birthdayDataManager;
+    private CodeDataManager codeDataManager;
     private GuildSettingsDataManager guildSettingsDataManager;
 
     // Managers
@@ -108,6 +113,7 @@ public class Bot extends ListenerAdapter
         // Start database
         this.db = initDatabase();
         this.birthdayDataManager = new BirthdayDataManager(db);
+        this.codeDataManager = new CodeDataManager(db);
         this.guildSettingsDataManager = new GuildSettingsDataManager(db, ((BotCoreImpl) getCore()).getEntityBuilder());
 
         bManager = new BlacklistManager();
@@ -149,10 +155,10 @@ public class Bot extends ListenerAdapter
                 new Bash(), new Eval(this), new MassMessage(pool), new Shutdown(),
 
                 // General
-                new BirthdayCmd(), new SetBirthdayCmd(),
+                new BirthdayCmd(), new InviteCmd(), new PingCmd(), new SetBirthdayCmd(),
 
                 // Tools
-                new ServerSettingsCmd(this), new UserInfo(), new InviteCmd(), new MailPatchCmd(config), new PingCmd(), new StatsCmd(),
+                new ServerSettingsCmd(this), new MailPatchCmd(config), new StatsCmd(),
 
                 // Wii-related
                 new Codes(pool), new Add(this), new BlocksCmd(), new ErrorInfo(config.isDebug()),
@@ -267,6 +273,11 @@ public class Bot extends ListenerAdapter
     public BirthdayDataManager getBirthdayDataManager()
     {
         return birthdayDataManager;
+    }
+
+    public CodeDataManager getCodeDataManager()
+    {
+        return codeDataManager;
     }
 
     public GuildSettingsDataManager getGuildSettingsDataManager()
