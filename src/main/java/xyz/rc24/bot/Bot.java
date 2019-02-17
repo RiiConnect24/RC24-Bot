@@ -150,7 +150,7 @@ public class Bot extends ListenerAdapter
                 new BirthdayCmd(), new SetBirthdayCmd(),
 
                 // Tools
-                new BotConfig(this), new UserInfo(), new Invite(), new MailParseCommand(config), new Ping(), new StatsCmd(),
+                new ServerSettingsCmd(this), new UserInfo(), new Invite(), new MailParseCommand(config), new Ping(), new StatsCmd(),
 
                 // Wii-related
                 new Codes(pool), new Add(this), new BlocksCmd(), new ErrorInfo(config.isDebug()),

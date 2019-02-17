@@ -60,21 +60,6 @@ public class ServerConfigManager
     }
 
     /**
-     * Sets the ID of the channel by type.
-     *
-     * @param serverID  Server ID to associate with
-     * @param type      Type of log to associate
-     * @param channelID Channel ID to set
-     */
-    public void setLog(Long serverID, LogType type, Long channelID)
-    {
-        try(Jedis conn = pool.getResource())
-        {
-            conn.hset(serverID + "", type.toString(), channelID.toString());
-        }
-    }
-
-    /**
      * "Disables" a log type for a server.
      *
      * @param type     Type of log to associate
@@ -85,20 +70,6 @@ public class ServerConfigManager
         try(Jedis conn = pool.getResource())
         {
             conn.hdel(serverID + "", type.toString());
-        }
-    }
-
-    /**
-     * Sets the default `add` command type for a server
-     *
-     * @param serverID Server ID to look up with
-     * @param setType  Type to default `add` command to
-     */
-    public void setDefaultAddType(Long serverID, CodeManager.Type setType)
-    {
-        try(Jedis conn = pool.getResource())
-        {
-            conn.hset(serverID + "", "addType", setType.toString());
         }
     }
 

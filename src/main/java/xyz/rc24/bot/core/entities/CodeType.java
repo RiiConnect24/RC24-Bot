@@ -55,6 +55,17 @@ public enum CodeType
         return name;
     }
 
+    public static CodeType fromCode(String code)
+    {
+        for(CodeType type : values())
+        {
+            if(type.getName().equalsIgnoreCase(code))
+                return type;
+        }
+
+        return UNKNOWN;
+    }
+
     public static CodeType fromId(int id)
     {
         for(CodeType type : values())

@@ -55,39 +55,4 @@ public class Const
         put(CodeManager.Type.SWITCH, "Switch");
         put(CodeManager.Type.GAME, "Game");
     }};
-
-    public static final Map<String, CodeManager.Type> namesToType = new HashMap<String, CodeManager.Type>()
-    {{
-        put("wii", CodeManager.Type.WII);
-        put("3ds", CodeManager.Type.THREE_DS);
-        put("nnid", CodeManager.Type.NNID);
-        put("switch", CodeManager.Type.SWITCH);
-        put("game", CodeManager.Type.GAME);
-    }};
-
-    public static final Map<String, String> channelTypes = new HashMap<String, String>()
-    {{
-        put("mod", "Moderation log. Shows bans/unbans.");
-        put("srv", "Server log. Shows bans/unbans, along with joins and leaves.");
-    }};
-
-    // oops, a function in a constant file
-    public static String getCodeTypes()
-    {
-        StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
-        for(String type : namesToType.keySet())
-            response.append("`").append(type).append("`, ");
-        // Remove leftover comma + space
-        return response.substring(0, response.length() - 2);
-    }
-
-    public static String getChannelTypes()
-    {
-        StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
-        for(Map.Entry<String, String> type : channelTypes.entrySet())
-            // `type`: Definition\n
-            response.append("`").append(type.getKey()).append("`: ").append(type.getValue()).append("\n");
-
-        return response.toString();
-    }
 }

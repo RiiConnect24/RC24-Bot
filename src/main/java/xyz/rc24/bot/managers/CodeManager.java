@@ -29,6 +29,7 @@ import java.util.Map;
  * Manages a single Redis instance, available across classes.
  * Now that's intuitive.™
  */
+@Deprecated
 public class CodeManager
 {
     /**

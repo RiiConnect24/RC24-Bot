@@ -22,6 +22,7 @@ package xyz.rc24.bot.core.entities.impl;
 import com.google.common.cache.Cache;
 import net.dv8tion.jda.core.entities.Guild;
 import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.SimpleCacheBuilder;
 import xyz.rc24.bot.core.entities.EntityBuilder;
@@ -48,15 +49,24 @@ public class BotCoreImpl implements BotCore
     }
 
     @Override
-    public GuildSettings getGuildSettings(Guild guild) throws ExecutionException
+    public GuildSettings getGuildSettings(Guild guild)
     {
         return getGuildSettings(guild.getIdLong());
     }
 
     @Override
-    public GuildSettings getGuildSettings(long guild) throws ExecutionException
+    public GuildSettings getGuildSettings(long guild)
     {
-        return gsCache.get(guild, () -> bot.getGuildSettingsDataManager().getGuildSettings(guild));
+        try
+        {
+            return gsCache.get(guild, () -> bot.getGuildSettingsDataManager().getGuildSettings(guild));
+        }
+        catch(ExecutionException e)
+        {
+            RiiConnect24Bot.getLogger().error("Error whilst building Guild Settings for Guild {}: {}",
+                    guild, e.getMessage(), e);
+            return getEntityBuilder().buildDefaultGuildSettings(guild);
+        }
     }
 
     public EntityBuilder getEntityBuilder()

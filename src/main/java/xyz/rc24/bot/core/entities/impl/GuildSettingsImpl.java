@@ -75,4 +75,25 @@ public class GuildSettingsImpl implements GuildSettings
     {
         return prefixes;
     }
+
+    @Override
+    public String getFirstPrefix()
+    {
+        return getPrefixes().stream().findFirst().orElse("@mention");
+    }
+
+    public void setModlogId(long id)
+    {
+        this.modlogId = id;
+    }
+
+    public void setServerlogId(long id)
+    {
+        this.serverlogId = id;
+    }
+
+    public void setDefaultAddType(CodeType type)
+    {
+        this.defaultAddType = type;
+    }
 }

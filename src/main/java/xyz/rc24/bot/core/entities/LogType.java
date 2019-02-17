@@ -19,21 +19,50 @@
 
 package xyz.rc24.bot.core.entities;
 
-import java.util.Set;
+/**
+ * Log type enum
+ *
+ * @author Artuto
+ */
 
-public interface GuildSettings
+public enum LogType
 {
-    CodeType getDefaultAddType();
+    MOD("mod", "Moderation log. Shows bans/unbans.", "modlog_id"),
+    SERVER("srv", "Server log. Shows bans/unbans, along with joins and leaves.", "serverlog_id"),
+    UNKNOWN(null, null, null);
 
-    long getBirthdaysChannelId();
+    private final String code, description, column;
 
-    long getGuildId();
+    LogType(String code, String description, String column)
+    {
+        this.code = code;
+        this.description = description;
+        this.column = column;
+    }
 
-    long getModlogChannelId();
+    public String getCode()
+    {
+        return code;
+    }
 
-    long getServerlogChannelId();
+    public String getDescription()
+    {
+        return description;
+    }
 
-    Set<String> getPrefixes();
+    public String getColumn()
+    {
+        return column;
+    }
 
-    String getFirstPrefix();
+    public static LogType fromCode(String code)
+    {
+        for(LogType type : values())
+        {
+            if(type.getCode().equals(code))
+                return type;
+        }
+
+        return UNKNOWN;
+    }
 }

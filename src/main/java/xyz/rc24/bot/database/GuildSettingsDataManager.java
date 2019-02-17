@@ -20,9 +20,18 @@
 package xyz.rc24.bot.database;
 
 import co.aikar.idb.DbRow;
+import com.jagrosh.jdautilities.command.GuildSettingsManager;
+import javax.annotation.Nullable;
+import net.dv8tion.jda.core.entities.Guild;
+import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.EntityBuilder;
 import xyz.rc24.bot.core.entities.GuildSettings;
+import xyz.rc24.bot.core.entities.LogType;
+import xyz.rc24.bot.core.entities.impl.GuildSettingsImpl;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -31,8 +40,10 @@ import java.util.Optional;
  * @author Artuto
  */
 
-public class GuildSettingsDataManager
+public class GuildSettingsDataManager implements GuildSettingsManager<GuildSettings>
 {
+    private Bot bot;
+
     private final EntityBuilder entityBuilder;
     private final Database db;
 
@@ -42,10 +53,65 @@ public class GuildSettingsDataManager
         this.entityBuilder = entityBuilder;
     }
 
+    @Override
+    public void init()
+    {
+        this.bot = RiiConnect24Bot.getInstance();
+    }
+
+    @Nullable
+    @Override
+    public GuildSettings getSettings(Guild guild)
+    {
+        return getSettings(guild.getIdLong());
+    }
+
     public GuildSettings getGuildSettings(long id)
     {
         Optional<DbRow> optRow = db.getRow("SELECT * FROM settings WHERE guild_id = ?", id);
 
         return optRow.map(entityBuilder::buildGuildSettings).orElse(entityBuilder.buildDefaultGuildSettings(id));
+    }
+
+    public boolean disableLog(LogType type, long id)
+    {
+        String column = type.getColumn();
+        updateLogCache((GuildSettingsImpl) getSettings(id), type, 0L);
+
+        return db.doInsert("INSERT INTO settings (guild_id, " + column + ")" +
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + column + " = ?", id, null);
+    }
+
+    public boolean setLog(LogType type, long guild, long channel)
+    {
+        String column = type.getColumn();
+        updateLogCache((GuildSettingsImpl) getSettings(guild), type, channel);
+
+        return db.doInsert("INSERT INTO settings (guild_id, " + column + ")" +
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + column + " = ?", guild, channel);
+    }
+
+    public boolean setDefaultAddType(CodeType type, long id)
+    {
+        ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setDefaultAddType(type);
+
+        return db.doInsert("INSERT INTO settings (guild_id, default_add)" +
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE default_add = ?", id, type.getId());
+    }
+
+    private GuildSettings getSettings(long id)
+    {
+        return (bot.getCore() == null) ? null : bot.getCore().getGuildSettings(id);
+    }
+
+    private void updateLogCache(GuildSettingsImpl gs, LogType type, long newChannel)
+    {
+        switch(type)
+        {
+            case MOD:
+                gs.setModlogId(newChannel);
+            case SERVER:
+                gs.setServerlogId(newChannel);
+        }
     }
 }

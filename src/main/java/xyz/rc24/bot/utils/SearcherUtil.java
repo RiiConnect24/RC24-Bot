@@ -22,6 +22,7 @@ package xyz.rc24.bot.utils;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.List;
 
@@ -47,6 +48,23 @@ public class SearcherUtil
         else if(found.size() > 1)
         {
             event.replyWarning(FormatUtil.listOfMembers(found, args));
+            return null;
+        }
+
+        return found.get(0);
+    }
+
+    public static TextChannel findTextChannel(CommandEvent event, String args)
+    {
+        List<TextChannel> found = FinderUtil.findTextChannels(args, event.getGuild());
+        if(found.isEmpty())
+        {
+            event.replyWarning("No text channels found matching \"" + args + "\"");
+            return null;
+        }
+        else if(found.size() > 1)
+        {
+            event.replyWarning(FormatUtil.listOfTcChannels(found, args));
             return null;
         }
 
