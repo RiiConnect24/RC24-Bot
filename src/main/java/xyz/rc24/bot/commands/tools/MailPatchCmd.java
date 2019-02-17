@@ -26,14 +26,14 @@ import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.Config;
 
 /**
- * @author Spotlight
+ * @author Artuto
  */
 
-public class MailParseCommand extends Command
+public class MailPatchCmd extends Command
 {
     private final Config config;
 
-    public MailParseCommand(Config config)
+    public MailPatchCmd(Config config)
     {
         this.config = config;
         this.name = "patch";
@@ -49,7 +49,13 @@ public class MailParseCommand extends Command
     public void execute(CommandEvent event)
     {
         if(config.isMailPatchEnabled())
-            event.replyInDm("Drag and drop your `nwc24msg.cfg` here, and I'll patch it!", (success) -> event.reactSuccess(), (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled."));
-        else event.replyError("The `patch` command has been disabled by the bot owner!");
+        {
+            event.replyInDm("Drag and drop your `nwc24msg.cfg` here, and I'll patch it!",
+                    (success) -> event.reactSuccess(),
+                    (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() +
+                            ": I couldn't DM you. Make sure your DMs are enabled."));
+        }
+        else
+            event.replyError("The `patch` command has been disabled by the bot owner!");
     }
 }

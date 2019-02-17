@@ -41,6 +41,8 @@ import xyz.rc24.bot.commands.botadm.Eval;
 import xyz.rc24.bot.commands.botadm.MassMessage;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.general.BirthdayCmd;
+import xyz.rc24.bot.commands.general.InviteCmd;
+import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
 import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
@@ -150,7 +152,7 @@ public class Bot extends ListenerAdapter
                 new BirthdayCmd(), new SetBirthdayCmd(),
 
                 // Tools
-                new ServerSettingsCmd(this), new UserInfo(), new Invite(), new MailParseCommand(config), new Ping(), new StatsCmd(),
+                new ServerSettingsCmd(this), new UserInfo(), new InviteCmd(), new MailPatchCmd(config), new PingCmd(), new StatsCmd(),
 
                 // Wii-related
                 new Codes(pool), new Add(this), new BlocksCmd(), new ErrorInfo(config.isDebug()),

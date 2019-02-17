@@ -17,28 +17,29 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.commands.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import xyz.rc24.bot.commands.Categories;
 
 /**
- * @author Artu, Spotlight
+ * @author Artuto
  */
 
-public class Invite extends Command
+public class InviteCmd extends Command
 {
-    public Invite()
+    public InviteCmd()
     {
         this.name = "invite";
-        this.category = Categories.TOOLS;
+        this.category = Categories.GENERAL;
         this.help = "Invite me to your server?";
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        event.reply("Aw, you want to invite me? <3\n" + "Invite me here: " + event.getJDA().asBot().getInviteUrl());
+        event.reply("Aw, you want to invite me? <3\n" +
+                "Invite me here: " + event.getJDA().asBot().getInviteUrl());
     }
 }

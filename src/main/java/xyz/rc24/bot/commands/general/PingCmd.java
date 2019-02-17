@@ -17,26 +17,23 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.commands.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.Permission;
 import xyz.rc24.bot.commands.Categories;
 
 /**
- * @author Spotlight
+ * @author Artuto
  */
 
-public class Ping extends Command
+public class PingCmd extends Command
 {
-    public Ping()
+    public PingCmd()
     {
         this.name = "ping";
         this.help = "Checks the bot's connection to Discord's servers.";
-        this.category = Categories.TOOLS;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
+        this.category = Categories.GENERAL;
         this.ownerCommand = false;
         this.guildOnly = false;
     }
@@ -45,6 +42,8 @@ public class Ping extends Command
     protected void execute(CommandEvent event)
     {
         long currentTime = System.currentTimeMillis();
-        event.reply("Pinging...", (message) -> message.editMessage("Discord API Ping: " + event.getJDA().getPing() + "ms, message edit latency: " + (System.currentTimeMillis() - currentTime) + "ms").queue());
+        event.reply("Pinging...", (message) ->
+                message.editMessage("Discord API Ping: " + event.getJDA().getPing() +
+                        "ms, message edit latency: " + (System.currentTimeMillis() - currentTime) + "ms").queue());
     }
 }
