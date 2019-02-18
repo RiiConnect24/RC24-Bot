@@ -76,8 +76,7 @@ public class AddCmd extends Command
             return;
         }
 
-        Map<CodeType, Map<String, String>> targetCodes = core.getAllCodes(member.getUser().getIdLong());
-        Map<String, String> targetTypeCodes = targetCodes.get(defaultAddType);
+        Map<String, String> targetTypeCodes = core.getCodesForType(defaultAddType, member.getUser().getIdLong());
         if(targetTypeCodes.isEmpty())
         {
             event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
