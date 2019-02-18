@@ -80,7 +80,7 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
         updateLogCache((GuildSettingsImpl) getSettings(id), type, 0L);
 
         return db.doInsert("INSERT INTO settings (guild_id, " + column + ")" +
-                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + column + " = ?", id, null);
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + column + " = ?", id, null, null);
     }
 
     public boolean setLog(LogType type, long guild, long channel)

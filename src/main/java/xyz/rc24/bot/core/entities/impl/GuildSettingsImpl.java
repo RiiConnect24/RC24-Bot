@@ -19,13 +19,14 @@
 
 package xyz.rc24.bot.core.entities.impl;
 
+import com.jagrosh.jdautilities.command.GuildSettingsProvider;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.core.entities.LogType;
 
 import java.util.Set;
 
-public class GuildSettingsImpl implements GuildSettings
+public class GuildSettingsImpl implements GuildSettings, GuildSettingsProvider
 {
     private CodeType defaultAddType;
     private long birthdaysId, guildId, modlogId, serverlogId;

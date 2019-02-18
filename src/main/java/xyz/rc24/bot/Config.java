@@ -170,10 +170,30 @@ public class Config
         return getString("database", database);
     }
 
+    boolean useSSL()
+    {
+        return getBoolean("useSSL", database);
+    }
+
+    boolean verifyServerCertificate()
+    {
+        return getBoolean("verifyServerCertificate", database);
+    }
+
+    boolean autoReconnect()
+    {
+        return getBoolean("autoReconnect", database);
+    }
+
     // Util methods
     private boolean getBoolean(String key)
     {
         return (boolean) config.getOrDefault(key, false);
+    }
+
+    private boolean getBoolean(String key, @Nonnull Map<String, Object> section)
+    {
+        return (boolean) section.getOrDefault(key, false);
     }
 
     private long getLong(String key)

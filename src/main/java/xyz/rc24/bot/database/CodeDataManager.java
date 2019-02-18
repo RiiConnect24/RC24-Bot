@@ -52,7 +52,7 @@ public class CodeDataManager
     {
         Optional<DbRow> optRow = db.getRow("SELECT * FROM codes WHERE user_id = ?", user);
         if(!(optRow.isPresent()))
-            return Collections.emptyMap();
+            return new HashMap<>();
 
         DbRow row = optRow.get();
 

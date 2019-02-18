@@ -28,10 +28,13 @@ import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.CodeType;
+import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.utils.FormatUtil;
 import xyz.rc24.bot.utils.SearcherUtil;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,8 +48,8 @@ public class CodeCmd extends Command
     private final BotCore core;
     private final CodeDataManager dataManager;
 
-    private final Pattern FULL_PATTERN = Pattern.compile("(\\\\w+)\\\\s+(.+?)\\\\s+(\\\\d{4}[-\\\\s]" +
-            "\\\\d{4}[-\\\\s]\\\\d{4}(?:[-\\\\s]\\\\d{4})|\\\\w+)$", Pattern.MULTILINE); // thanks Dismissed
+    private final Pattern FULL_PATTERN = Pattern.compile("(\\w+)\\s+(.+?)\\s+(\\d{4}[-\\s]\\d{4}[-\\s]\\d{4}" +
+            "(?:[-\\s]\\d{4})|\\w+)$", Pattern.MULTILINE); // thanks Dismissed
     private final Pattern REMOVE_PATTERN = Pattern.compile("(\\w+)\\s+(.+?)$", Pattern.MULTILINE);
 
     public CodeCmd(Bot bot)
@@ -79,21 +82,30 @@ public class CodeCmd extends Command
         @Override
         protected void execute(CommandEvent event)
         {
-            String[] args = parseArgs(FULL_PATTERN, event.getArgs());
-            CodeType type = CodeType.fromCode(args[0]);
-
-            if(!(doEmptyChecks(false, event, type, args)))
+            GuildSettings gs = event.getClient().getSettingsFor(event.getGuild());
+            List<String> args = parseArgs(FULL_PATTERN, event.getArgs());
+            if(args.size() < 3)
+            {
+                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code add <type> <name> <code>`");
                 return;
+            }
+
+            CodeType type = CodeType.fromCode(args.get(0));
+            if(type == CodeType.UNKNOWN)
+            {
+                event.replyError(FormatUtil.getCodeTypes());
+                return;
+            }
 
             Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
-            if(codeTypes.containsKey(args[1]))
+            if(!(codeTypes == null) && codeTypes.containsKey(args.get(1)))
             {
                 event.replyWarning("You already added this code!");
                 return;
             }
 
-            if(dataManager.addCode(type, event.getAuthor().getIdLong(), args[2], args[1]))
-                event.replySuccess("Added a code for `" + args[1] + "`");
+            if(dataManager.addCode(type, event.getAuthor().getIdLong(), args.get(2), args.get(1)))
+                event.replySuccess("Added a code for `" + args.get(1) + "`");
             else
                 event.replyError("Error whilst adding a code! Please contact a developer.");
         }
@@ -112,21 +124,30 @@ public class CodeCmd extends Command
         @Override
         protected void execute(CommandEvent event)
         {
-            String[] args = parseArgs(FULL_PATTERN, event.getArgs());
-            CodeType type = CodeType.fromCode(args[0]);
-
-            if(!(doEmptyChecks(false, event, type, args)))
-                return;
-
-            Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
-            if(!(codeTypes.containsKey(args[1])))
+            GuildSettings gs = event.getClient().getSettingsFor(event.getGuild());
+            List<String> args = parseArgs(FULL_PATTERN, event.getArgs());
+            if(args.size() < 3)
             {
-                event.replyWarning("A code for `" + args[1] + "` is not registered.");
+                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code edit <type> <name> <code>");
                 return;
             }
 
-            if(dataManager.editCode(type, event.getAuthor().getIdLong(), args[2], args[1]))
-                event.replySuccess("Edited the code for `" + args[1] + "`");
+            CodeType type = CodeType.fromCode(args.get(0));
+            if(type == CodeType.UNKNOWN)
+            {
+                event.replyError(FormatUtil.getCodeTypes());
+                return;
+            }
+
+            Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
+            if(!(codeTypes.containsKey(args.get(1))))
+            {
+                event.replyWarning("A code for `" + args.get(1) + "` is not registered.");
+                return;
+            }
+
+            if(dataManager.editCode(type, event.getAuthor().getIdLong(), args.get(2), args.get(1)))
+                event.replySuccess("Edited the code for `" + args.get(1) + "`");
             else
                 event.replyError("Error whilst editing a code! Please contact a developer.");
         }
@@ -182,58 +203,49 @@ public class CodeCmd extends Command
         @Override
         protected void execute(CommandEvent event)
         {
-            String[] args = parseArgs(REMOVE_PATTERN, event.getArgs());
-            CodeType type = CodeType.fromCode(args[0]);
-
-            if(!(doEmptyChecks(true, event, type, args)))
-                return;
-
-            Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
-            if(!(codeTypes.containsKey(args[1])))
+            GuildSettings gs = event.getClient().getSettingsFor(event.getGuild());
+            List<String> args = parseArgs(REMOVE_PATTERN, event.getArgs());
+            if(args.size() < 2)
             {
-                event.replyWarning("A code for `" + args[1] + "` is not registered.");
+                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code remove <type> <name>");
                 return;
             }
 
-            if(dataManager.removeCode(type, event.getAuthor().getIdLong(), args[1]))
-                event.replySuccess("Removed the code for `" + args[1] + "`");
+            CodeType type = CodeType.fromCode(args.get(0));
+            if(type == CodeType.UNKNOWN)
+            {
+                event.replyError(FormatUtil.getCodeTypes());
+                return;
+            }
+
+            Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
+            if(!(codeTypes.containsKey(args.get(1))))
+            {
+                event.replyWarning("A code for `" + args.get(1) + "` is not registered.");
+                return;
+            }
+
+            if(dataManager.removeCode(type, event.getAuthor().getIdLong(), args.get(1)))
+                event.replySuccess("Removed the code for `" + args.get(1) + "`");
             else
                 event.replyError("Error whilst removing a code! Please contact a developer.");
         }
     }
 
-    private String[] parseArgs(Pattern pattern, String args)
+    private List<String> parseArgs(Pattern pattern, String args)
     {
         Matcher m = pattern.matcher(args);
-        String[] array = new String[]{"", "", ""};
+        List<String> list = new LinkedList<>();
 
         while(m.find())
         {
             for(int i = 0; i <= m.groupCount(); i++)
-                array[i] = m.group(i + 1).trim();
+            {
+                if(!(m.group(i).trim().equals(args)))
+                    list.add(m.group(i).trim());
+            }
         }
 
-        return array;
-    }
-
-    private boolean doEmptyChecks(boolean isRemove, CommandEvent event, CodeType type, String[] args)
-    {
-        if(type == CodeType.UNKNOWN)
-        {
-            event.replyError(FormatUtil.getCodeTypes());
-            return false;
-        }
-        if(args[1].isEmpty())
-        {
-            event.replyError("You didn't specified a name!");
-            return false;
-        }
-        if(args[2].isEmpty() && !(isRemove))
-        {
-            event.replyError("You didn't specified a code to add!");
-            return false;
-        }
-
-        return true;
+        return list;
     }
 }

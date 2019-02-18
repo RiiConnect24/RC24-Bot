@@ -49,12 +49,14 @@ public class EntityBuilder
             prefixesRaw = gson.toJson(new String[]{defPrefix});
         }
 
+        Set<String> prefixes = gson.fromJson(prefixesRaw, Set.class);
+
         return new GuildSettingsImpl(defAdd,
                 row.getLong("birthdays_id", 0L),
                 row.getLong("guild_id", 0L),
                 row.getLong("modlog_id", 0L),
                 row.getLong("serverlog_id", 0L),
-                gson.fromJson(prefixesRaw, Set.class));
+                prefixes == null ? Collections.emptySet() : prefixes);
     }
 
     public GuildSettings buildDefaultGuildSettings(long id)

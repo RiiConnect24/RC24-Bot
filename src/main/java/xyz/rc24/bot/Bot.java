@@ -62,10 +62,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -128,7 +125,8 @@ public class Bot extends ListenerAdapter
                 .setLinkedCacheSize(10)
                 .setOwnerId(String.valueOf(config.getPrimaryOwner()))
                 .setPrefix("@mention")
-                .setServerInvite("https://discord.gg/5rw6Tur");
+                .setServerInvite("https://discord.gg/5rw6Tur")
+                .setGuildSettingsManager(getGuildSettingsDataManager());
 
         // Convert List<Long> of secondary owners to String[] so we can set later
         List<Long> owners = config.getSecondaryOwners();
@@ -227,7 +225,18 @@ public class Bot extends ListenerAdapter
                 .dataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource")
                 .build();
 
-        co.aikar.idb.Database db = PooledDatabaseOptions.builder().options(options).createHikariDatabase();
+        Map<String, Object> props = new HashMap<String, Object>()
+        {{
+            put("useSSL", config.useSSL());
+            put("verifyServerCertificate", config.verifyServerCertificate());
+            put("autoReconnect", config.autoReconnect());
+        }};
+
+        co.aikar.idb.Database db = PooledDatabaseOptions.builder()
+                .dataSourceProperties(props)
+                .options(options)
+                .createHikariDatabase();
+
         DB.setGlobalDatabase(db);
 
         return new Database();
