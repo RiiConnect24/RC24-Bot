@@ -28,7 +28,7 @@ public enum CodeType
     THREEDS(4, "threeds", "3DS", "<:New3DSXL:287651327763283968> **3DS**", "3ds"),
     WII(5, "wii", "Wii", "<:Wii:259081748007223296> **Wii**", "wii"),
 
-    UNKNOWN(-1, null, null, null, null);
+    UNKNOWN(-1, "", "", "", "");
 
     private final int id;
     private final String column, displayName, formattedName, name;
