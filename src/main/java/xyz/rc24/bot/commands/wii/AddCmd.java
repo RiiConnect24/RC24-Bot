@@ -70,14 +70,14 @@ public class AddCmd extends Command
         }
 
         Map<String, String> authorTypeCodes = core.getCodesForType(defaultAddType, event.getAuthor().getIdLong());
-        if(authorTypeCodes.isEmpty())
+        if(authorTypeCodes == null || authorTypeCodes.isEmpty())
         {
             event.replyError("**" + event.getMember().getEffectiveName() + "** has not added any friend codes!");
             return;
         }
 
         Map<String, String> targetTypeCodes = core.getCodesForType(defaultAddType, member.getUser().getIdLong());
-        if(targetTypeCodes.isEmpty())
+        if(targetTypeCodes == null || targetTypeCodes.isEmpty())
         {
             event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
             return;
