@@ -97,7 +97,7 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
         ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setDefaultAddType(type);
 
         return db.doInsert("INSERT INTO settings (guild_id, default_add)" +
-                "VALUES(?, ?) ON DUPLICATE KEY UPDATE default_add = ?", id, type.getId());
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE default_add = ?", id, type.getId(), type.getId());
     }
 
     private GuildSettings getSettings(long id)
