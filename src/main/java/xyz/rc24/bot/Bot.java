@@ -34,11 +34,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Eval;
-import xyz.rc24.bot.commands.botadm.MassMessage;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.general.BirthdayCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
@@ -59,7 +56,6 @@ import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
 import xyz.rc24.bot.managers.BlacklistManager;
-import xyz.rc24.bot.managers.ServerConfigManager;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -87,9 +83,6 @@ public class Bot extends ListenerAdapter
     public BlacklistManager bManager;
     public Config config;
 
-    public JedisPool pool;
-    public ServerConfigManager scm;
-
     private ScheduledExecutorService bdaysScheduler;
     private ScheduledExecutorService musicNightScheduler;
 
@@ -113,8 +106,8 @@ public class Bot extends ListenerAdapter
         // Start database
         this.db = initDatabase();
         this.birthdayDataManager = new BirthdayDataManager(db);
-        this.codeDataManager = new CodeDataManager(db);
-        this.guildSettingsDataManager = new GuildSettingsDataManager(db, ((BotCoreImpl) getCore()).getEntityBuilder());
+        this.codeDataManager = new CodeDataManager(this);
+        this.guildSettingsDataManager = new GuildSettingsDataManager(this);
 
         bManager = new BlacklistManager();
         bdaysScheduler = new ScheduledThreadPoolExecutor(40);
@@ -133,7 +126,9 @@ public class Bot extends ListenerAdapter
                 .setStatus(config.getStatus())
                 .setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E)
                 .setLinkedCacheSize(10)
-                .setOwnerId(String.valueOf(config.getPrimaryOwner()));
+                .setOwnerId(String.valueOf(config.getPrimaryOwner()))
+                .setPrefix("@mention")
+                .setServerInvite("https://discord.gg/5rw6Tur");
 
         // Convert List<Long> of secondary owners to String[] so we can set later
         List<Long> owners = config.getSecondaryOwners();
@@ -143,16 +138,11 @@ public class Bot extends ListenerAdapter
             coOwners[i] = String.valueOf(owners.get(i));
 
         // Set all co-owners
-        client.setCoOwnerIds(coOwners)
-                .setPrefix(config.getPrefix())
-                .setServerInvite("https://discord.gg/5rw6Tur");
+        client.setCoOwnerIds(coOwners);
 
-        // Create JedisPool for usage elsewhere
-        pool = new JedisPool(new JedisPoolConfig(), "localhost");
-        scm = new ServerConfigManager(pool);
         client.addCommands(
                 // Bot administration
-                new Bash(), new Eval(this), new MassMessage(pool), new Shutdown(),
+                new Bash(), new Eval(this), new Shutdown(),
 
                 // General
                 new BirthdayCmd(), new InviteCmd(), new PingCmd(), new SetBirthdayCmd(),
@@ -161,7 +151,7 @@ public class Bot extends ListenerAdapter
                 new ServerSettingsCmd(this), new MailPatchCmd(config), new StatsCmd(),
 
                 // Wii-related
-                new Codes(pool), new Add(this), new BlocksCmd(), new ErrorInfo(config.isDebug()),
+                new AddCmd(this), new CodeCmd(this), new BlocksCmd(), new ErrorInfo(config.isDebug()),
                 new DNS(), new Wads(), new WiiWare());
 
         // JDA Connection
@@ -222,7 +212,7 @@ public class Bot extends ListenerAdapter
     {
         bdaysScheduler.shutdown();
         musicNightScheduler.shutdown();
-        pool.destroy();
+        DB.close();
     }
 
     private Database initDatabase()
@@ -267,6 +257,11 @@ public class Bot extends ListenerAdapter
     public Config getConfig()
     {
         return config;
+    }
+
+    public Database getDatabase()
+    {
+        return db;
     }
 
     // Data managers

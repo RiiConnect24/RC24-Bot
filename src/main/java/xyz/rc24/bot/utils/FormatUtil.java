@@ -27,6 +27,7 @@ import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.LogType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Artuto
@@ -89,5 +90,15 @@ public class FormatUtil
             response.append("`").append(type.getName()).append("`, ");
         // Remove leftover comma + space
         return response.substring(0, response.length() - 2);
+    }
+
+    public static String getCodeLayout(Map<String, String> codes)
+    {
+        // Create a human-readable format of the user's Wii wii.
+        StringBuilder codesString = new StringBuilder();
+        for(Map.Entry<String, String> code : codes.entrySet())
+            codesString.append("`").append(code.getKey()).append("`:\n").append(code.getValue()).append("\n");
+
+        return codesString.toString();
     }
 }

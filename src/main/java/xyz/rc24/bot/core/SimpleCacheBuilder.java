@@ -32,10 +32,19 @@ import java.util.concurrent.TimeUnit;
 
 public class SimpleCacheBuilder<K, V>
 {
+    private int expireHours = 1;
+
+    public SimpleCacheBuilder() {}
+
+    public SimpleCacheBuilder(int expireHours)
+    {
+        this.expireHours = expireHours;
+    }
+
     public <K1 extends K, V1 extends V> Cache<K1, V1> build()
     {
         return CacheBuilder.newBuilder()
-                .expireAfterAccess(1, TimeUnit.HOURS)
+                .expireAfterAccess(expireHours, TimeUnit.HOURS)
                 .maximumSize(500).build();
     }
 }

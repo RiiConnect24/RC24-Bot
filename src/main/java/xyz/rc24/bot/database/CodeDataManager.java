@@ -21,7 +21,10 @@ package xyz.rc24.bot.database;
 
 import co.aikar.idb.DbRow;
 import com.google.gson.Gson;
+import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.CodeType;
+import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,17 +35,19 @@ import java.util.Optional;
  * @author Artuto
  */
 
+@SuppressWarnings("unchecked")
 public class CodeDataManager
 {
+    private final BotCore core;
     private final Database db;
     private final Gson gson = new Gson();
 
-    public CodeDataManager(Database db)
+    public CodeDataManager(Bot bot)
     {
-        this.db = db;
+        this.core = bot.getCore();
+        this.db = bot.getDatabase();
     }
 
-    @SuppressWarnings("unchecked")
     public Map<CodeType, Map<String, String>> getAllCodes(long user)
     {
         Optional<DbRow> optRow = db.getRow("SELECT * FROM codes WHERE user_id = ?", user);
@@ -67,5 +72,65 @@ public class CodeDataManager
         map.put(CodeType.WII, wii);
 
         return map;
+    }
+
+    @SuppressWarnings("unused")
+    public Map<String, String> getCodesForType(CodeType type, long user)
+    {
+        Optional<DbRow> optRow = db.getRow("SELECT * FROM codes WHERE user_id = ?", user);
+        if(!(optRow.isPresent()))
+            return Collections.emptyMap();
+
+        DbRow row = optRow.get();
+
+        return gson.fromJson(row.getString(type.getColumn(), ""), Map.class);
+    }
+
+    public boolean addCode(CodeType type, long id, String code, String name)
+    {
+        String json = gson.toJson(updateCodeCache(type, id, code, name));
+
+        return db.doInsert("INSERT INTO codes (user_id, " + type.getColumn() + ") " +
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + type.getColumn() + " = ?", id, json, json);
+    }
+
+    public boolean editCode(CodeType type, long id, String code, String name)
+    {
+        return db.doInsert("UPDATE codes SET " + type.getColumn() + " = ? " +
+                "WHERE user_id = ?", gson.toJson(updateCodeCache(type, id, code, name)), id);
+    }
+
+    public boolean removeCode(CodeType type, long id, String name)
+    {
+        Map<String, String> map = removeFromCodeCache(type, id, name);
+        if(map == null)
+            return true;
+
+        return db.doInsert("UPDATE codes SET " + type.getColumn() + " = ? " +
+                "WHERE user_id = ?", gson.toJson(map), id);
+    }
+
+    private Map<String, String> updateCodeCache(CodeType type, long id, String code, String name)
+    {
+        Map<String, String> currentCodes = core.getCodesForType(type, id);
+        if(currentCodes == null)
+            currentCodes = new HashMap<>();
+
+        currentCodes.put(name, code);
+        ((BotCoreImpl) core).updateCodeCache(type, id, currentCodes);
+
+        return currentCodes;
+    }
+
+    private Map<String, String> removeFromCodeCache(CodeType type, long id, String name)
+    {
+        Map<String, String> currentCodes = core.getCodesForType(type, id);
+        if(currentCodes == null)
+            return null;
+
+        currentCodes.remove(name);
+        ((BotCoreImpl) core).updateCodeCache(type, id, currentCodes);
+
+        return currentCodes;
     }
 }

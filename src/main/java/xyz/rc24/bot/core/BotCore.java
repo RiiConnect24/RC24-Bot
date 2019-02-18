@@ -20,11 +20,18 @@
 package xyz.rc24.bot.core;
 
 import net.dv8tion.jda.core.entities.Guild;
+import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
+
+import java.util.Map;
 
 public interface BotCore
 {
     GuildSettings getGuildSettings(Guild guild);
 
     GuildSettings getGuildSettings(long guild);
+
+    Map<CodeType, Map<String, String>> getAllCodes(long user);
+
+    Map<String, String> getCodesForType(CodeType type, long user);
 }

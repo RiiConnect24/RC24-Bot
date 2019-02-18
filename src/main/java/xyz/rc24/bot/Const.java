@@ -19,15 +19,10 @@
 
 package xyz.rc24.bot;
 
-import xyz.rc24.bot.managers.CodeManager;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Constants for the bot
  *
- * @author Artuto, Spotlight
+ * @author Artuto
  */
 
 public class Const
@@ -37,22 +32,4 @@ public class Const
     public static final String SUCCESS_E = "✅";
     public static final String WARN_E = "⚠";
     public static final String ERROR_E = "❌";
-	
-    public static final Map<CodeManager.Type, String> typesToDisplayName = new HashMap<CodeManager.Type, String>()
-    {{
-        put(CodeManager.Type.WII, "<:Wii:259081748007223296> **Wii**");
-        put(CodeManager.Type.THREE_DS, "<:New3DSXL:287651327763283968> **3DS**");
-        put(CodeManager.Type.NNID, "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**");
-        put(CodeManager.Type.SWITCH, "<:Switch:287652338791874560> **Switch**");
-        put(CodeManager.Type.GAME, "🎮 **Games**");
-    }};
-
-    public static final Map<CodeManager.Type, String> typesToProductName = new HashMap<CodeManager.Type, String>()
-    {{
-        put(CodeManager.Type.WII, "Wii");
-        put(CodeManager.Type.THREE_DS, "3DS");
-        put(CodeManager.Type.NNID, "Nintendo Network ID");
-        put(CodeManager.Type.SWITCH, "Switch");
-        put(CodeManager.Type.GAME, "Game");
-    }};
 }

@@ -36,4 +36,6 @@ public interface GuildSettings
     Set<String> getPrefixes();
 
     String getFirstPrefix();
+
+    long getLog(LogType type);
 }

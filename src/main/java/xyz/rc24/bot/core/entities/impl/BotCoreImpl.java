@@ -25,9 +25,12 @@ import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.SimpleCacheBuilder;
+import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.EntityBuilder;
 import xyz.rc24.bot.core.entities.GuildSettings;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -38,6 +41,7 @@ public class BotCoreImpl implements BotCore
 {
     // Caches
     private final Cache<Long, GuildSettings> gsCache = new SimpleCacheBuilder<>().build();
+    private final Cache<Long, Map<CodeType, Map<String, String>>> codeCache = new SimpleCacheBuilder<>(3).build();
 
     private final Bot bot;
     private final EntityBuilder entityBuilder;
@@ -69,8 +73,43 @@ public class BotCoreImpl implements BotCore
         }
     }
 
+    @Override
+    public Map<CodeType, Map<String, String>> getAllCodes(long user)
+    {
+        try
+        {
+            return codeCache.get(user, () -> bot.getCodeDataManager().getAllCodes(user));
+        }
+        catch(ExecutionException e)
+        {
+            RiiConnect24Bot.getLogger().error("Error whilst getting codes for User {}: {}",
+                    user, e.getMessage(), e);
+            return Collections.emptyMap();
+        }
+    }
+
+    @Override
+    public Map<String, String> getCodesForType(CodeType type, long user)
+    {
+        try
+        {
+            return codeCache.get(user, () -> bot.getCodeDataManager().getAllCodes(user)).get(type);
+        }
+        catch(ExecutionException e)
+        {
+            RiiConnect24Bot.getLogger().error("Error whilst getting codes for User {}: {}",
+                    user, e.getMessage(), e);
+            return Collections.emptyMap();
+        }
+    }
+
     public EntityBuilder getEntityBuilder()
     {
         return entityBuilder;
+    }
+
+    public void updateCodeCache(CodeType type, long id, Map<String, String> map)
+    {
+        getAllCodes(id).put(type, map);
     }
 }

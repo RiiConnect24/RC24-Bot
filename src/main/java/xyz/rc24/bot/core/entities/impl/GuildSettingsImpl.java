@@ -21,6 +21,7 @@ package xyz.rc24.bot.core.entities.impl;
 
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
+import xyz.rc24.bot.core.entities.LogType;
 
 import java.util.Set;
 
@@ -80,6 +81,20 @@ public class GuildSettingsImpl implements GuildSettings
     public String getFirstPrefix()
     {
         return getPrefixes().stream().findFirst().orElse("@mention");
+    }
+
+    @Override
+    public long getLog(LogType type)
+    {
+        switch(type)
+        {
+            case MOD:
+                return getModlogChannelId();
+            case SERVER:
+                return getServerlogChannelId();
+            default:
+                return 0L;
+        }
     }
 
     public void setModlogId(long id)

@@ -29,6 +29,7 @@ import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.EntityBuilder;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.core.entities.LogType;
+import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.core.entities.impl.GuildSettingsImpl;
 
 import java.util.Objects;
@@ -47,10 +48,10 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
     private final EntityBuilder entityBuilder;
     private final Database db;
 
-    public GuildSettingsDataManager(Database db, EntityBuilder entityBuilder)
+    public GuildSettingsDataManager(Bot bot)
     {
-        this.db = db;
-        this.entityBuilder = entityBuilder;
+        this.db = bot.getDatabase();
+        this.entityBuilder = ((BotCoreImpl) bot.getCore()).getEntityBuilder();
     }
 
     @Override
@@ -88,7 +89,7 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
         updateLogCache((GuildSettingsImpl) getSettings(guild), type, channel);
 
         return db.doInsert("INSERT INTO settings (guild_id, " + column + ")" +
-                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + column + " = ?", guild, channel);
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + column + " = ?", guild, channel, channel);
     }
 
     public boolean setDefaultAddType(CodeType type, long id)

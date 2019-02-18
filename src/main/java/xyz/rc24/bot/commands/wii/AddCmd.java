@@ -24,9 +24,10 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.entities.Member;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
-import xyz.rc24.bot.database.CodeDataManager;
+import xyz.rc24.bot.utils.FormatUtil;
 import xyz.rc24.bot.utils.SearcherUtil;
 
 import java.util.Map;
@@ -35,13 +36,13 @@ import java.util.Map;
  * @author Artuto
  */
 
-public class Add extends Command
+public class AddCmd extends Command
 {
-    private final CodeDataManager dataManager;
+    private final BotCore core;
 
-    public Add(Bot bot)
+    public AddCmd(Bot bot)
     {
-        this.dataManager = bot.getCodeDataManager();
+        this.core = bot.getCore();
         this.name = "add";
         this.help = "Sends your friend code to another user.";
         this.category = Categories.WII;
@@ -68,7 +69,7 @@ public class Add extends Command
             return;
         }
 
-        Map<CodeType, Map<String, String>> authorCodes = dataManager.getAllCodes(event.getAuthor().getIdLong());
+        Map<CodeType, Map<String, String>> authorCodes = core.getAllCodes(event.getAuthor().getIdLong());
         Map<String, String> authorTypeCodes = authorCodes.get(defaultAddType);
         if(authorTypeCodes.isEmpty())
         {
@@ -76,7 +77,7 @@ public class Add extends Command
             return;
         }
 
-        Map<CodeType, Map<String, String>> targetCodes = dataManager.getAllCodes(member.getUser().getIdLong());
+        Map<CodeType, Map<String, String>> targetCodes = core.getAllCodes(member.getUser().getIdLong());
         Map<String, String> targetTypeCodes = targetCodes.get(defaultAddType);
         if(targetTypeCodes.isEmpty())
         {
@@ -86,14 +87,14 @@ public class Add extends Command
 
         // Send target's code to author
         event.replyInDm(getAddMessageHeader(defaultAddType, event.getMember(), true) +
-                "\n\n" + getCodeLayout(targetTypeCodes), (success) -> event.reactSuccess(),
+                "\n\n" + FormatUtil.getCodeLayout(targetTypeCodes), (success) -> event.reactSuccess(),
                 (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() +
                         ": I couldn't DM you. Make sure your DMs are enabled."));
 
         // Send author's code to target
         member.getUser().openPrivateChannel().queue(pc ->
                 pc.sendMessage(getAddMessageHeader(defaultAddType, event.getMember(), false) +
-                        "\n\n" + getCodeLayout(authorTypeCodes)).queue(null,
+                        "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes)).queue(null,
                         (failure) -> event.replyError("Hey, " + member.getAsMention() +
                                 ": I couldn't DM you. Make sure your DMs are enabled.")));
     }
@@ -104,15 +105,5 @@ public class Add extends Command
             return "**" + member.getEffectiveName() + "** has requested to add your " + type.getDisplayName() + " friend code(s)!";
         else
             return "You have requested to add **" + member.getEffectiveName() + "**'s " + type.getDisplayName() + " friend code(s).";
-    }
-
-    private String getCodeLayout(Map<String, String> codes)
-    {
-        // Create a human-readable format of the user's Wii wii.
-        StringBuilder codesString = new StringBuilder();
-        for(Map.Entry<String, String> code : codes.entrySet())
-            codesString.append("`").append(code.getKey()).append("`:\n").append(code.getValue()).append("\n");
-
-        return codesString.toString();
     }
 }
