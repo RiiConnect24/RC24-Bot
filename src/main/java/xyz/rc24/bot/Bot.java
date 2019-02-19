@@ -41,10 +41,7 @@ import xyz.rc24.bot.commands.general.BirthdayCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
-import xyz.rc24.bot.commands.tools.MailParseListener;
-import xyz.rc24.bot.commands.tools.MailPatchCmd;
-import xyz.rc24.bot.commands.tools.ServerSettingsCmd;
-import xyz.rc24.bot.commands.tools.StatsCmd;
+import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
@@ -76,7 +73,6 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("WeakerAccess")
 public class Bot extends ListenerAdapter
 {
-    public BlacklistManager bManager;
     public BotCore core;
     public Config config;
 
@@ -88,9 +84,10 @@ public class Bot extends ListenerAdapter
 
     // Managers
     private BirthdayManager birthdayManager;
+    public BlacklistManager bManager;
 
     private final Logger logger = RiiConnect24Bot.getLogger();
-    private final ScheduledExecutorService bdaysScheduler = new ScheduledThreadPoolExecutor(40);
+    private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(40);
     private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
     void run() throws IOException, LoginException
@@ -142,7 +139,8 @@ public class Bot extends ListenerAdapter
                 new BirthdayCmd(), new InviteCmd(), new PingCmd(), new SetBirthdayCmd(),
 
                 // Tools
-                new ServerSettingsCmd(this), new MailPatchCmd(config), new StatsCmd(),
+                new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
+                new ServerSettingsCmd(this), new StatsCmd(),
 
                 // Wii-related
                 new AddCmd(this), new CodeCmd(this), new BlocksCmd(), new ErrorInfo(config.isDebug()),
@@ -184,7 +182,7 @@ public class Bot extends ListenerAdapter
             Duration duration = Duration.between(zonedNow, zonedNext8);
             long initialDelay = duration.getSeconds();
 
-            bdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(),
+            birthdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(),
                     config.getBirthdayChannel()), initialDelay, 86400, TimeUnit.SECONDS);
         }
 
@@ -204,7 +202,7 @@ public class Bot extends ListenerAdapter
     @Override
     public void onShutdown(ShutdownEvent event)
     {
-        bdaysScheduler.shutdown();
+        birthdaysScheduler.shutdown();
         musicNightScheduler.shutdown();
         DB.close();
     }

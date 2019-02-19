@@ -35,7 +35,7 @@ import java.util.Set;
 
 public class EntityBuilder
 {
-    private final Gson gson = new Gson();
+    public final Gson gson = new Gson();
 
     @SuppressWarnings("unchecked")
     public GuildSettings buildGuildSettings(DbRow row)

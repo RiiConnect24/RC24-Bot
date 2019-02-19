@@ -32,8 +32,10 @@ import xyz.rc24.bot.core.entities.LogType;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.core.entities.impl.GuildSettingsImpl;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Data manager for Guild settings
@@ -100,6 +102,22 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
                 "VALUES(?, ?) ON DUPLICATE KEY UPDATE default_add = ?", id, type.getId(), type.getId());
     }
 
+    public boolean addPrefix(long id, String prefix)
+    {
+        String json = entityBuilder.gson.toJson(addPrefixJson(id, prefix));
+
+        return db.doInsert("INSERT INTO settings (guild_id, prefixes)" +
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE prefixes = ?", id, json, json);
+    }
+
+    public boolean removePrefix(long id, String prefix)
+    {
+        String json = entityBuilder.gson.toJson(removePrefixJson(id, prefix));
+
+        return db.doInsert("INSERT INTO settings (guild_id, prefixes)" +
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE prefixes = ?", id, json, json);
+    }
+
     private GuildSettings getSettings(long id)
     {
         return (bot.getCore() == null) ? null : bot.getCore().getGuildSettings(id);
@@ -114,5 +132,26 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
             case SERVER:
                 gs.setServerlogId(newChannel);
         }
+    }
+
+    private Set<String> addPrefixJson(long id, String prefix)
+    {
+        Set<String> current = Objects.requireNonNull(getSettings(id)).getPrefixes();
+        if(current.getClass().getSimpleName().equals("EmptySet"))
+        {
+            current = new HashSet<>();
+            ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setPrefixes(current);
+        }
+
+        current.add(prefix);
+        return current;
+    }
+
+    private Set<String> removePrefixJson(long id, String prefix)
+    {
+        Set<String> current = Objects.requireNonNull(getSettings(id)).getPrefixes();
+
+        current.remove(prefix);
+        return current;
     }
 }

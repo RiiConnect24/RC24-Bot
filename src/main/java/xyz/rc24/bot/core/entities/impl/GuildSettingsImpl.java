@@ -112,4 +112,9 @@ public class GuildSettingsImpl implements GuildSettings, GuildSettingsProvider
     {
         this.defaultAddType = type;
     }
+
+    public void setPrefixes(Set<String> prefixes)
+    {
+        this.prefixes = prefixes;
+    }
 }
