@@ -29,7 +29,8 @@ public enum LogType
 {
     MOD("mod", "Moderation log. Shows bans/unbans.", "modlog_id"),
     SERVER("srv", "Server log. Shows bans/unbans, along with joins and leaves.", "serverlog_id"),
-    UNKNOWN("", "", "");
+
+    UNKNOWN(null, null, null);
 
     private final String code, description, column;
 
@@ -59,7 +60,7 @@ public enum LogType
     {
         for(LogType type : values())
         {
-            if(type.getCode().equals(code))
+            if(code.equals(type.getCode()))
                 return type;
         }
 

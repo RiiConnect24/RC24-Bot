@@ -55,21 +55,19 @@ public class CodeDataManager
             return new HashMap<>();
 
         DbRow row = optRow.get();
-
-        Map<String, String> games = gson.fromJson(row.getString("games", ""), Map.class);
-        Map<String, String> nnid = gson.fromJson(row.getString("nnid", ""), Map.class);
-        Map<String, String> nswitch = gson.fromJson(row.getString("switch", ""), Map.class);
-        Map<String, String> psn = gson.fromJson(row.getString("psn", ""), Map.class);
-        Map<String, String> threeds = gson.fromJson(row.getString("threeds", ""), Map.class);
-        Map<String, String> wii = gson.fromJson(row.getString("wii", ""), Map.class);
-
         Map<CodeType, Map<String, String>> map = new HashMap<>();
-        map.put(CodeType.GAME, games);
-        map.put(CodeType.NNID, nnid);
-        map.put(CodeType.PSN, psn);
-        map.put(CodeType.SWITCH, nswitch);
-        map.put(CodeType.THREEDS, threeds);
-        map.put(CodeType.WII, wii);
+
+        for(CodeType type : CodeType.values())
+        {
+            if(type == CodeType.UNKNOWN)
+                continue;
+
+            Map<String, String> typeMap = gson.fromJson(row.getString(type.getColumn(), ""), Map.class);
+            if(typeMap == null)
+                typeMap = new HashMap<>();
+
+            map.put(type, typeMap);
+        }
 
         return map;
     }
@@ -113,7 +111,7 @@ public class CodeDataManager
     private Map<String, String> updateCodeCache(CodeType type, long id, String code, String name)
     {
         Map<String, String> currentCodes = core.getCodesForType(type, id);
-        if(currentCodes == null)
+        if(currentCodes == null || currentCodes.getClass().getSimpleName().equals("EmptyMap"))
             currentCodes = new HashMap<>();
 
         currentCodes.put(name, code);
@@ -125,7 +123,7 @@ public class CodeDataManager
     private Map<String, String> removeFromCodeCache(CodeType type, long id, String name)
     {
         Map<String, String> currentCodes = core.getCodesForType(type, id);
-        if(currentCodes == null)
+        if(currentCodes == null || currentCodes.getClass().getSimpleName().equals("EmptyMap"))
             return null;
 
         currentCodes.remove(name);

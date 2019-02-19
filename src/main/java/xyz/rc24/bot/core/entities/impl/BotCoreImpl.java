@@ -30,7 +30,6 @@ import xyz.rc24.bot.core.entities.EntityBuilder;
 import xyz.rc24.bot.core.entities.GuildSettings;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -85,7 +84,7 @@ public class BotCoreImpl implements BotCore
         {
             RiiConnect24Bot.getLogger().error("Error whilst getting codes for User {}: {}",
                     user, e.getMessage(), e);
-            return new HashMap<>();
+            return Collections.emptyMap();
         }
     }
 
@@ -94,13 +93,14 @@ public class BotCoreImpl implements BotCore
     {
         try
         {
-            return codeCache.get(user, () -> bot.getCodeDataManager().getAllCodes(user)).get(type);
+            Map<CodeType, Map<String, String>> allCodes = codeCache.get(user, () -> bot.getCodeDataManager().getAllCodes(user));
+            return allCodes == null ? Collections.emptyMap() : (allCodes.get(type) == null ? Collections.emptyMap() : allCodes.get(type));
         }
         catch(ExecutionException e)
         {
             RiiConnect24Bot.getLogger().error("Error whilst getting codes for User {}: {}",
                     user, e.getMessage(), e);
-            return new HashMap<>();
+            return Collections.emptyMap();
         }
     }
 

@@ -19,6 +19,12 @@
 
 package xyz.rc24.bot.core.entities;
 
+/**
+ * Code type enum
+ *
+ * @author Artuto
+ */
+
 public enum CodeType
 {
     GAME(0, "games", "Game", "🎮 **Games**", "game"),
@@ -28,7 +34,7 @@ public enum CodeType
     THREEDS(4, "threeds", "3DS", "<:New3DSXL:287651327763283968> **3DS**", "3ds"),
     WII(5, "wii", "Wii", "<:Wii:259081748007223296> **Wii**", "wii"),
 
-    UNKNOWN(-1, "", "", "", "");
+    UNKNOWN(-1, null, null, null, null);
 
     private final int id;
     private final String column, displayName, formattedName, name;
@@ -71,7 +77,7 @@ public enum CodeType
     {
         for(CodeType type : values())
         {
-            if(type.getName().equalsIgnoreCase(code))
+            if(code.equalsIgnoreCase(type.getName()))
                 return type;
         }
 

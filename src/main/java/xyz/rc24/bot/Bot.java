@@ -73,15 +73,12 @@ import java.util.concurrent.TimeUnit;
  * @author Spotlight and Artuto
  */
 
+@SuppressWarnings("WeakerAccess")
 public class Bot extends ListenerAdapter
 {
-    public BotCore core;
-
     public BlacklistManager bManager;
+    public BotCore core;
     public Config config;
-
-    private ScheduledExecutorService bdaysScheduler;
-    private ScheduledExecutorService musicNightScheduler;
 
     // Database & Data managers
     private Database db;
@@ -93,6 +90,8 @@ public class Bot extends ListenerAdapter
     private BirthdayManager birthdayManager;
 
     private final Logger logger = RiiConnect24Bot.getLogger();
+    private final ScheduledExecutorService bdaysScheduler = new ScheduledThreadPoolExecutor(40);
+    private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
     void run() throws IOException, LoginException
     {
@@ -107,8 +106,6 @@ public class Bot extends ListenerAdapter
         this.guildSettingsDataManager = new GuildSettingsDataManager(this);
 
         bManager = new BlacklistManager();
-        bdaysScheduler = new ScheduledThreadPoolExecutor(40);
-        musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
         // Start managers
         this.birthdayManager = new BirthdayManager(getBirthdayDataManager());
@@ -117,17 +114,6 @@ public class Bot extends ListenerAdapter
         if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
             Sentry.init(config.getSentryDSN());
 
-        // Register commands
-        CommandClientBuilder client = new CommandClientBuilder()
-                .setGame(Game.playing(config.getPlaying()))
-                .setStatus(config.getStatus())
-                .setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E)
-                .setLinkedCacheSize(10)
-                .setOwnerId(String.valueOf(config.getPrimaryOwner()))
-                .setPrefix("@mention")
-                .setServerInvite("https://discord.gg/5rw6Tur")
-                .setGuildSettingsManager(getGuildSettingsDataManager());
-
         // Convert List<Long> of secondary owners to String[] so we can set later
         List<Long> owners = config.getSecondaryOwners();
         String[] coOwners = new String[owners.size()];
@@ -135,10 +121,20 @@ public class Bot extends ListenerAdapter
         for(int i = 0; i < owners.size(); i++)
             coOwners[i] = String.valueOf(owners.get(i));
 
-        // Set all co-owners
-        client.setCoOwnerIds(coOwners);
-
-        client.addCommands(
+        // Setup Command Client
+        CommandClientBuilder client = new CommandClientBuilder()
+        {{
+            setGame(Game.playing(config.getPlaying()));
+            setStatus(config.getStatus());
+            setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E);
+            setLinkedCacheSize(10);
+            setOwnerId(String.valueOf(config.getPrimaryOwner()));
+            setPrefix("@mention");
+            setServerInvite("https://discord.gg/5rw6Tur");
+            setGuildSettingsManager(getGuildSettingsDataManager());
+            setCoOwnerIds(coOwners);
+        }}
+        .addCommands(
                 // Bot administration
                 new Bash(), new Eval(this), new Shutdown(),
 
@@ -200,7 +196,7 @@ public class Bot extends ListenerAdapter
             Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
-            musicNightScheduler.scheduleWithFixedDelay(() -> reminderMusicNight(event.getJDA()),
+            musicNightScheduler.scheduleWithFixedDelay(() -> remindMusicNight(event.getJDA()),
                     initialDelay, 86400, TimeUnit.SECONDS);
         }
     }
@@ -242,7 +238,7 @@ public class Bot extends ListenerAdapter
         return new Database();
     }
 
-    private void reminderMusicNight(JDA jda)
+    private void remindMusicNight(JDA jda)
     {
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("CST"));
         c.setTime(new Date());

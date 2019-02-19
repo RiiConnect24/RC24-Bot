@@ -98,7 +98,7 @@ public class CodeCmd extends Command
             }
 
             Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
-            if(!(codeTypes == null) && codeTypes.containsKey(args.get(1)))
+            if(codeTypes.containsKey(args.get(1)))
             {
                 event.replyWarning("You already added this code!");
                 return;
@@ -177,7 +177,7 @@ public class CodeCmd extends Command
             for(Map.Entry<CodeType, Map<String, String>> typeData : userCodes.entrySet())
             {
                 Map<String, String> codes = typeData.getValue();
-                if(!(codes == null) && !(codes.isEmpty()))
+                if(!(codes.isEmpty()))
                 {
                     codeEmbed.addField(typeData.getKey().getFormattedName(),
                             FormatUtil.getCodeLayout(codes), true);

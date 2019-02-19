@@ -76,6 +76,9 @@ public class FormatUtil
         StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
         for(LogType type : LogType.values())
         {
+            if(type == LogType.UNKNOWN)
+                continue;
+
             // `type`: Definition\n
             response.append("`").append(type.getCode()).append("`: ").append(type.getDescription()).append("\n");
         }
@@ -87,7 +90,13 @@ public class FormatUtil
     {
         StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
         for(CodeType type : CodeType.values())
+        {
+            if(type == CodeType.UNKNOWN)
+                continue;
+
             response.append("`").append(type.getName()).append("`, ");
+        }
+
         // Remove leftover comma + space
         return response.substring(0, response.length() - 2);
     }

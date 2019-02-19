@@ -70,21 +70,21 @@ public class AddCmd extends Command
         }
 
         Map<String, String> authorTypeCodes = core.getCodesForType(defaultAddType, event.getAuthor().getIdLong());
-        if(authorTypeCodes == null || authorTypeCodes.isEmpty())
+        if(authorTypeCodes.isEmpty())
         {
             event.replyError("**" + event.getMember().getEffectiveName() + "** has not added any friend codes!");
             return;
         }
 
         Map<String, String> targetTypeCodes = core.getCodesForType(defaultAddType, member.getUser().getIdLong());
-        if(targetTypeCodes == null || targetTypeCodes.isEmpty())
+        if(targetTypeCodes.isEmpty())
         {
             event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
             return;
         }
 
         // Send target's code to author
-        event.replyInDm(getAddMessageHeader(defaultAddType, event.getMember(), true) +
+        event.replyInDm(getAddMessageHeader(defaultAddType, member, true) +
                 "\n\n" + FormatUtil.getCodeLayout(targetTypeCodes), (success) -> event.reactSuccess(),
                 (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() +
                         ": I couldn't DM you. Make sure your DMs are enabled."));
