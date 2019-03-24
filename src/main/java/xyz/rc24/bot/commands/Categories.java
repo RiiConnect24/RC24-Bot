@@ -41,6 +41,6 @@ public class Categories
 
     private static boolean isBlacklisted(CommandEvent event)
     {
-        return bot.getBlacklistManager().isBlacklisted(event.getAuthor().getId());
+        return bot.getCore().getBlacklist(event.getAuthor().getIdLong()) == null;
     }
 }

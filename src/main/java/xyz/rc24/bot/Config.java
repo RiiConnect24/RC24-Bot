@@ -124,6 +124,11 @@ public class Config
         return getLong("morpher_mirror");
     }
 
+    public long getRootServer()
+    {
+        return getLong("root_server");
+    }
+
     public boolean birthdaysAreEnabled()
     {
         return getBoolean("birthdays_enabled");

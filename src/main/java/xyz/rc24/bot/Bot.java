@@ -46,8 +46,8 @@ import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.database.*;
-import xyz.rc24.bot.events.Morpher;
-import xyz.rc24.bot.events.ServerLog;
+import xyz.rc24.bot.listeners.Morpher;
+import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
 import xyz.rc24.bot.managers.BlacklistManager;
 
@@ -62,7 +62,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Add all commands, and start all events.
+ * Add all commands, and start all listeners.
  *
  * @author Spotlight and Artuto
  */
@@ -72,6 +72,7 @@ public class Bot extends ListenerAdapter
 {
     public BotCore core;
     public Config config;
+    public JDA jda;
 
     // Database & Data managers
     private Database db;
@@ -88,6 +89,8 @@ public class Bot extends ListenerAdapter
     private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(40);
     private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
+    public final ScheduledExecutorService botThreadPool = new ScheduledThreadPoolExecutor(40);
+
     void run() throws IOException, LoginException
     {
         RiiConnect24Bot.setInstance(this);
@@ -100,8 +103,6 @@ public class Bot extends ListenerAdapter
         this.codeDataManager = new CodeDataManager(this);
         this.guildSettingsDataManager = new GuildSettingsDataManager(this);
         this.morpherDataManager = new MorpherDataManager(db);
-
-        bManager = new BlacklistManager();
 
         // Start managers
         this.birthdayManager = new BirthdayManager(getBirthdayDataManager());
@@ -161,6 +162,7 @@ public class Bot extends ListenerAdapter
     @Override
     public void onReady(ReadyEvent event)
     {
+        this.jda = event.getJDA();
         logger.info("Done loading!");
 
         // Check if we need to set a game
@@ -264,6 +266,11 @@ public class Bot extends ListenerAdapter
     public Database getDatabase()
     {
         return db;
+    }
+
+    public JDA getJDA()
+    {
+        return jda;
     }
 
     // Data managers

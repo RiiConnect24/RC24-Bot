@@ -69,7 +69,7 @@ public class Eval extends Command
                 "net.dv8tion.jda.core.managers.impl",
                 "net.dv8tion.jda.core.utils",
                 "net.dv8tion.jda.webhook",
-                "xyz.rc24.bot", "xyz.rc24.bot.events", "xyz.rc24.bot.loader",
+                "xyz.rc24.bot", "xyz.rc24.bot.listeners", "xyz.rc24.bot.loader",
                 "xyz.rc24.bot.managers", "xyz.rc24.bot.utils");
     }
 

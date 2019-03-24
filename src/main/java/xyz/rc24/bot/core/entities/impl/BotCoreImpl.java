@@ -42,6 +42,7 @@ public class BotCoreImpl implements BotCore
     // Caches
     private final Cache<Long, GuildSettings> gsCache = new SimpleCacheBuilder<>().build();
     private final Cache<Long, Map<CodeType, Map<String, String>>> codeCache = new SimpleCacheBuilder<>(3).build();
+    private final Cache<Long, String> blacklistCache = new SimpleCacheBuilder<>(3).build();
 
     private final Bot bot;
     private final EntityBuilder entityBuilder;
@@ -101,6 +102,20 @@ public class BotCoreImpl implements BotCore
             RiiConnect24Bot.getLogger().error("Error whilst getting codes for User {}: {}",
                     user, e.getMessage(), e);
             return Collections.emptyMap();
+        }
+    }
+
+    @Override
+    public String getBlacklist(long id)
+    {
+        try
+        {
+            return blacklistCache.get(id, () -> bot.getBlacklistManager().getBlacklist(id));
+        }
+        catch(ExecutionException e)
+        {
+            RiiConnect24Bot.getLogger().error("Error whilst retrieving a blacklist for User {}: {}", id, e.getMessage(), e);
+            return null;
         }
     }
 

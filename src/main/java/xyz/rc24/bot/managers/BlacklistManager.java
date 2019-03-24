@@ -19,60 +19,38 @@
 
 package xyz.rc24.bot.managers;
 
-import java.io.IOException;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
+import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.RiiConnect24Bot;
 
 /**
+ * Blacklist manager.
+ *
  * @author Artuto
  */
 
 public class BlacklistManager
 {
-    public BlacklistManager() throws IOException
+    private final JDA jda;
+    private final long rootServer;
+
+    public BlacklistManager(Bot bot)
     {
-        // this.lines = Files.readAllLines(Paths.get(fileName));
+        this.jda = bot.getJDA();
+        this.rootServer = bot.getConfig().getRootServer();
     }
 
-    public boolean isBlacklisted(String id)
+    public String getBlacklist(long id)
     {
-        // return lines.contains(id);
-        return false;
-    }
-
-    public void addBlacklist(String id) throws IOException
-    {
-        /*Writer w = new FileWriter(fileName, true);
-        w.append(id).close();
-        lines.add(id);*/
-    }
-
-    public void removeBlacklist(String id) throws IOException
-    {
-        /*File file = new File(fileName);
-        File tempFile = new File("tempBl.txt");
-        String currentLine;
-        if(! (file.exists())) return;
-        lines.remove(id);
-        if(lines.isEmpty())
+        Guild guild = jda.getGuildById(rootServer);
+        if(guild == null || !(guild.getSelfMember().hasPermission(Permission.BAN_MEMBERS)))
         {
-            file.delete();
-            return;
+            RiiConnect24Bot.getLogger().error("Could not access root server for blacklists!");
+            return null;
         }
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        Writer w = new FileWriter(fileName, true);
-        while(! ((currentLine = reader.readLine()) == null))
-        {
-            if(currentLine.trim().equals(id)) continue;
-            w.append(id);
-        }
-        w.close();
-        reader.close();
-        tempFile.renameTo(file);*/
-    }
 
-    public void updateList() throws IOException
-    {
-        /*File file = new File(fileName);
-        if(file.exists()) this.lines = Files.readAllLines(Paths.get(fileName));
-        else lines.clear();*/
+        return guild.getBanById(id).complete().getReason();
     }
 }

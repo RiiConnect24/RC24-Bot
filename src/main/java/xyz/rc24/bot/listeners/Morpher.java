@@ -17,7 +17,7 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.events;
+package xyz.rc24.bot.listeners;
 
 import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.core.EmbedBuilder;

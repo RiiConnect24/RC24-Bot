@@ -25,6 +25,7 @@ import xyz.rc24.bot.core.entities.GuildSettings;
 
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public interface BotCore
 {
     GuildSettings getGuildSettings(Guild guild);
@@ -34,4 +35,6 @@ public interface BotCore
     Map<CodeType, Map<String, String>> getAllCodes(long user);
 
     Map<String, String> getCodesForType(CodeType type, long user);
+
+    String getBlacklist(long id);
 }
