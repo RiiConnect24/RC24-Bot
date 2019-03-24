@@ -52,6 +52,20 @@ public class Database
         }
     }
 
+    boolean doDelete(@Language("MySQL") String query, Object... params)
+    {
+        try
+        {
+            DB.executeUpdate(query, params);
+            return true;
+        }
+        catch(Exception e)
+        {
+            logger.error("Exception while deleting values from the database: " + e.getMessage(), e);
+            return false;
+        }
+    }
+
     Optional<DbRow> getRow(@Language("MySQL") String query, Object... params)
     {
         DbRow row;

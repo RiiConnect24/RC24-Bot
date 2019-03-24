@@ -45,10 +45,7 @@ import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
-import xyz.rc24.bot.database.BirthdayDataManager;
-import xyz.rc24.bot.database.CodeDataManager;
-import xyz.rc24.bot.database.Database;
-import xyz.rc24.bot.database.GuildSettingsDataManager;
+import xyz.rc24.bot.database.*;
 import xyz.rc24.bot.events.Morpher;
 import xyz.rc24.bot.events.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
@@ -81,6 +78,7 @@ public class Bot extends ListenerAdapter
     private BirthdayDataManager birthdayDataManager;
     private CodeDataManager codeDataManager;
     private GuildSettingsDataManager guildSettingsDataManager;
+    private MorpherDataManager morpherDataManager;
 
     // Managers
     private BirthdayManager birthdayManager;
@@ -101,6 +99,7 @@ public class Bot extends ListenerAdapter
         this.birthdayDataManager = new BirthdayDataManager(db);
         this.codeDataManager = new CodeDataManager(this);
         this.guildSettingsDataManager = new GuildSettingsDataManager(this);
+        this.morpherDataManager = new MorpherDataManager(db);
 
         bManager = new BlacklistManager();
 
@@ -154,7 +153,7 @@ public class Bot extends ListenerAdapter
                 .setAudioEnabled(false);
 
         if(config.isMorpherEnabled())
-            builder.addEventListener(new Morpher(config));
+            builder.addEventListener(new Morpher(config, getMorpherDataManager()));
 
         builder.build();
     }
@@ -281,6 +280,11 @@ public class Bot extends ListenerAdapter
     public GuildSettingsDataManager getGuildSettingsDataManager()
     {
         return guildSettingsDataManager;
+    }
+
+    public MorpherDataManager getMorpherDataManager()
+    {
+        return morpherDataManager;
     }
 
     // Managers
