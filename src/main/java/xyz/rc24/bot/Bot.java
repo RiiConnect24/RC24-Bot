@@ -124,7 +124,7 @@ public class Bot extends ListenerAdapter
             setGame(Game.playing(config.getPlaying()));
             setStatus(config.getStatus());
             setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E);
-            setLinkedCacheSize(10);
+            setLinkedCacheSize(40);
             setOwnerId(String.valueOf(config.getPrimaryOwner()));
             setPrefix("@mention");
             setServerInvite("https://discord.gg/5rw6Tur");
@@ -172,7 +172,6 @@ public class Bot extends ListenerAdapter
         ZoneId currentZone = ZoneId.of("UTC-6"); // CST FTW
         ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
 
-        // It'll default to Type <prefix>help, per using the default game above.
         if(config.birthdaysAreEnabled())
         {
             // Every day at 8AM
@@ -240,14 +239,15 @@ public class Bot extends ListenerAdapter
     {
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("CST"));
         c.setTime(new Date());
-        if(! (c.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY))
+        if(!(c.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY))
         {
             // Not today, m8
             return;
         }
 
         TextChannel general = jda.getTextChannelById(258999527783137280L);
-        if(general == null || ! (general.canTalk())) return;
+        if(general == null || !(general.canTalk()))
+            return;
 
         general.sendMessage("\u23F0 <@98938149316599808> **Music night in 15 minutes!**").queue();
     }

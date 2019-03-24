@@ -21,7 +21,7 @@ package xyz.rc24.bot.events;
 
 import ch.qos.logback.classic.Logger;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.LoggerFactory;
+import xyz.rc24.bot.RiiConnect24Bot;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,9 +33,10 @@ import java.util.Arrays;
  * @author Spotlight
  */
 
+@Deprecated
 public class MailParser
 {
-    private static final Logger logger = (Logger) (Logger) LoggerFactory.getLogger(MailParser.class);
+    private final Logger logger = (Logger) RiiConnect24Bot.getLogger(MailParser.class);
 
     /**
      * The following is based off a specific format.
