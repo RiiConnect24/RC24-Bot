@@ -84,12 +84,12 @@ public class Morpher extends ListenerAdapter
         StringBuilder attachmentsString = new StringBuilder();
         User author = rootMessage.getAuthor();
 
-        if(attachments.size() == 1)
+        if(attachments.size() == 1&& attachments.get(0).isImage())
         {
             Message.Attachment image = attachments.get(0);
-            embed.setImage(image.isImage() ? image.getUrl() : null);
+            embed.setImage(image.getUrl());
         }
-        else
+        else if(!(attachments.isEmpty()))
         {
             Message.Attachment image = attachments.stream().filter(Message.Attachment::isImage).findFirst().orElse(null);
             if(!(image == null))
@@ -110,7 +110,8 @@ public class Morpher extends ListenerAdapter
 
         // Set actual content
         embed.setDescription(description);
-        embed.addField("\uD83D\uDCCE Attachments:", attachmentsString.toString(), false);
+        if(!(attachments.isEmpty()))
+            embed.addField("\uD83D\uDCCE Attachments:", attachmentsString.toString(), false);
         embed.setTimestamp(rootMessage.getCreationTime());
 
         return embed.build();
