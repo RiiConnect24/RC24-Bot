@@ -39,6 +39,7 @@ public class RiiConnect24Bot
 
     public static void main(String[] args) throws IOException, LoginException
     {
+        System.setProperty("stacktrace.app.packages", "xyz.rc24.bot"); // Sentry
         getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
 
         new Bot().run();
