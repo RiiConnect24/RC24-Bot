@@ -27,7 +27,8 @@ package xyz.rc24.bot;
 
 public class Const
 {
-    public static final String VERSION = Const.class.getPackage().getImplementationVersion();
+    public static final String VERSION = Const.class.getPackage().getImplementationVersion() == null ? "DEV" :
+            Const.class.getPackage().getImplementationVersion();
     public static final String PATCHING_URL = "http://mtw.rc24.xyz/patch";
     public static final String SUCCESS_E = "✅";
     public static final String WARN_E = "⚠";
