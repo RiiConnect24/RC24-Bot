@@ -50,12 +50,12 @@ public class MailParseListener extends ListenerAdapter
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
     {
-        if(! (bot.config.isMailPatchEnabled())) return;
-        if(bot.bManager.isBlacklisted(event.getAuthor().getId())) return;
+        if(!(bot.config.isMailPatchEnabled()))
+            return;
 
         Message message = event.getMessage();
         // Make sure we're not patching our own uploaded file again.
-        if(! (message.getAuthor().isBot()))
+        if(!(message.getAuthor().isBot()))
         {
             for(Message.Attachment att : message.getAttachments())
             {
@@ -74,7 +74,8 @@ public class MailParseListener extends ListenerAdapter
                             throw new IOException("Invalid file! Make sure you sent the correct file!");
                         if(response.code() == 503)
                             throw new IOException("The server is now currently under maintenance. Please wait some time and try again.");
-                        if(! (response.isSuccessful())) throw new IOException();
+                        if(!(response.isSuccessful()))
+                            throw new IOException();
 
                         String content = response.body().string();
                         Writer output = new BufferedWriter(new FileWriter("nwc24msg.cfg", true));
