@@ -120,7 +120,7 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
 
     private GuildSettings getSettings(long id)
     {
-        return (bot.getCore() == null) ? null : bot.getCore().getGuildSettings(id);
+        return (bot == null || bot.getCore() == null) ? null : bot.getCore().getGuildSettings(id);
     }
 
     private void updateLogCache(GuildSettingsImpl gs, LogType type, long newChannel)

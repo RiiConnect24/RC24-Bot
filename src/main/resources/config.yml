@@ -12,7 +12,7 @@ secondary_owners:
   - 302534881370439681
 
 # Status of the bot
-status: ONLINE
+online_status: ONLINE
 
 # Set this false to use some production APIs.
 debug: true
