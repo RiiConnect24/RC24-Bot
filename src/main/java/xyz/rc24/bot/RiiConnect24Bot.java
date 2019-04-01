@@ -37,7 +37,7 @@ public class RiiConnect24Bot
 
     private static final Logger logger = (Logger) LoggerFactory.getLogger("RiiConnect24 Bot");
 
-    public static void main(String[] args) throws IOException, LoginException
+    public static void main(String[] args) throws LoginException
     {
         System.setProperty("stacktrace.app.packages", "xyz.rc24.bot"); // Sentry
         getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);

@@ -87,9 +87,7 @@ public class Bot extends ListenerAdapter
     private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(40);
     private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
-    public final ScheduledExecutorService botThreadPool = new ScheduledThreadPoolExecutor(40);
-
-    void run() throws IOException, LoginException
+    void run() throws LoginException
     {
         RiiConnect24Bot.setInstance(this);
         this.config = new Config();
