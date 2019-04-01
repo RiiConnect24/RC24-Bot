@@ -49,7 +49,6 @@ import xyz.rc24.bot.database.*;
 import xyz.rc24.bot.listeners.Morpher;
 import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
-import xyz.rc24.bot.managers.BlacklistManager;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -83,7 +82,6 @@ public class Bot extends ListenerAdapter
 
     // Managers
     private BirthdayManager birthdayManager;
-    public BlacklistManager bManager;
 
     private final Logger logger = RiiConnect24Bot.getLogger();
     private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(40);
@@ -298,10 +296,5 @@ public class Bot extends ListenerAdapter
     public BirthdayManager getBirthdayManager()
     {
         return birthdayManager;
-    }
-
-    public BlacklistManager getBlacklistManager()
-    {
-        return bManager;
     }
 }

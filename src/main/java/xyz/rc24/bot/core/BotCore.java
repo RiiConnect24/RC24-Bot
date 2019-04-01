@@ -35,6 +35,4 @@ public interface BotCore
     Map<CodeType, Map<String, String>> getAllCodes(long user);
 
     Map<String, String> getCodesForType(CodeType type, long user);
-
-    String getBlacklist(long id);
 }
