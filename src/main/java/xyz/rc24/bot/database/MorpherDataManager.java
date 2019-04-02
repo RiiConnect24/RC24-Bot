@@ -47,7 +47,7 @@ public class MorpherDataManager
     {
         Optional<DbRow> optRow = db.getRow("SELECT * FROM morpher WHERE root_msg_id = ?", rootMsg);
 
-        return optRow.map(dbRow -> dbRow.getLong("morpher_msg_id")).orElse(0L);
+        return optRow.map(dbRow -> dbRow.getLong("mirror_msg_id")).orElse(0L);
     }
 
     public void removeAssociation(long rootMsg)
