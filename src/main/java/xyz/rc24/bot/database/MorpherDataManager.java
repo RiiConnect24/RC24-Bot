@@ -40,7 +40,8 @@ public class MorpherDataManager
 
     public void setAssociation(long rootMsg, long mirrorMsg)
     {
-        db.doInsert("INSERT INTO morpher VALUES(?, ?)", rootMsg, mirrorMsg);
+        db.doInsert("INSERT INTO morpher VALUES(?, ?) " +
+                "ON DUPLICATE KEY UPDATE mirror_msg_id = ?", rootMsg, mirrorMsg, mirrorMsg);
     }
 
     public long getAssociation(long rootMsg)

@@ -23,8 +23,6 @@ import ch.qos.logback.classic.Logger;
 import javax.security.auth.login.LoginException;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 /**
  * Bot entry point.
  *
