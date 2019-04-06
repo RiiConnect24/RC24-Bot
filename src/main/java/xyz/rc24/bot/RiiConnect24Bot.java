@@ -239,7 +239,7 @@ public class RiiConnect24Bot extends ListenerAdapter
 
     private void reminderMusicNight(JDA jda)
     {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("CST"));
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("America/Texas"));
         c.setTime(new Date());
         if(! (c.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY))
         {
