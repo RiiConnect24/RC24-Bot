@@ -32,6 +32,7 @@
     </properties>
 
     <build>
+        <finalName>RC24-Bot</fullName>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>
