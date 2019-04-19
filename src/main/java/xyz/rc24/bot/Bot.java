@@ -220,6 +220,7 @@ public class Bot extends ListenerAdapter
             put("useSSL", config.useSSL());
             put("verifyServerCertificate", config.verifyServerCertificate());
             put("autoReconnect", config.autoReconnect());
+            put("serverTimezone", "CST"); // Doesn't really matter
         }};
 
         co.aikar.idb.Database db = PooledDatabaseOptions.builder()
