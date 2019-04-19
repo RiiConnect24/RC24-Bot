@@ -17,34 +17,22 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.core;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.Permission;
-import xyz.rc24.bot.commands.Categories;
+import net.dv8tion.jda.core.entities.Guild;
+import xyz.rc24.bot.core.entities.CodeType;
+import xyz.rc24.bot.core.entities.GuildSettings;
 
-/**
- * @author Spotlight
- */
+import java.util.Map;
 
-public class Ping extends Command
+@SuppressWarnings("unused")
+public interface BotCore
 {
-    public Ping()
-    {
-        this.name = "ping";
-        this.help = "Checks the bot's connection to Discord's servers.";
-        this.category = Categories.TOOLS;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.ownerCommand = false;
-        this.guildOnly = false;
-    }
+    GuildSettings getGuildSettings(Guild guild);
 
-    @Override
-    protected void execute(CommandEvent event)
-    {
-        long currentTime = System.currentTimeMillis();
-        event.reply("Pinging...", (message) -> message.editMessage("Discord API Ping: " + event.getJDA().getPing() + "ms, message edit latency: " + (System.currentTimeMillis() - currentTime) + "ms").queue());
-    }
+    GuildSettings getGuildSettings(long guild);
+
+    Map<CodeType, Map<String, String>> getAllCodes(long user);
+
+    Map<String, String> getCodesForType(CodeType type, long user);
 }

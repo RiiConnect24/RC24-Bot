@@ -17,9 +17,8 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.events;
+package xyz.rc24.bot.listeners;
 
-import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -30,10 +29,12 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import org.slf4j.LoggerFactory;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.managers.ServerConfigManager;
-import xyz.rc24.bot.managers.ServerConfigManager.LogType;
+import xyz.rc24.bot.core.BotCore;
+import xyz.rc24.bot.core.entities.GuildSettings;
+import xyz.rc24.bot.core.entities.LogType;
+import xyz.rc24.bot.database.GuildSettingsDataManager;
 
 import java.awt.Color;
 import java.time.Instant;
@@ -45,13 +46,14 @@ import java.time.format.DateTimeFormatter;
 
 public class ServerLog extends ListenerAdapter
 {
-    private ServerConfigManager manager;
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(ServerLog.class);
+    private final BotCore core;
+    private final GuildSettingsDataManager dataManager;
 
-    public ServerLog(RiiConnect24Bot bot)
+    public ServerLog(Bot bot)
     {
-        this.manager = bot.scm;
-        logger.info("Tracking :eyes:");
+        this.core = bot.getCore();
+        this.dataManager = bot.getGuildSettingsDataManager();
+        RiiConnect24Bot.getLogger(ServerLog.class).info("Tracking :eyes:");
     }
 
     @Override
@@ -90,7 +92,8 @@ public class ServerLog extends ListenerAdapter
     {
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(title);
-        builder.setDescription("User: " + user.getAsMention() + " | " + user.getName() + "#" + user.getDiscriminator() + "\n" + "Account creation date: `" + user.getCreationTime().format(DateTimeFormatter.RFC_1123_DATE_TIME) + "`");
+        builder.setDescription("User: " + user.getAsMention() + " | " + user.getName() + "#" + user.getDiscriminator() +
+                "\n" + "Account creation date: `" + user.getCreationTime().format(DateTimeFormatter.RFC_1123_DATE_TIME) + "`");
         builder.setColor(Color.decode(color));
         builder.setFooter("Current time: ", null);
         builder.setTimestamp(Instant.now());
@@ -101,24 +104,26 @@ public class ServerLog extends ListenerAdapter
     private void sendEmbed(LogType[] logTypes, EmbedBuilder embed, GenericGuildEvent guildEvent)
     {
         long guildId = guildEvent.getGuild().getIdLong();
+        GuildSettings gs = core.getGuildSettings(guildId);
 
         for(LogType logType : logTypes)
         {
             try
             {
-                long channelId = manager.getLog(logType, guildId);
+                long channelId = gs.getLog(logType);
                 TextChannel tc = guildEvent.getGuild().getTextChannelById(channelId);
                 if(tc == null)
                 {
-                    manager.disableLog(logType, guildId);
+                    dataManager.disableLog(logType, guildId);
                     return;
                 }
+
                 tc.sendMessage(embed.build()).queue();
             }
             catch(InsufficientPermissionException e)
             {
                 // Remove the log from the config, since it's invalid.
-                manager.disableLog(logType, guildId);
+                dataManager.disableLog(logType, guildId);
             }
         }
     }

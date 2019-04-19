@@ -17,25 +17,41 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.managers;
+package xyz.rc24.bot.database;
+
+import co.aikar.idb.DbRow;
+
+import java.util.Optional;
 
 /**
- * Think of it as the old Ruby yaml helper, but 1000x less painful.
+ * Data manager for Morpher
+ *
+ * @author Artuto
  */
-public class RoleManager
+
+public class MorpherDataManager
 {
-    public enum Type
+    private final Database db;
+
+    public MorpherDataManager(Database db)
     {
-        OWNER("Dummy Entry", false), DEVELOPER("RiiConnect24 Developers", true), BOT_HELPERS("Bot Helpers", false), MODERATORS("Server Moderators", true), HELPERS("Helpers", false), DONATORS("Donators", false), ADMINS("Server Administrators", false), TRANSLATORS("Translators", false);
-
-        private final String roleName;
-        private final Boolean shouldAlert;
-
-        Type(String roleName, Boolean shouldAlert)
-        {
-            this.roleName = roleName;
-            this.shouldAlert = shouldAlert;
-        }
+        this.db = db;
     }
 
+    public void setAssociation(long rootMsg, long mirrorMsg)
+    {
+        db.doInsert("INSERT INTO morpher VALUES(?, ?)", rootMsg, mirrorMsg);
+    }
+
+    public long getAssociation(long rootMsg)
+    {
+        Optional<DbRow> optRow = db.getRow("SELECT * FROM morpher WHERE root_msg_id = ?", rootMsg);
+
+        return optRow.map(dbRow -> dbRow.getLong("mirror_msg_id")).orElse(0L);
+    }
+
+    public void removeAssociation(long rootMsg)
+    {
+        db.doDelete("DELETE FROM morpher WHERE root_msg_id = ?", rootMsg);
+    }
 }

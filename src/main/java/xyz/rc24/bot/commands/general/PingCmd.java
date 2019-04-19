@@ -17,54 +17,33 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot;
+package xyz.rc24.bot.commands.general;
 
-import ch.qos.logback.classic.Logger;
-import javax.security.auth.login.LoginException;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import xyz.rc24.bot.commands.Categories;
 
 /**
- * Bot entry point.
- *
  * @author Artuto
  */
 
-public class RiiConnect24Bot
+public class PingCmd extends Command
 {
-    private static Bot instance;
-
-    private static final Logger logger = (Logger) LoggerFactory.getLogger("RiiConnect24 Bot");
-
-    public static void main(String[] args) throws LoginException
+    public PingCmd()
     {
-        System.setProperty("stacktrace.app.packages", "xyz.rc24.bot"); // Sentry
-        getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
-
-        new Bot().run();
+        this.name = "ping";
+        this.help = "Checks the bot's connection to Discord's servers.";
+        this.category = Categories.GENERAL;
+        this.ownerCommand = false;
+        this.guildOnly = false;
     }
 
-    public static Bot getInstance()
+    @Override
+    protected void execute(CommandEvent event)
     {
-        if(instance == null)
-            throw new IllegalStateException("The bot is not initialized!");
-
-        return instance;
-    }
-
-    public static Logger getLogger()
-    {
-        return logger;
-    }
-
-    public static Logger getLogger(Class clazz)
-    {
-        return (Logger) LoggerFactory.getLogger(clazz);
-    }
-
-    static void setInstance(Bot instance)
-    {
-        RiiConnect24Bot.instance = instance;
+        long currentTime = System.currentTimeMillis();
+        event.reply("Pinging...", (message) ->
+                message.editMessage("Discord API Ping: " + event.getJDA().getPing() +
+                        "ms, message edit latency: " + (System.currentTimeMillis() - currentTime) + "ms").queue());
     }
 }

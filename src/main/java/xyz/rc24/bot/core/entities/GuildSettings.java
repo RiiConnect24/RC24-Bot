@@ -17,17 +17,25 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.events;
+package xyz.rc24.bot.core.entities;
 
-import net.dv8tion.jda.core.entities.Guild;
+import java.util.Set;
 
-/**
- * Sometimes, first impressions are important.
- */
-public class JoinAnalyze
+public interface GuildSettings
 {
-    public void analyze(Guild guild)
-    {
-        // TODO: analyze automatically potential log channels
-    }
+    CodeType getDefaultAddType();
+
+    long getBirthdaysChannelId();
+
+    long getGuildId();
+
+    long getModlogChannelId();
+
+    long getServerlogChannelId();
+
+    Set<String> getPrefixes();
+
+    String getFirstPrefix();
+
+    long getLog(LogType type);
 }

@@ -17,39 +17,29 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.commands.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.Permission;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.loader.Config;
 
 /**
- * @author Spotlight
+ * @author Artuto
  */
 
-public class MailParseCommand extends Command
+public class InviteCmd extends Command
 {
-    private final Config config;
-
-    public MailParseCommand(Config config)
+    public InviteCmd()
     {
-        this.config = config;
-        this.name = "patch";
-        this.help = "Patches your `nwc24msg.cfg` for use with RiiConnect24.";
-        this.category = Categories.TOOLS;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.ownerCommand = false;
-        this.guildOnly = false;
+        this.name = "invite";
+        this.category = Categories.GENERAL;
+        this.help = "Invite me to your server?";
     }
 
     @Override
-    public void execute(CommandEvent event)
+    protected void execute(CommandEvent event)
     {
-        if(config.isMailPatchEnabled())
-            event.replyInDm("Drag and drop your `nwc24msg.cfg` here, and I'll patch it!", (success) -> event.reactSuccess(), (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + ": I couldn't DM you. Make sure your DMs are enabled."));
-        else event.replyError("The `patch` command has been disabled by the bot owner!");
+        event.reply("Aw, you want to invite me? <3\n" +
+                "Invite me here: " + event.getJDA().asBot().getInviteUrl());
     }
 }

@@ -1,19 +1,18 @@
----
 # Your bot account token. Create a bot account if you don't a bot account, get one and its token here -> https://discordapp.com/developers/applications/me/
-token: 'Put your token here!'
+token: "Put your token here!"
 # All commands will use this symbol(s) before the command name. eg. &say has a prefix of &
-prefix: '!'
+prefix: "!"
 # Will appear after "Playing" under the bots name. Set to nil to not show a game
 playing: "type !help"
 
 # These users will have full access to the bot's admin commands, and by extension, the server it is hosted on.
 # Give this power with care!!
-primary_owner: 264499432538505217
+owner: 264499432538505217
 secondary_owners:
   - 302534881370439681
 
 # Status of the bot
-status: ONLINE
+online_status: ONLINE
 
 # Set this false to use some production APIs.
 debug: true
@@ -22,7 +21,7 @@ debug: true
 root_server: 000000000000000000
 
 # Set this to true to allow patching of config files via DM.
-patch_mail: true
+patch_mail: false
 
 # Set this to true to enable Morpher running.
 morpher_enabled: false
@@ -39,14 +38,6 @@ birthdays_enabled: false
 # The channel that Birthdays will be sent in.
 birthdays_channel: 000000000000000000
 
-# Severs that should be logged
-logged_servers:
-  - 000000000000000000
-
-# Block specific channel IDs from being logged.
-ignore_ids:
-  - 000000000000000000
-
 # Set this to true to enable Sentry, if you don't know what is this leave it on false.
 sentry_enabled: false
 
@@ -55,5 +46,20 @@ sentry_dsn: ""
 
 # Reminder for the Music Night @ RC24
 music_night_reminder: false
+
+database:
+    # MySQL host.
+    host: "localhost:3306"
+    # MySQL user
+    user: ""
+    # MySQL user password.
+    password: ""
+    # MySQL database. MUST BE CREATED BEFORE!
+    database: ""
+
+    # Properties
+    useSSL: true
+    verifyServerCertificate: false
+    autoReconnect: true
 
 raid_prevention: false

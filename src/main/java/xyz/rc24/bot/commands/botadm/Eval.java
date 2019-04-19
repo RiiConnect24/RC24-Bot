@@ -25,7 +25,7 @@ import javax.script.ScriptEngine;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
-import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 
 import java.util.Arrays;
@@ -39,9 +39,9 @@ public class Eval extends Command
 {
     private ScriptEngine engine;
     private List<String> imports;
-    private RiiConnect24Bot bot;
+    private Bot bot;
 
-    public Eval(RiiConnect24Bot bot)
+    public Eval(Bot bot)
     {
         this.bot = bot;
         this.name = "eval";
@@ -69,7 +69,7 @@ public class Eval extends Command
                 "net.dv8tion.jda.core.managers.impl",
                 "net.dv8tion.jda.core.utils",
                 "net.dv8tion.jda.webhook",
-                "xyz.rc24.bot", "xyz.rc24.bot.events", "xyz.rc24.bot.loader",
+                "xyz.rc24.bot", "xyz.rc24.bot.listeners", "xyz.rc24.bot.loader",
                 "xyz.rc24.bot.managers", "xyz.rc24.bot.utils");
     }
 

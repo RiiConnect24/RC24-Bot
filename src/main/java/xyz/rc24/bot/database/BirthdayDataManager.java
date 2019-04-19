@@ -17,34 +17,53 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.loader;
+package xyz.rc24.bot.database;
 
-import net.dv8tion.jda.core.OnlineStatus;
+import co.aikar.idb.DbRow;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-// We have to keep this public due to Jackson.
-@SuppressWarnings("WeakerAccess")
-public class ConfigFormat
+/**
+ * Data manager for Birthdays
+ *
+ * @author Artuto
+ */
+
+public class BirthdayDataManager
 {
-    public String token;
-    public String prefix;
-    public String playing;
-    public Long primary_owner;
-    public Long[] secondary_owners;
-    public OnlineStatus status;
-    public Boolean debug;
-    public Long root_server;
-    public Boolean patch_mail;
-    public Boolean morpher_enabled;
-    public Long morpher_root;
-    public Long morpher_mirror;
-    public Boolean birthdays_enabled;
-    public Long birthdays_channel;
-    public List<Long> logged_servers;
-    public List<Long> ignore_ids;
-    public String sentry_dsn;
-    public boolean sentry_enabled;
-    public boolean music_night_reminder;
-    public boolean raid_prevention;
+    private final Database db;
+
+    public BirthdayDataManager(Database db)
+    {
+        this.db = db;
+    }
+
+    public boolean setBirthday(long userId, String date)
+    {
+        return db.doInsert("INSERT INTO birthdays VALUES(?, ?) " +
+                "ON DUPLICATE KEY UPDATE day = ?", userId, date, date);
+    }
+
+    public String getBirthday(long userId)
+    {
+        Optional<DbRow> optRow = db.getRow("SELECT * FROM birthdays WHERE user_id = ?", userId);
+
+        return optRow.map(dbRow -> dbRow.getString("day")).orElse(null);
+    }
+
+    public List<Long> getPeopleWithDate(String date)
+    {
+        Optional<List<DbRow>> optRows = db.getRows("SELECT * FROM birthdays WHERE day = ?", date);
+        if(!(optRows.isPresent()))
+            return Collections.emptyList();
+
+        List<Long> ids = new ArrayList<>();
+        for(DbRow row : optRows.get())
+            ids.add(row.getLong("user_id"));
+
+        return ids;
+    }
 }

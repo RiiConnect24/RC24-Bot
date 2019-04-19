@@ -23,14 +23,14 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import xyz.rc24.bot.core.entities.CodeType;
+import xyz.rc24.bot.core.entities.LogType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * @author Artu
- * <p>
- * The following code is property of jagrosh () with some changes made by me.
- * Contact me if any issue.
+ * @author Artuto
  */
 
 public class FormatUtil
@@ -69,5 +69,45 @@ public class FormatUtil
             out.append("\n - ").append(list.get(i).getName()).append(" (ID:").append(list.get(i).getId()).append(")");
         if(list.size() > 6) out.append("\n**And ").append(list.size() - 6).append(" more...**");
         return out.toString();
+    }
+
+    public static String getChannelTypes()
+    {
+        StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
+        for(LogType type : LogType.values())
+        {
+            if(type == LogType.UNKNOWN)
+                continue;
+
+            // `type`: Definition\n
+            response.append("`").append(type.getCode()).append("`: ").append(type.getDescription()).append("\n");
+        }
+
+        return response.toString();
+    }
+
+    public static String getCodeTypes()
+    {
+        StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
+        for(CodeType type : CodeType.values())
+        {
+            if(type == CodeType.UNKNOWN)
+                continue;
+
+            response.append("`").append(type.getName()).append("`, ");
+        }
+
+        // Remove leftover comma + space
+        return response.substring(0, response.length() - 2);
+    }
+
+    public static String getCodeLayout(Map<String, String> codes)
+    {
+        // Create a human-readable format of the user's Wii wii.
+        StringBuilder codesString = new StringBuilder();
+        for(Map.Entry<String, String> code : codes.entrySet())
+            codesString.append("`").append(code.getKey()).append("`:\n").append(code.getValue()).append("\n");
+
+        return codesString.toString();
     }
 }

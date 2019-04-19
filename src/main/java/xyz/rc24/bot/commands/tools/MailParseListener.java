@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.utils.IOUtil;
 import okhttp3.*;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.Bot;
 
 import java.io.*;
 
@@ -40,9 +40,9 @@ import java.io.*;
 public class MailParseListener extends ListenerAdapter
 {
     private static final Logger logger = (Logger) LoggerFactory.getLogger(MailParseListener.class);
-    private final RiiConnect24Bot bot;
+    private final Bot bot;
 
-    public MailParseListener(RiiConnect24Bot bot)
+    public MailParseListener(Bot bot)
     {
         this.bot = bot;
     }
@@ -50,12 +50,12 @@ public class MailParseListener extends ListenerAdapter
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
     {
-        if(! (bot.config.isMailPatchEnabled())) return;
-        if(bot.bManager.isBlacklisted(event.getAuthor().getId())) return;
+        if(!(bot.config.isMailPatchEnabled()))
+            return;
 
         Message message = event.getMessage();
         // Make sure we're not patching our own uploaded file again.
-        if(! (message.getAuthor().isBot()))
+        if(!(message.getAuthor().isBot()))
         {
             for(Message.Attachment att : message.getAttachments())
             {
@@ -74,7 +74,8 @@ public class MailParseListener extends ListenerAdapter
                             throw new IOException("Invalid file! Make sure you sent the correct file!");
                         if(response.code() == 503)
                             throw new IOException("The server is now currently under maintenance. Please wait some time and try again.");
-                        if(! (response.isSuccessful())) throw new IOException();
+                        if(!(response.isSuccessful()))
+                            throw new IOException();
 
                         String content = response.body().string();
                         Writer output = new BufferedWriter(new FileWriter("nwc24msg.cfg", true));
@@ -87,10 +88,10 @@ public class MailParseListener extends ListenerAdapter
                     {
                         if(e.getMessage() == null)
                         {
-                            event.getChannel().sendMessage(Const.FAIL_E + " Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
+                            event.getChannel().sendMessage(Const.ERROR_E + " Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
                             e.printStackTrace();
                         }
-                        else event.getChannel().sendMessage(Const.FAIL_E + " " + e.getMessage()).queue();
+                        else event.getChannel().sendMessage(Const.ERROR_E + " " + e.getMessage()).queue();
                     }
 
                     /*try

@@ -17,28 +17,53 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.tools;
-
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import xyz.rc24.bot.commands.Categories;
+package xyz.rc24.bot.core.entities;
 
 /**
- * @author Artu, Spotlight
+ * Log type enum
+ *
+ * @author Artuto
  */
 
-public class Invite extends Command
+public enum LogType
 {
-    public Invite()
+    MOD("mod", "Moderation log. Shows bans/unbans.", "modlog_id"),
+    SERVER("srv", "Server log. Shows bans/unbans, along with joins and leaves.", "serverlog_id"),
+
+    UNKNOWN(null, null, null);
+
+    private final String code, description, column;
+
+    LogType(String code, String description, String column)
     {
-        this.name = "invite";
-        this.category = Categories.TOOLS;
-        this.help = "Invite me to your server?";
+        this.code = code;
+        this.description = description;
+        this.column = column;
     }
 
-    @Override
-    protected void execute(CommandEvent event)
+    public String getCode()
     {
-        event.reply("Aw, you want to invite me? <3\n" + "Invite me here: " + event.getJDA().asBot().getInviteUrl());
+        return code;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public String getColumn()
+    {
+        return column;
+    }
+
+    public static LogType fromCode(String code)
+    {
+        for(LogType type : values())
+        {
+            if(code.equals(type.getCode()))
+                return type;
+        }
+
+        return UNKNOWN;
     }
 }

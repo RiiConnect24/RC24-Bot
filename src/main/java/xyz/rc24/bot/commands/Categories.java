@@ -20,19 +20,17 @@
 package xyz.rc24.bot.commands;
 
 import com.jagrosh.jdautilities.command.Command.Category;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import xyz.rc24.bot.managers.BlacklistManager;
+
+/**
+ * Command categories
+ *
+ * @author Artuto
+ */
 
 public class Categories
 {
-    private static BlacklistManager bManager;
-
-    public Categories(BlacklistManager bManager)
-    {
-        Categories.bManager = bManager;
-    }
-
-    public static final Category ADMIN = new Category("Bot Administration", CommandEvent::isOwner);
-    public static final Category TOOLS = new Category("Tools", event -> ! (bManager.isBlacklisted(event.getAuthor().getId())));
-    public static final Category WII = new Category("Wii-related", event -> ! (bManager.isBlacklisted(event.getAuthor().getId())));
+    public static final Category ADMIN = new Category("Bot Administration");
+    public static final Category GENERAL = new Category("General");
+    public static final Category TOOLS = new Category("Tools");
+    public static final Category WII = new Category("Wii-related");
 }

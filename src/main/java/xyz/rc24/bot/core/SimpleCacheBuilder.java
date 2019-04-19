@@ -17,54 +17,34 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot;
+package xyz.rc24.bot.core;
 
-import ch.qos.logback.classic.Logger;
-import javax.security.auth.login.LoginException;
-import org.slf4j.LoggerFactory;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Bot entry point.
+ * Easy cache builder for our needs.
  *
  * @author Artuto
  */
 
-public class RiiConnect24Bot
+public class SimpleCacheBuilder<K, V>
 {
-    private static Bot instance;
+    private int expireHours = 1;
 
-    private static final Logger logger = (Logger) LoggerFactory.getLogger("RiiConnect24 Bot");
+    public SimpleCacheBuilder() {}
 
-    public static void main(String[] args) throws LoginException
+    public SimpleCacheBuilder(int expireHours)
     {
-        System.setProperty("stacktrace.app.packages", "xyz.rc24.bot"); // Sentry
-        getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
-
-        new Bot().run();
+        this.expireHours = expireHours;
     }
 
-    public static Bot getInstance()
+    public <K1 extends K, V1 extends V> Cache<K1, V1> build()
     {
-        if(instance == null)
-            throw new IllegalStateException("The bot is not initialized!");
-
-        return instance;
-    }
-
-    public static Logger getLogger()
-    {
-        return logger;
-    }
-
-    public static Logger getLogger(Class clazz)
-    {
-        return (Logger) LoggerFactory.getLogger(clazz);
-    }
-
-    static void setInstance(Bot instance)
-    {
-        RiiConnect24Bot.instance = instance;
+        return CacheBuilder.newBuilder()
+                .expireAfterAccess(expireHours, TimeUnit.HOURS)
+                .maximumSize(500).build();
     }
 }
