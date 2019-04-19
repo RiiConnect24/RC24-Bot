@@ -28,7 +28,6 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public interface BotCore
 {
-<<<<<<< HEAD:src/main/java/xyz/rc24/bot/core/BotCore.java
     GuildSettings getGuildSettings(Guild guild);
 
     GuildSettings getGuildSettings(long guild);
@@ -36,26 +35,4 @@ public interface BotCore
     Map<CodeType, Map<String, String>> getAllCodes(long user);
 
     Map<String, String> getCodesForType(CodeType type, long user);
-=======
-    public String token;
-    public String prefix;
-    public String playing;
-    public Long primary_owner;
-    public Long[] secondary_owners;
-    public OnlineStatus status;
-    public Boolean debug;
-    public Long root_server;
-    public Boolean patch_mail;
-    public Boolean morpher_enabled;
-    public Long morpher_root;
-    public Long morpher_mirror;
-    public Boolean birthdays_enabled;
-    public Long birthdays_channel;
-    public List<Long> logged_servers;
-    public List<Long> ignore_ids;
-    public String sentry_dsn;
-    public boolean sentry_enabled;
-    public boolean music_night_reminder;
-    public boolean raid_prevention;
->>>>>>> java:src/main/java/xyz/rc24/bot/loader/ConfigFormat.java
 }
