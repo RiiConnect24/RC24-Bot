@@ -137,7 +137,7 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
     private Set<String> addPrefixJson(long id, String prefix)
     {
         Set<String> current = Objects.requireNonNull(getSettings(id)).getPrefixes();
-        if(current.getClass().getSimpleName().equals("EmptySet") || current.getClass().getSimpleName().equals("SingletonList"))
+        if(current.getClass().getSimpleName().equals("EmptySet") || current.getClass().getSimpleName().equals("SingletonSet"))
         {
             current = new HashSet<>();
             ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setPrefixes(current);
