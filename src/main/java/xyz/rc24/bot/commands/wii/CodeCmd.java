@@ -49,7 +49,7 @@ public class CodeCmd extends Command
     private final CodeDataManager dataManager;
 
     private final Pattern FULL_PATTERN = Pattern.compile("(\\w+)\\s+(.+?)\\s+(\\d{4}[-\\s]\\d{4}[-\\s]\\d{4}" +
-            "(?:[-\\s]\\d{4})|\\w+)$", Pattern.MULTILINE); // thanks Dismissed
+            "(?:[-\\s]\\d{4})?|\\w+)$", Pattern.MULTILINE); // thanks Dismissed
     private final Pattern REMOVE_PATTERN = Pattern.compile("(\\w+)\\s+(.+?)$", Pattern.MULTILINE);
 
     public CodeCmd(Bot bot)
