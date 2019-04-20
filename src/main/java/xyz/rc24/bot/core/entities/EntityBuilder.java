@@ -61,6 +61,7 @@ public class EntityBuilder
 
     public GuildSettings buildDefaultGuildSettings(long id)
     {
-        return new GuildSettingsImpl(CodeType.WII, 0L, id, 0L, 0L, Collections.emptySet());
+        return new GuildSettingsImpl(CodeType.WII, 0L, id, 0L, 0L,
+                                     Collections.singleton(RiiConnect24Bot.getInstance().getConfig().getPrefix()));
     }
 }
