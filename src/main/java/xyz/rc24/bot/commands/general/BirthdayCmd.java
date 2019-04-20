@@ -61,6 +61,8 @@ public class BirthdayCmd extends Command
             }
             else
                 event.replyError("**" + target.getEffectiveName() + "** does not have a birthday set!");
+
+            return;
         }
 
         if(target.equals(event.getMember()))
