@@ -164,10 +164,8 @@ public class Bot extends ListenerAdapter
         // Check if we need to set a game
         if(config.getPlaying().isEmpty())
             event.getJDA().getPresence().setGame(Game.playing("Type " + config.getPrefix() + "help"));
-
-        ZonedDateTime localNow = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6"));
-        ZoneId currentZone = ZoneId.of("UTC-6"); // CST FTW
-        ZonedDateTime zonedNow = ZonedDateTime.of(localNow.toLocalDateTime(), currentZone);
+            
+        ZonedDateTime zonedNow = OffsetDateTime.now().toZonedDateTime();
 
         if(config.birthdaysAreEnabled())
         {
@@ -221,7 +219,7 @@ public class Bot extends ListenerAdapter
             put("verifyServerCertificate", config.verifyServerCertificate());
             put("autoReconnect", config.autoReconnect());
             put("serverTimezone", "CST"); // Doesn't really matter
-            // put("useUnicode", true);
+            put("characterEncoding", "UTF-8");
         }};
 
         co.aikar.idb.Database db = PooledDatabaseOptions.builder()
@@ -236,8 +234,7 @@ public class Bot extends ListenerAdapter
 
     private void remindMusicNight(JDA jda)
     {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("CST"));
-        c.setTime(new Date());
+        Calendar c = Calendar.getInstance();
         if(!(c.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY))
         {
             // Not today, m8
