@@ -21,28 +21,25 @@ package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.Permission;
 import xyz.rc24.bot.commands.Categories;
 
 /**
- * @author Spotlight
+ * @author Artuto
  */
 
-public class Wads extends Command
+public class WadsCmd extends Command
 {
-    public Wads()
+    public WadsCmd()
     {
         this.name = "wads";
-        this.help = "Lets you know the URL to the IOS Patcher.";
+        this.help = "Lets you know the URL to the RiiConnect24 Patcher.";
         this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = false;
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        event.reply("Check out the patcher here: https://github.com/RiiConnect24/IOS-Patcher/releases");
+        event.reply("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest");
     }
 }

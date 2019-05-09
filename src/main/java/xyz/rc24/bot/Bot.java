@@ -34,13 +34,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import xyz.rc24.bot.commands.botadm.Bash;
-import xyz.rc24.bot.commands.botadm.Eval;
-import xyz.rc24.bot.commands.botadm.Shutdown;
-import xyz.rc24.bot.commands.general.BirthdayCmd;
-import xyz.rc24.bot.commands.general.InviteCmd;
-import xyz.rc24.bot.commands.general.PingCmd;
-import xyz.rc24.bot.commands.general.SetBirthdayCmd;
+import xyz.rc24.bot.commands.botadm.*
+import xyz.rc24.bot.commands.general.*
 import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.core.BotCore;
@@ -140,7 +135,7 @@ public class Bot extends ListenerAdapter
 
                 // Wii-related
                 new AddCmd(this), new CodeCmd(this), new BlocksCmd(), new ErrorInfo(config.isDebug()),
-                new DNS(), new Wads(), new WiiWare());
+                new DNS(), new WadsCmd(), new WiiWare());
 
         // JDA Connection
         JDABuilder builder = new JDABuilder(config.getToken())
