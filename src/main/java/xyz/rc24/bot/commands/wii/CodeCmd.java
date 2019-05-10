@@ -57,7 +57,7 @@ public class CodeCmd extends Command
         this.dataManager = bot.getCodeDataManager();
         this.name = "code";
         this.help = "Manages friend codes for the user.";
-        this.children = new Command[]{new AddCmd(), new EditCmd(), new LookupCmd(), new RemoveCmd()};
+        this.children = new Command[]{new AddCmd(), new EditCmd(), new HelpCmd(), new LookupCmd(), new RemoveCmd()};
         this.category = Categories.WII;
         this.guildOnly = false;
     }
@@ -149,6 +149,34 @@ public class CodeCmd extends Command
                 event.replySuccess("Edited the code for `" + args.get(1) + "`");
             else
                 event.replyError("Error whilst editing a code! Please contact a developer.");
+        }
+    }
+
+    private class HelpCmd extends Command
+    {
+        HelpCmd()
+        {
+            this.name = "help";
+            this.help = "Shows help regarding codes.";
+            this.category = Categories.WII;
+			this.guildOnly = false;
+        }
+
+        @Override
+        protected void execute(CommandEvent event)
+        {
+            String help = "**__Using the bot__**\n\n" + 
+			    "**Adding Wii:**\n" + "`" + event.getClient().getPrefix() + "code add wii Wii Name Goes here 1234-5678-9012-3456`\n" + 
+			    "**Adding games:**\n `" + event.getClient().getPrefix() + "code add game Game Name 1234-5678-9012`\n" +
+		    	"and many more types! Run `" + event.getClient().getPrefix() + "code add` " +
+			    "to see all supported code types right now, such as the 3DS, PlayStation 4 and Switch.\n\n" +
+			    "**Editing codes**\n" + "`" + event.getClient().getPrefix() + "code edit type Name 1234-5678-9012-3456`\n\n" +
+			    "**Removing codes**\n" + "`" + event.getClient().getPrefix() + "code remove type Name`\n\n" + 
+			    "**Looking up codes**\n" + "`" + event.getClient().getPrefix() + "code lookup @user`\n\n" +
+			    "**Adding a user's Wii**\n" + "`" + event.getClient().getPrefix() + "add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
+
+            event.replyInDm(help, (success) -> event.reactSuccess(), (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + 
+			    ": I couldn't DM you. Make sure your DMs are enabled."));
         }
     }
 
