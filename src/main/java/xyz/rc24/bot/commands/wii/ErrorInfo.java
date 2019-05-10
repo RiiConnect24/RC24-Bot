@@ -42,12 +42,17 @@ import java.util.regex.Pattern;
 /**
  * Looks up errors using the Wiimmfi API.
  *
- * @author Spotlight, Artu
+ * @author Spotlight, Artuto
  */
 
 public class ErrorInfo extends Command
 {
     private static Boolean debug;
+	
+	private final Pattern CHANNEL = Pattern.compile("(NEWS|FORE)0{4}\\d{2}", Pattern.CASE_INSENSITIVE);
+	private final Pattern CHANNEL_CODE = Pattern.compile("0{4}\\d{2}");
+	
+	private final Pattern CODE = Pattern.compile("\\d{1,6}");
 
     public ErrorInfo(Boolean isInDebug)
     {
@@ -56,27 +61,28 @@ public class ErrorInfo extends Command
         this.help = "Looks up errors using the Wiimmfi API.";
         this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
-        this.ownerCommand = false;
         this.guildOnly = false;
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        Matcher channelCheck = Pattern.compile("(NEWS|FORE)0{4}\\d{2}").matcher(event.getArgs());
+        Matcher channelCheck = CHANNEL.matcher(event.getArgs());
         // Check for Fore/News
         if(channelCheck.find())
         {
             // First match will be the type, then second our actual code.
-            Integer code;
+            int code;
             try
             {
                 // Make sure the code's actually a code.
-                Matcher codeCheck = Pattern.compile("0{4}\\d{2}").matcher(channelCheck.group());
-                if(! (codeCheck.find())) throw new NumberFormatException();
+                Matcher codeCheck = CHANNEL_CODE.matcher(channelCheck.group());
+                if(!(codeCheck.find()))
+					throw new NumberFormatException();
 
                 code = Integer.parseInt(codeCheck.group(0));
-                if(channelErrors.get(code) == null) throw new NumberFormatException();
+                if(channelErrors.get(code) == null)
+					throw new NumberFormatException();
             }
             catch(NumberFormatException e)
             {
@@ -94,17 +100,21 @@ public class ErrorInfo extends Command
         }
         else
         {
-            Integer code;
+            int code;
             try
             {
                 // Validate it is a number.
-                Matcher codeCheck = Pattern.compile("\\d{1,6}").matcher(event.getArgs());
-                if(! codeCheck.find()) throw new NumberFormatException();
+                Matcher codeCheck = CODE.matcher(event.getArgs());
+                if(!codeCheck.find())
+					throw new NumberFormatException();
+				
                 code = Integer.parseInt(codeCheck.group(0));
                 if(code == 0)
+				{
                     // 0 returns an empty array (see https://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680936)
                     // We'll just treat it as an error.
                     throw new NumberFormatException();
+				}
             }
             catch(NumberFormatException e)
             {
@@ -114,7 +124,8 @@ public class ErrorInfo extends Command
 
             // Get method
             String method = "e=" + code;
-            if(debug) method = "t=" + code;
+            if(debug)
+				method = "t=" + code;
 
             // TODO: Rewrite using OkHttp3
 
@@ -123,7 +134,7 @@ public class ErrorInfo extends Command
                 URL jsonAPI = new URL("https://wiimmfi.de/error?" + method + "&m=json");
                 Gson gson = new Gson();
                 JSONFormat test = gson.fromJson(new InputStreamReader(jsonAPI.openStream()), JSONFormat[].class)[0];
-                if(! (test.found == 1))
+                if(!(test.found == 1))
                 {
                     event.replyError("Could not find the specified error from Wiimmfi.");
                     return;
@@ -201,7 +212,7 @@ public class ErrorInfo extends Command
         put(3, "VFF file corrupted. Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
         put(4, "Unknown (it probably doesn't exist).");
         put(5, "VFF processing error. Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
-        put(6, "Invalid data. If getting this on the Forecast Channel, try again in a few minutes. If you're still getting this error, follow https://wii.guide/riiconnect24-batteryfix and it might fix it.");
+        put(6, "Invalid data. If getting this on the **Forecast Channel**, try again in a few minutes. If you're still getting this error, follow https://wii.guide/riiconnect24-batteryfix and it might fix it.");
         put(99, "Other error. Follow https://wii.guide/riiconnect24-troubleshooting to potentially fix it.");
     }};
 
