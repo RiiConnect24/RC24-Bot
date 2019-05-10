@@ -171,6 +171,30 @@
                                         <include>**</include>
                                     </includes>
                                 </filter>
+								<filter>
+                                    <artifact>mysql:mysql-connector-java</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+								<filter>
+                                    <artifact>ch.qos.logback:logback-core</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+								<filter>
+                                    <artifact>ch.qos.logback:logback-classic</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+								<filter>
+                                    <artifact>io.sentry:sentry-logback</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
 							</filters>	
                         </configuration>
                     </execution>
