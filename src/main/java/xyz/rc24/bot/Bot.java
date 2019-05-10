@@ -30,6 +30,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
@@ -127,7 +128,7 @@ public class Bot extends ListenerAdapter
                 new Bash(), new Eval(this), new Shutdown(),
 
                 // General
-                new BirthdayCmd(this), new InviteCmd(), new PingCmd(), new SetBirthdayCmd(),
+                new BirthdayCmd(this), new InviteCmd(), new PingCmd(), new SetBirthdayCmd(this),
 
                 // Tools
                 new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
@@ -289,4 +290,12 @@ public class Bot extends ListenerAdapter
     {
         return birthdayManager;
     }
+	
+	public String getPrefix(Guild guild)
+	{
+		if(guild == null)
+			return config.getPrefix();
+		
+		return getCore().getGuildSettings(guild).getFirstPrefix();
+	}
 }

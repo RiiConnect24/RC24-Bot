@@ -21,9 +21,8 @@ package xyz.rc24.bot.commands.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.database.BirthdayDataManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,12 +34,12 @@ import java.time.format.DateTimeParseException;
 
 public class SetBirthdayCmd extends Command
 {
-    private BirthdayDataManager dataManager;
+    private Bot bot;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
 
-    public SetBirthdayCmd()
+    public SetBirthdayCmd(Bot bot)
     {
-        this.dataManager = RiiConnect24Bot.getInstance().getBirthdayDataManager();
+        this.bot = bot;
         this.name = "setbirthday";
         this.help = "Sets your birthday.";
         this.category = Categories.GENERAL;
@@ -56,11 +55,11 @@ public class SetBirthdayCmd extends Command
         if(dateTime == null)
         {
             event.replyError("I couldn't parse your date.\n" +
-                    "Try something like: `" + event.getClient().getPrefix() + "setbirthday 25/12` (DD/MM).");
+                    "Try something like: `" + bot.getPrefix(event.getGuild()) + "setbirthday 25/12` (DD/MM).");
             return;
         }
 
-        boolean success = dataManager.setBirthday(id, dateTime.getDayOfMonth() + "/" + dateTime.getMonthValue());
+        boolean success = bot.getBirthdayDataManager().setBirthday(id, dateTime.getDayOfMonth() + "/" + dateTime.getMonthValue());
 
         if(success)
             event.replySuccess("Updated successfully!");

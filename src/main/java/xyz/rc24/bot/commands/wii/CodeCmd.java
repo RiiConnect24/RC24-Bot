@@ -26,7 +26,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.database.CodeDataManager;
@@ -45,7 +44,7 @@ import java.util.regex.Pattern;
 
 public class CodeCmd extends Command
 {
-    private final BotCore core;
+    private final Bot bot;
     private final CodeDataManager dataManager;
 
     private final Pattern FULL_PATTERN = Pattern.compile("(\\w+)\\s+(.+?)\\s+((?:\\d{4}|SW)[-\\s]\\d{4}[-\\s]\\d{4}(?:[-\\s]\\d{4})?|\\w+)$", Pattern.MULTILINE); // thanks Dismissed
@@ -53,7 +52,7 @@ public class CodeCmd extends Command
 
     public CodeCmd(Bot bot)
     {
-        this.core = bot.getCore();
+        this.bot = bot;
         this.dataManager = bot.getCodeDataManager();
         this.name = "code";
         this.help = "Manages friend codes for the user.";
@@ -96,7 +95,7 @@ public class CodeCmd extends Command
                 return;
             }
 
-            Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
+            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getAuthor().getIdLong());
             if(codeTypes.containsKey(args.get(1)))
             {
                 event.replyWarning("You already added this code!");
@@ -138,7 +137,7 @@ public class CodeCmd extends Command
                 return;
             }
 
-            Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
+            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getAuthor().getIdLong());
             if(!(codeTypes.containsKey(args.get(1))))
             {
                 event.replyWarning("A code for `" + args.get(1) + "` is not registered.");
@@ -165,15 +164,17 @@ public class CodeCmd extends Command
         @Override
         protected void execute(CommandEvent event)
         {
+			String prefix = bot.getPrefix(event.getGuild());
+			
             String help = "**__Using the bot__**\n\n" + 
-			    "**Adding Wii:**\n" + "`" + event.getClient().getPrefix() + "code add wii Wii Name Goes here 1234-5678-9012-3456`\n" + 
-			    "**Adding games:**\n `" + event.getClient().getPrefix() + "code add game Game Name 1234-5678-9012`\n" +
-		    	"and many more types! Run `" + event.getClient().getPrefix() + "code add` " +
+			    "**Adding Wii:**\n" + "`" + prefix + "code add wii Wii Name Goes here 1234-5678-9012-3456`\n" + 
+			    "**Adding games:**\n `" + prefix + "code add game Game Name 1234-5678-9012`\n" +
+		    	"and many more types! Run `" + prefix + "code add` " +
 			    "to see all supported code types right now, such as the 3DS, PlayStation 4 and Switch.\n\n" +
-			    "**Editing codes**\n" + "`" + event.getClient().getPrefix() + "code edit type Name 1234-5678-9012-3456`\n\n" +
-			    "**Removing codes**\n" + "`" + event.getClient().getPrefix() + "code remove type Name`\n\n" + 
-			    "**Looking up codes**\n" + "`" + event.getClient().getPrefix() + "code lookup @user`\n\n" +
-			    "**Adding a user's Wii**\n" + "`" + event.getClient().getPrefix() + "add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
+			    "**Editing codes**\n" + "`" + prefix + "code edit type Name 1234-5678-9012-3456`\n\n" +
+			    "**Removing codes**\n" + "`" + prefix + "code remove type Name`\n\n" + 
+			    "**Looking up codes**\n" + "`" + prefix + "code lookup @user`\n\n" +
+			    "**Adding a user's Wii**\n" + "`" + prefix + "add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
 
             event.replyInDm(help, (success) -> event.reactSuccess(), (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + 
 			    ": I couldn't DM you. Make sure your DMs are enabled."));
@@ -200,7 +201,7 @@ public class CodeCmd extends Command
             EmbedBuilder codeEmbed = new EmbedBuilder().setAuthor("Profile for " + member.getEffectiveName(),
                     null, member.getUser().getEffectiveAvatarUrl()).setColor(member.getColor());
 
-            Map<CodeType, Map<String, String>> userCodes = core.getAllCodes(member.getUser().getIdLong());
+            Map<CodeType, Map<String, String>> userCodes = bot.getCore().getAllCodes(member.getUser().getIdLong());
             for(Map.Entry<CodeType, Map<String, String>> typeData : userCodes.entrySet())
             {
                 Map<String, String> codes = typeData.getValue();
@@ -245,7 +246,7 @@ public class CodeCmd extends Command
                 return;
             }
 
-            Map<String, String> codeTypes = core.getCodesForType(type, event.getAuthor().getIdLong());
+            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getAuthor().getIdLong());
             if(!(codeTypes.containsKey(args.get(1))))
             {
                 event.replyWarning("A code for `" + args.get(1) + "` is not registered.");

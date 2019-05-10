@@ -33,11 +33,11 @@ import xyz.rc24.bot.utils.SearcherUtil;
 
 public class BirthdayCmd extends Command
 {
-    private BirthdayDataManager dataManager;
+    private Bot bot;
 
     public BirthdayCmd(Bot bot)
     {
-        this.dataManager = bot.getBirthdayDataManager();
+        this.bot = bot;
         this.name = "birthday";
         this.help = "View your birthday or someone else's.";
         this.category = Categories.GENERAL;
@@ -50,14 +50,14 @@ public class BirthdayCmd extends Command
         if(target == null)
             return;
 
-        String date = dataManager.getBirthday(target.getUser().getIdLong());
+        String date = bot.getBirthdayDataManager().getBirthday(target.getUser().getIdLong());
 
         if(date == null)
         {
             if(target.equals(event.getMember()))
             {
                 event.replyError("You don't have set your birthday!" +
-                        " Set it using  `" + event.getClient().getPrefix() + "setbirthday`!");
+                        " Set it using  `" + bot.getPrefix(event.getGuild()) + "setbirthday`!");
             }
             else
                 event.replyError("**" + target.getEffectiveName() + "** does not have a birthday set!");
