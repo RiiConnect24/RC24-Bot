@@ -163,6 +163,15 @@
                                     <mainClass>xyz.rc24.bot.RiiConnect24Bot</mainClass>
                                 </transformer>
                             </transformers>
+							<minimizeJar>true</minimizeJar>
+                            <filters>
+                                <filter>
+                                    <artifact>org.codehaus.groovy:groovy-jsr223</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+							</filters>	
                         </configuration>
                     </execution>
                 </executions>
