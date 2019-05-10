@@ -56,7 +56,7 @@ public class SetBirthdayCmd extends Command
         if(dateTime == null)
         {
             event.replyError("I couldn't parse your date.\n" +
-                    "Try something like: `" + event.getClient().getPrefix() + "setbirthday 25/12`.");
+                    "Try something like: `" + event.getClient().getPrefix() + "setbirthday 25/12` (DD/MM).");
             return;
         }
 
