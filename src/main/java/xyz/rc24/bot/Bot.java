@@ -34,8 +34,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import xyz.rc24.bot.commands.botadm.*
-import xyz.rc24.bot.commands.general.*
+import xyz.rc24.bot.commands.botadm.*;
+import xyz.rc24.bot.commands.general.*;
 import xyz.rc24.bot.commands.tools.*;
 import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.core.BotCore;
