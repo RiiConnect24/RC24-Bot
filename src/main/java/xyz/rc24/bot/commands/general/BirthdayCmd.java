@@ -22,7 +22,7 @@ package xyz.rc24.bot.commands.general;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.entities.Member;
-import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.utils.SearcherUtil;
@@ -35,9 +35,9 @@ public class BirthdayCmd extends Command
 {
     private BirthdayDataManager dataManager;
 
-    public BirthdayCmd()
+    public BirthdayCmd(Bot bot)
     {
-        this.dataManager = RiiConnect24Bot.getInstance().getBirthdayDataManager();
+        this.dataManager = bot.getBirthdayDataManager();
         this.name = "birthday";
         this.help = "View your birthday or someone else's.";
         this.category = Categories.GENERAL;
@@ -66,8 +66,8 @@ public class BirthdayCmd extends Command
         }
 
         if(target.equals(event.getMember()))
-            event.reply("Your birthday is set to **" + date + "**");
+            event.reply("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "**");
         else
-            event.reply("**" + target.getEffectiveName() + "**'s birthday is set to **" + date + "**");
+            event.reply("<a:birthdaycake:576200303662071808> **" + target.getEffectiveName() + "**'s birthday is set to **" + date + "**");
     }
 }
