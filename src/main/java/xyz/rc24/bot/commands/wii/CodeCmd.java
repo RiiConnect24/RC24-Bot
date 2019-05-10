@@ -170,7 +170,7 @@ public class CodeCmd extends Command
                 return;
 
             EmbedBuilder codeEmbed = new EmbedBuilder().setAuthor("Profile for " + member.getEffectiveName(),
-                    null, member.getUser().getEffectiveAvatarUrl());
+                    null, member.getUser().getEffectiveAvatarUrl()).setColor(member.getColor());
 
             Map<CodeType, Map<String, String>> userCodes = core.getAllCodes(member.getUser().getIdLong());
             for(Map.Entry<CodeType, Map<String, String>> typeData : userCodes.entrySet())
