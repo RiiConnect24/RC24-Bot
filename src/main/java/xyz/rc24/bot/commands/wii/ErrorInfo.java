@@ -19,6 +19,7 @@
 
 package xyz.rc24.bot.commands.wii;
 
+import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.jagrosh.jdautilities.command.Command;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.core.Permission;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.commands.Categories;
 
 import java.awt.Color;
@@ -47,14 +49,16 @@ import java.util.regex.Pattern;
 
 public class ErrorInfo extends Command
 {
-    private static Boolean debug;
+    private static boolean debug;
 	
 	private final Pattern CHANNEL = Pattern.compile("(NEWS|FORE)0{4}\\d{2}", Pattern.CASE_INSENSITIVE);
 	private final Pattern CHANNEL_CODE = Pattern.compile("0{4}\\d{2}");
 	
 	private final Pattern CODE = Pattern.compile("\\d{1,6}");
+	
+	private final Logger logger = (Logger) LoggerFactory.getLogger(ErrorInfo.class);
 
-    public ErrorInfo(Boolean isInDebug)
+    public ErrorInfo(boolean isInDebug)
     {
         debug = isInDebug;
         this.name = "error";
@@ -131,6 +135,9 @@ public class ErrorInfo extends Command
 
             try
             {
+				if(debug)
+					logger.info("Sending request to 'https://wiimmfi.de/error?" + method + "&m=json'");
+				
                 URL jsonAPI = new URL("https://wiimmfi.de/error?" + method + "&m=json");
                 Gson gson = new Gson();
                 JSONFormat test = gson.fromJson(new InputStreamReader(jsonAPI.openStream()), JSONFormat[].class)[0];
@@ -180,7 +187,7 @@ public class ErrorInfo extends Command
             catch(IOException e)
             {
                 event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.");
-                e.printStackTrace();
+                logger.error("Something went wrong whilst checking error code '" + code + "' with Wiimmfi: " + e, e);
             }
         }
     }
