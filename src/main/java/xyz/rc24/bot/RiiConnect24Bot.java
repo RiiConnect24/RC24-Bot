@@ -45,8 +45,8 @@ public class RiiConnect24Bot
 		System.setProperty("release", Const.VERSION);
 		
 		// JDA
-		RestAction.setPassContext(true); // enable context by default
-		RestAction.DEFAULT_FAILURE = Throwable::printStackTrace;
+        RestAction.setPassContext(true); // enable context by default
+        RestAction.DEFAULT_FAILURE = Throwable::printStackTrace;
 		
         getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
 

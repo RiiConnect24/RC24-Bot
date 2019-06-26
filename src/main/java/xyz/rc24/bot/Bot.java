@@ -46,10 +46,8 @@ import xyz.rc24.bot.listeners.Morpher;
 import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,7 +60,6 @@ import java.util.concurrent.TimeUnit;
  * @author Spotlight and Artuto
  */
 
-@SuppressWarnings("WeakerAccess")
 public class Bot extends ListenerAdapter
 {
     public BotCore core;
@@ -162,14 +159,16 @@ public class Bot extends ListenerAdapter
             event.getJDA().getPresence().setGame(Game.playing("Type " + config.getPrefix() + "help"));
             
         ZonedDateTime zonedNow = OffsetDateTime.now().toZonedDateTime();
+        ZonedDateTime zonedNext;
 
         if(config.birthdaysAreEnabled())
         {
             // Every day at 8AM
-            ZonedDateTime zonedNext8 = zonedNow.withHour(8).withMinute(0).withSecond(0);
-            if(zonedNow.compareTo(zonedNext8) > 0)
-                zonedNext8 = zonedNext8.plusDays(1);
-            Duration duration = Duration.between(zonedNow, zonedNext8);
+            zonedNext = zonedNow.withHour(8).withMinute(0).withSecond(0);
+            if(zonedNow.compareTo(zonedNext) > 0)
+                zonedNext = zonedNext.plusDays(1);
+
+            Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
             birthdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(),
@@ -178,9 +177,10 @@ public class Bot extends ListenerAdapter
 
         if(config.isMusicNightReminderEnabled())
         {
-            ZonedDateTime zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
+            zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
             if(zonedNow.compareTo(zonedNext) > 0)
                 zonedNext = zonedNext.plusDays(1);
+
             Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
