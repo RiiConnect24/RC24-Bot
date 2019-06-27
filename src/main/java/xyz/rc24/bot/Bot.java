@@ -35,6 +35,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import okhttp3.OkHttpClient;
 import xyz.rc24.bot.commands.botadm.*;
 import xyz.rc24.bot.commands.general.*;
 import xyz.rc24.bot.commands.tools.*;
@@ -46,10 +47,8 @@ import xyz.rc24.bot.listeners.Morpher;
 import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,7 +61,7 @@ import java.util.concurrent.TimeUnit;
  * @author Spotlight and Artuto
  */
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("unused")
 public class Bot extends ListenerAdapter
 {
     public BotCore core;
@@ -80,6 +79,7 @@ public class Bot extends ListenerAdapter
     private BirthdayManager birthdayManager;
 
     private final Logger logger = RiiConnect24Bot.getLogger();
+    private final OkHttpClient httpClient = new OkHttpClient();
     private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(40);
     private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(40);
 
@@ -122,21 +122,21 @@ public class Bot extends ListenerAdapter
             setServerInvite("https://discord.gg/5rw6Tur");
             setGuildSettingsManager(getGuildSettingsDataManager());
             setCoOwnerIds(coOwners);
-        }}
-        .addCommands(
-                // Bot administration
-                new Bash(), new Eval(this), new Shutdown(),
+            addCommands(
+                    // Bot administration
+                    new Bash(), new Eval(Bot.this), new Shutdown(),
 
-                // General
-                new BirthdayCmd(this), new InviteCmd(), new PingCmd(), new SetBirthdayCmd(this),
+                    // General
+                    new BirthdayCmd(Bot.this), new InviteCmd(), new PingCmd(), new SetBirthdayCmd(Bot.this),
 
-                // Tools
-                new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
-                new ServerSettingsCmd(this), new StatsCmd(),
+                    // Tools
+                    new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
+                    new ServerSettingsCmd(Bot.this), new StatsCmd(),
 
-                // Wii-related
-                new AddCmd(this), new CodeCmd(this), new BlocksCmd(), new ErrorInfo(config.isDebug()),
-                new DNS(), new WadsCmd(), new WiiWare());
+                    // Wii-related
+                    new AddCmd(Bot.this), new CodeCmd(Bot.this), new BlocksCmd(), new ErrorInfoCmd(Bot.this),
+                    new DNS(), new WadsCmd(), new WiiWare());
+        }};
 
         // JDA Connection
         JDABuilder builder = new JDABuilder(config.getToken())
@@ -162,14 +162,16 @@ public class Bot extends ListenerAdapter
             event.getJDA().getPresence().setGame(Game.playing("Type " + config.getPrefix() + "help"));
             
         ZonedDateTime zonedNow = OffsetDateTime.now().toZonedDateTime();
+        ZonedDateTime zonedNext;
 
         if(config.birthdaysAreEnabled())
         {
             // Every day at 8AM
-            ZonedDateTime zonedNext8 = zonedNow.withHour(8).withMinute(0).withSecond(0);
-            if(zonedNow.compareTo(zonedNext8) > 0)
-                zonedNext8 = zonedNext8.plusDays(1);
-            Duration duration = Duration.between(zonedNow, zonedNext8);
+            zonedNext = zonedNow.withHour(8).withMinute(0).withSecond(0);
+            if(zonedNow.compareTo(zonedNext) > 0)
+                zonedNext = zonedNext.plusDays(1);
+
+            Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
             birthdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(),
@@ -178,9 +180,10 @@ public class Bot extends ListenerAdapter
 
         if(config.isMusicNightReminderEnabled())
         {
-            ZonedDateTime zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
+            zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
             if(zonedNow.compareTo(zonedNext) > 0)
                 zonedNext = zonedNext.plusDays(1);
+
             Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
@@ -290,7 +293,13 @@ public class Bot extends ListenerAdapter
     {
         return birthdayManager;
     }
-	
+
+    // Other
+    public OkHttpClient getHttpClient()
+    {
+        return httpClient;
+    }
+
 	public String getPrefix(Guild guild)
 	{
 		if(guild == null)
