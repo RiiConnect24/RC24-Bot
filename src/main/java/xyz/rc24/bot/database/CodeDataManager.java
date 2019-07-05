@@ -108,6 +108,21 @@ public class CodeDataManager
                 "WHERE user_id = ?", gson.toJson(map), id);
     }
 
+    public String getFlag(long user)
+    {
+        Optional<DbRow> optRow = db.getRow("SELECT * FROM codes WHERE user_id = ?", user);
+
+        return optRow.map(dbRow -> dbRow.getString("flag")).orElse("");
+    }
+
+    public boolean setFlag(long user, String flag)
+    {
+        ((BotCoreImpl) core).setFlag(user, flag);
+
+        return db.doInsert("INSERT INTO codes (user_id, flag) " +
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE flag = ?", user, flag, flag);
+    }
+
     private Map<String, String> updateCodeCache(CodeType type, long id, String code, String name)
     {
         Map<String, String> currentCodes = core.getCodesForType(type, id);

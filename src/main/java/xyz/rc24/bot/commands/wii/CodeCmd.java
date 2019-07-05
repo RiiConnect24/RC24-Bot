@@ -198,8 +198,15 @@ public class CodeCmd extends Command
             if(member == null)
                 return;
 
-            EmbedBuilder codeEmbed = new EmbedBuilder().setAuthor("Profile for " + member.getEffectiveName(),
-                    null, member.getUser().getEffectiveAvatarUrl()).setColor(member.getColor());
+            String flag = bot.getCore().getFlag(member.getUser().getIdLong());
+            boolean hasFlag = !(flag.isEmpty());
+            EmbedBuilder codeEmbed = new EmbedBuilder()
+                    .setAuthor("Profile for " + member.getEffectiveName(),
+                            null, member.getUser().getEffectiveAvatarUrl())
+                    .setColor(member.getColor());
+
+            if(hasFlag)
+                codeEmbed.setTitle("Country: " + flag);
 
             Map<CodeType, Map<String, String>> userCodes = bot.getCore().getAllCodes(member.getUser().getIdLong());
             for(Map.Entry<CodeType, Map<String, String>> typeData : userCodes.entrySet())

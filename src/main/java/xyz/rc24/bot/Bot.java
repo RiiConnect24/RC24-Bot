@@ -127,7 +127,8 @@ public class Bot extends ListenerAdapter
                     new Bash(), new Eval(Bot.this), new Shutdown(),
 
                     // General
-                    new BirthdayCmd(Bot.this), new InviteCmd(), new PingCmd(), new SetBirthdayCmd(Bot.this),
+                    new BirthdayCmd(Bot.this), new FlagCmd(Bot.this), new InviteCmd(), new PingCmd(),
+                    new SetBirthdayCmd(Bot.this),
 
                     // Tools
                     new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),

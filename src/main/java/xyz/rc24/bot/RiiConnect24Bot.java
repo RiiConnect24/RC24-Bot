@@ -24,8 +24,6 @@ import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 /**
  * Bot entry point.
  *
@@ -42,12 +40,12 @@ public class RiiConnect24Bot
     {
 		// Sentry
         System.setProperty("stacktrace.app.packages", "xyz.rc24.bot");
-		System.setProperty("release", Const.VERSION);
+        System.setProperty("release", Const.VERSION);
 		
 		// JDA
         RestAction.setPassContext(true); // enable context by default
         RestAction.DEFAULT_FAILURE = Throwable::printStackTrace;
-		
+
         getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
 
         new Bot().run();

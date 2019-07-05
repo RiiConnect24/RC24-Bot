@@ -42,6 +42,7 @@ public class BotCoreImpl implements BotCore
     // Caches
     private final Cache<Long, GuildSettings> gsCache = new SimpleCacheBuilder<>().build();
     private final Cache<Long, Map<CodeType, Map<String, String>>> codeCache = new SimpleCacheBuilder<>(3).build();
+    private final Cache<Long, String> flagCache = new SimpleCacheBuilder<>(3).build();
 
     private final Bot bot;
     private final EntityBuilder entityBuilder;
@@ -104,6 +105,21 @@ public class BotCoreImpl implements BotCore
         }
     }
 
+    @Override
+    public String getFlag(long user)
+    {
+        try
+        {
+            return flagCache.get(user, () -> bot.getCodeDataManager().getFlag(user));
+        }
+        catch(ExecutionException e)
+        {
+            RiiConnect24Bot.getLogger().error("Error whilst getting flag for User {}: {}",
+                    user, e.getMessage(), e);
+            return "";
+        }
+    }
+
     public EntityBuilder getEntityBuilder()
     {
         return entityBuilder;
@@ -112,5 +128,11 @@ public class BotCoreImpl implements BotCore
     public void updateCodeCache(CodeType type, long id, Map<String, String> map)
     {
         getAllCodes(id).put(type, map);
+    }
+
+    public void setFlag(long user, String flag)
+    {
+        if(flagCache.asMap().containsKey(user))
+            flagCache.put(user, flag);
     }
 }
