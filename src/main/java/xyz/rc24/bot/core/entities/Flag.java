@@ -10,6 +10,9 @@ public enum Flag
     USA("\uD83C\uDDFA\uD83C\uDDF8", "United States"),
     CANADA("\uD83C\uDDE8\uD83C\uDDE6", "Canada"),
 
+    // Central America
+    COSTA_RICA("\uD83C\uDDE8\uD83C\uDDF7", "Costa Rica"),
+
     // South America
     COLOMBIA("\uD83C\uDDE8\uD83C\uDDF4", "Colombia"),
     ARGENTINA("\uD83C\uDDE6\uD83C\uDDF7", "Argentina"),
@@ -36,6 +39,7 @@ public enum Flag
     RUSSIA("\uD83C\uDDF7\uD83C\uDDFA", "Russia"),
     TURKEY("\uD83C\uDDF9\uD83C\uDDF7", "Turkey"),
     GREECE("\uD83C\uDDEC\uD83C\uDDF7", "Greece"),
+    FINLAND("\uD83C\uDDEB\uD83C\uDDEE", "Finland"),
 
     // Asia
     JAPAN("\uD83C\uDDEF\uD83C\uDDF5", "Japan"),
