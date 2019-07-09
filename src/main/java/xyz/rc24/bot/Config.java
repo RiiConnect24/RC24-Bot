@@ -36,9 +36,11 @@ import java.util.Map;
  * @author Artuto
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Config
 {
     private Map<String, Object> config;
+    private Map<String, Object> datadog;
     private Map<String, Object> database;
 
     @SuppressWarnings("unchecked")
@@ -59,8 +61,9 @@ public class Config
 
         try(InputStream is = new FileInputStream(file))
         {
-            config = yaml.load(is);
-            database = (Map<String, Object>) config.get("database"); // database section
+            this.config = yaml.load(is);
+            this.datadog = (Map<String, Object>) config.get("datadog"); // datadog section
+            this.database = (Map<String, Object>) config.get("database"); // database section
         }
         catch(Exception e)
         {
@@ -154,6 +157,27 @@ public class Config
         return getBoolean("music_night_reminder");
     }
 
+    // Datadog
+    public boolean isDatadogEnabled()
+    {
+        return getBoolean("enabled", datadog);
+    }
+
+    public String getDatadogPrefix()
+    {
+        return getString("prefix", datadog);
+    }
+
+    public String getDatadogHost()
+    {
+        return getString("host", datadog);
+    }
+
+    public int getDatadogPort()
+    {
+        return getInt("port", datadog);
+    }
+
     // Database
     public String getDatabaseHost()
     {
@@ -199,6 +223,11 @@ public class Config
     private boolean getBoolean(String key, @Nonnull Map<String, Object> section)
     {
         return (boolean) section.getOrDefault(key, false);
+    }
+
+    private int getInt(String key, @Nonnull Map<String, Object> section)
+    {
+        return (int) section.getOrDefault(key, 0);
     }
 
     private long getLong(String key)

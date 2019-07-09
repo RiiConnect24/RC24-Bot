@@ -24,6 +24,9 @@ import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.ServiceCheck;
+import com.timgroup.statsd.StatsDClient;
 import io.sentry.Sentry;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.JDA;
@@ -43,6 +46,7 @@ import xyz.rc24.bot.commands.wii.*;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.database.*;
+import xyz.rc24.bot.listeners.DataDogStatsListener;
 import xyz.rc24.bot.listeners.Morpher;
 import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
@@ -67,6 +71,7 @@ public class Bot extends ListenerAdapter
     public BotCore core;
     public Config config;
     public JDA jda;
+    private StatsDClient statsd;
 
     // Database & Data managers
     private Database db;
@@ -103,6 +108,16 @@ public class Bot extends ListenerAdapter
         if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
             Sentry.init(config.getSentryDSN());
 
+        DataDogStatsListener dataDogStatsListener = null;
+
+        if(config.isDatadogEnabled())
+        {
+            this.statsd = new NonBlockingStatsDClient(config.getDatadogPrefix(), config.getDatadogHost(),
+                    config.getDatadogPort());
+
+            dataDogStatsListener = new DataDogStatsListener(statsd);
+        }
+
         // Convert List<Long> of secondary owners to String[] so we can set later
         List<Long> owners = config.getSecondaryOwners();
         String[] coOwners = new String[owners.size()];
@@ -111,6 +126,7 @@ public class Bot extends ListenerAdapter
             coOwners[i] = String.valueOf(owners.get(i));
 
         // Setup Command Client
+        DataDogStatsListener finalDataDogStatsListener = dataDogStatsListener;
         CommandClientBuilder client = new CommandClientBuilder()
         {{
             setGame(Game.playing(config.getPlaying()));
@@ -137,6 +153,9 @@ public class Bot extends ListenerAdapter
                     // Wii-related
                     new AddCmd(Bot.this), new CodeCmd(Bot.this), new BlocksCmd(), new ErrorInfoCmd(Bot.this),
                     new DNS(), new WadsCmd(), new WiiWare());
+
+            if(!(finalDataDogStatsListener == null))
+                setListener(finalDataDogStatsListener);
         }};
 
         // JDA Connection
@@ -148,6 +167,8 @@ public class Bot extends ListenerAdapter
 
         if(config.isMorpherEnabled())
             builder.addEventListener(new Morpher(config, getMorpherDataManager()));
+        if(!(dataDogStatsListener == null))
+            builder.addEventListener(dataDogStatsListener);
 
         builder.build();
     }
