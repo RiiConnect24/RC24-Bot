@@ -38,11 +38,11 @@ public class RiiConnect24Bot
 
     public static void main(String[] args) throws LoginException
     {
-		// Sentry
+        // Sentry
         System.setProperty("sentry.stacktrace.app.packages", "xyz.rc24.bot");
         System.setProperty("sentry.release", Const.VERSION);
-		
-		// JDA
+
+        // JDA
         RestAction.setPassContext(true); // enable context by default
         RestAction.DEFAULT_FAILURE = Throwable::printStackTrace;
 
