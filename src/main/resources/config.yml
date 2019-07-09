@@ -47,6 +47,13 @@ sentry_dsn: ""
 # Reminder for the Music Night @ RC24
 music_night_reminder: false
 
+# Datadog connection info
+datadog:
+  enabled: false
+  prefix: ""
+  host: "localhost"
+  port: 8125
+
 database:
     # MySQL host.
     host: "localhost:3306"
