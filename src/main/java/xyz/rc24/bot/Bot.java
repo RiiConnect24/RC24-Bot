@@ -85,8 +85,8 @@ public class Bot extends ListenerAdapter
 
     private final Logger logger = RiiConnect24Bot.getLogger();
     private final OkHttpClient httpClient = new OkHttpClient();
-    private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(40);
-    private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(40);
+    private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(1);
+    private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(1);
 
     void run() throws LoginException
     {
