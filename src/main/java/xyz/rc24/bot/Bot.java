@@ -24,6 +24,8 @@ import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.mysql.cj.jdbc.Driver;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import io.sentry.Sentry;
@@ -254,8 +256,8 @@ public class Bot extends ListenerAdapter
 
         DatabaseOptions options = DatabaseOptions.builder()
                 .mysql(config.getDatabaseUser(), config.getDatabasePassword(), config.getDatabase(), config.getDatabaseHost())
-                .driverClassName("com.mysql.cj.jdbc.Driver")
-                .dataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource")
+                .driverClassName(Driver.class.getSimpleName() /*"com.mysql.cj.jdbc.Driver"*/)
+                .dataSourceClassName(MysqlDataSource.class.getSimpleName() /*"com.mysql.cj.jdbc.MysqlDataSource"*/)
                 .build();
 
         Map<String, Object> props = new HashMap<String, Object>()
