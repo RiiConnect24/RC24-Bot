@@ -47,6 +47,7 @@ import xyz.rc24.bot.commands.general.BirthdayCmd;
 import xyz.rc24.bot.commands.general.FlagCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
+import xyz.rc24.bot.commands.general.ReviveCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
 import xyz.rc24.bot.commands.tools.MailParseListener;
 import xyz.rc24.bot.commands.tools.MailPatchCmd;
@@ -169,8 +170,8 @@ public class Bot extends ListenerAdapter
                     new Bash(), new Eval(Bot.this), new Shutdown(),
 
                     // General
-                    new BirthdayCmd(Bot.this), new FlagCmd(Bot.this), new InviteCmd(), new PingCmd(),
-                    new SetBirthdayCmd(Bot.this),
+                    new BirthdayCmd(Bot.this), new FlagCmd(Bot.this), new InviteCmd(),
+                    new ReviveCmd(getPollManager()), new PingCmd(), new SetBirthdayCmd(Bot.this),
 
                     // Tools
                     new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
