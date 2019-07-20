@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.core.entities.Poll;
 import xyz.rc24.bot.managers.PollManager;
@@ -22,18 +23,17 @@ public class ReviveCmd extends Command
 {
     private final PollManager manager;
     private final Set<Long> current;
+    private final EventWaiter waiter;
 
-    public ReviveCmd(PollManager manager)
+    public ReviveCmd(Bot bot)
     {
         this.name = "revive";
         this.help = "Revives the chat by sending a EVC poll for users to vote in.";
         this.category = Categories.GENERAL;
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
-        this.manager = manager;
+        this.manager = bot.getPollManager();
         this.current = new HashSet<>();
-
-        EventWaiter waiter = new EventWaiter();
-        waiter.waitForEvent(GenericGuildMessageReactionEvent.class, this::checkCondition, this::runAction);
+        this.waiter = bot.getWaiter();
     }
 
     @Override
