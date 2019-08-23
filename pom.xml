@@ -182,12 +182,12 @@
                                         <include>**</include>
                                     </includes>
                                 </filter>
-								<filter>
+								<!--<filter>
                                     <artifact>mysql:mysql-connector-java</artifact>
                                     <includes>
                                         <include>com/mysql/cj/**</include>
                                     </includes>
-								</filter>
+								</filter>-->
 								<filter>
                                     <artifact>ch.qos.logback:logback-core</artifact>
                                     <includes>

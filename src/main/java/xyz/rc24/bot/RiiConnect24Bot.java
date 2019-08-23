@@ -20,9 +20,11 @@
 package xyz.rc24.bot;
 
 import ch.qos.logback.classic.Logger;
-import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.slf4j.LoggerFactory;
+
+import javax.security.auth.login.LoginException;
+import java.io.IOException;
 
 /**
  * Bot entry point.
@@ -36,7 +38,7 @@ public class RiiConnect24Bot
 
     private static final Logger logger = (Logger) LoggerFactory.getLogger("RiiConnect24 Bot");
 
-    public static void main(String[] args) throws LoginException
+    public static void main(String[] args) throws LoginException, IOException
     {
         // Sentry
         System.setProperty("sentry.stacktrace.app.packages", "xyz.rc24.bot");

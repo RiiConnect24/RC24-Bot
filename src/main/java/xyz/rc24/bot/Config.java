@@ -19,10 +19,10 @@
 
 package xyz.rc24.bot;
 
-import javax.annotation.Nonnull;
 import net.dv8tion.jda.core.OnlineStatus;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -24,11 +24,12 @@ import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.mysql.cj.jdbc.Driver;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import com.timgroup.statsd.NonBlockingStatsDClient;
-import com.timgroup.statsd.ServiceCheck;
 import com.timgroup.statsd.StatsDClient;
 import io.sentry.Sentry;
-import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -39,22 +40,50 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import okhttp3.OkHttpClient;
-import xyz.rc24.bot.commands.botadm.*;
-import xyz.rc24.bot.commands.general.*;
-import xyz.rc24.bot.commands.tools.*;
-import xyz.rc24.bot.commands.wii.*;
+import xyz.rc24.bot.commands.botadm.Bash;
+import xyz.rc24.bot.commands.botadm.Eval;
+import xyz.rc24.bot.commands.botadm.Shutdown;
+import xyz.rc24.bot.commands.general.BirthdayCmd;
+import xyz.rc24.bot.commands.general.FlagCmd;
+import xyz.rc24.bot.commands.general.InviteCmd;
+import xyz.rc24.bot.commands.general.PingCmd;
+import xyz.rc24.bot.commands.general.ReviveCmd;
+import xyz.rc24.bot.commands.general.SetBirthdayCmd;
+import xyz.rc24.bot.commands.tools.MailParseListener;
+import xyz.rc24.bot.commands.tools.MailPatchCmd;
+import xyz.rc24.bot.commands.tools.PrefixCmd;
+import xyz.rc24.bot.commands.tools.ServerSettingsCmd;
+import xyz.rc24.bot.commands.tools.StatsCmd;
+import xyz.rc24.bot.commands.wii.AddCmd;
+import xyz.rc24.bot.commands.wii.BlocksCmd;
+import xyz.rc24.bot.commands.wii.CodeCmd;
+import xyz.rc24.bot.commands.wii.DNS;
+import xyz.rc24.bot.commands.wii.ErrorInfoCmd;
+import xyz.rc24.bot.commands.wii.WadsCmd;
+import xyz.rc24.bot.commands.wii.WiiWare;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
-import xyz.rc24.bot.database.*;
+import xyz.rc24.bot.database.BirthdayDataManager;
+import xyz.rc24.bot.database.CodeDataManager;
+import xyz.rc24.bot.database.Database;
+import xyz.rc24.bot.database.GuildSettingsDataManager;
+import xyz.rc24.bot.database.MorpherDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
 import xyz.rc24.bot.listeners.Morpher;
+import xyz.rc24.bot.listeners.PollListener;
 import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
+import xyz.rc24.bot.managers.PollManager;
 
+import javax.security.auth.login.LoginException;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -65,13 +94,13 @@ import java.util.concurrent.TimeUnit;
  * @author Spotlight and Artuto
  */
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Bot extends ListenerAdapter
 {
     public BotCore core;
     public Config config;
+    public EventWaiter waiter;
     public JDA jda;
-    private StatsDClient statsd;
 
     // Database & Data managers
     private Database db;
@@ -82,17 +111,20 @@ public class Bot extends ListenerAdapter
 
     // Managers
     private BirthdayManager birthdayManager;
+    private PollManager pollManager;
 
     private final Logger logger = RiiConnect24Bot.getLogger();
     private final OkHttpClient httpClient = new OkHttpClient();
-    private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(40);
-    private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(40);
+    private final ScheduledExecutorService botScheduler = new ScheduledThreadPoolExecutor(1);
+    private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(1);
+    private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(1);
 
-    void run() throws LoginException
+    void run() throws LoginException, IOException
     {
         RiiConnect24Bot.setInstance(this);
         this.config = new Config();
         this.core = new BotCoreImpl(this);
+        this.waiter = new EventWaiter();
 
         // Start database
         this.db = initDatabase();
@@ -103,6 +135,7 @@ public class Bot extends ListenerAdapter
 
         // Start managers
         this.birthdayManager = new BirthdayManager(getBirthdayDataManager());
+        this.pollManager = new PollManager();
 
         // Start Sentry (if enabled)
         if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
@@ -112,8 +145,7 @@ public class Bot extends ListenerAdapter
 
         if(config.isDatadogEnabled())
         {
-            this.statsd = new NonBlockingStatsDClient(config.getDatadogPrefix(), config.getDatadogHost(),
-                    config.getDatadogPort());
+            StatsDClient statsd = new NonBlockingStatsDClient(config.getDatadogPrefix(), config.getDatadogHost(), config.getDatadogPort());
 
             dataDogStatsListener = new DataDogStatsListener(statsd);
         }
@@ -143,16 +175,16 @@ public class Bot extends ListenerAdapter
                     new Bash(), new Eval(Bot.this), new Shutdown(),
 
                     // General
-                    new BirthdayCmd(Bot.this), new FlagCmd(Bot.this), new InviteCmd(), new PingCmd(),
-                    new SetBirthdayCmd(Bot.this),
+                    new BirthdayCmd(Bot.this), new FlagCmd(Bot.this), new InviteCmd(),
+                    new ReviveCmd(Bot.this), new PingCmd(), new SetBirthdayCmd(Bot.this),
 
                     // Tools
                     new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
                     new ServerSettingsCmd(Bot.this), new StatsCmd(),
 
                     // Wii-related
-                    new AddCmd(Bot.this), new CodeCmd(Bot.this), new BlocksCmd(), new ErrorInfoCmd(Bot.this),
-                    new DNS(), new WadsCmd(), new WiiWare());
+                    new AddCmd(Bot.this), new CodeCmd(Bot.this), new BlocksCmd(),
+                    new ErrorInfoCmd(Bot.this), new DNS(), new WadsCmd(), new WiiWare());
 
             if(!(finalDataDogStatsListener == null))
                 setListener(finalDataDogStatsListener);
@@ -162,7 +194,8 @@ public class Bot extends ListenerAdapter
         JDABuilder builder = new JDABuilder(config.getToken())
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setGame(Game.playing("Loading..."))
-                .addEventListener(this, client.build(), new ServerLog(this), new MailParseListener(this))
+                .addEventListener(this, client.build(), waiter, new ServerLog(this), new MailParseListener(this),
+                        new PollListener(getPollManager()))
                 .setAudioEnabled(false);
 
         if(config.isMorpherEnabled())
@@ -182,7 +215,7 @@ public class Bot extends ListenerAdapter
         // Check if we need to set a game
         if(config.getPlaying().isEmpty())
             event.getJDA().getPresence().setGame(Game.playing("Type " + config.getPrefix() + "help"));
-            
+
         ZonedDateTime zonedNow = OffsetDateTime.now().toZonedDateTime();
         ZonedDateTime zonedNext;
 
@@ -196,8 +229,7 @@ public class Bot extends ListenerAdapter
             Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
-            birthdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(),
-                    config.getBirthdayChannel()), initialDelay, 86400, TimeUnit.SECONDS);
+            birthdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(), config.getBirthdayChannel()), initialDelay, 86400, TimeUnit.SECONDS);
         }
 
         if(config.isMusicNightReminderEnabled())
@@ -209,8 +241,7 @@ public class Bot extends ListenerAdapter
             Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
-            musicNightScheduler.scheduleWithFixedDelay(() -> remindMusicNight(event.getJDA()),
-                    initialDelay, 86400, TimeUnit.SECONDS);
+            musicNightScheduler.scheduleWithFixedDelay(() -> remindMusicNight(event.getJDA()), initialDelay, 86400, TimeUnit.SECONDS);
         }
     }
 
@@ -226,12 +257,14 @@ public class Bot extends ListenerAdapter
     {
         if(config.getDatabaseUser().isEmpty() || config.getDatabasePassword().isEmpty() ||
                 config.getDatabase().isEmpty() || config.getDatabaseHost().isEmpty())
+        {
             throw new IllegalStateException("You haven't configured database details in the config file!");
+        }
 
         DatabaseOptions options = DatabaseOptions.builder()
                 .mysql(config.getDatabaseUser(), config.getDatabasePassword(), config.getDatabase(), config.getDatabaseHost())
-                .driverClassName("com.mysql.cj.jdbc.Driver")
-                .dataSourceClassName("com.mysql.cj.jdbc.MysqlDataSource")
+                .driverClassName(Driver.class.getName() /*"com.mysql.cj.jdbc.Driver"*/)
+                .dataSourceClassName(MysqlDataSource.class.getName() /*"com.mysql.cj.jdbc.MysqlDataSource"*/)
                 .build();
 
         Map<String, Object> props = new HashMap<String, Object>()
@@ -284,9 +317,19 @@ public class Bot extends ListenerAdapter
         return db;
     }
 
+    public EventWaiter getWaiter()
+    {
+        return waiter;
+    }
+
     public JDA getJDA()
     {
         return jda;
+    }
+
+    public ScheduledExecutorService getBotScheduler()
+    {
+        return botScheduler;
     }
 
     // Data managers
@@ -314,6 +357,11 @@ public class Bot extends ListenerAdapter
     public BirthdayManager getBirthdayManager()
     {
         return birthdayManager;
+    }
+
+    public PollManager getPollManager()
+    {
+        return pollManager;
     }
 
     // Other

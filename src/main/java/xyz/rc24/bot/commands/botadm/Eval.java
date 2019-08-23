@@ -21,13 +21,13 @@ package xyz.rc24.bot.commands.botadm;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import javax.script.ScriptEngine;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 
+import javax.script.ScriptEngine;
 import java.util.Arrays;
 import java.util.List;
 
