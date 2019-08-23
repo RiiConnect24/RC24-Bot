@@ -24,6 +24,7 @@ import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.mysql.cj.jdbc.Driver;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import com.timgroup.statsd.NonBlockingStatsDClient;
@@ -70,6 +71,7 @@ import xyz.rc24.bot.database.GuildSettingsDataManager;
 import xyz.rc24.bot.database.MorpherDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
 import xyz.rc24.bot.listeners.Morpher;
+import xyz.rc24.bot.listeners.PollListener;
 import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
 import xyz.rc24.bot.managers.PollManager;
@@ -97,6 +99,7 @@ public class Bot extends ListenerAdapter
 {
     public BotCore core;
     public Config config;
+    public EventWaiter waiter;
     public JDA jda;
 
     // Database & Data managers
@@ -112,6 +115,7 @@ public class Bot extends ListenerAdapter
 
     private final Logger logger = RiiConnect24Bot.getLogger();
     private final OkHttpClient httpClient = new OkHttpClient();
+    private final ScheduledExecutorService botScheduler = new ScheduledThreadPoolExecutor(1);
     private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(1);
     private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(1);
 
@@ -120,6 +124,7 @@ public class Bot extends ListenerAdapter
         RiiConnect24Bot.setInstance(this);
         this.config = new Config();
         this.core = new BotCoreImpl(this);
+        this.waiter = new EventWaiter();
 
         // Start database
         this.db = initDatabase();
@@ -171,7 +176,7 @@ public class Bot extends ListenerAdapter
 
                     // General
                     new BirthdayCmd(Bot.this), new FlagCmd(Bot.this), new InviteCmd(),
-                    new ReviveCmd(getPollManager()), new PingCmd(), new SetBirthdayCmd(Bot.this),
+                    new ReviveCmd(Bot.this), new PingCmd(), new SetBirthdayCmd(Bot.this),
 
                     // Tools
                     new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
@@ -189,7 +194,8 @@ public class Bot extends ListenerAdapter
         JDABuilder builder = new JDABuilder(config.getToken())
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setGame(Game.playing("Loading..."))
-                .addEventListener(this, client.build(), new ServerLog(this), new MailParseListener(this))
+                .addEventListener(this, client.build(), waiter, new ServerLog(this), new MailParseListener(this),
+                        new PollListener(getPollManager()))
                 .setAudioEnabled(false);
 
         if(config.isMorpherEnabled())
@@ -257,8 +263,8 @@ public class Bot extends ListenerAdapter
 
         DatabaseOptions options = DatabaseOptions.builder()
                 .mysql(config.getDatabaseUser(), config.getDatabasePassword(), config.getDatabase(), config.getDatabaseHost())
-                .driverClassName(Driver.class.getSimpleName() /*"com.mysql.cj.jdbc.Driver"*/)
-                .dataSourceClassName(MysqlDataSource.class.getSimpleName() /*"com.mysql.cj.jdbc.MysqlDataSource"*/)
+                .driverClassName(Driver.class.getName() /*"com.mysql.cj.jdbc.Driver"*/)
+                .dataSourceClassName(MysqlDataSource.class.getName() /*"com.mysql.cj.jdbc.MysqlDataSource"*/)
                 .build();
 
         Map<String, Object> props = new HashMap<String, Object>()
@@ -311,9 +317,19 @@ public class Bot extends ListenerAdapter
         return db;
     }
 
+    public EventWaiter getWaiter()
+    {
+        return waiter;
+    }
+
     public JDA getJDA()
     {
         return jda;
+    }
+
+    public ScheduledExecutorService getBotScheduler()
+    {
+        return botScheduler;
     }
 
     // Data managers

@@ -2,28 +2,16 @@ package xyz.rc24.bot.commands.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.core.entities.Poll;
 import xyz.rc24.bot.managers.PollManager;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 public class ReviveCmd extends Command
 {
     private final PollManager manager;
-    private final Set<Long> current;
-    private final EventWaiter waiter;
 
     public ReviveCmd(Bot bot)
     {
@@ -32,8 +20,6 @@ public class ReviveCmd extends Command
         this.category = Categories.GENERAL;
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.manager = bot.getPollManager();
-        this.current = new HashSet<>();
-        this.waiter = bot.getWaiter();
     }
 
     @Override
@@ -51,85 +37,19 @@ public class ReviveCmd extends Command
                     "\uD83C\uDD71 " + poll.getResponse2());
             addField("Users who reacted  \uD83C\uDD70:", "", false);
             addField("Users who reacted \uD83C\uDD71:", "", false);
+            setColor(event.getSelfMember().getColor());
+            setFooter("This question was in the " + poll.getCountryFlag() + " EVC", null);
         }};
 
         // Send embed to chat
         event.reply(embed.build(), s ->
         {
             // Add message ID to tracked list
-            current.add(s.getIdLong());
+            manager.trackId(s.getIdLong());
 
             // Add reactions
             s.addReaction("\uD83C\uDD70").queue();
             s.addReaction("\uD83C\uDD71").queue();
-
-            // Schedule to stop tracking it after 10 minutes
-            event.getClient().getScheduleExecutor().schedule(() -> current.remove(s.getIdLong()), 10, TimeUnit.MINUTES);
         });
-    }
-
-    private boolean checkCondition(GenericGuildMessageReactionEvent event)
-    {
-        // First check if the message is being tracked by us
-        if(!(current.contains(event.getMessageIdLong())))
-            return false;
-
-        // Then check the reacted emotes are valid
-        MessageReaction.ReactionEmote reaction = event.getReactionEmote();
-        if(reaction.isEmote())
-            return false;
-
-        String emote = reaction.getName();
-        return emote.equals("\uD83C\uDD70") || emote.equals("\uD83C\uDD71");
-    }
-
-    private void runAction(GenericGuildMessageReactionEvent genericEvent)
-    {
-        if(genericEvent instanceof GuildMessageReactionAddEvent)
-        {
-            GuildMessageReactionAddEvent event = (GuildMessageReactionAddEvent) genericEvent;
-            event.getChannel().getMessageById(event.getMessageIdLong()).queue(message ->
-            {
-                MessageEmbed embed = message.getEmbeds().stream().findFirst().orElse(null);
-                if(embed == null)
-                    return;
-
-                MessageEmbed.Field field = embed.getFields().get(0);
-                String users = field.getValue().equals("\u200E") ? event.getUser().getAsTag() :
-                        (field.getValue() + ", " + event.getUser().getAsTag());
-
-                EmbedBuilder newEmbed = new EmbedBuilder(embed)
-                {{
-                   clearFields();
-                   addField(field.getName(), users, false);
-                   addField(embed.getFields().get(1));
-                }};
-
-                message.editMessage(newEmbed.build()).queue();
-            }, e -> {});
-        }
-        else if(genericEvent instanceof GuildMessageReactionRemoveEvent)
-        {
-            GuildMessageReactionRemoveEvent event = (GuildMessageReactionRemoveEvent) genericEvent;
-            event.getChannel().getMessageById(event.getMessageIdLong()).queue(message ->
-            {
-                MessageEmbed embed = message.getEmbeds().stream().findFirst().orElse(null);
-                if(embed == null)
-                    return;
-
-                MessageEmbed.Field field = embed.getFields().get(1);
-                String users = field.getValue().equals("\u200E") ? event.getUser().getAsTag() :
-                        (field.getValue() + ", " + event.getUser().getAsTag());
-
-                EmbedBuilder newEmbed = new EmbedBuilder(embed)
-                {{
-                    clearFields();
-                    addField(embed.getFields().get(0));
-                    addField(field.getName(), users, false);
-                }};
-
-                message.editMessage(newEmbed.build()).queue();
-            });
-        }
     }
 }

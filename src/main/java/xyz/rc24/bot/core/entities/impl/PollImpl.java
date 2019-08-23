@@ -2,11 +2,11 @@ package xyz.rc24.bot.core.entities.impl;
 
 import xyz.rc24.bot.core.entities.Poll;
 
-public class PollImpl implements Poll
+public abstract class PollImpl implements Poll
 {
     private String question, response1, response2;
 
-    public PollImpl(String question, String response1, String response2)
+    PollImpl(String question, String response1, String response2)
     {
         this.question = question;
         this.response1 = response1;
@@ -30,6 +30,9 @@ public class PollImpl implements Poll
     {
         return response2;
     }
+
+    @Override
+    public abstract String getCountryFlag();
 
     @Override
     public String toString()

@@ -29,4 +29,5 @@ target/*
 .idea/*
 *.iml
 dependency-reduced-pom.xml
-polls.yml
+polls_049.yml
+polls_110.yml

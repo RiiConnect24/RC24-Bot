@@ -7,4 +7,6 @@ public interface Poll
     String getResponse1();
 
     String getResponse2();
+
+    String getCountryFlag();
 }
