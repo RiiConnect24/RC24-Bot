@@ -25,7 +25,7 @@
 
     <groupId>xyz.rc24.bot</groupId>
     <artifactId>RC24-Bot</artifactId>
-    <version>4.1.1</version>
+    <version>4.2.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -168,7 +168,7 @@
                                     <mainClass>xyz.rc24.bot.RiiConnect24Bot</mainClass>
                                 </transformer>
                             </transformers>
-							<minimizeJar>true</minimizeJar>
+			    <minimizeJar>true</minimizeJar>
                             <filters>
                                 <filter>
                                     <artifact>org.codehaus.groovy:groovy-jsr223</artifact>
@@ -182,25 +182,25 @@
                                         <include>**</include>
                                     </includes>
                                 </filter>
-								<!--<filter>
+				<filter>
                                     <artifact>mysql:mysql-connector-java</artifact>
                                     <includes>
                                         <include>com/mysql/cj/**</include>
                                     </includes>
-								</filter>-->
-								<filter>
+				</filter>
+				<filter>
                                     <artifact>ch.qos.logback:logback-core</artifact>
                                     <includes>
                                         <include>**</include>
                                     </includes>
                                 </filter>
-								<filter>
+				<filter>
                                     <artifact>ch.qos.logback:logback-classic</artifact>
                                     <includes>
                                         <include>**</include>
                                     </includes>
                                 </filter>
-								<filter>
+				<filter>
                                     <artifact>io.sentry:sentry-logback</artifact>
                                     <includes>
                                         <include>io/sentry/logback/SentryAppender*</include>
@@ -212,7 +212,7 @@
                 </executions>
             </plugin>
 			
-			<plugin>
+            <plugin>
                 <groupId>net.md-5</groupId>
                 <artifactId>scriptus</artifactId>
                 <version>0.1</version>
