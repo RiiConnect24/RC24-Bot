@@ -30,7 +30,6 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import io.sentry.Sentry;
-import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -76,6 +75,7 @@ import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
 import xyz.rc24.bot.managers.PollManager;
 
+import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;

@@ -21,7 +21,6 @@ package xyz.rc24.bot.database;
 
 import co.aikar.idb.DbRow;
 import com.jagrosh.jdautilities.command.GuildSettingsManager;
-import javax.annotation.Nullable;
 import net.dv8tion.jda.core.entities.Guild;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
@@ -32,6 +31,7 @@ import xyz.rc24.bot.core.entities.LogType;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.core.entities.impl.GuildSettingsImpl;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;

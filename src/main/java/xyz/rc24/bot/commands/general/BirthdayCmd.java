@@ -24,7 +24,6 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.entities.Member;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.utils.SearcherUtil;
 
 /**

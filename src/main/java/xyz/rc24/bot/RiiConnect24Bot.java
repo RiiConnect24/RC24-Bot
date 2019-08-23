@@ -20,10 +20,10 @@
 package xyz.rc24.bot;
 
 import ch.qos.logback.classic.Logger;
-import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.requests.RestAction;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.login.LoginException;
 import java.io.IOException;
 
 /**
