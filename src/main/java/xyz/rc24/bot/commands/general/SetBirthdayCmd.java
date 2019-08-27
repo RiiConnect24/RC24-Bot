@@ -55,7 +55,7 @@ public class SetBirthdayCmd extends Command
         if(dateTime == null)
         {
             event.replyError("I couldn't parse your date.\n" +
-                    "Try something like: `" + bot.getPrefix(event.getGuild()) + "setbirthday 25/12` (DD/MM).");
+                    "Try something like: `" + bot.getPrefix(event.getGuild()) + "setbirthday 25/12` (the date format used is DD/MM).");
             return;
         }
 
@@ -64,7 +64,7 @@ public class SetBirthdayCmd extends Command
         if(success)
             event.replySuccess("Updated successfully!");
         else
-            event.replyError("Error whilst updating your birthday! Please contact a developer.");
+            event.replyError("There was an error updating your birthday! Please contact a developer.");
     }
 
     private LocalDate parseDate(String args)
