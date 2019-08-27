@@ -38,7 +38,7 @@ public class BirthdayCmd extends Command
     {
         this.bot = bot;
         this.name = "birthday";
-        this.help = "View your birthday or someone else's.";
+        this.help = "View someone's birthday.";
         this.category = Categories.GENERAL;
     }
 
@@ -55,11 +55,11 @@ public class BirthdayCmd extends Command
         {
             if(target.equals(event.getMember()))
             {
-                event.replyError("You don't have set your birthday!" +
+                event.replyError("You haven't have set your birthday!" +
                         " Set it using  `" + bot.getPrefix(event.getGuild()) + "setbirthday`!");
             }
             else
-                event.replyError("**" + target.getEffectiveName() + "** does not have a birthday set!");
+                event.replyError("**" + target.getEffectiveName() + "** has not set their birthday!");
 
             return;
         }
