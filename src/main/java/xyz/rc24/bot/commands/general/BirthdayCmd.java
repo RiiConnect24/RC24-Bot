@@ -38,7 +38,7 @@ public class BirthdayCmd extends Command
     {
         this.bot = bot;
         this.name = "birthday";
-        this.help = "View someone's birthday.";
+        this.help = "View the birthday of you/someone else.";
         this.category = Categories.GENERAL;
     }
 
