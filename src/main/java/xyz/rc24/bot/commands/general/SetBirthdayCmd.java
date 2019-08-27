@@ -41,7 +41,7 @@ public class SetBirthdayCmd extends Command
     {
         this.bot = bot;
         this.name = "setbirthday";
-        this.help = "Sets your birthday.";
+        this.help = "Sets your birthday. Please note that this command uses the DD/MM format.";
         this.category = Categories.GENERAL;
         this.guildOnly = false;
     }
