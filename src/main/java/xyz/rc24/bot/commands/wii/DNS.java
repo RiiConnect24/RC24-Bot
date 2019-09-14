@@ -43,6 +43,6 @@ public class DNS extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        event.reply("`164.132.44.106` should be your primary DNS.\n" + "`8.8.8.8` can be your secondary DNS. (Or `1.1.1.1`, alternatively)");
+        event.reply("`164.132.44.106` should be your primary DNS.\n" + "`1.1.1.1` can be your secondary DNS. (Or `8.8.8.8`, alternatively)\n" + "Note that if your ISP blocks the use of custom DNS, you can use a local DNS server like ours: https://github.com/RiiConnect24/DNS-Server");
     }
 }
