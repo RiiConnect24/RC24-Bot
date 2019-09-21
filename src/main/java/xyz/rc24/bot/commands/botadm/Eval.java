@@ -53,24 +53,20 @@ public class Eval extends Command
         this.guildOnly = false;
 
         engine = new GroovyScriptEngineFactory().getScriptEngine();
-        imports = Arrays.asList("com.jagrosh.jdautilities",
-                "com.jagrosh.jdautilities.commandclient",
-                "com.jagrosh.jdautilities.commandclient.impl",
-                "com.jagrosh.jdautilities.entities",
-                "com.jagrosh.jdautilities.utils",
+        imports = Arrays.asList("com.jagrosh.jdautilities.command",
+                "com.jagrosh.jdautilities.command.impl",
+                "com.jagrosh.jdautilities.commons",
+                "com.jagrosh.jdautilities.commons.utils",
                 "java.io", "java.lang", "java.util",
-                "net.dv8tion.jda.bot",
-                "net.dv8tion.jda.bot.entities",
-                "net.dv8tion.jda.bot.entities.impl",
                 "net.dv8tion.jda.api",
                 "net.dv8tion.jda.api.entities",
-                "net.dv8tion.jda.api.entities.impl",
                 "net.dv8tion.jda.api.managers",
-                "net.dv8tion.jda.api.managers.impl",
                 "net.dv8tion.jda.api.utils",
-                "net.dv8tion.jda.webhook",
-                "xyz.rc24.bot", "xyz.rc24.bot.listeners", "xyz.rc24.bot.loader",
-                "xyz.rc24.bot.managers", "xyz.rc24.bot.utils");
+                "net.dv8tion.jda.internal",
+                "net.dv8tion.jda.internal.entities",
+                "net.dv8tion.jda.internal.managers",
+                "xyz.rc24.bot", "xyz.rc24.bot.core", "xyz.rc24.bot.core.entities", "xyz.rc24.bot.core.entities.impl",
+                "xyz.rc24.bot.database", "xyz.rc24.bot.listeners", "xyz.rc24.bot.managers", "xyz.rc24.bot.utils");
     }
 
     @Override
