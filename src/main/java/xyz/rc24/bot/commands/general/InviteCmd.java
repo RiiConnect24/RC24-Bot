@@ -39,7 +39,6 @@ public class InviteCmd extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        event.reply("Aw, you want to invite me? <3\n" +
-                "Invite me here: " + event.getJDA().asBot().getInviteUrl());
+        event.reply("Aw, you want to invite me? <3\nInvite me here: " + event.getJDA().getInviteUrl());
     }
 }

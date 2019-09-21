@@ -17,17 +17,18 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.events;
+package xyz.rc24.bot.listeners;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Seriously, stop.
@@ -51,25 +52,26 @@ public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
         Guild guild = event.getGuild();
         Member member = event.getMember();
 
-        if(!(guild.getIdLong() == 206934458954153984L) || !(enabled) ||
-                allowed.contains(member.getUser().getIdLong()))
+        if(!(guild.getIdLong() == 206934458954153984L) || !(enabled) || allowed.contains(member.getUser().getIdLong()))
         {
             // Nothing to see here guys
             return;
         }
 
         OffsetDateTime now = OffsetDateTime.now();
-        long creation = member.getUser().getCreationTime().until(now, ChronoUnit.SECONDS);
+        long creation = member.getUser().getTimeCreated().until(now, ChronoUnit.SECONDS);
 
         if(creation > 1800)
             return;
 
         try
         {
+            List<Member> admins = guild.getMembersWithRoles(guild.getRoleById(394317745665343488L));
+
             String dm = "Hello,\n\n" +
                     "For security reasons, you've been kicked from RiiConnect24. " +
-                    "If you are a legit user, please contact one of our admins: \n" +
-                    "KcrPL#4625, Larsenv#2020, iDroid#2002, thejsa#7237 and Artuto#0424\n\n" +
+                    "If you are a legit user, please contact one of our admins:\n" +
+                    admins.stream().map(admin -> admin.getUser().getAsTag()).collect(Collectors.joining(", ")) + "\n\n" +
                     "Cheers,\n" +
                     "RiiConnect24 Staff";
 
@@ -81,8 +83,8 @@ public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
 
     private void ban(Member member)
     {
-        member.getGuild().getController().ban(member, 1, "[AutoBan]")
-                .reason("[AutoBan]").queue(null, e -> {});
+        // We set double reason because one is AuditLog reason and other ban reason (really dumb #Discord)
+        member.ban(1, "[AutoBan]").reason("[AutoBan]").queue(null, e -> {});
 
         allowed.add(member.getUser().getIdLong());
     }

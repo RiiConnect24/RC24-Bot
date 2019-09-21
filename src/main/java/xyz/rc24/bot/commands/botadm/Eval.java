@@ -21,8 +21,8 @@ package xyz.rc24.bot.commands.botadm;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineFactory;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
@@ -62,12 +62,12 @@ public class Eval extends Command
                 "net.dv8tion.jda.bot",
                 "net.dv8tion.jda.bot.entities",
                 "net.dv8tion.jda.bot.entities.impl",
-                "net.dv8tion.jda.core",
-                "net.dv8tion.jda.core.entities",
-                "net.dv8tion.jda.core.entities.impl",
-                "net.dv8tion.jda.core.managers",
-                "net.dv8tion.jda.core.managers.impl",
-                "net.dv8tion.jda.core.utils",
+                "net.dv8tion.jda.api",
+                "net.dv8tion.jda.api.entities",
+                "net.dv8tion.jda.api.entities.impl",
+                "net.dv8tion.jda.api.managers",
+                "net.dv8tion.jda.api.managers.impl",
+                "net.dv8tion.jda.api.utils",
                 "net.dv8tion.jda.webhook",
                 "xyz.rc24.bot", "xyz.rc24.bot.listeners", "xyz.rc24.bot.loader",
                 "xyz.rc24.bot.managers", "xyz.rc24.bot.utils");

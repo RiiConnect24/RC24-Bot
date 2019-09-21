@@ -19,7 +19,7 @@
 
 package xyz.rc24.bot.core;
 
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
 

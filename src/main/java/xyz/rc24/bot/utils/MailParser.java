@@ -17,7 +17,7 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.listeners;
+package xyz.rc24.bot.utils;
 
 import ch.qos.logback.classic.Logger;
 import org.apache.commons.io.IOUtils;

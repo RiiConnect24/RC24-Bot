@@ -17,14 +17,14 @@
  * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.tools;
+package xyz.rc24.bot.listeners;
 
 import ch.qos.logback.classic.Logger;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.utils.IOUtil;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -59,7 +59,7 @@ public class MailParseListener extends ListenerAdapter
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
     {
-        if(!(bot.config.isMailPatchEnabled()))
+        /*if(!(bot.config.isMailPatchEnabled()))
             return;
 
         Message message = event.getMessage();
@@ -103,7 +103,7 @@ public class MailParseListener extends ListenerAdapter
                         else event.getChannel().sendMessage(Const.ERROR_E + " " + e.getMessage()).queue();
                     }
 
-                    /*try
+                    try
                     {
                         String url = test.getUrl();
                         logger.debug("Downloaded from: " + url);
@@ -144,9 +144,9 @@ public class MailParseListener extends ListenerAdapter
                     {
                         event.getChannel().sendMessage("Uh oh, I messed up and couldn't patch. Please ask one of my owners to check the console.").queue();
                         e.printStackTrace();
-                    }*/
+                    }
                 }
             }
-        }
+        }*/
     }
 }

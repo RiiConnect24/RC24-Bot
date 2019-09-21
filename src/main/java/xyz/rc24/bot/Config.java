@@ -19,7 +19,7 @@
 
 package xyz.rc24.bot;
 
-import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.api.OnlineStatus;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nonnull;
@@ -83,7 +83,7 @@ public class Config
 
     public String getPlaying()
     {
-        return getString("playing");
+        return getString("playing").replace("{prefix}", getPrefix());
     }
 
     public long getPrimaryOwner()

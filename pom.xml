@@ -53,7 +53,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>3.8.3_463</version>
+            <version>4.0.0_46</version>
             <!-- We dont need audio in this bot ~~use endless instead~~ -->
             <exclusions>
                 <exclusion>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.jagrosh</groupId>
             <artifactId>jda-utilities-command</artifactId>
-            <version>2.1.5</version>
+            <version>3.0.2</version>
         </dependency>
 
         <!-- Logging -->

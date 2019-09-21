@@ -1,12 +1,12 @@
 package xyz.rc24.bot.listeners;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.react.GenericGuildMessageReactionEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.rc24.bot.managers.PollManager;
 
 import java.util.concurrent.Executors;
@@ -24,6 +24,7 @@ public class PollListener extends ListenerAdapter
         this.threadPool = Executors.newSingleThreadScheduledExecutor();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onGenericGuildMessageReaction(GenericGuildMessageReactionEvent event)
     {
@@ -32,7 +33,7 @@ public class PollListener extends ListenerAdapter
 
         threadPool.submit(() ->
         {
-            Message message = event.getChannel().getMessageById(event.getMessageIdLong()).complete();
+            Message message = event.getChannel().retrieveMessageById(event.getMessageIdLong()).complete();
             MessageEmbed embed = message.getEmbeds().stream().findFirst().orElse(null);
             if(embed == null)
                 return;
@@ -48,7 +49,7 @@ public class PollListener extends ListenerAdapter
                     if(embed.getFields().get(1).getValue().contains(event.getUser().getAsTag()))
                         return;
 
-                    String users = event.getReaction().getUsers().complete()
+                    String users = event.getReaction().retrieveUsers()
                             .stream()
                             .filter(user -> !(user.isBot()))
                             .map(User::getAsTag)
@@ -68,7 +69,7 @@ public class PollListener extends ListenerAdapter
                     if(embed.getFields().get(0).getValue().contains(event.getUser().getAsTag()))
                         return;
 
-                    String users = event.getReaction().getUsers().complete()
+                    String users = event.getReaction().retrieveUsers()
                             .stream()
                             .filter(user -> !(user.isBot()))
                             .map(User::getAsTag)

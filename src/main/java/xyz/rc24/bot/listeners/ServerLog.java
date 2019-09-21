@@ -19,16 +19,16 @@
 
 package xyz.rc24.bot.listeners;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.guild.GenericGuildEvent;
-import net.dv8tion.jda.core.events.guild.GuildBanEvent;
-import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.core.BotCore;
@@ -93,7 +93,7 @@ public class ServerLog extends ListenerAdapter
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle(title);
         builder.setDescription("User: " + user.getAsMention() + " | " + user.getName() + "#" + user.getDiscriminator() +
-                "\n" + "Account creation date: `" + user.getCreationTime().format(DateTimeFormatter.RFC_1123_DATE_TIME) + "`");
+                "\n" + "Account creation date: `" + user.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME) + "`");
         builder.setColor(Color.decode(color));
         builder.setFooter("Current time: ", null);
         builder.setTimestamp(Instant.now());

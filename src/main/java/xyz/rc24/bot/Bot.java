@@ -30,15 +30,16 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import io.sentry.Sentry;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.ShutdownEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import okhttp3.OkHttpClient;
 import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Eval;
@@ -49,7 +50,7 @@ import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.ReviveCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
-import xyz.rc24.bot.commands.tools.MailParseListener;
+import xyz.rc24.bot.listeners.MailParseListener;
 import xyz.rc24.bot.commands.tools.MailPatchCmd;
 import xyz.rc24.bot.commands.tools.PrefixCmd;
 import xyz.rc24.bot.commands.tools.ServerSettingsCmd;
@@ -81,11 +82,12 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -115,9 +117,9 @@ public class Bot extends ListenerAdapter
 
     private final Logger logger = RiiConnect24Bot.getLogger();
     private final OkHttpClient httpClient = new OkHttpClient();
-    private final ScheduledExecutorService botScheduler = new ScheduledThreadPoolExecutor(1);
-    private final ScheduledExecutorService birthdaysScheduler = new ScheduledThreadPoolExecutor(1);
-    private final ScheduledExecutorService musicNightScheduler = new ScheduledThreadPoolExecutor(1);
+    private final ScheduledExecutorService botScheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService musicNightScheduler = Executors.newSingleThreadScheduledExecutor();
 
     void run() throws LoginException, IOException
     {
@@ -161,7 +163,7 @@ public class Bot extends ListenerAdapter
         DataDogStatsListener finalDataDogStatsListener = dataDogStatsListener;
         CommandClientBuilder client = new CommandClientBuilder()
         {{
-            setGame(Game.playing(config.getPlaying()));
+            setActivity(Activity.playing(config.getPlaying()));
             setStatus(config.getStatus());
             setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E);
             setLinkedCacheSize(40);
@@ -180,7 +182,7 @@ public class Bot extends ListenerAdapter
 
                     // Tools
                     new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
-                    new ServerSettingsCmd(Bot.this), new StatsCmd(),
+                    new ServerSettingsCmd(Bot.this), new StatsCmd(Bot.this),
 
                     // Wii-related
                     new AddCmd(Bot.this), new CodeCmd(Bot.this), new BlocksCmd(),
@@ -193,15 +195,15 @@ public class Bot extends ListenerAdapter
         // JDA Connection
         JDABuilder builder = new JDABuilder(config.getToken())
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .setGame(Game.playing("Loading..."))
-                .addEventListener(this, client.build(), waiter, new ServerLog(this), new MailParseListener(this),
-                        new PollListener(getPollManager()))
-                .setAudioEnabled(false);
+                .setActivity(Activity.playing("Loading..."))
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.VOICE_STATE, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS))
+                .addEventListeners(this, client.build(), waiter, new ServerLog(this), new MailParseListener(this),
+                        new PollListener(getPollManager()));
 
         if(config.isMorpherEnabled())
-            builder.addEventListener(new Morpher(config, getMorpherDataManager()));
+            builder.addEventListeners(new Morpher(config, getMorpherDataManager()));
         if(!(dataDogStatsListener == null))
-            builder.addEventListener(dataDogStatsListener);
+            builder.addEventListeners(dataDogStatsListener);
 
         builder.build();
     }
@@ -214,7 +216,7 @@ public class Bot extends ListenerAdapter
 
         // Check if we need to set a game
         if(config.getPlaying().isEmpty())
-            event.getJDA().getPresence().setGame(Game.playing("Type " + config.getPrefix() + "help"));
+            event.getJDA().getPresence().setActivity(Activity.playing("Type " + config.getPrefix() + "help"));
 
         ZonedDateTime zonedNow = OffsetDateTime.now().toZonedDateTime();
         ZonedDateTime zonedNext;

@@ -20,7 +20,7 @@
 package xyz.rc24.bot.core.entities.impl;
 
 import com.google.common.cache.Cache;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.core.BotCore;

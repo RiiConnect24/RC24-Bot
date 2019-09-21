@@ -20,7 +20,7 @@
 package xyz.rc24.bot;
 
 import ch.qos.logback.classic.Logger;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
@@ -46,7 +46,7 @@ public class RiiConnect24Bot
 
         // JDA
         RestAction.setPassContext(true); // enable context by default
-        RestAction.DEFAULT_FAILURE = Throwable::printStackTrace;
+        RestAction.setDefaultFailure(Throwable::printStackTrace);
 
         getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
 

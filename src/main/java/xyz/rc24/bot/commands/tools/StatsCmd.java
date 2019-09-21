@@ -21,10 +21,9 @@ package xyz.rc24.bot.commands.tools;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.Permission;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -32,6 +31,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 
@@ -43,9 +43,9 @@ import java.util.TreeSet;
 public class StatsCmd extends Command
 {
     private Logger LOG = LoggerFactory.getLogger("Stats Command");
-    private String STATS_URL = "http://164.132.44.106/stats.json";
+    private OkHttpClient httpClient;
 
-    public StatsCmd()
+    public StatsCmd(Bot bot)
     {
         this.name = "stats";
         this.help = "Shows stats for the RC24 services";
@@ -53,15 +53,18 @@ public class StatsCmd extends Command
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.ownerCommand = false;
         this.guildOnly = true;
+        this.httpClient = bot.getHttpClient();
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        OkHttpClient client = ((JDAImpl) event.getJDA()).getHttpClient();
-        Request request = new Request.Builder().url(STATS_URL).addHeader("User-Agent", "RC24-Bot " + Const.VERSION).build();
+        Request request = new Request.Builder()
+                .url("http://164.132.44.106/stats.json")
+                .addHeader("User-Agent", "RC24-Bot " + Const.VERSION)
+                .build();
 
-        try(Response response = client.newCall(request).execute())
+        try(Response response = httpClient.newCall(request).execute())
         {
             EmbedBuilder eb = new EmbedBuilder();
             MessageBuilder mb = new MessageBuilder();
@@ -79,6 +82,7 @@ public class StatsCmd extends Command
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private String parseJSON(Response response)
     {
         JSONObject json = new JSONObject(new JSONTokener(response.body().byteStream()));

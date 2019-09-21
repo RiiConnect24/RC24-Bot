@@ -41,9 +41,6 @@ public class PingCmd extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        long currentTime = System.currentTimeMillis();
-        event.reply("Pinging...", (message) ->
-                message.editMessage("Discord API Ping: " + event.getJDA().getPing() +
-                        "ms, message edit latency: " + (System.currentTimeMillis() - currentTime) + "ms").queue());
+        event.getJDA().getRestPing().queue(ping -> event.replyFormatted("Gateway Ping: %dms, Discord API Ping: %dms", event.getJDA().getGatewayPing(), ping));
     }
 }

@@ -21,7 +21,7 @@ package xyz.rc24.bot.commands.botadm;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
 
 /**

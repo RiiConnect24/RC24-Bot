@@ -20,17 +20,17 @@
 package xyz.rc24.bot.listeners;
 
 import ch.qos.logback.classic.Logger;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageHistory;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageUpdateEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.rc24.bot.Config;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.database.MorpherDataManager;
@@ -46,6 +46,7 @@ import java.util.List;
  * @author Artuto
  */
 
+@SuppressWarnings("ConstantConditions")
 public class Morpher extends ListenerAdapter
 {
     // IDs
@@ -116,7 +117,7 @@ public class Morpher extends ListenerAdapter
         embed.setDescription(description);
         if(!(attachments.isEmpty()))
             embed.addField("\uD83D\uDCCE Attachments:", attachmentsString.toString(), false);
-        embed.setTimestamp(rootMessage.getCreationTime());
+        embed.setTimestamp(rootMessage.getTimeCreated());
 
         return embed.build();
     }
@@ -145,7 +146,7 @@ public class Morpher extends ListenerAdapter
             if(!(association == 0L))
             {
                 // Create a new embed, and edit the mirrored message to it.
-                jda.getTextChannelById(mirrorId).getMessageById(association)
+                jda.getTextChannelById(mirrorId).retrieveMessageById(association)
                         .queue(mirroredMessage -> mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue());
             }
         }
@@ -161,6 +162,7 @@ public class Morpher extends ListenerAdapter
             if(!(association == 0L))
             {
                 // Remove mirrored message.
+
                 jda.getTextChannelById(mirrorId).deleteMessageById(association)
                         .queue(s -> dataManager.removeAssociation(event.getMessageIdLong()));
             }
