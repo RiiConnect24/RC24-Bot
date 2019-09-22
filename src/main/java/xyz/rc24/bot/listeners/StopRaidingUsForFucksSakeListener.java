@@ -61,7 +61,7 @@ public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
         OffsetDateTime now = OffsetDateTime.now();
         long creation = member.getUser().getTimeCreated().until(now, ChronoUnit.SECONDS);
 
-        if(creation > 1800)
+        if(creation > 3600)
             return;
 
         try
