@@ -126,7 +126,7 @@ public class CodeCmd extends Command
             List<String> args = parseArgs(FULL_PATTERN, event.getArgs());
             if(args.size() < 3)
             {
-                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code edit <type> <name> <code>");
+                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code edit <type> <name> <code>`");
                 return;
             }
 
