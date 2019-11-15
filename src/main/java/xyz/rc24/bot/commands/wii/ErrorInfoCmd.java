@@ -264,7 +264,7 @@ public class ErrorInfoCmd extends Command
         put(105409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
         put(107006, "Are you getting this on the News Channel? If so, please tell Larsenv you're getting this error and tell him your country and language your Wii is set to.");
         put(107245, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them.");
-        put(107304, "This error is can be caused by your isp blocking  custom DNS server, or simply not having it entered. Make sure it is entered correctly, if you still get this error use https://github.com/RiiConnect24/DNS-Server to resolve it");
+        put(107304, "This error is can be caused by your isp blocking custom DNS servers, or simply not having it entered. Make sure it is entered correctly, if you still get this error use https://github.com/RiiConnect24/DNS-Server to resolve it.");
         put(107305, "Try again. If it still doesn't work, it might be a problem with your Internet or RiiConnect24's servers.");
         put(110211, "If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
         put(110220, "Looks like the password your Wii uses isn't matching the one on the server. If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
