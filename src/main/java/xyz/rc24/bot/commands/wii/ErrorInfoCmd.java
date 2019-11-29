@@ -257,6 +257,7 @@ public class ErrorInfoCmd extends Command
     private final Map<Integer, String> codeNotes = new HashMap<Integer, String>()
     {{
         put(101409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
+	put(102032, "The IOS the app/game uses is not patched for RiiConnect24.");
         put(102409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
         put(103409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
         put(104409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
