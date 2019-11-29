@@ -242,7 +242,7 @@ public class CodeCmd extends Command
             List<String> args = parseArgs(REMOVE_PATTERN, event.getArgs());
             if(args.size() < 2)
             {
-                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code remove <type> <name>");
+                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code remove <type> <name>`");
                 return;
             }
 
