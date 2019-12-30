@@ -286,5 +286,6 @@ public class ErrorInfoCmd extends Command
         put(51330, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
         put(51331, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
         put(51332, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
+	put(61020, "This usually means that there is a bad connection. Try again.");
     }};
 }
