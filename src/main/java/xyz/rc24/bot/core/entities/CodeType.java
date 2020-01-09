@@ -32,23 +32,24 @@ package xyz.rc24.bot.core.entities;
 
 public enum CodeType
 {
-    GAME(0, "games", "Game", "🎮 **Games**", "game"),
-    NNID(1, "nnid", "Nintendo Network ID", "<:NintendoNetworkID:287655797104836608> **Nintendo Network ID**", "nnid"),
-    PSN(2, "psn", "PlayStation Network ID", "<:psn:545097818319224832> **PlayStation Network ID**", "psn"),
-    SWITCH(3, "switch", "Switch", "<:Switch:287652338791874560> **Switch**", "switch"),
-    THREEDS(4, "threeds", "3DS", "<:New3DSXL:287651327763283968> **3DS**", "3ds"),
-    WII(5, "wii", "Wii", "<:Wii:259081748007223296> **Wii**", "wii"),
+    GAME(0, "games", "Game", "664931537225121802", "**Games**", "game"),
+    NNID(1, "nnid", "Nintendo Network ID", "287655797104836608", "**Nintendo Network ID**", "nnid"),
+    PSN(2, "psn", "PlayStation Network ID", "545097818319224832", "**PlayStation Network ID**", "psn"),
+    SWITCH(3, "switch", "Switch", "287652338791874560", "**Switch**", "switch"),
+    THREEDS(4, "threeds", "3DS", "287651327763283968", "**3DS**", "3ds"),
+    WII(5, "wii", "Wii", "259081748007223296", "**Wii**", "wii"),
 
-    UNKNOWN(-1, null, null, null, null);
+    UNKNOWN(-1, null, null, null, null, null);
 
     private final int id;
-    private final String column, displayName, formattedName, name;
+    private final String column, displayName, emote, formattedName, name;
 
-    CodeType(int id, String column, String displayName, String formattedName, String name)
+    CodeType(int id, String column, String displayName, String emote, String formattedName, String name)
     {
         this.id = id;
         this.column = column;
         this.displayName = displayName;
+        this.emote = emote;
         this.formattedName = formattedName;
         this.name = name;
     }
@@ -68,9 +69,14 @@ public enum CodeType
         return displayName;
     }
 
+    public String getEmote()
+    {
+        return emote;
+    }
+
     public String getFormattedName()
     {
-        return formattedName;
+        return "<:" + column + ":" + emote + "> " + formattedName;
     }
 
     public String getName()
@@ -83,6 +89,17 @@ public enum CodeType
         for(CodeType type : values())
         {
             if(code.equalsIgnoreCase(type.getName()))
+                return type;
+        }
+
+        return UNKNOWN;
+    }
+
+    public static CodeType fromEmote(String emote)
+    {
+        for(CodeType type : values())
+        {
+            if(emote.equalsIgnoreCase(type.getEmote()))
                 return type;
         }
 

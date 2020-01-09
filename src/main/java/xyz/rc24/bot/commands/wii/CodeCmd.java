@@ -26,9 +26,13 @@ package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.jagrosh.jdautilities.menu.ButtonMenu;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.core.entities.CodeType;
@@ -40,6 +44,8 @@ import xyz.rc24.bot.utils.SearcherUtil;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +57,7 @@ public class CodeCmd extends Command
 {
     private final Bot bot;
     private final CodeDataManager dataManager;
+    private final EventWaiter waiter;
 
     private final Pattern FULL_PATTERN = Pattern.compile("(\\w+)\\s+(.+?)\\s+((?:\\d{4}|SW)[-\\s]\\d{4}[-\\s]\\d{4}(?:[-\\s]\\d{4})?|\\w+)$", Pattern.MULTILINE); // thanks Dismissed
     private final Pattern REMOVE_PATTERN = Pattern.compile("(\\w+)\\s+(.+?)$", Pattern.MULTILINE);
@@ -59,6 +66,7 @@ public class CodeCmd extends Command
     {
         this.bot = bot;
         this.dataManager = bot.getCodeDataManager();
+        this.waiter = bot.waiter;
         this.name = "code";
         this.help = "Manages friend codes for the user.";
         this.children = new Command[]{new AddCmd(), new EditCmd(), new HelpCmd(), new LookupCmd(), new RemoveCmd()};
@@ -188,12 +196,24 @@ public class CodeCmd extends Command
 
     private class LookupCmd extends Command
     {
+        private final Consumer<Message> finalAction = (message) ->
+        {
+            try
+            {
+                message.clearReactions().queue();
+            }
+            catch(PermissionException ignored)
+            {
+                message.delete().queue();
+            }
+        };
+
         LookupCmd()
         {
             this.name = "lookup";
             this.help = "Displays codes for the user.";
             this.category = Categories.WII;
-            this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
+            this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ADD_REACTION};
         }
 
         @Override
@@ -202,6 +222,43 @@ public class CodeCmd extends Command
             Member member = SearcherUtil.findMember(event, event.getArgs());
             if(member == null)
                 return;
+
+            ButtonMenu.Builder menuBuilder = new ButtonMenu.Builder()
+                    .setEventWaiter(waiter)
+                    .setUsers(member.getUser(), event.getAuthor())
+                    .setColor(member.getColor())
+                    .setTimeout(5, TimeUnit.MINUTES)
+                    .setDescription("Please select a code type:")
+                    .setFinalAction(finalAction);
+
+            boolean hasCodes = false;
+            Map<CodeType, Map<String, String>> userCodes = bot.getCore().getAllCodes(member.getUser().getIdLong());
+
+            for(Map.Entry<CodeType, Map<String, String>> codeType : userCodes.entrySet())
+            {
+                Map<String, String> codes = codeType.getValue();
+                if(codes.isEmpty())
+                    continue;
+
+                // Discord only cares about the emote ID, so we just pass "a" as the name
+                menuBuilder.addChoice("a:" + codeType.getKey().getEmote());
+                hasCodes = true;
+            }
+
+            if(!(hasCodes))
+            {
+                event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
+                return;
+            }
+
+            menuBuilder.setAction(emote ->
+            {
+                CodeType codeType = CodeType.fromEmote(emote.getName());
+                event.reply(codeType.toString());
+            });
+
+            menuBuilder.build().display(event.getChannel());
+            if(true)return; // TODO: Remove this
 
             String flag = bot.getCore().getFlag(member.getUser().getIdLong());
             boolean hasFlag = !(flag.isEmpty());
@@ -213,7 +270,7 @@ public class CodeCmd extends Command
             if(hasFlag)
                 codeEmbed.setTitle("Country: " + flag);
 
-            Map<CodeType, Map<String, String>> userCodes = bot.getCore().getAllCodes(member.getUser().getIdLong());
+            // TODO: Move this logic to different methods
             for(Map.Entry<CodeType, Map<String, String>> typeData : userCodes.entrySet())
             {
                 Map<String, String> codes = typeData.getValue();

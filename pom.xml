@@ -72,6 +72,11 @@
             <artifactId>jda-utilities-command</artifactId>
             <version>3.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.jagrosh</groupId>
+            <artifactId>jda-utilities-menu</artifactId>
+            <version>3.0.2</version>
+        </dependency>
 
         <!-- Logging -->
         <dependency>
@@ -238,6 +243,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
+                            <!--suppress UnresolvedMavenProperty -->
                             <Implementation-Version>${project.version}:${describe}</Implementation-Version>
                         </manifestEntries>
                     </archive>
