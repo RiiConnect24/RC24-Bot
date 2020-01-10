@@ -246,7 +246,7 @@ public class CodeCmd extends Command
             if(member == null)
                 return;
 
-            if(!(displayTypeSelector(event, member)))
+            if(!(displayTypeSelector(event, member, null)))
                 return;
 
             String flag = bot.getCore().getFlag(member.getUser().getIdLong());
@@ -254,11 +254,9 @@ public class CodeCmd extends Command
 
             if(hasFlag)
                 codePaginator.setTitle("Country: " + flag);
-
-            event.reply("Profile for **" + member.getEffectiveName() + "**", m -> typeMenu.build().display(m));
         }
 
-        private boolean displayTypeSelector(CommandEvent event, Member member)
+        private boolean displayTypeSelector(CommandEvent event, Member member, Message message)
         {
             typeMenu.setUsers(member.getUser(), event.getAuthor())
                     .setColor(member.getColor());
@@ -283,17 +281,22 @@ public class CodeCmd extends Command
                 return false;
             }
 
-            typeMenu.setAction((message, emote) ->
+            typeMenu.setAction((msg, emote) ->
             {
                 CodeType codeType = CodeType.fromEmote(emote.getId());
                 if(codeType == CodeType.UNKNOWN)
                     return;
 
-                displayCodes(event, message, member, codeType, userCodes.get(codeType));
+                displayCodes(event, msg, member, codeType, userCodes.get(codeType));
 
                 codePaginator.setUsers(member.getUser(), event.getAuthor())
                         .setColor(member.getColor());
             });
+
+            if(message == null)
+                event.reply("Profile for **" + member.getEffectiveName() + "**", m -> typeMenu.build().display(m));
+            else
+                typeMenu.build().display(message);
 
             return true;
         }
@@ -306,7 +309,7 @@ public class CodeCmd extends Command
             codePaginator.setText(codeType.getFormattedName() + " codes for **" + member.getEffectiveName() + "**");
             codePaginator.setAuthor("Profile for " + member.getEffectiveName(), member.getUser().getEffectiveAvatarUrl());
             codePaginator.build().display(message);
-            handleBackButton(event, message, message.getMember(), member);
+            handleBackButton(event, message, event.getMember(), member);
         }
 
         private void handleBackButton(CommandEvent cevent, Message message, Member... allowed)
@@ -319,11 +322,17 @@ public class CodeCmd extends Command
                 if(!(event.getReactionEmote().isEmoji()))
                     return false;
 
+                if(event.getMember().getUser().isBot())
+                    return false;
+
+                System.out.println(Arrays.toString(allowed));
+
                 if(!(Arrays.asList(allowed).contains(event.getMember())))
                     return false;
 
                 return event.getReactionEmote().getName().equals(BACK);
-            }, event -> displayTypeSelector(cevent, allowed[1]), 5, TimeUnit.MINUTES, () -> {});
+            }, event -> displayTypeSelector(cevent, allowed[1], message),
+                    5, TimeUnit.MINUTES, () -> finalAction.accept(message));
             message.addReaction(BACK).queueAfter(3, TimeUnit.SECONDS);
         }
     }
