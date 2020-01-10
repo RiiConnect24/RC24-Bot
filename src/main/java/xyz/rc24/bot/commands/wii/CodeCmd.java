@@ -216,19 +216,6 @@ public class CodeCmd extends Command
             }
         };
 
-        private final Paginator.Builder codePaginator = new Paginator.Builder()
-                .setEventWaiter(waiter)
-                .showPageNumbers(true)
-                .setTimeout(5, TimeUnit.MINUTES)
-                .setColumns(2)
-                .setFinalAction(finalAction);
-
-        private final ButtonMenu.Builder typeMenu = new ButtonMenu.Builder()
-                .setEventWaiter(waiter)
-                .setTimeout(5, TimeUnit.MINUTES)
-                .setDescription("Please select a code type:")
-                .setFinalAction(finalAction);
-
         LookupCmd()
         {
             this.name = "lookup";
@@ -240,12 +227,18 @@ public class CodeCmd extends Command
         @Override
         protected void execute(CommandEvent event)
         {
-            codePaginator.clearItems();
             Member member = SearcherUtil.findMember(event, event.getArgs());
             if(member == null)
                 return;
 
-            if(!(displayTypeSelector(event, member, null)))
+            Paginator.Builder codePaginator = new Paginator.Builder()
+                    .setEventWaiter(waiter)
+                    .showPageNumbers(true)
+                    .setTimeout(5, TimeUnit.MINUTES)
+                    .setColumns(2)
+                    .setFinalAction(finalAction);
+
+            if(!(displayTypeSelector(event, member, null, codePaginator)))
                 return;
 
             String flag = bot.getCore().getFlag(member.getUser().getIdLong());
@@ -255,9 +248,14 @@ public class CodeCmd extends Command
                 codePaginator.setTitle("Country: " + flag);
         }
 
-        private boolean displayTypeSelector(CommandEvent event, Member member, Message message)
+        private boolean displayTypeSelector(CommandEvent event, Member member, Message message, Paginator.Builder codePaginator)
         {
-            typeMenu.setUsers(member.getUser(), event.getAuthor())
+            ButtonMenu.Builder typeMenu = new ButtonMenu.Builder()
+                    .setEventWaiter(waiter)
+                    .setTimeout(5, TimeUnit.MINUTES)
+                    .setDescription("Please select a code type:")
+                    .setFinalAction(finalAction)
+                    .setUsers(member.getUser(), event.getAuthor())
                     .setColor(member.getColor());
 
             boolean hasCodes = false;
@@ -286,7 +284,7 @@ public class CodeCmd extends Command
                 if(codeType == CodeType.UNKNOWN)
                     return;
 
-                displayCodes(event, msg, member, codeType, userCodes.get(codeType));
+                displayCodes(event, msg, member, codeType, userCodes.get(codeType), codePaginator);
 
                 codePaginator.setUsers(member.getUser(), event.getAuthor())
                         .setColor(member.getColor());
@@ -300,7 +298,7 @@ public class CodeCmd extends Command
             return true;
         }
 
-        private void displayCodes(CommandEvent event, Message message, Member member, CodeType codeType, Map<String, String> codes)
+        private void displayCodes(CommandEvent event, Message message, Member member, CodeType codeType, Map<String, String> codes, Paginator.Builder codePaginator)
         {
             for(Map.Entry<String, String> entry : codes.entrySet())
                 codePaginator.addItems(FormatUtil.getCodeLayout(entry.getKey(), entry.getValue()));
@@ -308,10 +306,10 @@ public class CodeCmd extends Command
             codePaginator.setText(codeType.getFormattedName() + " codes for **" + member.getEffectiveName() + "**");
             codePaginator.setAuthor("Profile for " + member.getEffectiveName(), member.getUser().getEffectiveAvatarUrl());
             codePaginator.build().display(message);
-            handleBackButton(event, message, event.getMember(), member);
+            handleBackButton(event, codePaginator, message, event.getMember(), member);
         }
 
-        private void handleBackButton(CommandEvent cevent, Message message, Member... allowed)
+        private void handleBackButton(CommandEvent cevent, Paginator.Builder codePaginator, Message message, Member... allowed)
         {
             waiter.waitForEvent(GuildMessageReactionAddEvent.class, event ->
             {
@@ -333,7 +331,7 @@ public class CodeCmd extends Command
                 try
                 {
                     message.editMessage("Profile for **" + allowed[1].getEffectiveName() + "**").queue();
-                    message.clearReactions().queue(s -> displayTypeSelector(cevent, allowed[1], message), e -> {});
+                    message.clearReactions().queue(s -> displayTypeSelector(cevent, allowed[1], message, codePaginator), e -> {});
                 }
                 catch(PermissionException ignored) {}
             }, 5, TimeUnit.MINUTES, () -> finalAction.accept(message));
