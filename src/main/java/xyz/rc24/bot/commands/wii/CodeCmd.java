@@ -333,12 +333,12 @@ public class CodeCmd extends Command
             {
                 try
                 {
-                    message.clearReactions().queue(s -> displayTypeSelector(cevent, allowed[1], message));
+                    message.editMessage("Profile for **" + allowed[1].getEffectiveName() + "**").queue();
+                    message.clearReactions().queue(s -> displayTypeSelector(cevent, allowed[1], message), e -> {});
                 }
                 catch(PermissionException ignored) {}
-            },
-                    5, TimeUnit.MINUTES, () -> finalAction.accept(message));
-            message.addReaction(BACK).queueAfter(3, TimeUnit.SECONDS);
+            }, 5, TimeUnit.MINUTES, () -> finalAction.accept(message));
+            message.addReaction(BACK).queue();
         }
     }
 
