@@ -325,13 +325,18 @@ public class CodeCmd extends Command
                 if(event.getMember().getUser().isBot())
                     return false;
 
-                System.out.println(Arrays.toString(allowed));
-
                 if(!(Arrays.asList(allowed).contains(event.getMember())))
                     return false;
 
                 return event.getReactionEmote().getName().equals(BACK);
-            }, event -> displayTypeSelector(cevent, allowed[1], message),
+            }, event ->
+            {
+                try
+                {
+                    message.clearReactions().queue(s -> displayTypeSelector(cevent, allowed[1], message));
+                }
+                catch(PermissionException ignored) {}
+            },
                     5, TimeUnit.MINUTES, () -> finalAction.accept(message));
             message.addReaction(BACK).queueAfter(3, TimeUnit.SECONDS);
         }
