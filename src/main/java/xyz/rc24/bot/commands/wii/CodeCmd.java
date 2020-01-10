@@ -221,7 +221,6 @@ public class CodeCmd extends Command
                 .showPageNumbers(true)
                 .setTimeout(5, TimeUnit.MINUTES)
                 .setColumns(2)
-                .waitOnSinglePage(true)
                 .setFinalAction(finalAction);
 
         private final ButtonMenu.Builder typeMenu = new ButtonMenu.Builder()
@@ -338,7 +337,7 @@ public class CodeCmd extends Command
                 }
                 catch(PermissionException ignored) {}
             }, 5, TimeUnit.MINUTES, () -> finalAction.accept(message));
-            message.addReaction(BACK).queue();
+            message.addReaction(BACK).queueAfter(1, TimeUnit.SECONDS);
         }
     }
 
