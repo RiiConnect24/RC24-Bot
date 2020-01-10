@@ -284,10 +284,10 @@ public class CodeCmd extends Command
                 if(codeType == CodeType.UNKNOWN)
                     return;
 
-                displayCodes(event, msg, member, codeType, userCodes.get(codeType), codePaginator);
-
                 codePaginator.setUsers(member.getUser(), event.getAuthor())
                         .setColor(member.getColor());
+
+                displayCodes(event, msg, member, codeType, userCodes.get(codeType), codePaginator);
             });
 
             if(message == null)
