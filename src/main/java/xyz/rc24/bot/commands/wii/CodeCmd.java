@@ -306,10 +306,10 @@ public class CodeCmd extends Command
             codePaginator.setText(codeType.getFormattedName() + " codes for **" + member.getEffectiveName() + "**");
             codePaginator.setAuthor("Profile for " + member.getEffectiveName(), member.getUser().getEffectiveAvatarUrl());
             codePaginator.build().display(message);
-            handleBackButton(event, codePaginator, message, event.getMember(), member);
+            handleBackButton(event, message, event.getMember(), member);
         }
 
-        private void handleBackButton(CommandEvent cevent, Paginator.Builder codePaginator, Message message, Member... allowed)
+        private void handleBackButton(CommandEvent cevent, Message message, Member... allowed)
         {
             waiter.waitForEvent(GuildMessageReactionAddEvent.class, event ->
             {
@@ -330,8 +330,27 @@ public class CodeCmd extends Command
             {
                 try
                 {
-                    message.editMessage("Profile for **" + allowed[1].getEffectiveName() + "**").queue();
-                    message.clearReactions().queue(s -> displayTypeSelector(cevent, allowed[1], message, codePaginator), e -> {});
+                    Member member = allowed[1];
+                    message.editMessage("Profile for **" + member.getEffectiveName() + "**").queue();
+                    message.clearReactions().queue(s ->
+                    {
+                        Paginator.Builder codePaginator = new Paginator.Builder()
+                                .setEventWaiter(waiter)
+                                .showPageNumbers(true)
+                                .setTimeout(5, TimeUnit.MINUTES)
+                                .setColumns(2)
+                                .setFinalAction(finalAction)
+                                .setUsers(member.getUser(), allowed[0].getUser())
+                                .setColor(member.getColor());
+
+                        String flag = bot.getCore().getFlag(member.getUser().getIdLong());
+                        boolean hasFlag = !(flag.isEmpty());
+
+                        if(hasFlag)
+                            codePaginator.setTitle("Country: " + flag);
+
+                        displayTypeSelector(cevent, member, message, codePaginator);
+                    }, e -> {});
                 }
                 catch(PermissionException ignored) {}
             }, 5, TimeUnit.MINUTES, () -> finalAction.accept(message));
