@@ -80,7 +80,7 @@
         <dependency>
             <groupId>com.github.RiiConnect24-Bot.JDA-Utilities</groupId>
             <artifactId>jda-utilities-menu</artifactId>
-            <version>a2f28219a6</version>
+            <version>c3e09d51aa</version>
         </dependency>
 
         <!-- Logging -->

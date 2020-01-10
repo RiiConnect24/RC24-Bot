@@ -33,8 +33,8 @@ package xyz.rc24.bot.core.entities;
 public enum CodeType
 {
     GAME(0, "games", "Game", "664931537225121802", "**Games**", "game"),
-    NNID(1, "nnid", "Nintendo Network ID", "287655797104836608", "**Nintendo Network ID**", "nnid"),
-    PSN(2, "psn", "PlayStation Network ID", "545097818319224832", "**PlayStation Network ID**", "psn"),
+    NNID(1, "nnid", "Nintendo Network", "287655797104836608", "**Nintendo Network ID**", "nnid"),
+    PSN(2, "psn", "PlayStation Network", "545097818319224832", "**PlayStation Network ID**", "psn"),
     SWITCH(3, "switch", "Switch", "287652338791874560", "**Switch**", "switch"),
     THREEDS(4, "threeds", "3DS", "287651327763283968", "**3DS**", "3ds"),
     WII(5, "wii", "Wii", "259081748007223296", "**Wii**", "wii"),

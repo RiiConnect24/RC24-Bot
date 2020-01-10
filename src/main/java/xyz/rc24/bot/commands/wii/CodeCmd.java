@@ -28,6 +28,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.ButtonMenu;
+import com.jagrosh.jdautilities.menu.Paginator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -208,6 +209,19 @@ public class CodeCmd extends Command
             }
         };
 
+        private final Paginator.Builder codePaginator = new Paginator.Builder()
+                .setEventWaiter(waiter)
+                .showPageNumbers(true)
+                .setTimeout(5, TimeUnit.MINUTES)
+                .setColumns(2)
+                .setFinalAction(finalAction);
+
+        private final ButtonMenu.Builder typeMenu = new ButtonMenu.Builder()
+                .setEventWaiter(waiter)
+                .setTimeout(5, TimeUnit.MINUTES)
+                .setDescription("Please select a code type:")
+                .setFinalAction(finalAction);
+
         LookupCmd()
         {
             this.name = "lookup";
@@ -219,17 +233,16 @@ public class CodeCmd extends Command
         @Override
         protected void execute(CommandEvent event)
         {
+            codePaginator.clearItems();
             Member member = SearcherUtil.findMember(event, event.getArgs());
             if(member == null)
                 return;
 
-            ButtonMenu.Builder menuBuilder = new ButtonMenu.Builder()
-                    .setEventWaiter(waiter)
-                    .setUsers(member.getUser(), event.getAuthor())
-                    .setColor(member.getColor())
-                    .setTimeout(5, TimeUnit.MINUTES)
-                    .setDescription("Please select a code type:")
-                    .setFinalAction(finalAction);
+            typeMenu.setUsers(member.getUser(), event.getAuthor())
+                    .setColor(member.getColor());
+
+            String flag = bot.getCore().getFlag(member.getUser().getIdLong());
+            boolean hasFlag = !(flag.isEmpty());
 
             boolean hasCodes = false;
             Map<CodeType, Map<String, String>> userCodes = bot.getCore().getAllCodes(member.getUser().getIdLong());
@@ -241,7 +254,7 @@ public class CodeCmd extends Command
                     continue;
 
                 // Discord only cares about the emote ID, so we just pass "a" as the name
-                menuBuilder.addChoice("a:" + codeType.getKey().getEmote());
+                typeMenu.addChoice("a:" + codeType.getKey().getEmote());
                 hasCodes = true;
             }
 
@@ -251,24 +264,30 @@ public class CodeCmd extends Command
                 return;
             }
 
-            menuBuilder.setAction(emote ->
+            if(hasFlag)
+                codePaginator.setTitle("Country: " + flag);
+
+            typeMenu.setAction((message, emote) ->
             {
-                CodeType codeType = CodeType.fromEmote(emote.getName());
-                event.reply(codeType.toString());
+                CodeType codeType = CodeType.fromEmote(emote.getId());
+                if(codeType == CodeType.UNKNOWN)
+                    return;
+
+                displayCodes(message, member, codeType, userCodes.get(codeType));
+
+                codePaginator.setUsers(member.getUser(), event.getAuthor())
+                        .setColor(member.getColor());
             });
 
-            menuBuilder.build().display(event.getChannel());
+            event.reply("Profile for **" + member.getEffectiveName() + "**", m -> typeMenu.build().display(m));
+
             if(true)return; // TODO: Remove this
 
-            String flag = bot.getCore().getFlag(member.getUser().getIdLong());
-            boolean hasFlag = !(flag.isEmpty());
+
             EmbedBuilder codeEmbed = new EmbedBuilder()
                     .setAuthor("Profile for " + member.getEffectiveName(),
                             null, member.getUser().getEffectiveAvatarUrl())
                     .setColor(member.getColor());
-
-            if(hasFlag)
-                codeEmbed.setTitle("Country: " + flag);
 
             // TODO: Move this logic to different methods
             for(Map.Entry<CodeType, Map<String, String>> typeData : userCodes.entrySet())
@@ -285,6 +304,16 @@ public class CodeCmd extends Command
                 event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
             else
                 event.reply(codeEmbed.build());
+        }
+
+        private void displayCodes(Message message, Member member, CodeType codeType, Map<String, String> codes)
+        {
+            for(Map.Entry<String, String> entry : codes.entrySet())
+                codePaginator.addItems(FormatUtil.getCodeLayout(entry.getKey(), entry.getValue()));
+
+            codePaginator.setText(codeType.getFormattedName() + " codes for **" + member.getEffectiveName() + "**");
+            codePaginator.setAuthor("Profile for " + member.getEffectiveName(), member.getUser().getEffectiveAvatarUrl());
+            codePaginator.build().display(message);
         }
     }
 

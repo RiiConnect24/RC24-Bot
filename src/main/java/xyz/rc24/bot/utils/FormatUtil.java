@@ -115,4 +115,9 @@ public class FormatUtil
 
         return codesString.toString();
     }
+
+    public static String getCodeLayout(String name, String code)
+    {
+        return "`" + name + "`:\n" + code;
+    }
 }
