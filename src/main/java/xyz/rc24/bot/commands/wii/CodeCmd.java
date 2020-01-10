@@ -29,7 +29,6 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.ButtonMenu;
 import com.jagrosh.jdautilities.menu.Paginator;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -280,30 +279,6 @@ public class CodeCmd extends Command
             });
 
             event.reply("Profile for **" + member.getEffectiveName() + "**", m -> typeMenu.build().display(m));
-
-            if(true)return; // TODO: Remove this
-
-
-            EmbedBuilder codeEmbed = new EmbedBuilder()
-                    .setAuthor("Profile for " + member.getEffectiveName(),
-                            null, member.getUser().getEffectiveAvatarUrl())
-                    .setColor(member.getColor());
-
-            // TODO: Move this logic to different methods
-            for(Map.Entry<CodeType, Map<String, String>> typeData : userCodes.entrySet())
-            {
-                Map<String, String> codes = typeData.getValue();
-                if(!(codes.isEmpty()))
-                {
-                    codeEmbed.addField(typeData.getKey().getFormattedName(),
-                            FormatUtil.getCodeLayout(codes), true);
-                }
-            }
-
-            if(codeEmbed.getFields().isEmpty())
-                event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
-            else
-                event.reply(codeEmbed.build());
         }
 
         private void displayCodes(Message message, Member member, CodeType codeType, Map<String, String> codes)
