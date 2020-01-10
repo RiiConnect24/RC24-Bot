@@ -25,9 +25,7 @@
 package xyz.rc24.bot.utils;
 
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.LogType;
 
@@ -49,25 +47,7 @@ public class FormatUtil
         return out.toString();
     }
 
-    public static String listOfRoles(List<Role> list, String query)
-    {
-        StringBuilder out = new StringBuilder(" Multiple roles found matching \"" + query + "\":");
-        for(int i = 0; i < 6 && i < list.size(); i++)
-            out.append("\n - ").append(list.get(i).getName()).append(" (ID:").append(list.get(i).getId()).append(")");
-        if(list.size() > 6) out.append("\n**And ").append(list.size() - 6).append(" more...**");
-        return out.toString();
-    }
-
     public static String listOfTcChannels(List<TextChannel> list, String query)
-    {
-        StringBuilder out = new StringBuilder(" Multiple roles found matching \"" + query + "\":");
-        for(int i = 0; i < 6 && i < list.size(); i++)
-            out.append("\n - ").append(list.get(i).getName()).append(" (ID:").append(list.get(i).getId()).append(")");
-        if(list.size() > 6) out.append("\n**And ").append(list.size() - 6).append(" more...**");
-        return out.toString();
-    }
-
-    public static String listOfVcChannels(List<VoiceChannel> list, String query)
     {
         StringBuilder out = new StringBuilder(" Multiple roles found matching \"" + query + "\":");
         for(int i = 0; i < 6 && i < list.size(); i++)

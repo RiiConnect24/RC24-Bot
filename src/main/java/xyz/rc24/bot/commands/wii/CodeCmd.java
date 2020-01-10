@@ -32,6 +32,10 @@ import com.jagrosh.jdautilities.menu.Paginator;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
@@ -41,6 +45,8 @@ import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.utils.FormatUtil;
 import xyz.rc24.bot.utils.SearcherUtil;
 
+import java.sql.Time;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -196,6 +202,8 @@ public class CodeCmd extends Command
 
     private class LookupCmd extends Command
     {
+        private final String BACK = "↩";
+
         private final Consumer<Message> finalAction = (message) ->
         {
             try
@@ -213,6 +221,7 @@ public class CodeCmd extends Command
                 .showPageNumbers(true)
                 .setTimeout(5, TimeUnit.MINUTES)
                 .setColumns(2)
+                .waitOnSinglePage(true)
                 .setFinalAction(finalAction);
 
         private final ButtonMenu.Builder typeMenu = new ButtonMenu.Builder()
@@ -237,11 +246,22 @@ public class CodeCmd extends Command
             if(member == null)
                 return;
 
-            typeMenu.setUsers(member.getUser(), event.getAuthor())
-                    .setColor(member.getColor());
+            if(!(displayTypeSelector(event, member)))
+                return;
 
             String flag = bot.getCore().getFlag(member.getUser().getIdLong());
             boolean hasFlag = !(flag.isEmpty());
+
+            if(hasFlag)
+                codePaginator.setTitle("Country: " + flag);
+
+            event.reply("Profile for **" + member.getEffectiveName() + "**", m -> typeMenu.build().display(m));
+        }
+
+        private boolean displayTypeSelector(CommandEvent event, Member member)
+        {
+            typeMenu.setUsers(member.getUser(), event.getAuthor())
+                    .setColor(member.getColor());
 
             boolean hasCodes = false;
             Map<CodeType, Map<String, String>> userCodes = bot.getCore().getAllCodes(member.getUser().getIdLong());
@@ -260,11 +280,8 @@ public class CodeCmd extends Command
             if(!(hasCodes))
             {
                 event.replyError("**" + member.getEffectiveName() + "** has not added any codes!");
-                return;
+                return false;
             }
-
-            if(hasFlag)
-                codePaginator.setTitle("Country: " + flag);
 
             typeMenu.setAction((message, emote) ->
             {
@@ -272,16 +289,16 @@ public class CodeCmd extends Command
                 if(codeType == CodeType.UNKNOWN)
                     return;
 
-                displayCodes(message, member, codeType, userCodes.get(codeType));
+                displayCodes(event, message, member, codeType, userCodes.get(codeType));
 
                 codePaginator.setUsers(member.getUser(), event.getAuthor())
                         .setColor(member.getColor());
             });
 
-            event.reply("Profile for **" + member.getEffectiveName() + "**", m -> typeMenu.build().display(m));
+            return true;
         }
 
-        private void displayCodes(Message message, Member member, CodeType codeType, Map<String, String> codes)
+        private void displayCodes(CommandEvent event, Message message, Member member, CodeType codeType, Map<String, String> codes)
         {
             for(Map.Entry<String, String> entry : codes.entrySet())
                 codePaginator.addItems(FormatUtil.getCodeLayout(entry.getKey(), entry.getValue()));
@@ -289,6 +306,25 @@ public class CodeCmd extends Command
             codePaginator.setText(codeType.getFormattedName() + " codes for **" + member.getEffectiveName() + "**");
             codePaginator.setAuthor("Profile for " + member.getEffectiveName(), member.getUser().getEffectiveAvatarUrl());
             codePaginator.build().display(message);
+            handleBackButton(event, message, message.getMember(), member);
+        }
+
+        private void handleBackButton(CommandEvent cevent, Message message, Member... allowed)
+        {
+            waiter.waitForEvent(GuildMessageReactionAddEvent.class, event ->
+            {
+                if(!(event.getMessageIdLong() == message.getIdLong()))
+                    return false;
+
+                if(!(event.getReactionEmote().isEmoji()))
+                    return false;
+
+                if(!(Arrays.asList(allowed).contains(event.getMember())))
+                    return false;
+
+                return event.getReactionEmote().getName().equals(BACK);
+            }, event -> displayTypeSelector(cevent, allowed[1]), 5, TimeUnit.MINUTES, () -> {});
+            message.addReaction(BACK).queueAfter(3, TimeUnit.SECONDS);
         }
     }
 
