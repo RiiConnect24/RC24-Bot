@@ -32,10 +32,7 @@ import com.jagrosh.jdautilities.menu.Paginator;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
@@ -45,7 +42,6 @@ import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.utils.FormatUtil;
 import xyz.rc24.bot.utils.SearcherUtil;
 
-import java.sql.Time;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
