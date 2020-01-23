@@ -100,4 +100,10 @@ public class FormatUtil
     {
         return "`" + name + "`:\n" + code;
     }
+
+    public static String sanitize(String msg)
+    {
+        return msg.replace("@everyone", "@\u0435veryone")
+                .replace("@here", "@h\u0435re");
+    }
 }

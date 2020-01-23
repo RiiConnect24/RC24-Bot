@@ -327,7 +327,7 @@ public class CodeCmd extends Command
                 try
                 {
                     Member member = allowed[1];
-                    message.editMessage("Profile for **" + member.getEffectiveName() + "**").queue();
+                    message.editMessage(FormatUtil.sanitize("Profile for **" + member.getEffectiveName() + "**")).queue();
                     message.clearReactions().queue(s ->
                     {
                         Paginator.Builder codePaginator = new Paginator.Builder()

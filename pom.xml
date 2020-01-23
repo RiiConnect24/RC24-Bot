@@ -30,7 +30,7 @@
 
     <groupId>xyz.rc24.bot</groupId>
     <artifactId>RC24-Bot</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.0.0_46</version>
+            <version>4.1.0_100</version>
             <!-- We dont need audio in this bot ~~use endless instead~~ -->
             <exclusions>
                 <exclusion>
