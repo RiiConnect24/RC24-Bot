@@ -299,7 +299,7 @@ public class CodeCmd extends Command
             for(Map.Entry<String, String> entry : codes.entrySet())
                 codePaginator.addItems(FormatUtil.getCodeLayout(entry.getKey(), entry.getValue()));
 
-            codePaginator.setText(codeType.getFormattedName() + " codes for **" + member.getEffectiveName() + "**");
+            codePaginator.setText(FormatUtil.sanitize(codeType.getFormattedName() + " codes for **" + member.getEffectiveName() + "**"));
             codePaginator.setAuthor("Profile for " + member.getEffectiveName(), member.getUser().getEffectiveAvatarUrl());
             codePaginator.build().display(message);
             handleBackButton(event, message, event.getMember(), member);
