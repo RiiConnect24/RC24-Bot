@@ -30,6 +30,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.menu.ButtonMenu;
 import com.jagrosh.jdautilities.menu.Paginator;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
@@ -179,7 +180,7 @@ public class CodeCmd extends Command
         @Override
         protected void execute(CommandEvent event)
         {
-			String prefix = bot.getPrefix(event.getGuild());
+			String prefix = event.isFromType(ChannelType.TEXT) ? bot.getPrefix(event.getGuild()) : "!";
 			
             String help = "**__Using the bot__**\n\n" + 
 			    "**Adding Wii:**\n" + "`" + prefix + "code add wii Wii Name Goes here 1234-5678-9012-3456`\n" + 
@@ -191,8 +192,9 @@ public class CodeCmd extends Command
 			    "**Looking up codes**\n" + "`" + prefix + "code lookup @user`\n\n" +
 			    "**Adding a user's Wii**\n" + "`" + prefix + "add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
 
-            event.replyInDm(help, (success) -> event.reactSuccess(), (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() + 
-			    ": I couldn't DM you. Make sure your DMs are enabled."));
+            event.replyInDm(help, (success) -> event.reactSuccess(), (failure) ->
+                    event.replyError("Hey, " + event.getAuthor().getAsMention() +
+                            ": I couldn't DM you. Make sure your DMs are enabled."));
         }
     }
 
