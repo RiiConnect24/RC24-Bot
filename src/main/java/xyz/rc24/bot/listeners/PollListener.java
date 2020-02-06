@@ -118,7 +118,7 @@ public class PollListener extends ListenerAdapter
     private boolean preCheck(GenericGuildMessageReactionEvent event)
     {
         // Check if the user is a bot
-        if(event.getUser().isBot())
+        if(event.getUser() == null || event.getUser().isBot())
             return false;
 
         // Check we're tracking that message
