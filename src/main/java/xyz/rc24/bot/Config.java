@@ -99,7 +99,7 @@ public class Config
     @SuppressWarnings("unchecked")
     public List<Long> getSecondaryOwners()
     {
-        return (List) config.getOrDefault("secondary_owners", Collections.emptyList());
+        return (List<Long>) config.getOrDefault("secondary_owners", Collections.emptyList());
     }
 
     public OnlineStatus getStatus()
@@ -110,11 +110,6 @@ public class Config
     public boolean isDebug()
     {
         return getBoolean("debug");
-    }
-
-    public boolean isMailPatchEnabled()
-    {
-        return getBoolean("patch_mail");
     }
 
     public boolean isMorpherEnabled()
@@ -137,7 +132,7 @@ public class Config
         return getLong("root_server");
     }
 
-    public boolean birthdaysAreEnabled()
+    public boolean areBirthdaysEnabled()
     {
         return getBoolean("birthdays_enabled");
     }

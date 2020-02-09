@@ -54,10 +54,8 @@ import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.ReviveCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
-import xyz.rc24.bot.listeners.MailParseListener;
-import xyz.rc24.bot.commands.tools.MailPatchCmd;
-import xyz.rc24.bot.commands.tools.PrefixCmd;
 import xyz.rc24.bot.commands.tools.DefaultAddCmd;
+import xyz.rc24.bot.commands.tools.PrefixCmd;
 import xyz.rc24.bot.commands.tools.StatsCmd;
 import xyz.rc24.bot.commands.wii.AddCmd;
 import xyz.rc24.bot.commands.wii.BlocksCmd;
@@ -180,8 +178,8 @@ public class Bot extends ListenerAdapter
                         new ReviveCmd(this), new PingCmd(), new SetBirthdayCmd(this),
 
                         // Tools
-                        new DefaultAddCmd(this), new MailPatchCmd(config),
-                        new PrefixCmd(getGuildSettingsDataManager()), new StatsCmd(this),
+                        new DefaultAddCmd(this), new PrefixCmd(getGuildSettingsDataManager()),
+                        new StatsCmd(this),
 
                         // Wii-related
                         new AddCmd(this), new CodeCmd(this), new BlocksCmd(),
@@ -195,8 +193,7 @@ public class Bot extends ListenerAdapter
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("Loading..."))
                 .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.VOICE_STATE, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS))
-                .addEventListeners(this, client.build(), waiter, new MailParseListener(this),
-                        new PollListener(getPollManager()));
+                .addEventListeners(this, client.build(), waiter, new PollListener(getPollManager()));
 
         if(config.isMorpherEnabled())
             builder.addEventListeners(new Morpher(config, getMorpherDataManager()));
@@ -219,7 +216,7 @@ public class Bot extends ListenerAdapter
         ZonedDateTime zonedNow = OffsetDateTime.now().toZonedDateTime();
         ZonedDateTime zonedNext;
 
-        if(config.birthdaysAreEnabled())
+        if(config.areBirthdaysEnabled())
         {
             // Every day at 8AM
             zonedNext = zonedNow.withHour(8).withMinute(0).withSecond(0);

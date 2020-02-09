@@ -20,9 +20,6 @@ debug: true
 # The root server this bot will be based off.
 root_server: 000000000000000000
 
-# Set this to true to allow patching of config files via DM.
-patch_mail: false
-
 # Set this to true to enable Morpher running.
 morpher_enabled: false
 
@@ -43,9 +40,6 @@ sentry_enabled: false
 
 # Sentry DSN.
 sentry_dsn: ""
-
-# Reminder for the Music Night @ RC24
-music_night_reminder: false
 
 # Datadog connection info
 datadog:
