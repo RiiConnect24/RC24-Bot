@@ -25,12 +25,7 @@
 package xyz.rc24.bot.core.entities;
 
 import co.aikar.idb.DbRow;
-import com.google.gson.Gson;
-import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.core.entities.impl.GuildSettingsImpl;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Builder for common entities
@@ -40,33 +35,18 @@ import java.util.Set;
 
 public class EntityBuilder
 {
-    public final Gson gson = new Gson();
-
-    @SuppressWarnings("unchecked")
     public GuildSettings buildGuildSettings(DbRow row)
     {
         CodeType defAdd = CodeType.fromId(row.getInt("default_add", 5));
-        String prefixesRaw = row.getString("prefixes");
-
-        if(prefixesRaw == null)
-        {
-            String defPrefix = RiiConnect24Bot.getInstance().getConfig().getPrefix();
-            prefixesRaw = gson.toJson(new String[]{defPrefix});
-        }
-
-        Set<String> prefixes = gson.fromJson(prefixesRaw, Set.class);
+        String prefix = row.getString("prefix");
 
         return new GuildSettingsImpl(defAdd,
-                row.getLong("birthdays_id", 0L),
                 row.getLong("guild_id", 0L),
-                row.getLong("modlog_id", 0L),
-                row.getLong("serverlog_id", 0L),
-                prefixes == null ? Collections.emptySet() : prefixes);
+                prefix);
     }
 
     public GuildSettings buildDefaultGuildSettings(long id)
     {
-        return new GuildSettingsImpl(CodeType.WII, 0L, id, 0L, 0L,
-                                     Collections.singleton(RiiConnect24Bot.getInstance().getConfig().getPrefix()));
+        return new GuildSettingsImpl(CodeType.WII, id, null);
     }
 }

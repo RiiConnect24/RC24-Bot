@@ -24,23 +24,11 @@
 
 package xyz.rc24.bot.core.entities;
 
-import java.util.Set;
-
 public interface GuildSettings
 {
     CodeType getDefaultAddType();
 
-    long getBirthdaysChannelId();
-
     long getGuildId();
 
-    long getModlogChannelId();
-
-    long getServerlogChannelId();
-
-    Set<String> getPrefixes();
-
-    String getFirstPrefix();
-
-    long getLog(LogType type);
+    String getPrefix();
 }

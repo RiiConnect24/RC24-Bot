@@ -100,7 +100,8 @@ public class CodeCmd extends Command
             List<String> args = parseArgs(FULL_PATTERN, event.getArgs());
             if(args.size() < 3)
             {
-                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code add <type> <name> <code>`");
+                event.replyError("Wrong format! Correct one is `" + bot.getPrefix(event.getGuild()) +
+                        "code add <type> <name> <code>`");
                 return;
             }
 
@@ -142,7 +143,8 @@ public class CodeCmd extends Command
             List<String> args = parseArgs(FULL_PATTERN, event.getArgs());
             if(args.size() < 3)
             {
-                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code edit <type> <name> <code>`");
+                event.replyError("Wrong format! Correct one is `" + bot.getPrefix(event.getGuild()) +
+                        "code edit <type> <name> <code>`");
                 return;
             }
 
@@ -372,7 +374,8 @@ public class CodeCmd extends Command
             List<String> args = parseArgs(REMOVE_PATTERN, event.getArgs());
             if(args.size() < 2)
             {
-                event.replyError("Wrong format! Correct one is `" + gs.getFirstPrefix() + "code remove <type> <name>`");
+                event.replyError("Wrong format! Correct one is `" + bot.getPrefix(event.getGuild()) +
+                        "code remove <type> <name>`");
                 return;
             }
 

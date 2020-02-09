@@ -27,64 +27,42 @@ package xyz.rc24.bot.commands.tools;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.Permission;
+import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.core.entities.GuildSettings;
+import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
+import xyz.rc24.bot.utils.FormatUtil;
 
 /**
  * @author Artuto
  */
 
-public class PrefixCmd extends Command
+public class DefaultAddCmd extends Command
 {
-    private final GuildSettingsDataManager dataManager;
+    private GuildSettingsDataManager dataManager;
 
-    public PrefixCmd(GuildSettingsDataManager dataManager)
+    public DefaultAddCmd(Bot bot)
     {
-        this.dataManager = dataManager;
-        this.name = "prefix";
-        this.help = "Set and display the bot's prefixes.";
-        this.userPermissions = new Permission[]{Permission.MANAGE_SERVER};
+        this.dataManager = bot.getGuildSettingsDataManager();
+        this.name = "defaultadd";
+        this.help = "Changes the default `add` command's type.";
         this.category = Categories.TOOLS;
+        this.userPermissions = new Permission[]{Permission.MANAGE_SERVER};
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        GuildSettings gs = event.getClient().getSettingsFor(event.getGuild());
-        String args = event.getArgs();
-
-        if(args.isEmpty())
+        CodeType type = CodeType.fromCode(event.getArgs());
+        if(type == CodeType.UNKNOWN)
         {
-            event.reply("ℹ The prefix in this server is: " + gs.getPrefix());
+            event.replyError(FormatUtil.getCodeTypes());
             return;
         }
 
-        if(args.length() > 5)
-        {
-            event.replyError("The prefix length may not be longer than 5 characters!");
-            return;
-        }
-
-        if(args.equals("none"))
-        {
-            if(dataManager.setPrefix(event.getGuild().getIdLong(), null))
-                event.replySuccess("Successfully disabled the custom prefix!");
-            else
-                event.replyError("Error whilst disabling the custom prefix! Please contact a developer.");
-
-            return;
-        }
-
-        if(gs.getPrefix().equals(args))
-        {
-            event.replyError("This prefix is already in use!");
-            return;
-        }
-
-        if(dataManager.setPrefix(event.getGuild().getIdLong(), args))
-            event.replySuccess("Successfully set `" + args + "` as the prefix!");
+        if(dataManager.setDefaultAddType(type, event.getGuild().getIdLong()))
+            event.replySuccess("Successfully set `" + type.getName() + "` as default `add` type!");
         else
-            event.replyError("Error whilst setting the prefix! Please contact a developer.");
+            event.replyError("Error whilst updating the default add type! Please contact a developer.");
     }
 }

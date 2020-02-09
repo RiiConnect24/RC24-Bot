@@ -25,26 +25,25 @@
 package xyz.rc24.bot.core.entities.impl;
 
 import com.jagrosh.jdautilities.command.GuildSettingsProvider;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
-import xyz.rc24.bot.core.entities.LogType;
 
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
 
 public class GuildSettingsImpl implements GuildSettings, GuildSettingsProvider
 {
     private CodeType defaultAddType;
-    private long birthdaysId, guildId, modlogId, serverlogId;
-    private Set<String> prefixes;
+    private long guildId;
+    private String prefix;
 
-    public GuildSettingsImpl(CodeType defAddType, long bId, long gId, long mId, long sId, Set<String> prefixes)
+    public GuildSettingsImpl(CodeType defAddType, long gId, String prefix)
     {
         this.defaultAddType = defAddType;
-        this.birthdaysId = bId;
         this.guildId = gId;
-        this.modlogId = mId;
-        this.serverlogId = sId;
-        this.prefixes = prefixes;
+        this.prefix = prefix;
     }
 
     @Override
@@ -54,63 +53,22 @@ public class GuildSettingsImpl implements GuildSettings, GuildSettingsProvider
     }
 
     @Override
-    public long getBirthdaysChannelId()
-    {
-        return birthdaysId;
-    }
-
-    @Override
     public long getGuildId()
     {
         return guildId;
     }
 
     @Override
-    public long getModlogChannelId()
+    public String getPrefix()
     {
-        return modlogId;
+        return prefix == null ? RiiConnect24Bot.getInstance().getConfig().getPrefix() : prefix;
     }
 
+    @Nullable
     @Override
-    public long getServerlogChannelId()
+    public Collection<String> getPrefixes()
     {
-        return serverlogId;
-    }
-
-    @Override
-    public Set<String> getPrefixes()
-    {
-        return prefixes;
-    }
-
-    @Override
-    public String getFirstPrefix()
-    {
-        return getPrefixes().stream().findFirst().orElse("@mention");
-    }
-
-    @Override
-    public long getLog(LogType type)
-    {
-        switch(type)
-        {
-            case MOD:
-                return getModlogChannelId();
-            case SERVER:
-                return getServerlogChannelId();
-            default:
-                return 0L;
-        }
-    }
-
-    public void setModlogId(long id)
-    {
-        this.modlogId = id;
-    }
-
-    public void setServerlogId(long id)
-    {
-        this.serverlogId = id;
+        return Collections.singleton(getPrefix());
     }
 
     public void setDefaultAddType(CodeType type)
@@ -118,8 +76,8 @@ public class GuildSettingsImpl implements GuildSettings, GuildSettingsProvider
         this.defaultAddType = type;
     }
 
-    public void setPrefixes(Set<String> prefixes)
+    public void setPrefix(String prefix)
     {
-        this.prefixes = prefixes;
+        this.prefix = prefix;
     }
 }

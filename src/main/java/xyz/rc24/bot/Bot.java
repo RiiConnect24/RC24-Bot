@@ -58,7 +58,7 @@ import xyz.rc24.bot.commands.general.SetBirthdayCmd;
 import xyz.rc24.bot.listeners.MailParseListener;
 import xyz.rc24.bot.commands.tools.MailPatchCmd;
 import xyz.rc24.bot.commands.tools.PrefixCmd;
-import xyz.rc24.bot.commands.tools.ServerSettingsCmd;
+import xyz.rc24.bot.commands.tools.DefaultAddCmd;
 import xyz.rc24.bot.commands.tools.StatsCmd;
 import xyz.rc24.bot.commands.wii.AddCmd;
 import xyz.rc24.bot.commands.wii.BlocksCmd;
@@ -77,7 +77,6 @@ import xyz.rc24.bot.database.MorpherDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
 import xyz.rc24.bot.listeners.Morpher;
 import xyz.rc24.bot.listeners.PollListener;
-import xyz.rc24.bot.listeners.ServerLog;
 import xyz.rc24.bot.managers.BirthdayManager;
 import xyz.rc24.bot.managers.PollManager;
 
@@ -152,8 +151,8 @@ public class Bot extends ListenerAdapter
 
         if(config.isDatadogEnabled())
         {
-            StatsDClient statsd = new NonBlockingStatsDClient(config.getDatadogPrefix(), config.getDatadogHost(), config.getDatadogPort());
-
+            StatsDClient statsd = new NonBlockingStatsDClient(config.getDatadogPrefix(),
+                    config.getDatadogHost(), config.getDatadogPort());
             dataDogStatsListener = new DataDogStatsListener(statsd);
         }
 
@@ -165,44 +164,41 @@ public class Bot extends ListenerAdapter
             coOwners[i] = String.valueOf(owners.get(i));
 
         // Setup Command Client
-        DataDogStatsListener finalDataDogStatsListener = dataDogStatsListener;
         CommandClientBuilder client = new CommandClientBuilder()
-        {{
-            setActivity(Activity.playing(config.getPlaying()));
-            setStatus(config.getStatus());
-            setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E);
-            setLinkedCacheSize(40);
-            setOwnerId(String.valueOf(config.getPrimaryOwner()));
-            setPrefix("@mention");
-            setServerInvite("https://discord.gg/5rw6Tur");
-            setGuildSettingsManager(getGuildSettingsDataManager());
-            setCoOwnerIds(coOwners);
-            addCommands(
-                    // Bot administration
-                    new Bash(), new Eval(Bot.this), new Shutdown(),
+                .setActivity(Activity.playing(config.getPlaying()))
+                .setStatus(config.getStatus())
+                .setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E)
+                .setLinkedCacheSize(40)
+                .setOwnerId(String.valueOf(config.getPrimaryOwner()))
+                .setPrefix("@mention")
+                .setServerInvite("https://discord.gg/5rw6Tur")
+                .setGuildSettingsManager(getGuildSettingsDataManager())
+                .setCoOwnerIds(coOwners)
+                .addCommands(
+                        // Bot administration
+                        new Bash(), new Eval(this), new Shutdown(),
 
-                    // General
-                    new BirthdayCmd(Bot.this), new FlagCmd(Bot.this), new InviteCmd(),
-                    new ReviveCmd(Bot.this), new PingCmd(), new SetBirthdayCmd(Bot.this),
+                        // General
+                        new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
+                        new ReviveCmd(this), new PingCmd(), new SetBirthdayCmd(this),
 
-                    // Tools
-                    new MailPatchCmd(config), new PrefixCmd(getGuildSettingsDataManager()),
-                    new ServerSettingsCmd(Bot.this), new StatsCmd(Bot.this),
+                        // Tools
+                        new DefaultAddCmd(this), new MailPatchCmd(config),
+                        new PrefixCmd(getGuildSettingsDataManager()), new StatsCmd(this),
 
-                    // Wii-related
-                    new AddCmd(Bot.this), new CodeCmd(Bot.this), new BlocksCmd(),
-                    new ErrorInfoCmd(Bot.this), new DNS(), new WadsCmd(), new WiiWare());
+                        // Wii-related
+                        new AddCmd(this), new CodeCmd(this), new BlocksCmd(),
+                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare());
 
-            if(!(finalDataDogStatsListener == null))
-                setListener(finalDataDogStatsListener);
-        }};
+        if(!(dataDogStatsListener == null))
+            client.setListener(dataDogStatsListener);
 
         // JDA Connection
         JDABuilder builder = new JDABuilder(config.getToken())
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("Loading..."))
                 .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.VOICE_STATE, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS))
-                .addEventListeners(this, client.build(), waiter, new ServerLog(this), new MailParseListener(this),
+                .addEventListeners(this, client.build(), waiter, new MailParseListener(this),
                         new PollListener(getPollManager()));
 
         if(config.isMorpherEnabled())
@@ -379,9 +375,6 @@ public class Bot extends ListenerAdapter
 
 	public String getPrefix(Guild guild)
 	{
-		if(guild == null)
-			return config.getPrefix();
-		
-		return getCore().getGuildSettings(guild).getFirstPrefix();
+		return getCore().getGuildSettings(guild).getPrefix();
 	}
 }

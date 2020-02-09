@@ -32,15 +32,12 @@ import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.EntityBuilder;
 import xyz.rc24.bot.core.entities.GuildSettings;
-import xyz.rc24.bot.core.entities.LogType;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.core.entities.impl.GuildSettingsImpl;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Data manager for Guild settings
@@ -81,24 +78,6 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
         return optRow.map(entityBuilder::buildGuildSettings).orElse(entityBuilder.buildDefaultGuildSettings(id));
     }
 
-    public boolean disableLog(LogType type, long id)
-    {
-        String column = type.getColumn();
-        updateLogCache((GuildSettingsImpl) getSettings(id), type, 0L);
-
-        return db.doInsert("INSERT INTO settings (guild_id, " + column + ")" +
-                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + column + " = ?", id, null, null);
-    }
-
-    public boolean setLog(LogType type, long guild, long channel)
-    {
-        String column = type.getColumn();
-        updateLogCache((GuildSettingsImpl) getSettings(guild), type, channel);
-
-        return db.doInsert("INSERT INTO settings (guild_id, " + column + ")" +
-                "VALUES(?, ?) ON DUPLICATE KEY UPDATE " + column + " = ?", guild, channel, channel);
-    }
-
     public boolean setDefaultAddType(CodeType type, long id)
     {
         ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setDefaultAddType(type);
@@ -107,56 +86,16 @@ public class GuildSettingsDataManager implements GuildSettingsManager<GuildSetti
                 "VALUES(?, ?) ON DUPLICATE KEY UPDATE default_add = ?", id, type.getId(), type.getId());
     }
 
-    public boolean addPrefix(long id, String prefix)
+    public boolean setPrefix(long id, String prefix)
     {
-        String json = entityBuilder.gson.toJson(addPrefixJson(id, prefix));
+        ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setPrefix(prefix);
 
-        return db.doInsert("INSERT INTO settings (guild_id, prefixes)" +
-                "VALUES(?, ?) ON DUPLICATE KEY UPDATE prefixes = ?", id, json, json);
-    }
-
-    public boolean removePrefix(long id, String prefix)
-    {
-        String json = entityBuilder.gson.toJson(removePrefixJson(id, prefix));
-
-        return db.doInsert("INSERT INTO settings (guild_id, prefixes)" +
-                "VALUES(?, ?) ON DUPLICATE KEY UPDATE prefixes = ?", id, json, json);
+        return db.doInsert("INSERT INTO settings (guild_id, prefix)" +
+                "VALUES(?, ?) ON DUPLICATE KEY UPDATE prefix = ?", id, prefix, prefix);
     }
 
     private GuildSettings getSettings(long id)
     {
         return (bot == null || bot.getCore() == null) ? null : bot.getCore().getGuildSettings(id);
-    }
-
-    private void updateLogCache(GuildSettingsImpl gs, LogType type, long newChannel)
-    {
-        switch(type)
-        {
-            case MOD:
-                gs.setModlogId(newChannel);
-            case SERVER:
-                gs.setServerlogId(newChannel);
-        }
-    }
-
-    private Set<String> addPrefixJson(long id, String prefix)
-    {
-        Set<String> current = Objects.requireNonNull(getSettings(id)).getPrefixes();
-        if(current.getClass().getSimpleName().equals("EmptySet") || current.getClass().getSimpleName().equals("SingletonSet"))
-        {
-            current = new HashSet<>();
-            ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setPrefixes(current);
-        }
-
-        current.add(prefix);
-        return current;
-    }
-
-    private Set<String> removePrefixJson(long id, String prefix)
-    {
-        Set<String> current = Objects.requireNonNull(getSettings(id)).getPrefixes();
-
-        current.remove(prefix);
-        return current;
     }
 }
