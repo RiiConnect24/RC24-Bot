@@ -157,11 +157,6 @@ public class Config
         return getString("sentry_dsn");
     }
 
-    public boolean isMusicNightReminderEnabled()
-    {
-        return getBoolean("music_night_reminder");
-    }
-
     // Datadog
     public boolean isDatadogEnabled()
     {

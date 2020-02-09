@@ -40,7 +40,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -85,7 +84,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -123,7 +121,6 @@ public class Bot extends ListenerAdapter
     private final OkHttpClient httpClient = new OkHttpClient();
     private final ScheduledExecutorService botScheduler = Executors.newSingleThreadScheduledExecutor();
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
-    private final ScheduledExecutorService musicNightScheduler = Executors.newSingleThreadScheduledExecutor();
 
     void run() throws LoginException, IOException
     {
@@ -234,25 +231,12 @@ public class Bot extends ListenerAdapter
 
             birthdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(), config.getBirthdayChannel()), initialDelay, 86400, TimeUnit.SECONDS);
         }
-
-        if(config.isMusicNightReminderEnabled())
-        {
-            zonedNext = zonedNow.withHour(19).withMinute(45).withSecond(0);
-            if(zonedNow.compareTo(zonedNext) > 0)
-                zonedNext = zonedNext.plusDays(1);
-
-            Duration duration = Duration.between(zonedNow, zonedNext);
-            long initialDelay = duration.getSeconds();
-
-            musicNightScheduler.scheduleWithFixedDelay(() -> remindMusicNight(event.getJDA()), initialDelay, 86400, TimeUnit.SECONDS);
-        }
     }
 
     @Override
     public void onShutdown(ShutdownEvent event)
     {
         birthdaysScheduler.shutdown();
-        musicNightScheduler.shutdown();
         DB.close();
     }
 
@@ -287,22 +271,6 @@ public class Bot extends ListenerAdapter
         DB.setGlobalDatabase(db);
 
         return new Database();
-    }
-
-    private void remindMusicNight(JDA jda)
-    {
-        Calendar c = Calendar.getInstance();
-        if(!(c.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY))
-        {
-            // Not today, m8
-            return;
-        }
-
-        TextChannel general = jda.getTextChannelById(258999527783137280L);
-        if(general == null || !(general.canTalk()))
-            return;
-
-        general.sendMessage("\u23F0 <@98938149316599808> **Music night in 15 minutes!**").queue();
     }
 
     public BotCore getCore()
