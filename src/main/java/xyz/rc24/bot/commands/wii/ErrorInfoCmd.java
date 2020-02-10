@@ -280,12 +280,12 @@ public class ErrorInfoCmd extends Command
         put(117404, "This is a 404 Not Found error. If you're getting this on the Everybody Votes Channel, what questions does this appear on?");
         put(117500, "This is a 500 Internal Server error. If you're getting this, tell Larsenv where you're getting this error on.");
         put(117503, "This is a 503 Service Unavailable error. If you're getting this, tell Larsenv where you're getting this error on.");
-	     put(123456, "CMOC/MCC Contests are not supported yet.");
         put(20103, "Delete DWC_AUTHDATA file stored in nand:/shared2/ using WiiXplorer.");
         put(231000, "Restart the Channel or your Wii then try again. We hope to fix this error from happening in the future, sorry for the inconvenience!");
         put(231401, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24-evc");
         put(231409, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24-evc");
         put(239001, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them. Occasionally, this error can mean it downloaded invalid data.");
+	put(257607, "You do not have a registered MAC address. Post a Mii to the Posting Plaza and try again.");
 	put(258503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press ok");
 	put(258404, "This is a 404 Not Found error. If you are getting this on Nintendo Channel it means the item hasn't been added yet");
         put(51330, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
