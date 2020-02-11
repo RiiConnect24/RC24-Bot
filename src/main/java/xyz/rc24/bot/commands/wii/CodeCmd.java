@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
@@ -212,7 +213,7 @@ public class CodeCmd extends Command
             }
             catch(PermissionException ignored)
             {
-                message.delete().queue();
+                message.editMessage(Const.WARN_E + "Unable to remove reactions, make sure I have `Manage Message` permissions!").queue();
             }
         };
 
