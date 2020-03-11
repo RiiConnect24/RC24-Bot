@@ -83,7 +83,7 @@ public class RiiTagCmd extends Command
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException
+            public void onResponse(Call call, Response response)
             {
                 if(response.code() == 404)
                 {
