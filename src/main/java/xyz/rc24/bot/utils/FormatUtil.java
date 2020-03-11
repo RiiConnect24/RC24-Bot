@@ -26,8 +26,8 @@ package xyz.rc24.bot.utils;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import xyz.rc24.bot.core.entities.CodeType;
-import xyz.rc24.bot.core.entities.LogType;
 
 import java.util.List;
 import java.util.Map;
@@ -40,35 +40,49 @@ public class FormatUtil
 {
     public static String listOfMembers(List<Member> list, String query)
     {
-        StringBuilder out = new StringBuilder(" Multiple members found matching \"" + query + "\":");
+        StringBuilder out = new StringBuilder("Multiple members found matching \"" + query + "\":");
         for(int i = 0; i < 6 && i < list.size(); i++)
-            out.append("\n - ").append(list.get(i).getUser().getName()).append("#").append(list.get(i).getUser().getDiscriminator()).append(" (ID:").append(list.get(i).getUser().getId()).append(")");
-        if(list.size() > 6) out.append("\n**And ").append(list.size() - 6).append(" more...**");
+        {
+            out.append("\n - ").append(list.get(i).getUser().getName()).append("#")
+                    .append(list.get(i).getUser().getDiscriminator()).append(" (ID:")
+                    .append(list.get(i).getUser().getId()).append(")");
+        }
+
+        if(list.size() > 6)
+            out.append("\n**And ").append(list.size() - 6).append(" more...**");
+
         return out.toString();
     }
 
     public static String listOfTcChannels(List<TextChannel> list, String query)
     {
-        StringBuilder out = new StringBuilder(" Multiple roles found matching \"" + query + "\":");
+        StringBuilder out = new StringBuilder("Multiple text channels found matching \"" + query + "\":");
         for(int i = 0; i < 6 && i < list.size(); i++)
-            out.append("\n - ").append(list.get(i).getName()).append(" (ID:").append(list.get(i).getId()).append(")");
-        if(list.size() > 6) out.append("\n**And ").append(list.size() - 6).append(" more...**");
+        {
+            out.append("\n - ").append(list.get(i).getName()).append(" (ID:")
+                    .append(list.get(i).getId()).append(")");
+        }
+
+        if(list.size() > 6)
+            out.append("\n**And ").append(list.size() - 6).append(" more...**");
+
         return out.toString();
     }
 
-    public static String getChannelTypes()
+    public static String listOfUsers(List<User> list, String query)
     {
-        StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
-        for(LogType type : LogType.values())
+        StringBuilder out = new StringBuilder("Multiple users found matching \"" + query + "\":");
+        for(int i = 0; i < 6 && i < list.size(); i++)
         {
-            if(type == LogType.UNKNOWN)
-                continue;
-
-            // `type`: Definition\n
-            response.append("`").append(type.getCode()).append("`: ").append(type.getDescription()).append("\n");
+            out.append("\n - ").append(list.get(i).getName()).append("#")
+                    .append(list.get(i).getDiscriminator()).append(" (ID:")
+                    .append(list.get(i).getId()).append(")");
         }
 
-        return response.toString();
+        if(list.size() > 6)
+            out.append("\n**And ").append(list.size() - 6).append(" more...**");
+
+        return out.toString();
     }
 
     public static String getCodeTypes()

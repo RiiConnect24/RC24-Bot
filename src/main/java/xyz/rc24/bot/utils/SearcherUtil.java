@@ -28,6 +28,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.commons.utils.FinderUtil;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.List;
 
@@ -70,6 +71,26 @@ public class SearcherUtil
         else if(found.size() > 1)
         {
             event.replyWarning(FormatUtil.listOfTcChannels(found, args));
+            return null;
+        }
+
+        return found.get(0);
+    }
+
+    public static User findUser(CommandEvent event, String args)
+    {
+        if(args.isEmpty())
+            return event.getAuthor();
+
+        List<User> found = FinderUtil.findUsers(args, event.getJDA());
+        if(found.isEmpty())
+        {
+            event.replyWarning("No users found matching \"" + args + "\"");
+            return null;
+        }
+        else if(found.size() > 1)
+        {
+            event.replyWarning(FormatUtil.listOfUsers(found, args));
             return null;
         }
 

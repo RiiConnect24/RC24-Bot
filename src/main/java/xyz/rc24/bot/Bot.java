@@ -53,6 +53,7 @@ import xyz.rc24.bot.commands.general.FlagCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.ReviveCmd;
+import xyz.rc24.bot.commands.general.RiiTagCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
 import xyz.rc24.bot.commands.tools.DefaultAddCmd;
 import xyz.rc24.bot.commands.tools.PrefixCmd;
@@ -175,7 +176,7 @@ public class Bot extends ListenerAdapter
 
                         // General
                         new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
-                        new ReviveCmd(this), new PingCmd(), new SetBirthdayCmd(this),
+                        new PingCmd(), new ReviveCmd(this), new RiiTagCmd(this), new SetBirthdayCmd(this),
 
                         // Tools
                         new DefaultAddCmd(this), new PrefixCmd(getGuildSettingsDataManager()),
