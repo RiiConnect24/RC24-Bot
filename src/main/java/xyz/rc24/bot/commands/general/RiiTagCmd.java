@@ -46,9 +46,9 @@ import java.io.IOException;
 
 public class RiiTagCmd extends Command
 {
-    private final String URL = "https://tag.rc24.xyz/%s/tag.png";
-    private final OkHttpClient httpClient;
     private final Logger logger;
+    private final OkHttpClient httpClient;
+    private final String URL = "https://tag.rc24.xyz/%s/tag.png?randomizer=%f";
 
     public RiiTagCmd(Bot bot)
     {
@@ -70,7 +70,7 @@ public class RiiTagCmd extends Command
         if(user == null)
             return;
 
-        Request request = new Request.Builder().url(String.format(URL, user.getId())).build();
+        Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
         httpClient.newCall(request).enqueue(new Callback()
         {
             @Override
@@ -107,7 +107,7 @@ public class RiiTagCmd extends Command
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setAuthor(user.getAsTag() + "'s RiiTag", null, user.getEffectiveAvatarUrl())
                 .setColor(event.isFromType(ChannelType.TEXT) ? event.getSelfMember().getColor() : Color.BLUE)
-                .setImage(String.format(URL, user.getId()));
+                .setImage(String.format(URL, user.getId(), Math.random()));
 
         event.reply(embedBuilder.build());
     }
