@@ -30,7 +30,7 @@
 
     <groupId>xyz.rc24.bot</groupId>
     <artifactId>RC24-Bot</artifactId>
-    <version>5.1.1</version>
+    <version>5.2.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -196,11 +196,18 @@
                                 </transformer>
                             </transformers>
 
-                            <minimizeJar>true</minimizeJar>
+                            <minimizeJar>false</minimizeJar>
 
-                            <filters>
-                                <filter>
+                            <!--<filters>
+                                -<filter>
                                     <artifact>org.codehaus.groovy:groovy-jsr223</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+
+                                <filter>
+
                                     <includes>
                                         <include>**</include>
                                     </includes>
@@ -209,7 +216,9 @@
                                 <filter>
                                     <artifact>org.codehaus.groovy:groovy</artifact>
                                     <includes>
-                                        <include>**</include>
+                                        <include>groovy/grape/**</include>
+                                        <include>groovy/lang/**</include>
+                                        <include>org/codehaus/groovy/control/CompilationFailedException**</include>
                                     </includes>
                                 </filter>
 
@@ -241,7 +250,7 @@
                                     </includes>
                                 </filter>
 
-                            </filters>	
+                            </filters>-->
                         </configuration>
                     </execution>
                 </executions>
