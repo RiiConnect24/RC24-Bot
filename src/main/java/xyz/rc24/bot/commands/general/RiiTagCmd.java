@@ -46,7 +46,7 @@ import java.io.IOException;
 
 public class RiiTagCmd extends Command
 {
-    private final String URL = "https://tag.rc24.xyz/%s/tag.png";
+    private final String URL = "https://tag.rc24.xyz/%s/tag.max.png";
     private final OkHttpClient httpClient;
     private final Logger logger;
 
