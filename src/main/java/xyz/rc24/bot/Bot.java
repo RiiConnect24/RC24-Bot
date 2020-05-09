@@ -43,7 +43,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import okhttp3.OkHttpClient;
 import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Eval;
@@ -83,7 +82,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +116,7 @@ public class Bot extends ListenerAdapter
 
     private final Logger logger = RiiConnect24Bot.getLogger();
     private final OkHttpClient httpClient = new OkHttpClient();
-    private final ScheduledExecutorService botScheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService botScheduler = Executors.newScheduledThreadPool(5);
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
 
     void run() throws LoginException, IOException
@@ -170,6 +168,7 @@ public class Bot extends ListenerAdapter
                 .setServerInvite("https://discord.gg/5rw6Tur")
                 .setGuildSettingsManager(getGuildSettingsDataManager())
                 .setCoOwnerIds(coOwners)
+                .setScheduleExecutor(botScheduler)
                 .addCommands(
                         // Bot administration
                         new Bash(), new Eval(this), new Shutdown(),
@@ -190,10 +189,9 @@ public class Bot extends ListenerAdapter
             client.setListener(dataDogStatsListener);
 
         // JDA Connection
-        JDABuilder builder = new JDABuilder(config.getToken())
+        JDABuilder builder = JDABuilder.createLight(config.getToken())
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("Loading..."))
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.VOICE_STATE, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS))
                 .addEventListeners(this, client.build(), waiter, new PollListener(getPollManager()));
 
         if(config.isMorpherEnabled())

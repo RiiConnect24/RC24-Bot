@@ -62,7 +62,8 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.1.1_107</version>
+            <version>4.1.1_146</version>
+
             <!-- We dont need audio in this bot ~~use endless instead~~ -->
             <exclusions>
                 <exclusion>
@@ -75,7 +76,7 @@
         <dependency>
             <groupId>com.jagrosh</groupId>
             <artifactId>jda-utilities-command</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.3</version>
         </dependency>
 
         <!-- JitPack.io -->

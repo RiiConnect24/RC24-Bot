@@ -81,8 +81,10 @@ public class Morpher extends ListenerAdapter
 
         // Well, looks like we can't talk, or something.
         String message = "I couldn't access the Morpher mirror channel... could you please check it out?";
-        jda.getUserById(ownerId).openPrivateChannel().queue(pc -> pc.sendMessage(message).queue(null,
-                e -> logger.error("I can't access the Morpher mirror channel!")));
+        jda.retrieveUserById(ownerId).queue(user -> user.openPrivateChannel()
+                .queue(pc -> pc.sendMessage(message).queue(null,
+                        e -> logger.error("I can't access the Morpher mirror channel!"))));
+
         return false;
     }
 

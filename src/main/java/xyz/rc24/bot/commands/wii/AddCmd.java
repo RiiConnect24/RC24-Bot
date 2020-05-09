@@ -56,50 +56,56 @@ public class AddCmd extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        Member member = SearcherUtil.findMember(event, event.getArgs());
-        if(member == null)
-            return;
-
-        GuildSettings gs = event.getClient().getSettingsFor(event.getGuild());
-        CodeType defaultAddType = gs.getDefaultAddType();
-
-        if(member.equals(event.getMember()))
+        event.getChannel().sendTyping().queue();
+        event.async(() ->
         {
-            event.replyError("You can't add yourself!");
-            return;
-        }
-        if(member.getUser().isBot())
-        {
-            event.replyError("You can't add bots!");
-            return;
-        }
+            Member member = SearcherUtil.findMember(event, event.getArgs());
+            if(member == null)
+                return;
 
-        Map<String, String> authorTypeCodes = core.getCodesForType(defaultAddType, event.getAuthor().getIdLong());
-        if(authorTypeCodes.isEmpty())
-        {
-            event.replyError("**" + event.getMember().getEffectiveName() + "** has not added any friend codes!");
-            return;
-        }
+            GuildSettings gs = event.getClient().getSettingsFor(event.getGuild());
+            CodeType defaultAddType = gs.getDefaultAddType();
 
-        Map<String, String> targetTypeCodes = core.getCodesForType(defaultAddType, member.getUser().getIdLong());
-        if(targetTypeCodes.isEmpty())
-        {
-            event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
-            return;
-        }
+            if(member.equals(event.getMember()))
+            {
+                event.replyError("You can't add yourself!");
+                return;
+            }
+            if(member.getUser().isBot())
+            {
+                event.replyError("You can't add bots!");
+                return;
+            }
 
-        // Send target's code to author
-        event.replyInDm(getAddMessageHeader(defaultAddType, member, true) +
-                "\n\n" + FormatUtil.getCodeLayout(targetTypeCodes), (success) -> event.reactSuccess(),
-                (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() +
-                        ": I couldn't DM you. Make sure your DMs are enabled."));
+            Map<String, String> authorTypeCodes = core.getCodesForType(defaultAddType, event.getAuthor().getIdLong());
+            if(authorTypeCodes.isEmpty())
+            {
+                event.replyError("**" + event.getMember().getEffectiveName() + "** has not added any friend codes!");
+                return;
+            }
 
-        // Send author's code to target
-        member.getUser().openPrivateChannel().queue(pc ->
+            Map<String, String> targetTypeCodes = core.getCodesForType(defaultAddType, member.getUser().getIdLong());
+            if(targetTypeCodes.isEmpty())
+            {
+                event.replyError("**" + member.getEffectiveName() + "** has not added any friend codes!");
+                return;
+            }
+
+            // Send target's code to author
+            event.replyInDm(getAddMessageHeader(defaultAddType, member, true) +
+                            "\n\n" + FormatUtil.getCodeLayout(targetTypeCodes), (success) -> event.reactSuccess(),
+                    (failure) -> event.replyError("Hey, " + event.getAuthor().getAsMention() +
+                            ": I couldn't DM you. Make sure your DMs are enabled."));
+
+            // Send author's code to target
+            member.getUser().openPrivateChannel().queue(pc ->
+            {
                 pc.sendMessage(getAddMessageHeader(defaultAddType, event.getMember(), false) +
                         "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes)).queue(null,
                         (failure) -> event.replyError("Hey, " + member.getAsMention() +
-                                ": I couldn't DM you. Make sure your DMs are enabled.")));
+                                ": I couldn't DM you. Make sure your DMs are enabled."));
+            });
+        });
     }
 
     private String getAddMessageHeader(CodeType type, Member member, boolean isCommandRunner)

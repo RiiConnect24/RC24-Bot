@@ -61,6 +61,7 @@ public class BirthdayManager
         LocalDate date = OffsetDateTime.now().atZoneSameInstant(ZoneId.of("UTC-6")).toLocalDate();
         String today = date.getDayOfMonth() + "/" + date.getMonthValue();
 
+        // TODO: Retrieve members by ID in bulk, implement when JDA does it.
         List<Member> members = dataManager.getPeopleWithDate(today).stream()
                 .filter(id -> !(tc.getGuild().getMemberById(id) == null))
                 .map(id -> tc.getGuild().getMemberById(id))

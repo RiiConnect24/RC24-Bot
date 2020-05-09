@@ -33,7 +33,6 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Seriously, stop.
@@ -71,12 +70,9 @@ public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
 
         try
         {
-            List<Member> admins = guild.getMembersWithRoles(guild.getRoleById(394317745665343488L));
-
             String dm = "Hello,\n\n" +
                     "For security reasons, you've been kicked from RiiConnect24. " +
-                    "If you are a legit user, please contact one of our admins:\n" +
-                    admins.stream().map(admin -> admin.getUser().getAsTag()).collect(Collectors.joining(", ")) + "\n\n" +
+                    "If you are a legit user, please contact one of our admins.\n\n" +
                     "Cheers,\n" +
                     "RiiConnect24 Staff";
 
