@@ -62,7 +62,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.1.1_146</version>
+            <version>4.1.1_150</version>
 
             <!-- We dont need audio in this bot ~~use endless instead~~ -->
             <exclusions>
