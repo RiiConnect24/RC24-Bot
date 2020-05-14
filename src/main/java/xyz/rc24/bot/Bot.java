@@ -190,6 +190,7 @@ public class Bot extends ListenerAdapter
 
         // JDA Connection
         JDABuilder builder = JDABuilder.createLight(config.getToken())
+                .setEnabledIntents(Const.INTENTS)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("Loading..."))
                 .addEventListeners(this, client.build(), waiter, new PollListener(getPollManager()));
