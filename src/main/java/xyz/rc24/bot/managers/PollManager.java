@@ -43,12 +43,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class PollManager
 {
-    private Set<Long> current;
-    private List<Poll> polls;
-    private Random random;
+    private final Set<Long> current;
+    private final List<Poll> polls;
+    private final Random random;
+    private final ScheduledExecutorService threadPool;
 
     public PollManager() throws IOException
     {
@@ -71,6 +75,8 @@ public class PollManager
 
         // Free up memory after this mess
         System.gc();
+
+        this.threadPool = Executors.newScheduledThreadPool(2);
     }
 
     public Poll getRandomPoll()
@@ -81,11 +87,22 @@ public class PollManager
     public void trackId(long id)
     {
         current.add(id);
+        threadPool.schedule(() -> unTrackId(id), 10, TimeUnit.MINUTES);
+    }
+
+    public void unTrackId(long id)
+    {
+        current.remove(id);
     }
 
     public boolean isTracked(long id)
     {
         return current.contains(id);
+    }
+
+    public ScheduledExecutorService getThreadPool()
+    {
+        return threadPool;
     }
 
     private void downloadFile(String downloadUrl, File file) throws IOException

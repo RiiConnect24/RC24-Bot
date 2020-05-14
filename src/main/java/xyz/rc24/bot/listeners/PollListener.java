@@ -33,7 +33,6 @@ import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactio
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.rc24.bot.managers.PollManager;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
@@ -45,7 +44,7 @@ public class PollListener extends ListenerAdapter
     public PollListener(PollManager manager)
     {
         this.manager = manager;
-        this.threadPool = Executors.newSingleThreadScheduledExecutor();
+        this.threadPool = manager.getThreadPool();
     }
 
     @SuppressWarnings("ConstantConditions")

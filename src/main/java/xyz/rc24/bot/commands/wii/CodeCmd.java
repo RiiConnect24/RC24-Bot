@@ -228,25 +228,29 @@ public class CodeCmd extends Command
         @Override
         protected void execute(CommandEvent event)
         {
-            Member member = SearcherUtil.findMember(event, event.getArgs());
-            if(member == null)
-                return;
+            event.getChannel().sendTyping().queue();
+            event.async(() ->
+            {
+                Member member = SearcherUtil.findMember(event, event.getArgs());
+                if(member == null)
+                    return;
 
-            Paginator.Builder codePaginator = new Paginator.Builder()
-                    .setEventWaiter(waiter)
-                    .showPageNumbers(true)
-                    .setTimeout(5, TimeUnit.MINUTES)
-                    .setColumns(2)
-                    .setFinalAction(finalAction);
+                Paginator.Builder codePaginator = new Paginator.Builder()
+                        .setEventWaiter(waiter)
+                        .showPageNumbers(true)
+                        .setTimeout(5, TimeUnit.MINUTES)
+                        .setColumns(2)
+                        .setFinalAction(finalAction);
 
-            if(!(displayTypeSelector(event, member, null, codePaginator)))
-                return;
+                if(!(displayTypeSelector(event, member, null, codePaginator)))
+                    return;
 
-            String flag = bot.getCore().getFlag(member.getUser().getIdLong());
-            boolean hasFlag = !(flag.isEmpty());
+                String flag = bot.getCore().getFlag(member.getUser().getIdLong());
+                boolean hasFlag = !(flag.isEmpty());
 
-            if(hasFlag)
-                codePaginator.setTitle("Country: " + flag);
+                if(hasFlag)
+                    codePaginator.setTitle("Country: " + flag);
+            });
         }
 
         private boolean displayTypeSelector(CommandEvent event, Member member, Message message, Paginator.Builder codePaginator)

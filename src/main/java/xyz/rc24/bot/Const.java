@@ -24,6 +24,15 @@
 
 package xyz.rc24.bot;
 
+import net.dv8tion.jda.api.requests.GatewayIntent;
+
+import java.util.EnumSet;
+
+import static net.dv8tion.jda.api.requests.GatewayIntent.DIRECT_MESSAGES;
+import static net.dv8tion.jda.api.requests.GatewayIntent.DIRECT_MESSAGE_REACTIONS;
+import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MESSAGES;
+import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MESSAGE_REACTIONS;
+
 /**
  * Constants for the bot
  *
@@ -38,4 +47,7 @@ public class Const
     public static final String SUCCESS_E = "✅";
     public static final String WARN_E = "⚠";
     public static final String ERROR_E = "❌";
+
+    public static final EnumSet<GatewayIntent> INTENTS = EnumSet.of(GUILD_MESSAGES,
+            GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGES, DIRECT_MESSAGE_REACTIONS);
 }

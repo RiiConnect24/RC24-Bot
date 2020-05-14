@@ -30,6 +30,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -58,7 +59,6 @@ public class RiiTagCmd extends Command
         this.aliases = new String[]{"tag"};
         this.category = Categories.GENERAL;
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
-        this.guildOnly = false;
         this.logger = RiiConnect24Bot.getLogger(RiiTagCmd.class);
         this.httpClient = bot.getHttpClient();
     }
@@ -66,10 +66,11 @@ public class RiiTagCmd extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        User user = SearcherUtil.findUser(event, event.getArgs());
-        if(user == null)
+        Member member = SearcherUtil.findMember(event, event.getArgs());
+        if(member == null)
             return;
 
+        User user = member.getUser();
         Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
         httpClient.newCall(request).enqueue(new Callback()
         {

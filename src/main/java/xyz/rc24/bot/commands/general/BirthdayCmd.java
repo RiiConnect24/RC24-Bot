@@ -37,7 +37,7 @@ import xyz.rc24.bot.utils.SearcherUtil;
 
 public class BirthdayCmd extends Command
 {
-    private Bot bot;
+    private final Bot bot;
 
     public BirthdayCmd(Bot bot)
     {
@@ -50,28 +50,32 @@ public class BirthdayCmd extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        Member target = SearcherUtil.findMember(event, event.getArgs());
-        if(target == null)
-            return;
-
-        String date = bot.getBirthdayDataManager().getBirthday(target.getUser().getIdLong());
-
-        if(date == null)
+        event.getChannel().sendTyping().queue();
+        event.async(() ->
         {
-            if(target.equals(event.getMember()))
+            Member target = SearcherUtil.findMember(event, event.getArgs());
+            if(target == null)
+                return;
+
+            String date = bot.getBirthdayDataManager().getBirthday(target.getUser().getIdLong());
+
+            if(date == null)
             {
-                event.replyError("You haven't have set your birthday!" +
-                        " Set it using  `" + bot.getPrefix(event.getGuild()) + "setbirthday`!");
+                if(target.equals(event.getMember()))
+                {
+                    event.replyError("You haven't have set your birthday!" +
+                            " Set it using  `" + bot.getPrefix(event.getGuild()) + "setbirthday`!");
+                }
+                else
+                    event.replyError("**" + target.getEffectiveName() + "** has not set their birthday!");
+
+                return;
             }
+
+            if(target.equals(event.getMember()))
+                event.reply("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "**");
             else
-                event.replyError("**" + target.getEffectiveName() + "** has not set their birthday!");
-
-            return;
-        }
-
-        if(target.equals(event.getMember()))
-            event.reply("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "**");
-        else
-            event.reply("<a:birthdaycake:576200303662071808> **" + target.getEffectiveName() + "**'s birthday is set to **" + date + "**");
+                event.reply("<a:birthdaycake:576200303662071808> **" + target.getEffectiveName() + "**'s birthday is set to **" + date + "**");
+        });
     }
 }

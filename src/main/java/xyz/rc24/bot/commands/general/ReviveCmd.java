@@ -66,14 +66,15 @@ public class ReviveCmd extends Command
         }};
 
         // Send embed to chat
-        event.reply(embed.build(), s ->
+        event.reply(embed.build(), message ->
         {
             // Add message ID to tracked list
-            manager.trackId(s.getIdLong());
+            manager.trackId(message.getIdLong());
 
             // Add reactions
-            s.addReaction("\uD83C\uDD70").queue();
-            s.addReaction("\uD83C\uDD71").queue();
+            message.addReaction("\uD83C\uDD70").queue(s ->
+                            message.addReaction("\uD83C\uDD71").queue(null, e -> {}),
+                    error -> manager.unTrackId(message.getIdLong()));
         });
     }
 }
