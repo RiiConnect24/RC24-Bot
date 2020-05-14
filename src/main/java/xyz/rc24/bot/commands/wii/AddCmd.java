@@ -56,7 +56,6 @@ public class AddCmd extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        event.getChannel().sendTyping().queue();
         event.async(() ->
         {
             Member member = SearcherUtil.findMember(event, event.getArgs());
@@ -99,12 +98,10 @@ public class AddCmd extends Command
 
             // Send author's code to target
             member.getUser().openPrivateChannel().queue(pc ->
-            {
-                pc.sendMessage(getAddMessageHeader(defaultAddType, event.getMember(), false) +
-                        "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes)).queue(null,
-                        (failure) -> event.replyError("Hey, " + member.getAsMention() +
-                                ": I couldn't DM you. Make sure your DMs are enabled."));
-            });
+                    pc.sendMessage(getAddMessageHeader(defaultAddType, event.getMember(),
+                            false) + "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes))
+                            .queue(null, (failure) -> event.replyError("Hey, " + member.getAsMention() +
+                            ": I couldn't DM you. Make sure your DMs are enabled.")));
         });
     }
 

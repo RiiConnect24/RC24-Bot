@@ -30,11 +30,11 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static net.dv8tion.jda.api.entities.Message.MentionType.USER;
 
 public class FinderUtil
@@ -65,8 +65,19 @@ public class FinderUtil
 
     private static List<Member> retrieveMembers(String name, Guild guild)
     {
-        try {return guild.retrieveMembersByPrefix(removeDiscriminator(name), 6).get();}
-        catch(CompletionException ignored) {return emptyList();}
+        List<Member> members = guild.retrieveMembersByPrefix(removeDiscriminator(name), 6).get();
+        String discriminator = splitDiscriminator(name);
+
+        if(!(discriminator == null))
+        {
+            for(Member member : members)
+            {
+                if(member.getUser().getDiscriminator().equals(discriminator))
+                    return singletonList(member);
+            }
+        }
+
+        return members;
     }
 
     private static long parseId(Pattern pattern, String arg)
@@ -74,7 +85,7 @@ public class FinderUtil
         Matcher matcher = pattern.matcher(arg);
 
         if(matcher.matches())
-            return Long.parseLong(matcher.group());
+            return Long.parseLong(matcher.group(1));
 
         return 0;
     }
@@ -87,5 +98,16 @@ public class FinderUtil
             return name.substring(0, index - 1);
 
         return name;
+    }
+
+    private static String splitDiscriminator(String name)
+    {
+        String discriminator = null;
+        int index = name.indexOf("#");
+
+        if(!(index == -1))
+            discriminator = name.substring(index + 1);
+
+        return discriminator;
     }
 }

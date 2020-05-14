@@ -225,7 +225,9 @@ public class Bot extends ListenerAdapter
             Duration duration = Duration.between(zonedNow, zonedNext);
             long initialDelay = duration.getSeconds();
 
-            birthdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager().updateBirthdays(event.getJDA(), config.getBirthdayChannel()), initialDelay, 86400, TimeUnit.SECONDS);
+            birthdaysScheduler.scheduleWithFixedDelay(() -> getBirthdayManager()
+                    .updateBirthdays(event.getJDA(), config.getBirthdayChannel(),
+                            config.getPrimaryOwner()), initialDelay, 86400, TimeUnit.SECONDS);
         }
     }
 
