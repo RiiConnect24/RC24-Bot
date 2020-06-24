@@ -262,7 +262,7 @@ public class ErrorInfoCmd extends Command
     private final Map<Integer, String> codeNotes = new HashMap<Integer, String>()
     {{
         put(101409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-    put(102032, "The IOS the app/game uses is not patched for RiiConnect24.");
+        put(102032, "The IOS the app/game uses is not patched for RiiConnect24.");
         put(102409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
         put(103409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
         put(104409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
@@ -285,12 +285,12 @@ public class ErrorInfoCmd extends Command
         put(231401, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24-evc");
         put(231409, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24-evc");
         put(239001, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them. Occasionally, this error can mean it downloaded invalid data.");
-    put(257607, "You do not have a registered MAC address. Post a Mii to the Posting Plaza and try again.");
-    put(258503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press ok");
-    put(258404, "This is a 404 Not Found error. If you are getting this on Nintendo Channel it means the item hasn't been added yet");
+        put(257607, "You do not have a registered MAC address. Post a Mii to the Posting Plaza and try again.");
+        put(258503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press ok");
+        put(258404, "This is a 404 Not Found error. If you are getting this on Nintendo Channel it means the item hasn't been added yet");
         put(51330, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
         put(51331, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
         put(51332, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
-    put(32007, "You are blocking System Menu updates using Priiloader. Disable them if you wish to update.");
+        put(32007, "You are blocking System Menu updates using Priiloader. Disable them if you wish to update.");
     }};
 }
