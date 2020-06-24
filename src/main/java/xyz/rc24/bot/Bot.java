@@ -340,8 +340,8 @@ public class Bot extends ListenerAdapter
         return httpClient;
     }
 
-	public String getPrefix(Guild guild)
-	{
-		return getCore().getGuildSettings(guild).getPrefix();
-	}
+    public String getPrefix(Guild guild)
+    {
+        return getCore().getGuildSettings(guild).getPrefix();
+    }
 }
