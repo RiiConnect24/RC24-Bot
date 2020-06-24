@@ -177,23 +177,23 @@ public class CodeCmd extends Command
             this.name = "help";
             this.help = "Shows help regarding codes.";
             this.category = Categories.WII;
-			this.guildOnly = false;
+            this.guildOnly = false;
         }
 
         @Override
         protected void execute(CommandEvent event)
         {
-			String prefix = event.isFromType(ChannelType.TEXT) ? bot.getPrefix(event.getGuild()) : "!";
-			
+            String prefix = event.isFromType(ChannelType.TEXT) ? bot.getPrefix(event.getGuild()) : "!";
+            
             String help = "**__Using the bot__**\n\n" + 
-			    "**Adding Wii:**\n" + "`" + prefix + "code add wii Wii Name Goes here 1234-5678-9012-3456`\n" + 
-			    "**Adding games:**\n `" + prefix + "code add game Game Name 1234-5678-9012`\n" +
-		    	"and many more types! Run `" + prefix + "code add` " +
-			    "to see all supported code types right now, such as the 3DS, PlayStation 4 and Switch.\n\n" +
-			    "**Editing codes**\n" + "`" + prefix + "code edit type Name 1234-5678-9012-3456`\n\n" +
-			    "**Removing codes**\n" + "`" + prefix + "code remove type Name`\n\n" + 
-			    "**Looking up codes**\n" + "`" + prefix + "code lookup @user`\n\n" +
-			    "**Adding a user's Wii**\n" + "`" + prefix + "add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
+                "**Adding Wii:**\n" + "`" + prefix + "code add wii Wii Name Goes here 1234-5678-9012-3456`\n" + 
+                "**Adding games:**\n `" + prefix + "code add game Game Name 1234-5678-9012`\n" +
+                "and many more types! Run `" + prefix + "code add` " +
+                "to see all supported code types right now, such as the 3DS, PlayStation 4 and Switch.\n\n" +
+                "**Editing codes**\n" + "`" + prefix + "code edit type Name 1234-5678-9012-3456`\n\n" +
+                "**Removing codes**\n" + "`" + prefix + "code remove type Name`\n\n" + 
+                "**Looking up codes**\n" + "`" + prefix + "code lookup @user`\n\n" +
+                "**Adding a user's Wii**\n" + "`" + prefix + "add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
 
             event.replyInDm(help, (success) -> event.reactSuccess(), (failure) ->
                     event.replyError("Hey, " + event.getAuthor().getAsMention() +
