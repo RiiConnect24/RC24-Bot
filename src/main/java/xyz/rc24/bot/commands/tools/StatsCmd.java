@@ -29,6 +29,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -47,8 +49,8 @@ import java.util.TreeSet;
 
 public class StatsCmd extends Command
 {
-    private Logger LOG = LoggerFactory.getLogger("Stats Command");
-    private OkHttpClient httpClient;
+    private final Logger logger = LoggerFactory.getLogger("Stats Command");
+    private final OkHttpClient httpClient;
 
     public StatsCmd(Bot bot)
     {
@@ -58,6 +60,7 @@ public class StatsCmd extends Command
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.ownerCommand = false;
         this.guildOnly = true;
+
         this.httpClient = bot.getHttpClient();
     }
 
@@ -69,22 +72,41 @@ public class StatsCmd extends Command
                 .addHeader("User-Agent", "RC24-Bot " + Const.VERSION)
                 .build();
 
-        try(Response response = httpClient.newCall(request).execute())
+        httpClient.newCall(request).enqueue(new Callback()
         {
-            EmbedBuilder eb = new EmbedBuilder();
-            MessageBuilder mb = new MessageBuilder();
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                event.replyError("Could not contact the Stats API! Please ask a owner to check the console. " +
+                        "Error: ```\n" + e.getMessage() + "\n```");
+                logger.error("Exception while contacting the Stats API! ", e);
+            }
 
-            eb.setDescription(parseJSON(response));
-            eb.setColor(Color.decode("#29B7EB"));
+            @Override
+            public void onResponse(Call call, Response response)
+            {
+                try(response)
+                {
+                    if(!(response.isSuccessful()))
+                        throw new IOException("Unsuccessful response code: " + response.code());
 
-            mb.setContent("<:RC24:302470872201953280> Service statuses of RC24:").setEmbed(eb.build());
-            event.reply(mb.build());
-        }
-        catch(IOException e)
-        {
-            event.replyError("Could not contact the Stats API! Please ask a owner to check the console.");
-            LOG.error("Exception while contacting the Stats API! ", e);
-        }
+                    if(response.body() == null)
+                        throw new IOException("Response body is null!");
+
+                    EmbedBuilder eb = new EmbedBuilder();
+                    MessageBuilder mb = new MessageBuilder();
+
+                    eb.setDescription(parseJSON(response));
+                    eb.setColor(Color.decode("#29B7EB"));
+
+                    mb.setContent("<:RC24:302470872201953280> Service stats of RC24:").setEmbed(eb.build());
+
+                    event.reply(mb.build());
+                }
+                catch(IOException e) {onFailure(call, e);}
+                catch(Exception e) {onFailure(call, new IOException(e));}
+            }
+        });
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -115,7 +137,10 @@ public class StatsCmd extends Command
             }
         });
 
-        sb.append("Supported by RiiConnect24:\n").append(green).append("```\nIn progress...\n").append(yellow).append("```\nNot supported:\n").append(red).append("```");
+        sb.append("Supported by RiiConnect24:\n")
+                .append(green).append("```\nIn progress...\n")
+                .append(yellow.toString().isEmpty() ? "None!" : yellow).append("```\nNot supported:\n")
+                .append(red.toString().isEmpty() ? "None!" : red).append("```");
 
         return sb.toString();
     }
