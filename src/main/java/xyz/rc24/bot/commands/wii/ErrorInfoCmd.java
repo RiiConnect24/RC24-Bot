@@ -248,15 +248,15 @@ public class ErrorInfoCmd extends Command
 
     private final Map<Integer, String> channelErrors = new HashMap<Integer, String>()
     {{
-        put(1, "Can't open the VFF Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
+        put(1, "Can't open the VFF Follow https://wii.guide/deleting-vffs to fix it.");
         put(2, "WiiConnect24 file problem.");
-        put(3, "VFF file corrupted. Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
+        put(3, "VFF file corrupted. Follow https://wii.guide/deleting-vffs to fix it.");
         put(4, "Unknown (it probably doesn't exist).");
-        put(5, "VFF processing error. Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
+        put(5, "VFF processing error. Follow https://wii.guide/deleting-vffs to fix it.");
         put(6, "Invalid data. If getting this on the **Forecast Channel**, try again in a few minutes. " +
                 "If you're still getting this error, follow https://wii.guide/riiconnect24-batteryfix " +
                 "and it might fix it.");
-        put(99, "Other error. Follow https://wii.guide/riiconnect24-troubleshooting to potentially fix it.");
+        put(99, "Other error. Follow https://wii.guide/deleting-vffs to potentially fix it.");
     }};
 
     private final Map<Integer, String> codeNotes = new HashMap<Integer, String>()
@@ -282,8 +282,8 @@ public class ErrorInfoCmd extends Command
         put(117503, "This is a 503 Service Unavailable error. If you're getting this, tell Larsenv where you're getting this error on.");
         put(20103, "Delete DWC_AUTHDATA file stored in nand:/shared2/ using WiiXplorer.");
         put(231000, "Restart the Channel or your Wii then try again. We hope to fix this error from happening in the future, sorry for the inconvenience!");
-        put(231401, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24-evc");
-        put(231409, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24-evc");
+        put(231401, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24");
+        put(231409, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24");
         put(239001, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them. Occasionally, this error can mean it downloaded invalid data.");
 	put(257607, "You do not have a registered MAC address. Post a Mii to the Posting Plaza and try again.");
 	put(258503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press ok");
