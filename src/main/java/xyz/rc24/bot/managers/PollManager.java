@@ -26,6 +26,7 @@ package xyz.rc24.bot.managers;
 
 import org.yaml.snakeyaml.Yaml;
 import xyz.rc24.bot.core.entities.Poll;
+import xyz.rc24.bot.core.entities.impl.MiitomoPoll;
 import xyz.rc24.bot.core.entities.impl.UKPollImpl;
 import xyz.rc24.bot.core.entities.impl.USPollImpl;
 
@@ -56,20 +57,25 @@ public class PollManager
 
     public PollManager() throws IOException
     {
+        File miitomoFile = new File("miitomo_questions.yml");
         File usFile = new File("polls_049.yml");
         File ukFile = new File("polls_110.yml");
 
+        if(!(miitomoFile.exists()))
+            downloadFile(MIITOMO_FILE, miitomoFile);
+
         if(!(usFile.exists()))
-            downloadFile("https://raw.githubusercontent.com/RiiConnect24/Site/master/_data/votes/results_049.yml", usFile);
+            downloadFile(US_FILE, usFile);
 
         if(!(ukFile.exists()))
-            downloadFile("https://raw.githubusercontent.com/RiiConnect24/Site/master/_data/votes/results_110.yml", ukFile);
+            downloadFile(UK_FILE, ukFile);
 
         Yaml yaml = new Yaml();
         this.polls = new ArrayList<>();
         this.current = new HashSet<>();
 
-        populateList(yaml.load(new FileReader(usFile)), yaml.load(new FileReader(ukFile)));
+        populateList(yaml.load(new FileReader(miitomoFile)), yaml.load(new FileReader(usFile)),
+                yaml.load(new FileReader(ukFile)));
 
         this.random = new Random();
 
@@ -115,8 +121,15 @@ public class PollManager
     }
 
     @SuppressWarnings("unchecked")
-    private void populateList(List<Map<String, Object>> us, List<Map<String, Object>> uk)
+    private void populateList(List<Map<String, Object>> miitomo, List<Map<String, Object>> us,
+                              List<Map<String, Object>> uk)
     {
+        for(Map<String, Object> data : miitomo)
+        {
+            Map<String, Object> section = (Map<String, Object>) data.get("question");
+            polls.add(new MiitomoPoll((String) section.get("english")));
+        }
+
         for(Map<String, Object> data : us)
         {
             Map<String, Object> section = (Map<String, Object>) data.get("poll");
@@ -141,4 +154,11 @@ public class PollManager
     {
         return (String) ((Map<String, Object>) poll.get(key)).get("english");
     }
+
+    private final String MIITOMO_FILE = "https://cdn.discordapp.com/attachments/287740297923002368/" +
+            "748654266352140288/miitomo_questions.yml";
+    private final String UK_FILE = "https://raw.githubusercontent.com/RiiConnect24/Site/master/" +
+            "_data/votes/results_110.yml";
+    private final String US_FILE = "https://raw.githubusercontent.com/RiiConnect24/Site/master/" +
+            "_data/votes/results_049.yml";
 }

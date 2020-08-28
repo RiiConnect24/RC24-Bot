@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.core.entities.Poll;
+import xyz.rc24.bot.core.entities.impl.MiitomoPoll;
 import xyz.rc24.bot.managers.PollManager;
 
 public class ReviveCmd extends Command
@@ -56,18 +57,28 @@ public class ReviveCmd extends Command
         EmbedBuilder embed = new EmbedBuilder()
         {{
             setTitle("<:EverybodyVotesChannel:317090360449040388> " + poll.getQuestion());
-            setDescription("\uD83C\uDD70 " + poll.getResponse1() + "\n" +
-                    "_ _\n" + // Line separator
-                    "\uD83C\uDD71 " + poll.getResponse2());
-            addField("Users who reacted  \uD83C\uDD70:", "", false);
-            addField("Users who reacted \uD83C\uDD71:", "", false);
+
+            if(!(poll instanceof MiitomoPoll))
+            {
+                setDescription("\uD83C\uDD70 " + poll.getResponse1() + "\n" +
+                        "_ _\n" + // Line separator
+                        "\uD83C\uDD71 " + poll.getResponse2());
+                addField("Users who reacted  \uD83C\uDD70:", "", false);
+                addField("Users who reacted \uD83C\uDD71:", "", false);
+                setFooter("This question was from the " + poll.getCountryFlag() + " EVC", null);
+            }
+            else
+                setFooter("This question was from Miitomo");
+
             setColor(event.getSelfMember().getColor());
-            setFooter("This question was in the " + poll.getCountryFlag() + " EVC", null);
         }};
 
         // Send embed to chat
         event.reply(embed.build(), message ->
         {
+            if(poll instanceof MiitomoPoll)
+                return;
+
             // Add message ID to tracked list
             manager.trackId(message.getIdLong());
 
