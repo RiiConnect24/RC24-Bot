@@ -66,40 +66,43 @@ public class RiiTagCmd extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        Member member = SearcherUtil.findMember(event, event.getArgs());
-        if(member == null)
-            return;
-
-        User user = member.getUser();
-        Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
-        httpClient.newCall(request).enqueue(new Callback()
+        event.async(() ->
         {
-            @Override
-            public void onFailure(Call call, IOException e)
-            {
-                event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.\n" +
-                        "```" + e.getMessage() + "```");
-                logger.error("Something went wrong whilst checking if user {} has a RiiTag: {}", user.getId(),
-                        e.getMessage(), e);
-            }
+            Member member = SearcherUtil.findMember(event, event.getArgs());
+            if(member == null)
+                return;
 
-            @Override
-            public void onResponse(Call call, Response response)
+            User user = member.getUser();
+            Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
+            httpClient.newCall(request).enqueue(new Callback()
             {
-                if(response.code() == 404)
+                @Override
+                public void onFailure(Call call, IOException e)
                 {
-                    event.replyError("**" + user.getAsTag() + "** does not have a RiiTag!");
-                    return;
+                    event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.\n" +
+                            "```" + e.getMessage() + "```");
+                    logger.error("Something went wrong whilst checking if user {} has a RiiTag: {}", user.getId(),
+                            e.getMessage(), e);
                 }
 
-                if(!(response.isSuccessful()))
+                @Override
+                public void onResponse(Call call, Response response)
                 {
-                    onFailure(call, new IOException("Server error: HTTP Code " + response.code()));
-                    return;
-                }
+                    if(response.code() == 404)
+                    {
+                        event.replyError("**" + user.getAsTag() + "** does not have a RiiTag!");
+                        return;
+                    }
 
-                displayTag(event, user);
-            }
+                    if(!(response.isSuccessful()))
+                    {
+                        onFailure(call, new IOException("Server error: HTTP Code " + response.code()));
+                        return;
+                    }
+
+                    displayTag(event, user);
+                }
+            });
         });
     }
 
