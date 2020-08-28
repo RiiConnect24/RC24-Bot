@@ -115,9 +115,9 @@ public class StatsCmd extends Command
         JSONObject json = new JSONObject(new JSONTokener(response.body().byteStream()));
         Set<String> keys = new TreeSet<>(json.keySet());
 
-        StringBuilder green = new StringBuilder("```diff\n");
-        StringBuilder yellow = new StringBuilder("```fix\n");
-        StringBuilder red = new StringBuilder("```diff\n");
+        StringBuilder green = new StringBuilder();
+        StringBuilder yellow = new StringBuilder();
+        StringBuilder red = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
         keys.forEach(k ->
@@ -138,9 +138,10 @@ public class StatsCmd extends Command
         });
 
         sb.append("Supported by RiiConnect24:\n")
-                .append(green).append("```\nIn progress...\n")
-                .append(yellow.toString().isEmpty() ? "None!" : yellow).append("```\nNot supported:\n")
-                .append(red.toString().isEmpty() ? "None!" : red).append("```");
+                .append("```diff\n").append(green).append("```\nIn progress...\n")
+                .append("```fix\n").append(yellow.toString().isEmpty() ? "None!" : yellow)
+                .append("```\nNot supported:\n")
+                .append("```diff\n").append(red.toString().isEmpty() ? "None!" : red).append("\n```");
 
         return sb.toString();
     }
