@@ -70,7 +70,6 @@ import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.database.Database;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
-import xyz.rc24.bot.database.MorpherDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
 import xyz.rc24.bot.listeners.Morpher;
 import xyz.rc24.bot.listeners.PollListener;
@@ -108,7 +107,6 @@ public class Bot extends ListenerAdapter
     private BirthdayDataManager birthdayDataManager;
     private CodeDataManager codeDataManager;
     private GuildSettingsDataManager guildSettingsDataManager;
-    private MorpherDataManager morpherDataManager;
 
     // Managers
     private BirthdayManager birthdayManager;
@@ -131,7 +129,6 @@ public class Bot extends ListenerAdapter
         this.birthdayDataManager = new BirthdayDataManager(db);
         this.codeDataManager = new CodeDataManager(this);
         this.guildSettingsDataManager = new GuildSettingsDataManager(this);
-        this.morpherDataManager = new MorpherDataManager(db);
 
         // Start managers
         this.birthdayManager = new BirthdayManager(getBirthdayDataManager());
@@ -196,7 +193,7 @@ public class Bot extends ListenerAdapter
                 .addEventListeners(this, client.build(), waiter, new PollListener(getPollManager()));
 
         if(config.isMorpherEnabled())
-            builder.addEventListeners(new Morpher(config, getMorpherDataManager()));
+            builder.addEventListeners(new Morpher(config));
         if(!(dataDogStatsListener == null))
             builder.addEventListeners(dataDogStatsListener);
 
@@ -253,7 +250,7 @@ public class Bot extends ListenerAdapter
                 .dataSourceClassName(MysqlDataSource.class.getName() /*"com.mysql.cj.jdbc.MysqlDataSource"*/)
                 .build();
 
-        Map<String, Object> props = new HashMap<String, Object>()
+        Map<String, Object> props = new HashMap<>()
         {{
             put("useSSL", config.useSSL());
             put("verifyServerCertificate", config.verifyServerCertificate());
@@ -316,11 +313,6 @@ public class Bot extends ListenerAdapter
     public GuildSettingsDataManager getGuildSettingsDataManager()
     {
         return guildSettingsDataManager;
-    }
-
-    public MorpherDataManager getMorpherDataManager()
-    {
-        return morpherDataManager;
     }
 
     // Managers

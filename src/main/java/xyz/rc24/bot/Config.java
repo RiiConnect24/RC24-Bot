@@ -122,11 +122,6 @@ public class Config
         return getLong("morpher_root");
     }
 
-    public long getMorpherMirror()
-    {
-        return getLong("morpher_mirror");
-    }
-
     public long getRootServer()
     {
         return getLong("root_server");

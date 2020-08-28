@@ -25,25 +25,14 @@
 package xyz.rc24.bot.listeners;
 
 import ch.qos.logback.classic.Logger;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.rc24.bot.Config;
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.database.MorpherDataManager;
-
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Mirror messages from one server to another.
@@ -51,162 +40,48 @@ import java.util.List;
  * @author Artuto
  */
 
-@SuppressWarnings("ConstantConditions")
 public class Morpher extends ListenerAdapter
 {
     // IDs
     private final long rootId;
-    private final long mirrorId;
     private final long ownerId;
 
-    private final MorpherDataManager dataManager;
     private final Logger logger = RiiConnect24Bot.getLogger(Morpher.class);
 
-    public Morpher(Config config, MorpherDataManager dataManager)
+    public Morpher(Config config)
     {
         this.rootId = config.getMorpherRoot();
-        this.mirrorId = config.getMorpherMirror();
         this.ownerId = config.getPrimaryOwner();
-
-        this.dataManager = dataManager;
-    }
-
-    private boolean canUseMirror(JDA jda)
-    {
-        TextChannel mirror = jda.getTextChannelById(mirrorId);
-
-        // Double check that I can still talk.
-        if(!(mirror == null) && mirror.canTalk())
-            return true;
-
-        // Well, looks like we can't talk, or something.
-        String message = "I couldn't access the Morpher mirror channel... could you please check it out?";
-        jda.retrieveUserById(ownerId).queue(user -> user.openPrivateChannel()
-                .queue(pc -> pc.sendMessage(message).queue(null,
-                        e -> logger.error("I can't access the Morpher mirror channel!"))));
-
-        return false;
-    }
-
-    private MessageEmbed createMirrorEmbed(Message rootMessage)
-    {
-        EmbedBuilder embed = new EmbedBuilder();
-        List<Message.Attachment> attachments = new ArrayList<>(rootMessage.getAttachments());
-        StringBuilder description = new StringBuilder(rootMessage.getContentRaw());
-        StringBuilder attachmentsString = new StringBuilder();
-        User author = rootMessage.getAuthor();
-
-        if(attachments.size() == 1&& attachments.get(0).isImage())
-        {
-            Message.Attachment image = attachments.get(0);
-            embed.setImage(image.getUrl());
-        }
-        else if(!(attachments.isEmpty()))
-        {
-            Message.Attachment image = attachments.stream().filter(Message.Attachment::isImage).findFirst().orElse(null);
-            if(!(image == null))
-            {
-                attachments.remove(image);
-                embed.setImage(image.getUrl());
-            }
-
-            for(Message.Attachment a : attachments)
-                attachmentsString.append("**[").append(a.getFileName()).append("](").append(a.getUrl()).append(")**\n");
-        }
-
-        // Set meta
-        embed.setTitle("New announcement!");
-        embed.setColor(Color.decode("#29B7EB"));
-        embed.setFooter("#" + rootMessage.getChannel().getName(), null);
-        embed.setAuthor(author.getName(), "https://rc24.xyz", author.getEffectiveAvatarUrl());
-
-        // Set actual content
-        embed.setDescription(description);
-        if(!(attachments.isEmpty()))
-            embed.addField("\uD83D\uDCCE Attachments:", attachmentsString.toString(), false);
-        embed.setTimestamp(rootMessage.getTimeCreated());
-
-        return embed.build();
     }
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
         JDA jda = event.getJDA();
-        if(event.getChannel().getIdLong() == rootId && canUseMirror(jda))
-        {
-            // Mirror message, and if successful store it.
-            jda.getTextChannelById(mirrorId).sendMessage(createMirrorEmbed(event.getMessage()))
-                    .queue(message -> dataManager.setAssociation(event.getMessageIdLong(), message.getIdLong()));
-        }
+
+        if(event.getChannel().getIdLong() == rootId && canCrosspost(jda, event.getChannel()))
+            event.getMessage().crosspost().queue();
     }
 
-    @Override
-    public void onGuildMessageUpdate(GuildMessageUpdateEvent event)
+    private boolean canCrosspost(JDA jda, TextChannel origin)
     {
-        JDA jda = event.getJDA();
-        if(event.getMessage().getContentRaw().isEmpty())
-            return;
-        if(event.getChannel().getIdLong() == rootId && canUseMirror(jda))
-        {
-            long association = dataManager.getAssociation(event.getMessageIdLong());
-            if(!(association == 0L))
-            {
-                // Create a new embed, and edit the mirrored message to it.
-                jda.getTextChannelById(mirrorId).retrieveMessageById(association)
-                        .queue(mirroredMessage -> mirroredMessage.editMessage(createMirrorEmbed(event.getMessage())).queue());
-            }
-        }
-    }
+        String message = null;
 
-    @Override
-    public void onGuildMessageDelete(GuildMessageDeleteEvent event)
-    {
-        JDA jda = event.getJDA();
-        if(event.getChannel().getIdLong() == rootId && canUseMirror(jda))
-        {
-            long association = dataManager.getAssociation(event.getMessageIdLong());
-            if(!(association == 0L))
-            {
-                // Remove mirrored message.
+        if(!(origin.getGuild().getSelfMember().hasPermission(origin, Permission.MESSAGE_MANAGE)))
+            message = "I don't have `Manage Messages` permission in the root Morpher channel!";
 
-                jda.getTextChannelById(mirrorId).deleteMessageById(association)
-                        .queue(s -> dataManager.removeAssociation(event.getMessageIdLong()));
-            }
-        }
-    }
+        if(message == null && !(origin.canTalk()))
+            message = "I couldn't access the Morpher mirror channel... could you please check it out?";
 
-    @Deprecated
-    public void syncMessages(JDA jda)
-    {
-        if(canUseMirror(jda))
-        {
-            TextChannel root = jda.getTextChannelById(rootId);
-            // Set current history
-            MessageHistory channelHistory = root.getHistory();
-            // Grab current 100 messages, and make the list mutable.
-            List<Message> history = new ArrayList<>(channelHistory.retrievePast(100).complete());
-            List<Message> retrievedHistory;
-            do
-            {
-                // Get further 100 messages back.
-                retrievedHistory = channelHistory.retrievePast(100).complete();
-                history.addAll(retrievedHistory);
-                logger.info("Downloading another 100 messages for mirroring...");
-            }
-            while(! (retrievedHistory.size() % 100 == 0));
-            // The above detects if it evenly fits into 100 or not.
-            // If it doesn't, we're done with messages.
+        if(message == null)
+            return true;
 
-            // Since our current history is from most recent message -> last, we need to reverse.
-            Collections.reverse(history);
-            for(Message toMirror : history)
-            {
-                // Time to mirror!
-                // Create embed + store in database.
-                jda.getTextChannelById(mirrorId).sendMessage(createMirrorEmbed(toMirror))
-                        .queue(message -> dataManager.setAssociation(toMirror.getIdLong(), message.getIdLong()));
-            }
-        }
+        // Well, looks like we don't have permissions, or something.
+        String finalMessage = message;
+        jda.retrieveUserById(ownerId).flatMap(User::openPrivateChannel)
+                .flatMap(pc -> pc.sendMessage(finalMessage))
+                .queue(null, e -> logger.error("I can't access the Morpher mirror channel: {}", finalMessage));
+
+        return false;
     }
 }
