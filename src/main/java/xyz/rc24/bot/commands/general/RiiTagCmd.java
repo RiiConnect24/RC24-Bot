@@ -44,7 +44,6 @@ import xyz.rc24.bot.utils.SearcherUtil;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 
 public class RiiTagCmd extends Command
 {
@@ -80,17 +79,17 @@ public class RiiTagCmd extends Command
                 @Override
                 public void onFailure(Call call, IOException e)
                 {
-                    if(e instanceof SocketTimeoutException)
-                    {
+                    /*if(e instanceof SocketTimeoutException)
+                    {*/
                         event.replyError("WOW! RiiTag has timed out! What a surprise, indeed " +
                                 "||it's not a surprise, at all||.\n Complain to Larsenv, I guess.");
-                        return;
+                        /*return;
                     }
 
                     event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.\n" +
                             "```" + e.getMessage() + "```");
                     logger.error("Something went wrong whilst checking if user {} has a RiiTag: {}", user.getId(),
-                            e.getMessage(), e);
+                            e.getMessage(), e);*/
                 }
 
                 @Override
