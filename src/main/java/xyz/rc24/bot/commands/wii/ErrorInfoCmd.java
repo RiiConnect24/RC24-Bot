@@ -24,7 +24,6 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.jagrosh.jdautilities.command.Command;
@@ -40,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Categories;
@@ -73,7 +73,7 @@ public class ErrorInfoCmd extends Command
 
     public ErrorInfoCmd(Bot bot)
     {
-        this.debug = bot.getConfig().isDebug();
+        this.debug = bot.getConfig().debug;
         this.httpClient = bot.getHttpClient();
         this.name = "error";
         this.help = "Looks up errors using the Wiimmfi API.";

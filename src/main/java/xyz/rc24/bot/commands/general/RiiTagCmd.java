@@ -24,7 +24,6 @@
 
 package xyz.rc24.bot.commands.general;
 
-import ch.qos.logback.classic.Logger;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -37,6 +36,7 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.slf4j.Logger;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Categories;
