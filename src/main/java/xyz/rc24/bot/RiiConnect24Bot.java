@@ -25,7 +25,6 @@
 package xyz.rc24.bot;
 
 import ch.qos.logback.classic.Logger;
-import net.dv8tion.jda.api.requests.RestAction;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
@@ -49,12 +48,7 @@ public class RiiConnect24Bot
         System.setProperty("sentry.stacktrace.app.packages", "xyz.rc24.bot");
         System.setProperty("sentry.release", Const.VERSION);
 
-        // JDA
-        RestAction.setPassContext(true); // enable context by default
-        RestAction.setDefaultFailure(Throwable::printStackTrace);
-
         getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
-
         new Bot().run();
     }
 
@@ -71,7 +65,7 @@ public class RiiConnect24Bot
         return logger;
     }
 
-    public static Logger getLogger(Class clazz)
+    public static Logger getLogger(Class<?> clazz)
     {
         return (Logger) LoggerFactory.getLogger(clazz);
     }
