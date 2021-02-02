@@ -22,55 +22,35 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot;
+package xyz.rc24.bot.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.security.auth.login.LoginException;
+import net.dv8tion.jda.api.OnlineStatus;
 
 /**
- * Bot entry point.
- *
  * @author Artuto
  */
 
-public class RiiConnect24Bot
+public class Config
 {
-    private static Bot instance;
+    public String token, prefix;
 
-    private static final Logger logger = LoggerFactory.getLogger("RiiConnect24 Bot");
+    public OnlineStatus status;
+    public String playing;
 
-    public static void main(String[] args) throws LoginException
+    public long owner;
+    public String[] coOwners;
+
+    public boolean debug;
+
+    public boolean birthdays, sentry, datadog;
+    public long birthdaysChannel, datadogPort;
+    public String sentryDSN, datadogPrefix, datadogHost;
+
+    public boolean useSSL;
+    public String database, databaseHost, databaseUser, databasePassword;
+
+    public String getPlaying()
     {
-        // Sentry
-        System.setProperty("sentry.stacktrace.app.packages", "xyz.rc24.bot");
-        System.setProperty("sentry.release", Const.VERSION);
-
-        getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
-        new Bot().run();
-    }
-
-    public static Bot getInstance()
-    {
-        if(instance == null)
-            throw new IllegalStateException("The bot is not initialized!");
-
-        return instance;
-    }
-
-    public static Logger getLogger()
-    {
-        return logger;
-    }
-
-    public static Logger getLogger(Class<?> clazz)
-    {
-        return LoggerFactory.getLogger(clazz);
-    }
-
-    static void setInstance(Bot instance)
-    {
-        RiiConnect24Bot.instance = instance;
+        return playing.replace("{prefix}", prefix);
     }
 }

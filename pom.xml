@@ -104,6 +104,12 @@
             <version>2.14.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-log4j2</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+
         <!-- Stuff -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
