@@ -33,7 +33,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.config.bot.BotConfig;
+import xyz.rc24.bot.config.bot.JDAConfig;
 
 import javax.security.auth.login.LoginException;
 
@@ -41,15 +41,15 @@ import javax.security.auth.login.LoginException;
 public class DiscordConfig
 {
     @Bean
-    public CommandClient commandClient(BotConfig config)
+    public CommandClient commandClient(JDAConfig config)
     {
         CommandClientBuilder client = new CommandClientBuilder()
-                .setActivity(config.getJDAConfig().getActivity())
-                .setStatus(config.getJDAConfig().getOnlineStatus())
+                .setActivity(config.getActivity())
+                .setStatus(config.getOnlineStatus())
                 .setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E)
                 .setLinkedCacheSize(40)
-                .setOwnerId(config.getJDAConfig().getOwner())
-                .setCoOwnerIds(config.getJDAConfig().getCoOwners())
+                .setOwnerId(config.getOwner())
+                .setCoOwnerIds(config.getCoOwners())
                 .setPrefix("@mention")
                 .setServerInvite("https://discord.gg/5rw6Tur")
                 /*.setGuildSettingsManager(getGuildSettingsDataManager())
@@ -77,9 +77,9 @@ public class DiscordConfig
     }
 
     @Bean
-    public JDA jda(CommandClient client, BotConfig config) throws LoginException
+    public JDA jda(CommandClient client, JDAConfig config) throws LoginException
     {
-        JDABuilder builder = JDABuilder.createLight(config.getJDAConfig().getToken())
+        JDABuilder builder = JDABuilder.createLight(config.getToken())
                 .setEnabledIntents(Const.INTENTS)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("loading..."))
