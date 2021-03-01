@@ -142,47 +142,12 @@ public class Bot extends ListenerAdapter
         }
 
         // Setup Command Client
-        CommandClientBuilder client = new CommandClientBuilder()
-                .setActivity(Activity.playing(config.getPlaying()))
-                .setStatus(config.status)
-                .setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E)
-                .setLinkedCacheSize(40)
-                .setOwnerId(String.valueOf(config.owner))
-                .setCoOwnerIds(config.coOwners)
-                .setPrefix("@mention")
-                .setServerInvite("https://discord.gg/5rw6Tur")
-                .setGuildSettingsManager(getGuildSettingsDataManager())
-                .setScheduleExecutor(botScheduler)
-                .addCommands(
-                        // Bot administration
-                        new Bash(), new Eval(this), new Shutdown(),
 
-                        // General
-                        new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
-                        new PingCmd(), new RiiTagCmd(this), new SetBirthdayCmd(this),
 
-                        // Tools
-                        new DefaultAddCmd(this), new PrefixCmd(getGuildSettingsDataManager()),
-                        new StatsCmd(this),
 
-                        // Wii-related
-                        new AddCmd(this), new CodeCmd(this), new BlocksCmd(),
-                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare());
-
-        if(!(dataDogStatsListener == null))
-            client.setListener(dataDogStatsListener);
 
         // JDA Connection
-        JDABuilder builder = JDABuilder.createLight(config.token)
-                .setEnabledIntents(Const.INTENTS)
-                .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .setActivity(Activity.playing("loading..."))
-                .addEventListeners(this, client.build());
 
-        if(!(dataDogStatsListener == null))
-            builder.addEventListeners(dataDogStatsListener);
-
-        builder.build();
     }
 
     @Override

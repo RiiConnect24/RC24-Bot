@@ -22,18 +22,28 @@
  * SOFTWARE.
  */
 
-create table codes
-(
-  user_id bigint     not null,
-  games   mediumtext null,
-  nnid    mediumtext null,
-  switch  mediumtext null,
-  threeds mediumtext null,
-  wii     mediumtext null,
-  psn     mediumtext null,
-  constraint codes_user_id_uindex
-    unique (user_id)
-);
+package xyz.rc24.bot.config.bot;
 
-alter table codes
-  add primary key (user_id);
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConfigurationProperties("bot")
+public class BotConfig
+{
+    @NestedConfigurationProperty
+    private final JDAConfig jdaConfig;
+
+    @Autowired
+    public BotConfig(JDAConfig jdaConfig)
+    {
+        this.jdaConfig = jdaConfig;
+    }
+
+    public JDAConfig getJDAConfig()
+    {
+        return jdaConfig;
+    }
+}

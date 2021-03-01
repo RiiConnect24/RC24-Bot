@@ -26,8 +26,10 @@ package xyz.rc24.bot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.security.auth.login.LoginException;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Bot entry point.
@@ -35,42 +37,27 @@ import javax.security.auth.login.LoginException;
  * @author Artuto
  */
 
+@SpringBootApplication
+@EnableScheduling
+@ComponentScan("xyz.rc24.bot")
 public class RiiConnect24Bot
 {
-    private static Bot instance;
-
-    private static final Logger logger = LoggerFactory.getLogger("RiiConnect24 Bot");
-
-    public static void main(String[] args) throws LoginException
+    public static void main(String[] args)
     {
         // Sentry
-        System.setProperty("sentry.stacktrace.app.packages", "xyz.rc24.bot");
         System.setProperty("sentry.release", Const.VERSION);
 
         getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
-        new Bot().run();
-    }
-
-    public static Bot getInstance()
-    {
-        if(instance == null)
-            throw new IllegalStateException("The bot is not initialized!");
-
-        return instance;
+        SpringApplication.run(RiiConnect24Bot.class, args);
     }
 
     public static Logger getLogger()
     {
+        if(logger == null)
+            logger = LoggerFactory.getLogger("RiiConnect24 Bot");
+
         return logger;
     }
 
-    public static Logger getLogger(Class<?> clazz)
-    {
-        return LoggerFactory.getLogger(clazz);
-    }
-
-    static void setInstance(Bot instance)
-    {
-        RiiConnect24Bot.instance = instance;
-    }
+    private static Logger logger;
 }

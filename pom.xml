@@ -28,6 +28,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.2</version>
+        <relativePath/>
+    </parent>
+
     <groupId>xyz.rc24.bot</groupId>
     <artifactId>RC24-Bot</artifactId>
     <version>6.0.0-SNAPSHOT</version>
@@ -61,14 +68,26 @@
         </repository>
     </repositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jdbi</groupId>
+                <artifactId>jdbi3-bom</artifactId>
+                <version>3.16.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- JDA -->
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.2.0_227</version>
+            <version>4.2.0_229</version>
 
-            <!-- We dont need audio in this bot, use endless instead -->
+            <!-- We don't need audio in this bot, use endless instead -->
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -90,6 +109,29 @@
             </exclusions>
         </dependency>
 
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <!-- JitPack.io -->
         <dependency>
             <groupId>com.github.RiiConnect24-Bot.JDA-Utilities</groupId>
@@ -99,15 +141,14 @@
 
         <!-- Logging -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.14.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
         <dependency>
             <groupId>io.sentry</groupId>
-            <artifactId>sentry-log4j2</artifactId>
-            <version>1.7.30</version>
+            <artifactId>sentry-spring-boot-starter</artifactId>
+            <version>4.2.0</version>
         </dependency>
 
         <!-- Stuff -->
@@ -123,7 +164,7 @@
             <version>1.13.1</version>
         </dependency>
 
-        <!-- Database -->
+        <!-- Data -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -131,22 +172,8 @@
         </dependency>
 
         <dependency>
-            <groupId>co.aikar</groupId>
-            <artifactId>idb-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>2.7.9</version>
-        </dependency>
-
-        <!-- Data -->
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.27</version>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-core</artifactId>
         </dependency>
 
         <dependency>

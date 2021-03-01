@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ MIT License
   ~
@@ -22,22 +23,16 @@
   ~ SOFTWARE.
   -->
 
-<configuration debug="false">
-    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>[%d{dd-MM-yyyy HH:mm:ss, -5}] [%boldCyan(%thread)] [%boldGreen(%logger{0})] [%level] - %msg%n
-            </pattern>
-        </encoder>
-    </appender>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] [%level] [%c{1}] - %msg%n"/>
+        </Console>
+    </Appenders>
 
-    <appender name="Sentry" class="io.sentry.logback.SentryAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-        </filter>
-    </appender>
-
-    <root level="INFO">
-        <appender-ref ref="Console"/>
-        <appender-ref ref="Sentry"/>
-    </root>
-</configuration>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
