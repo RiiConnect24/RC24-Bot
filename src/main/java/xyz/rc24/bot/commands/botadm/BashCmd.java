@@ -24,30 +24,27 @@
 
 package xyz.rc24.bot.commands.botadm;
 
-import ch.qos.logback.classic.Logger;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.commands.Categories;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Runs a shell command.
  *
- * @author Spotlight
+ * @author Artuto
  */
-public class Bash extends Command
+public class BashCmd extends Command
 {
-    private static Logger logger = (Logger) LoggerFactory.getLogger(Bash.class);
-
-    public Bash()
+    public BashCmd()
     {
         this.name = "bash";
-        this.help = "Runs a bash command.";
-        this.category = Categories.ADMIN;
+        this.help = "Runs a bash command";
+        this.category = Categories.BOT_ADMIN;
+        this.guildOnly = false;
         this.ownerCommand = true;
     }
 
@@ -60,42 +57,39 @@ public class Bash extends Command
             return;
         }
 
-        StringBuilder output = new StringBuilder();
-        String finalOutput;
-        try
+        event.async(() ->
         {
-            ProcessBuilder builder = new ProcessBuilder(event.getArgs().split(" "));
-            Process p = builder.start();
+            Scanner scanner;
+            String output = "";
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-            String runningLineOutput;
-            while(!((runningLineOutput = reader.readLine()) == null))
-                output.append(runningLineOutput).append("\n");
-
-            if(output.toString().isEmpty())
+            try
             {
-                event.replySuccess("Done, with no output!");
-                return;
+                Runtime runtime = Runtime.getRuntime();
+                Process process = runtime.exec(getCommandInterpreter() + event.getArgs() + " && 2>&1");
+
+                process.waitFor(10, TimeUnit.SECONDS); // timeout of 10 seconds
+                scanner = new Scanner(process.getInputStream());
             }
+            catch(IOException ignored) {event.replyError("Unknown command."); return;}
+            catch(InterruptedException ignored) {event.replyError("Process has timed out"); return;}
 
-            // Remove linebreak
-            finalOutput = output.substring(0, output.length() - 1);
-            reader.close();
-        }
-        catch(IOException e)
-        {
-            event.replyError("I wasn't able to find the command `" + event.getArgs() + "`!");
-            return;
-        }
-        catch(Exception e)
-        {
-            logger.warn("An unknown error occurred!");
-            e.printStackTrace();
-            event.replyError("An unknown error occurred! Check the bot console.");
-            return;
-        }
+            while(scanner.hasNextLine())
+                output += scanner.nextLine() + "\n";
 
-        event.replySuccess("Input: ```\n" + event.getArgs() + "``` Output: \n```\n" + finalOutput + "```");
+            if(!(output.isEmpty())) event.replySuccess("Done! Output: ```\n" + output + "```");
+            else event.reactSuccess();
+        });
+    }
+
+    private String getCommandInterpreter()
+    {
+        String os = System.getProperty("os.name");
+
+        if(os.startsWith("Windows"))
+            return "cmd /c ";
+        else if(os.equals("Linux"))
+            return "sh -c ";
+        else
+            return "";
     }
 }

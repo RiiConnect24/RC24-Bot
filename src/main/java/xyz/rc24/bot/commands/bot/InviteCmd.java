@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.general;
+package xyz.rc24.bot.commands.bot;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -32,20 +32,19 @@ import xyz.rc24.bot.commands.Categories;
  * @author Artuto
  */
 
-public class PingCmd extends Command
+public class InviteCmd extends Command
 {
-    public PingCmd()
+    public InviteCmd()
     {
-        this.name = "ping";
-        this.help = "Checks the bot's connection to Discord's servers.";
-        this.category = Categories.GENERAL;
-        this.ownerCommand = false;
-        this.guildOnly = false;
+        this.name = "invite";
+        this.category = Categories.BOT;
+        this.help = "Invite me to your server?";
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        event.getJDA().getRestPing().queue(ping -> event.replyFormatted("Gateway Ping: %dms, Discord API Ping: %dms", event.getJDA().getGatewayPing(), ping));
+        event.reply("Aw, you want to invite me? <3\nInvite me here: <" +
+                event.getJDA().getInviteUrl() + ">");
     }
 }

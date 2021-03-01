@@ -22,20 +22,31 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands;
+package xyz.rc24.bot.commands.bot;
 
-import com.jagrosh.jdautilities.command.Command.Category;
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import xyz.rc24.bot.commands.Categories;
 
 /**
- * Command categories
- *
  * @author Artuto
  */
 
-public class Categories
+public class PingCmd extends Command
 {
-    public static final Category ADMIN = new Category("Bot Administration");
-    public static final Category GENERAL = new Category("General");
-    public static final Category TOOLS = new Category("Tools");
-    public static final Category WII = new Category("Wii-related");
+    public PingCmd()
+    {
+        this.name = "ping";
+        this.help = "Checks the bot's connection to Discord's servers.";
+        this.category = Categories.BOT;
+        this.guildOnly = false;
+    }
+
+    @Override
+    protected void execute(CommandEvent event)
+    {
+        event.getJDA().getRestPing().queue(ping ->
+                event.replyFormatted("Gateway Ping: %dms, Discord API Ping: %dms",
+                        event.getJDA().getGatewayPing(), ping));
+    }
 }

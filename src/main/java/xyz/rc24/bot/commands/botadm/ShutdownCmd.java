@@ -26,22 +26,19 @@ package xyz.rc24.bot.commands.botadm;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
 
 /**
  * @author Spotlight
  */
 
-public class Shutdown extends Command
+public class ShutdownCmd extends Command
 {
-    public Shutdown()
+    public ShutdownCmd()
     {
         this.name = "shutdown";
-        this.help = "Turns the bot off.";
-        this.category = Categories.ADMIN;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
+        this.help = "Turns the bot off";
+        this.category = Categories.BOT_ADMIN;
         this.ownerCommand = true;
         this.guildOnly = false;
     }
@@ -49,8 +46,12 @@ public class Shutdown extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        event.getTextChannel().sendMessage("Done! Cya \uD83D\uDC4B").complete();
-        event.getJDA().shutdown();
-        System.exit(0);
+        event.getTextChannel().sendMessage("Done! Cya \uD83D\uDC4B")
+                .submit()
+                .whenComplete((s, e) ->
+                {
+                    event.getJDA().shutdown();
+                    System.exit(0);
+                });
     }
 }

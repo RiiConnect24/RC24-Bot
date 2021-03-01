@@ -22,28 +22,21 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.general;
+package xyz.rc24.bot.commands;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import xyz.rc24.bot.commands.Categories;
+import com.jagrosh.jdautilities.command.Command.Category;
 
 /**
+ * Command categories
+ *
  * @author Artuto
  */
 
-public class InviteCmd extends Command
+public class Categories
 {
-    public InviteCmd()
-    {
-        this.name = "invite";
-        this.category = Categories.GENERAL;
-        this.help = "Invite me to your server?";
-    }
-
-    @Override
-    protected void execute(CommandEvent event)
-    {
-        event.reply("Aw, you want to invite me? <3\nInvite me here: " + event.getJDA().getInviteUrl());
-    }
+    public static final Category BOT       = new Category("Bot");
+    public static final Category BOT_ADMIN = new Category("Bot Administration");
+    public static final Category GENERAL   = new Category("General");
+    public static final Category TOOLS     = new Category("Tools");
+    public static final Category WII       = new Category("Wii-related");
 }

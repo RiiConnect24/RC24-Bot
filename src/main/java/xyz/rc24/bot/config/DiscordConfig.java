@@ -33,6 +33,12 @@ import net.dv8tion.jda.api.entities.Activity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import xyz.rc24.bot.Const;
+import xyz.rc24.bot.commands.bot.AboutCmd;
+import xyz.rc24.bot.commands.bot.InviteCmd;
+import xyz.rc24.bot.commands.bot.PingCmd;
+import xyz.rc24.bot.commands.botadm.BashCmd;
+import xyz.rc24.bot.commands.botadm.EvalCmd;
+import xyz.rc24.bot.commands.botadm.ShutdownCmd;
 import xyz.rc24.bot.config.bot.JDAConfig;
 
 import javax.security.auth.login.LoginException;
@@ -54,11 +60,12 @@ public class DiscordConfig
                 .setServerInvite("https://discord.gg/5rw6Tur")
                 /*.setGuildSettingsManager(getGuildSettingsDataManager())
                 .setScheduleExecutor(botScheduler)*/
-                /*.addCommands(
+                .addCommands(
+                        // Bot
+                        new AboutCmd(), new InviteCmd(), new PingCmd(),
                         // Bot administration
-                        new Bash(), new Eval(this), new Shutdown(),
-
-                        // General
+                        new BashCmd(), new EvalCmd(), new ShutdownCmd()
+                        /*// General
                         new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
                         new PingCmd(), new RiiTagCmd(this), new SetBirthdayCmd(this),
 
@@ -68,7 +75,7 @@ public class DiscordConfig
 
                         // Wii-related
                         new AddCmd(this), new CodeCmd(this), new BlocksCmd(),
-                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare())*/;
+                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare()*/);
 
         /*if(!(dataDogStatsListener == null))
             client.setListener(dataDogStatsListener);*/
