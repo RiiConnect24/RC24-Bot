@@ -39,7 +39,7 @@ public class DNSCmd extends Command
     {
         this.name = "dns";
         this.help = "Lets you know the current DNS settings.";
-        this.category = Categories.WII;
+        this.category = Categories.TOOLS;
         this.guildOnly = false;
     }
 

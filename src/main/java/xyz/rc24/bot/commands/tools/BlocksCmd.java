@@ -37,7 +37,7 @@ public class BlocksCmd extends Command
     {
         this.name = "blocks";
         this.help = "Convert between Nintendo blocks and MBs.";
-        this.category = Categories.WII;
+        this.category = Categories.TOOLS;
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.guildOnly = false;
     }
