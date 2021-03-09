@@ -51,7 +51,6 @@ public class RiiTagCmd extends Command
     private OkHttpClient httpClient;
 
     //private final Logger logger;
-    private final String URL = "https://tag.rc24.xyz/%s/tag.max.png?randomizer=%f";
 
     public RiiTagCmd()
     {
@@ -127,4 +126,6 @@ public class RiiTagCmd extends Command
 
         event.reply(embedBuilder.build());
     }
+
+    private final String URL = "https://tag.rc24.xyz/%s/tag.max.png?randomizer=%f";
 }

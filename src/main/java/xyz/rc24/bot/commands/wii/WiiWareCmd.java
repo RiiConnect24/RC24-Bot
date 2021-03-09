@@ -26,44 +26,27 @@ package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.RegistrableCommand;
 
-public class BlocksCmd extends Command
+/**
+ * @author Artuto
+ */
+@RegistrableCommand
+public class WiiWareCmd extends Command
 {
-    public BlocksCmd()
+    public WiiWareCmd()
     {
-        this.name = "blocks";
-        this.help = "Convert between Nintendo blocks and MBs.";
+        this.name = "wiiware";
+        this.help = "Lets you know the URL to the WiiWare patcher.";
         this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
         this.guildOnly = false;
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        if(event.getArgs().isEmpty())
-        {
-            event.reply("\u2139 1 block is 128kb\n" +
-                    "8 blocks are 1MB");
-            return;
-        }
-
-        double blocks = parseNumber(event.getArgs());
-        if(blocks < 1)
-        {
-            event.replyError("Invalid number!");
-            return;
-        }
-
-        double mb = blocks * 128 / 1024;
-        event.reply("\u2139 " + blocks + " block(s) are " + mb + "MB(s)");
-    }
-
-    private double parseNumber(String args)
-    {
-        try {return Double.parseDouble(args);}
-        catch(NumberFormatException e) {return -1.0;}
+        event.reply("Check out the patcher here: " +
+                "<https://github.com/RiiConnect24/auto-wiiware-patcher/releases/latest>");
     }
 }

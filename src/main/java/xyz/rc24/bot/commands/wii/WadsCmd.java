@@ -26,28 +26,27 @@ package xyz.rc24.bot.commands.wii;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.RegistrableCommand;
 
 /**
  * @author Artuto
  */
-
-public class WiiWare extends Command
+@RegistrableCommand
+public class WadsCmd extends Command
 {
-    public WiiWare()
+    public WadsCmd()
     {
-        this.name = "wiiware";
-        this.help = "Lets you know the URL to the WiiWare patcher.";
+        this.name = "wads";
+        this.help = "Lets you know the URL to the RiiConnect24 Patcher.";
         this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = false;
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        event.reply("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases");
+        event.reply("Check out the patcher here: " +
+                "<https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest>");
     }
 }

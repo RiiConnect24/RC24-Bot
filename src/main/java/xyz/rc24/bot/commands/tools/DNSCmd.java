@@ -22,32 +22,34 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.wii;
+package xyz.rc24.bot.commands.tools;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.RegistrableCommand;
 
 /**
  * @author Spotlight
  */
-
-public class DNS extends Command
+@RegistrableCommand
+public class DNSCmd extends Command
 {
-    public DNS()
+    public DNSCmd()
     {
         this.name = "dns";
         this.help = "Lets you know the current DNS settings.";
         this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = false;
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        event.reply("`164.132.44.106` should be your primary DNS.\n" + "`8.8.8.8` (Google DNS) can be your secondary DNS. (Or `1.1.1.1` (Cloudflare DNS), alternatively)\n" + "Note that if your ISP blocks the use of custom DNS, you can use a local DNS server like ours: https://github.com/RiiConnect24/DNS-Server");
+        event.reply("`164.132.44.106` should be your primary DNS.\n" +
+                "`8.8.8.8` (Google DNS) can be your secondary DNS. " +
+                "(Or `1.1.1.1` (Cloudflare DNS), alternatively)\n" +
+                "Note that if your ISP blocks the use of custom DNS, you can use a local DNS server like ours: " +
+                "<https://github.com/RiiConnect24/DNS-Server>");
     }
 }

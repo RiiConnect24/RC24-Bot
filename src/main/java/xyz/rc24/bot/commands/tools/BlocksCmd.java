@@ -22,29 +22,49 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.wii;
+package xyz.rc24.bot.commands.tools;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.RegistrableCommand;
 
-/**
- * @author Artuto
- */
-
-public class WadsCmd extends Command
+@RegistrableCommand
+public class BlocksCmd extends Command
 {
-    public WadsCmd()
+    public BlocksCmd()
     {
-        this.name = "wads";
-        this.help = "Lets you know the URL to the RiiConnect24 Patcher.";
+        this.name = "blocks";
+        this.help = "Convert between Nintendo blocks and MBs.";
         this.category = Categories.WII;
+        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.guildOnly = false;
     }
 
     @Override
     protected void execute(CommandEvent event)
     {
-        event.reply("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest");
+        if(event.getArgs().isEmpty())
+        {
+            event.reply("\u2139 1 block is 128kb\n8 blocks are 1MB");
+            return;
+        }
+
+        double blocks = parseNumber(event.getArgs());
+        if(blocks < 1)
+        {
+            event.replyError("Invalid number!");
+            return;
+        }
+
+        double mb = blocks * 128 / 1024;
+        event.reply("\u2139 " + blocks + " blocks are " + mb + "MB");
+    }
+
+    private double parseNumber(String args)
+    {
+        try {return Double.parseDouble(args);}
+        catch(NumberFormatException e) {return -1.0;}
     }
 }
