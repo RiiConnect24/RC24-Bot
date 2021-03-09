@@ -33,11 +33,12 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.RegistrableCommand;
 
 /**
  * @author Artuto
  */
-
+@RegistrableCommand
 public class EvalCmd extends Command
 {
     //private Bot bot;

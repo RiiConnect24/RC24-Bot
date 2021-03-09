@@ -22,37 +22,18 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.botadm;
+package xyz.rc24.bot.config;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.commands.RegistrableCommand;
+import okhttp3.OkHttpClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * @author Spotlight
- */
-@RegistrableCommand
-public class ShutdownCmd extends Command
+@Configuration
+public class ServiceConfig
 {
-    public ShutdownCmd()
+    @Bean
+    public OkHttpClient httpClient()
     {
-        this.name = "shutdown";
-        this.help = "Turns the bot off";
-        this.category = Categories.BOT_ADMIN;
-        this.ownerCommand = true;
-        this.guildOnly = false;
-    }
-
-    @Override
-    protected void execute(CommandEvent event)
-    {
-        event.getTextChannel().sendMessage("Done! Cya \uD83D\uDC4B")
-                .submit()
-                .whenComplete((s, e) ->
-                {
-                    event.getJDA().shutdown();
-                    System.exit(0);
-                });
+        return new OkHttpClient();
     }
 }

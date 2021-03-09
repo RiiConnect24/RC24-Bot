@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import xyz.rc24.bot.Const;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.RegistrableCommand;
 import xyz.rc24.bot.utils.FormatUtil;
 
 import java.time.OffsetDateTime;
@@ -41,6 +42,7 @@ import static java.lang.String.format;
 import static net.dv8tion.jda.api.entities.ChannelType.TEXT;
 import static xyz.rc24.bot.Const.COLOR;
 
+@RegistrableCommand
 public class AboutCmd extends Command
 {
     public AboutCmd()

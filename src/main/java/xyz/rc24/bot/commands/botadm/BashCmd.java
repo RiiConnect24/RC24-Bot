@@ -27,6 +27,7 @@ package xyz.rc24.bot.commands.botadm;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.RegistrableCommand;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Artuto
  */
+@RegistrableCommand
 public class BashCmd extends Command
 {
     public BashCmd()

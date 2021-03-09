@@ -27,11 +27,13 @@ package xyz.rc24.bot.commands.bot;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.RegistrableCommand;
 
 /**
  * @author Artuto
  */
 
+@RegistrableCommand
 public class PingCmd extends Command
 {
     public PingCmd()

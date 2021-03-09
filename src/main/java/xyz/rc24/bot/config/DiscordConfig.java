@@ -30,24 +30,22 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.commands.bot.AboutCmd;
-import xyz.rc24.bot.commands.bot.InviteCmd;
-import xyz.rc24.bot.commands.bot.PingCmd;
-import xyz.rc24.bot.commands.botadm.BashCmd;
-import xyz.rc24.bot.commands.botadm.EvalCmd;
-import xyz.rc24.bot.commands.botadm.ShutdownCmd;
 import xyz.rc24.bot.config.bot.JDAConfig;
+import xyz.rc24.bot.utils.CommandRegistry;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
+import java.util.concurrent.Executors;
 
 @Configuration
 public class DiscordConfig
 {
     @Bean
-    public CommandClient commandClient(JDAConfig config)
+    public CommandClient commandClient(JDAConfig config) throws IOException
     {
         CommandClientBuilder client = new CommandClientBuilder()
                 .setActivity(config.getActivity())
@@ -58,16 +56,17 @@ public class DiscordConfig
                 .setCoOwnerIds(config.getCoOwners())
                 .setPrefix("@mention")
                 .setServerInvite("https://discord.gg/5rw6Tur")
-                /*.setGuildSettingsManager(getGuildSettingsDataManager())
-                .setScheduleExecutor(botScheduler)*/
-                .addCommands(
-                        // Bot
+                /*.setGuildSettingsManager(getGuildSettingsDataManager())*/
+                .setScheduleExecutor(Executors.newScheduledThreadPool(5))
+                .addCommands(CommandRegistry.getCommands()
+                        /*// Bot
                         new AboutCmd(), new InviteCmd(), new PingCmd(),
                         // Bot administration
-                        new BashCmd(), new EvalCmd(), new ShutdownCmd()
-                        /*// General
-                        new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
-                        new PingCmd(), new RiiTagCmd(this), new SetBirthdayCmd(this),
+                        new BashCmd(), new EvalCmd(), new ShutdownCmd(),
+                        // General
+                        new RiiTagCmd()
+                        /*new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
+                        new PingCmd(), , new SetBirthdayCmd(this),
 
                         // Tools
                         new DefaultAddCmd(this), new PrefixCmd(getGuildSettingsDataManager()),
@@ -84,12 +83,13 @@ public class DiscordConfig
     }
 
     @Bean
-    public JDA jda(CommandClient client, JDAConfig config) throws LoginException
+    public JDA jda(CommandClient client, JDAConfig config, OkHttpClient httpClient) throws LoginException
     {
         JDABuilder builder = JDABuilder.createLight(config.getToken())
                 .setEnabledIntents(Const.INTENTS)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("loading..."))
+                .setHttpClient(httpClient)
                 .addEventListeners(client);
 
         /*if(!(dataDogStatsListener == null))

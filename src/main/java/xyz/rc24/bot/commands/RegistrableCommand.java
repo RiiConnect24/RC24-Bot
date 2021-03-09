@@ -22,37 +22,18 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.botadm;
+package xyz.rc24.bot.commands;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.commands.RegistrableCommand;
+import org.springframework.stereotype.Component;
 
-/**
- * @author Spotlight
- */
-@RegistrableCommand
-public class ShutdownCmd extends Command
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Component
+public @interface RegistrableCommand
 {
-    public ShutdownCmd()
-    {
-        this.name = "shutdown";
-        this.help = "Turns the bot off";
-        this.category = Categories.BOT_ADMIN;
-        this.ownerCommand = true;
-        this.guildOnly = false;
-    }
-
-    @Override
-    protected void execute(CommandEvent event)
-    {
-        event.getTextChannel().sendMessage("Done! Cya \uD83D\uDC4B")
-                .submit()
-                .whenComplete((s, e) ->
-                {
-                    event.getJDA().shutdown();
-                    System.exit(0);
-                });
-    }
 }
