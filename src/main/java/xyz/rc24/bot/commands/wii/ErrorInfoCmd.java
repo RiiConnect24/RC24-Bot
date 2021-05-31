@@ -291,5 +291,6 @@ public class ErrorInfoCmd extends Command
         put(51330, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
         put(51331, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
         put(51332, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
+        put(69420, "pee pee poo poo funni number");
     }};
 }
