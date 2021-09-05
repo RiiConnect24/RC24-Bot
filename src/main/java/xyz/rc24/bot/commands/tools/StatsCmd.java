@@ -99,12 +99,16 @@ public class StatsCmd extends Command
                     eb.setDescription(parseJSON(response));
                     eb.setColor(Color.decode("#29B7EB"));
 
-                    mb.setContent("<:RC24:302470872201953280> Service stats of RC24:").setEmbed(eb.build());
+                    mb.setContent("<:RC24:302470872201953280> Service stats of RC24:").setEmbeds(eb.build());
 
+                    response.close();
                     event.reply(mb.build());
                 }
-                catch(IOException e) {onFailure(call, e);}
-                catch(Exception e) {onFailure(call, new IOException(e));}
+                catch(Exception e)
+                {
+                    onFailure(call, e instanceof IOException ? (IOException) e : new IOException(e));
+                    response.close();
+                }
             }
         });
     }

@@ -98,16 +98,19 @@ public class RiiTagCmd extends Command
                     if(response.code() == 404)
                     {
                         event.replyError("**" + user.getAsTag() + "** does not have a RiiTag!");
+                        response.close();
                         return;
                     }
 
                     if(!(response.isSuccessful()))
                     {
                         onFailure(call, new IOException("Server error: HTTP Code " + response.code()));
+                        response.close();
                         return;
                     }
 
                     displayTag(event, user);
+                    response.close();
                 }
             });
         });

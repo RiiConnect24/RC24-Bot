@@ -153,7 +153,7 @@ public class ErrorInfoCmd extends Command
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e)
                 {
-                    event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.");
+                    event.replyError("Hm, something went wrong on our end. Check Wiimmfi's website is up?");
                     logger.error("Something went wrong whilst checking error code '" + code +
                             "' with Wiimmfi: {}", e.getMessage(), e);
                 }
@@ -164,10 +164,12 @@ public class ErrorInfoCmd extends Command
                     if(!(response.isSuccessful()))
                     {
                         onFailure(call, new IOException("Not success response code: " + response.code()));
+                        response.close();
                         return;
                     }
 
                     success(event, response);
+                    response.close();
                 }
             });
         }

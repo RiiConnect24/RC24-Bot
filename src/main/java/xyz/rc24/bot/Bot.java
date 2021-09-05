@@ -51,7 +51,6 @@ import xyz.rc24.bot.commands.general.BirthdayCmd;
 import xyz.rc24.bot.commands.general.FlagCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
-import xyz.rc24.bot.commands.general.ReviveCmd;
 import xyz.rc24.bot.commands.general.RiiTagCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
 import xyz.rc24.bot.commands.tools.DefaultAddCmd;
@@ -71,13 +70,9 @@ import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.database.Database;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
-import xyz.rc24.bot.listeners.Morpher;
-import xyz.rc24.bot.listeners.PollListener;
 import xyz.rc24.bot.managers.BirthdayManager;
-import xyz.rc24.bot.managers.PollManager;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
@@ -110,19 +105,22 @@ public class Bot extends ListenerAdapter
 
     // Managers
     private BirthdayManager birthdayManager;
-    private PollManager pollManager;
 
     private final Logger logger = RiiConnect24Bot.getLogger();
     private final OkHttpClient httpClient = new OkHttpClient();
     private final ScheduledExecutorService botScheduler = Executors.newScheduledThreadPool(5);
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    void run() throws LoginException, IOException
+    void run() throws LoginException
     {
         RiiConnect24Bot.setInstance(this);
         this.config = new Config();
         this.core = new BotCoreImpl(this);
         this.waiter = new EventWaiter();
+
+        // Start Sentry (if enabled)
+        if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
+            Sentry.init(config.getSentryDSN());
 
         // Start database
         this.db = initDatabase();
@@ -132,11 +130,6 @@ public class Bot extends ListenerAdapter
 
         // Start managers
         this.birthdayManager = new BirthdayManager(getBirthdayDataManager());
-        this.pollManager = new PollManager();
-
-        // Start Sentry (if enabled)
-        if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
-            Sentry.init(config.getSentryDSN());
 
         DataDogStatsListener dataDogStatsListener = null;
 
@@ -172,7 +165,7 @@ public class Bot extends ListenerAdapter
 
                         // General
                         new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
-                        new PingCmd(), new ReviveCmd(this), new RiiTagCmd(this), new SetBirthdayCmd(this),
+                        new PingCmd(), new RiiTagCmd(this), new SetBirthdayCmd(this),
 
                         // Tools
                         new DefaultAddCmd(this), new PrefixCmd(getGuildSettingsDataManager()),
@@ -190,10 +183,8 @@ public class Bot extends ListenerAdapter
                 .setEnabledIntents(Const.INTENTS)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("Loading..."))
-                .addEventListeners(this, client.build(), waiter, new PollListener(getPollManager()));
+                .addEventListeners(this, client.build(), waiter);
 
-        if(config.isMorpherEnabled())
-            builder.addEventListeners(new Morpher(config));
         if(!(dataDogStatsListener == null))
             builder.addEventListeners(dataDogStatsListener);
 
@@ -255,7 +246,7 @@ public class Bot extends ListenerAdapter
             put("useSSL", config.useSSL());
             put("verifyServerCertificate", config.verifyServerCertificate());
             put("autoReconnect", config.autoReconnect());
-            put("serverTimezone", "CST"); // Doesn't really matter
+            //put("serverTimezone", "CST"); // Doesn't really matter
             put("characterEncoding", "UTF-8");
         }};
 
@@ -319,11 +310,6 @@ public class Bot extends ListenerAdapter
     public BirthdayManager getBirthdayManager()
     {
         return birthdayManager;
-    }
-
-    public PollManager getPollManager()
-    {
-        return pollManager;
     }
 
     // Other
