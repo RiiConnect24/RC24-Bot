@@ -40,7 +40,13 @@
         <repository>
             <id>m2-dv8tion</id>
             <name>m2-dv8tion</name>
-            <url>https://m2.dv8tion.net/releases</url>
+            <url>https://m2.dv8tion.net/releases/</url>
+        </repository>
+
+        <repository>
+            <id>bintray-jagrosh-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/jagrosh/maven/</url>
         </repository>
 
         <repository>
