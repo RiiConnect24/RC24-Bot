@@ -81,6 +81,13 @@
             <groupId>com.github.RiiConnect24-Bot.JDA-Utilities</groupId>
             <artifactId>jda-utilities-menu</artifactId>
             <version>c3e09d51aa</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.RiiConnect24-Bot.JDA-Utilities</groupId>
+                    <artifactId>jda-utilities-commons</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Logging -->
