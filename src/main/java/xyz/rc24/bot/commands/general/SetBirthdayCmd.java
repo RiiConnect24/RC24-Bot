@@ -46,7 +46,7 @@ public class SetBirthdayCmd extends Command
     {
         this.bot = bot;
         this.name = "setbirthday";
-        this.help = "Sets your birthday. Please note that this command uses the DD/MM format.";
+        this.help = "Sets your birthday. Please note that this command uses the DD/MM date format.";
         this.category = Categories.GENERAL;
         this.guildOnly = false;
     }
@@ -60,7 +60,7 @@ public class SetBirthdayCmd extends Command
         if(dateTime == null)
         {
             event.replyError("I couldn't parse your date.\n" +
-                    "Try something like: `" + bot.getPrefix(event.getGuild()) + "setbirthday 25/12` (the date format used is DD/MM).");
+                    "Try something like: `" + bot.getPrefix(event.getGuild()) + "setbirthday 25/12` (date format: DD/MM).");
             return;
         }
 
