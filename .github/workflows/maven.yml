@@ -5,10 +5,11 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.commits[0].message, '[ci-skip]')"
 
     strategy:
       matrix:
-        java: [11]
+        java: [16]
       fail-fast: true
 
     steps:
@@ -18,7 +19,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'adopt'
+        distribution: 'adopt'
 
       - name: Build with Maven
         run: mvn clean package
