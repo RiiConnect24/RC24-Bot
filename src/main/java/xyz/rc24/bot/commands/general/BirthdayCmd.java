@@ -73,9 +73,9 @@ public class BirthdayCmd extends Command
             }
 
             if(target.equals(event.getMember()))
-                event.reply("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "**");
+                event.reply("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "** (date format: DD/MM)");
             else
-                event.reply("<a:birthdaycake:576200303662071808> **" + target.getEffectiveName() + "**'s birthday is set to **" + date + "**");
+                event.reply("<a:birthdaycake:576200303662071808> **" + target.getEffectiveName() + "**'s birthday is set to **" + date + "** (date format: DD/MM)");
         });
     }
 }

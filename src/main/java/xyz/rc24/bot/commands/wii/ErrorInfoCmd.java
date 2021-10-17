@@ -254,22 +254,22 @@ public class ErrorInfoCmd extends Command
         put(2, "Seems to happen when there is a problem with one of the files on the NAND. " + "If you're getting it after fixing NEWS/FORE000006, do a connection test to fix it.");
         put(3, "VFF file corrupted. Follow https://wii.guide/deleting-vffs to fix it.");
         put(4, "This error probably doesn't exist.");
-        put(5, "Seems to happen when there is a problem with the VFF. If you're getting this on the Wii," + "follow https://wii.guide/deleting-vffs to fix it." + "If you're getting this on Dolphin, make sure you're using the VFF Downloader and that it's working.");
-        put(6, "Invalid data. If you're getting this on the **Forecast Channel**, try again in a few minutes. " + "If you're still getting this error, follow https://wii.guide/riiconnect24-batteryfix " + "and it might fix it." + "If you're getting this on the **News Channel**, follow https://wii.guide/news000006");
+        put(5, "Seems to happen when there is a problem with the VFF. If you're getting this on the Wii," + "follow https://wii.guide/deleting-vffs to fix it." + "If you're getting this on Dolphin, make sure you're using the VFF Downloader and make sure that it's working.");
+        put(6, "Invalid data. If you're getting this on the **Forecast Channel**, try again in a few minutes. " + "If you're still getting this error, make sure your Wii's time is set correctly and wait a while." + "If you're getting this on the **News Channel**, follow https://wii.guide/news000006");
         put(99, "Other error. Follow https://wii.guide/deleting-vffs to potentially fix it.");
     }};
 
     private final Map<Integer, String> codeNotes = new HashMap<>()
     {{
-        put(101409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
+        put(101409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
         put(102032, "This error shouldn't happen anymore as we have implemented the challenge response that prevents the error from happening.");
-        put(102409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-        put(103409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-        put(104409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-        put(105409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
+        put(102409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
+        put(103409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
+        put(104409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
+        put(105409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
         put(107006, "Are you getting this on the News Channel? This error means that the total size of the news files on the server is more than the Wii can handle. If so, please tell Larsenv you're getting this error and tell him your country and language your Wii is set to.");
         put(107245, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them.");
-        put(107304, "This error can be caused by your ISP blocking custom DNS servers, or simply not having it entered. Make sure it is entered correctly, if you still get this error use https://github.com/RiiConnect24/DNS-Server to resolve it.");
+        put(107304, "This error can be caused by your ISP blocking custom DNS servers, or simply not having it entered. Turn on Auto-obtain DNS in the Wii Settings.");
         put(107305, "Try again. If it still doesn't work, it might be a problem with your Internet or RiiConnect24's servers.");
         put(110211, "If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can re-register with the mail patcher.");
         put(110220, "Looks like the password your Wii uses isn't matching the one on the server. If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
@@ -286,8 +286,8 @@ public class ErrorInfoCmd extends Command
         put(231401, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24");
         put(231409, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24");
         put(239001, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them. Occasionally, this error can mean it downloaded invalid data.");
-        put(258503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press OK.");
-        put(258404, "This is a 404 Not Found error. If you are getting this on Nintendo Channel it means the item hasn't been added yet");
+        put(258404, "This is a 404 Not Found error.");
+        put(268503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press OK.");
         put(32007, "You are blocking System Menu updates using Priiloader. Disable them if you wish to update.");
         put(33020, "If you're getting this on the Check Mii Out Channel, please repatch the Channel using RiiConnect24 Patcher.");
         put(51330, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
