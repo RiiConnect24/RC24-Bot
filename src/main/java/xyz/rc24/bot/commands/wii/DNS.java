@@ -48,6 +48,6 @@ public class DNS extends Command
     @Override
     protected void execute(CommandEvent event)
     {
-        event.reply("`164.132.44.106` should be your primary DNS.\n" + "`8.8.8.8` (Google DNS) can be your secondary DNS. (Or `1.1.1.1` (Cloudflare DNS), alternatively)");
+        event.reply("`167.86.108.126` should be your primary DNS.\n" + "`1.1.1.1` should be your secondary DNS.");
     }
 }
