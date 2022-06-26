@@ -267,9 +267,9 @@ public class ErrorInfoCmd extends Command
         put(103409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
         put(104409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
         put(105409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
-        put(107006, "Are you getting this on the News Channel? This error means that the total size of the news files on the server is more than the Wii can handle. If so, please tell Larsenv you're getting this error and tell him your country and language your Wii is set to.");
+        put(107006, "If you are getting this on the News Channel, this error means that the total size of the news files on the server is more than the Wii can handle. If so, please tell Larsenv you're getting this error and tell him your country and language your Wii is set to.");
         put(107245, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them.");
-        put(107304, "This error can be caused by your ISP blocking custom DNS servers, or simply not having it entered. Turn on Auto-obtain DNS in the Wii Settings.");
+        put(107304, "This error can be caused by your ISP blocking custom DNS servers. Turn on Auto-obtain DNS in the Wii Settings, or use https://github.com/RiiConnect24/DNS-Server/releases/latest");
         put(107305, "Try again. If it still doesn't work, it might be a problem with your Internet or RiiConnect24's servers.");
         put(110211, "If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can re-register with the mail patcher.");
         put(110220, "Looks like the password your Wii uses isn't matching the one on the server. If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
@@ -288,10 +288,13 @@ public class ErrorInfoCmd extends Command
         put(239001, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them. Occasionally, this error can mean it downloaded invalid data.");
         put(258404, "This is a 404 Not Found error.");
         put(268503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press OK.");
-        put(32007, "You are blocking System Menu updates using Priiloader. Disable them if you wish to update.");
+        put(32007, "You can no longer do a system update on the Wii because the server hosting the update is no longer up. Use https://wii.guide/update instead.");
         put(33020, "If you're getting this on the Check Mii Out Channel, please repatch the Channel using RiiConnect24 Patcher.");
-        put(51330, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
-        put(51331, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
-        put(51332, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
+        put(51330, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(51331, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(51332, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(52030, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(52031, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(52032, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
     }};
 }
