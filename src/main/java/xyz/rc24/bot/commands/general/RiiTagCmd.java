@@ -81,8 +81,7 @@ public class RiiTagCmd extends Command
                 {
                     /*if(e instanceof SocketTimeoutException)
                     {*/
-                        event.replyError("WOW! RiiTag has timed out! What a surprise, indeed " +
-                                "||it's not a surprise, at all||.\n Complain to Larsenv, I guess.");
+                        event.replyError("The RiiTag server did not respond.");
                         /*return;
                     }
 
