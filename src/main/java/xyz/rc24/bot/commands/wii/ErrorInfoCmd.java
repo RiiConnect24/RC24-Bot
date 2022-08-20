@@ -215,7 +215,7 @@ public class ErrorInfoCmd extends Command
         }
 
         // Check for dev note
-        if(codeNotes.containsKey(json.error))
+        if(codeNotes.containsKey(json.error) && !codeNotes.containsKey(json.error))
             infoBuilder.append("Note from RiiConnect24: ").append(codeNotes.get(json.error));
 
         EmbedBuilder builder = new EmbedBuilder();
