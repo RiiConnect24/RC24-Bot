@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Bot entry point.
@@ -43,7 +44,7 @@ public class RiiConnect24Bot
 
     private static final Logger logger = (Logger) LoggerFactory.getLogger("RiiConnect24 Bot");
 
-    public static void main(String[] args) throws LoginException, IOException
+    public static void main(String[] args) throws LoginException, IOException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
     {
         // Sentry
         System.setProperty("sentry.stacktrace.app.packages", "xyz.rc24.bot");

@@ -27,9 +27,11 @@ package xyz.rc24.bot.commands.wii;
 import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -47,6 +49,8 @@ import xyz.rc24.bot.commands.Categories;
 import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -58,7 +62,7 @@ import java.util.regex.Pattern;
  * @author Spotlight, Artuto
  */
 
-public class ErrorInfoCmd extends Command
+public class ErrorInfoCmd extends SlashCommand
 {
     private final boolean debug;
     private final OkHttpClient httpClient;
@@ -80,12 +84,16 @@ public class ErrorInfoCmd extends Command
         this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.guildOnly = false;
+
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.STRING, "code", "The error code."));
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        Matcher channelCheck = CHANNEL.matcher(event.getArgs());
+        Matcher channelCheck = CHANNEL.matcher(event.getOption("code").getAsString());
 
         // Check for Fore/News
         if(channelCheck.find())
@@ -105,16 +113,16 @@ public class ErrorInfoCmd extends Command
             }
             catch(NumberFormatException ignored)
             {
-                event.replyError("Could not find the specified app error code.");
+                event.reply("Could not find the specified app error code.").queue();
                 return;
             }
 
-            EmbedBuilder builder = new EmbedBuilder();
+           EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle("Here's information about your error:");
             builder.setDescription(channelErrors.get(code));
             builder.setColor(Color.decode("#D32F2F"));
             builder.setFooter("All information provided by RC24 Developers.", null);
-            event.reply(builder.build());
+            event.replyEmbeds(builder.build()).setEphemeral(true).queue();
         }
         else
         {
@@ -122,7 +130,7 @@ public class ErrorInfoCmd extends Command
             try
             {
                 // Validate if it is a number.
-                Matcher codeCheck = CODE.matcher(event.getArgs());
+                Matcher codeCheck = CODE.matcher(event.getOption("code").getAsString());
                 if(!(codeCheck.find()))
 					throw new NumberFormatException();
 				
@@ -136,7 +144,7 @@ public class ErrorInfoCmd extends Command
             }
             catch(NumberFormatException ignored)
             {
-                event.replyError("Enter a valid error code!");
+                event.reply("Enter a valid error code!").setEphemeral(true).queue();
                 return;
             }
 
@@ -153,7 +161,7 @@ public class ErrorInfoCmd extends Command
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e)
                 {
-                    event.replyError("Hm, something went wrong on our end. Check Wiimmfi's website is up?");
+                    event.reply("Hm, something went wrong on our end. Check Wiimmfi's website is up?").setEphemeral(true).queue();;
                     logger.error("Something went wrong whilst checking error code '" + code +
                             "' with Wiimmfi: {}", e.getMessage(), e);
                 }
@@ -176,12 +184,12 @@ public class ErrorInfoCmd extends Command
     }
 
     @SuppressWarnings("ConstantConditions") // Response body can't be null at this point of the execution
-    private void success(@NotNull CommandEvent event, @NotNull Response response)
+    private void success(@NotNull SlashCommandEvent event, @NotNull Response response)
     {
         JSONFormat json = gson.fromJson(new InputStreamReader(response.body().byteStream()), JSONFormat[].class)[0];
         if(!(json.found == 1))
         {
-            event.replyError("Could not find the specified error from Wiimmfi.");
+            event.reply("Could not find the specified error from Wiimmfi.").setEphemeral(true).queue();;
             return;
         }
 
@@ -224,7 +232,7 @@ public class ErrorInfoCmd extends Command
         builder.setColor(Color.decode("#D32F2F"));
         builder.setFooter("All information is from Wiimmfi unless noted.", null);
 
-        event.reply(builder.build());
+        event.replyEmbeds(builder.build()).queue();
         response.close();
     }
 

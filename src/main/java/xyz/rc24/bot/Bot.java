@@ -29,6 +29,7 @@ import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.mysql.cj.jdbc.Driver;
 import com.mysql.cj.jdbc.MysqlDataSource;
@@ -44,6 +45,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import okhttp3.OkHttpClient;
+import org.reflections.Reflections;
 import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Eval;
 import xyz.rc24.bot.commands.botadm.Shutdown;
@@ -82,6 +84,11 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Add all commands, and start all listeners.
@@ -111,7 +118,7 @@ public class Bot extends ListenerAdapter
     private final ScheduledExecutorService botScheduler = Executors.newScheduledThreadPool(5);
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    void run() throws LoginException
+    void run() throws LoginException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
     {
         RiiConnect24Bot.setInstance(this);
         this.config = new Config();
@@ -147,6 +154,15 @@ public class Bot extends ListenerAdapter
         for(int i = 0; i < owners.size(); i++)
             coOwners[i] = String.valueOf(owners.get(i));
 
+        List<SlashCommand> slashCommands = new ArrayList<>();
+
+        slashCommands.add(new AddCmd(this));
+        slashCommands.add(new BlocksCmd());
+        slashCommands.add(new CodeCmd(this));
+        slashCommands.add(new DNS());
+        slashCommands.add(new ErrorInfoCmd(this));
+        slashCommands.add(new RiiTagCmd(this));
+
         // Setup Command Client
         CommandClientBuilder client = new CommandClientBuilder()
                 .setActivity(Activity.playing(config.getPlaying()))
@@ -173,7 +189,8 @@ public class Bot extends ListenerAdapter
 
                         // Wii-related
                         new AddCmd(this), new CodeCmd(this), new BlocksCmd(),
-                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare());
+                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare())
+                .addSlashCommands(slashCommands.toArray(new SlashCommand[0]));
 
         if(!(dataDogStatsListener == null))
             client.setListener(dataDogStatsListener);
@@ -322,4 +339,17 @@ public class Bot extends ListenerAdapter
 	{
 		return getCore().getGuildSettings(guild).getPrefix();
 	}
+
+    private static SlashCommand[] getSlashCommands() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
+    {
+        Reflections reflections = new Reflections("xyz.rc24.bot.commands");
+        Set<Class<? extends SlashCommand>> subTypes = reflections.getSubTypesOf(SlashCommand.class);
+        List<SlashCommand> commands = new ArrayList<>();
+
+        for (Class<? extends SlashCommand> theClass : subTypes) {
+            commands.add(theClass.getDeclaredConstructor().newInstance());
+        }
+
+        return commands.toArray(new SlashCommand[0]);
+    }
 }

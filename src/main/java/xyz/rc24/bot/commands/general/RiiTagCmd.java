@@ -25,13 +25,15 @@
 package xyz.rc24.bot.commands.general;
 
 import ch.qos.logback.classic.Logger;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -44,8 +46,10 @@ import xyz.rc24.bot.utils.SearcherUtil;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class RiiTagCmd extends Command
+public class RiiTagCmd extends SlashCommand
 {
     private final Logger logger;
     private final OkHttpClient httpClient;
@@ -61,14 +65,16 @@ public class RiiTagCmd extends Command
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.logger = RiiConnect24Bot.getLogger(RiiTagCmd.class);
         this.httpClient = bot.getHttpClient();
+
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.USER, "user", "The user to grab the RiiTag of.").setRequired(true));
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        event.async(() ->
-        {
-            Member member = SearcherUtil.findMember(event, event.getArgs());
+            Member member = event.getOption("user").getAsMember();
             if(member == null)
                 return;
 
@@ -81,7 +87,7 @@ public class RiiTagCmd extends Command
                 {
                     /*if(e instanceof SocketTimeoutException)
                     {*/
-                        event.replyError("The RiiTag server did not respond.");
+                        event.reply("The RiiTag server did not respond.").setEphemeral(true).queue();
                         /*return;
                     }
 
@@ -96,7 +102,7 @@ public class RiiTagCmd extends Command
                 {
                     if(response.code() == 404)
                     {
-                        event.replyError("**" + user.getAsTag() + "** does not have a RiiTag!");
+                        event.reply("**" + user.getAsTag() + "** does not have a RiiTag!").setEphemeral(true).queue();
                         response.close();
                         return;
                     }
@@ -112,16 +118,15 @@ public class RiiTagCmd extends Command
                     response.close();
                 }
             });
-        });
     }
 
-    private void displayTag(CommandEvent event, User user)
+    private void displayTag(SlashCommandEvent event, User user)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setAuthor(user.getAsTag() + "'s RiiTag", null, user.getEffectiveAvatarUrl())
-                .setColor(event.isFromType(ChannelType.TEXT) ? event.getSelfMember().getColor() : Color.BLUE)
+                .setColor(event.getGuild() == null ? null : event.getGuild().getSelfMember().getColor())
                 .setImage(String.format(URL, user.getId(), Math.random()));
 
-        event.reply(embedBuilder.build());
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 }

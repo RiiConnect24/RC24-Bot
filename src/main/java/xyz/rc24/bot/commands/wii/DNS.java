@@ -24,16 +24,20 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import xyz.rc24.bot.commands.Categories;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Spotlight
  */
 
-public class DNS extends Command
+public class DNS extends SlashCommand
 {
     public DNS()
     {
@@ -43,11 +47,14 @@ public class DNS extends Command
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = false;
+
+        List<OptionData> data = new ArrayList<>();
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        event.reply("`167.86.108.126` should be your primary DNS.\n" + "`1.1.1.1` should be your secondary DNS.");
+        event.reply("`167.86.108.126` should be your primary DNS.\n" + "`1.1.1.1` should be your secondary DNS.").setEphemeral(true).queue();;
     }
 }
