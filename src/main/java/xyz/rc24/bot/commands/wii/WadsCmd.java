@@ -24,15 +24,15 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import xyz.rc24.bot.commands.Categories;
 
 /**
  * @author Artuto
  */
 
-public class WadsCmd extends Command
+public class WadsCmd extends SlashCommand
 {
     public WadsCmd()
     {
@@ -43,8 +43,8 @@ public class WadsCmd extends Command
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        event.reply("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest");
+        event.reply("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest").queue();
     }
 }

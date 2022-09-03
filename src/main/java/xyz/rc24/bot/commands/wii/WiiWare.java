@@ -24,8 +24,8 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
 
@@ -33,7 +33,7 @@ import xyz.rc24.bot.commands.Categories;
  * @author Artuto
  */
 
-public class WiiWare extends Command
+public class WiiWare extends SlashCommand
 {
     public WiiWare()
     {
@@ -46,8 +46,8 @@ public class WiiWare extends Command
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        event.reply("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases");
+        event.reply("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases").queue();
     }
 }

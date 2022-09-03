@@ -24,20 +24,24 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Artuto
  */
 
-public class SetBirthdayCmd extends Command
+public class SetBirthdayCmd extends SlashCommand
 {
     private Bot bot;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
@@ -49,27 +53,31 @@ public class SetBirthdayCmd extends Command
         this.help = "Sets your birthday. Please note that this command uses the DD/MM date format.";
         this.category = Categories.GENERAL;
         this.guildOnly = false;
+
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.STRING, "date", "The birthday to set to in DD/MM format.").setRequired(true));
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        long id = event.getAuthor().getIdLong();
-        LocalDate dateTime = parseDate(event.getArgs());
+        long id = event.getMember().getIdLong();
+        LocalDate dateTime = parseDate(event.getOption("date").getAsString());
 
         if(dateTime == null)
         {
-            event.replyError("I couldn't parse your date.\n" +
-                    "Try something like: `" + bot.getPrefix(event.getGuild()) + "setbirthday 25/12` (date format: DD/MM).");
+            event.reply("I couldn't parse your date.\n" +
+                    "Try something like: `" + bot.getPrefix(event.getGuild()) + "setbirthday 25/12` (date format: DD/MM).").setEphemeral(true).queue();
             return;
         }
 
         boolean success = bot.getBirthdayDataManager().setBirthday(id, dateTime.getDayOfMonth() + "/" + dateTime.getMonthValue());
 
         if(success)
-            event.replySuccess("Updated successfully!");
+            event.reply("Updated successfully!").setEphemeral(true).queue();
         else
-            event.replyError("There was an error updating your birthday! Please contact a developer.");
+            event.reply("There was an error updating your birthday! Please contact a developer.").setEphemeral(true).queue();
     }
 
     private LocalDate parseDate(String args)

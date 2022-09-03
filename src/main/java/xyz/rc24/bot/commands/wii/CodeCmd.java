@@ -92,7 +92,6 @@ public class CodeCmd extends SlashCommand
     @Override
     protected void execute(SlashCommandEvent event)
     {
-        System.out.println(event.getOption("cmd").getAsString());
         if (event.getOption("cmd").getAsString().equals("add"))
         {
             GuildSettings gs = getClient().getSettingsFor(event.getGuild());
@@ -104,14 +103,14 @@ public class CodeCmd extends SlashCommand
                 return;
             }
 
-            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getGuild() == null ? null : event.getGuild().getSelfMember().getIdLong());
+            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getMember().getIdLong());
             if(codeTypes.containsKey(event.getOption("code").getAsString()))
             {
                 event.reply("You already added this code!").setEphemeral(true).queue();
                 return;
             }
 
-            if(dataManager.addCode(type, event.getGuild() == null ? null : event.getGuild().getSelfMember().getIdLong(), event.getOption("code").getAsString(), event.getOption("name").getAsString()))
+            if(dataManager.addCode(type, event.getMember().getIdLong(), event.getOption("code").getAsString(), event.getOption("name").getAsString()))
                 event.reply("Added a code for `" + event.getOption("name").getAsString() + "`").setEphemeral(true).queue();
             else
                 event.reply("Error whilst adding a code! Please contact a developer.").setEphemeral(true).queue();
@@ -127,14 +126,14 @@ public class CodeCmd extends SlashCommand
                 return;
             }
 
-            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getGuild() == null ? null : event.getGuild().getSelfMember().getIdLong());
+            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getMember().getIdLong());
             if(!(codeTypes.containsKey(event.getOption("name").getAsString())))
             {
                 event.reply("A code for `" + event.getOption("name").getAsString() + "` is not registered.").setEphemeral(true).queue();
                 return;
             }
 
-            if(dataManager.editCode(type, event.getGuild() == null ? null : event.getGuild().getSelfMember().getIdLong(), event.getOption("code").getAsString(), event.getOption("name").getAsString()))
+            if(dataManager.editCode(type, event.getMember().getIdLong(), event.getOption("code").getAsString(), event.getOption("name").getAsString()))
                 event.reply("Edited the code for `" + event.getOption("name").getAsString() + "`").setEphemeral(true).queue();
             else
                 event.reply("Error whilst editing a code! Please contact a developer.").setEphemeral(true).queue();
@@ -150,23 +149,27 @@ public class CodeCmd extends SlashCommand
                 return;
             }
 
-            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getGuild() == null ? null : event.getGuild().getSelfMember().getIdLong());
+            Map<String, String> codeTypes = bot.getCore().getCodesForType(type, event.getMember().getIdLong());
             if(!(codeTypes.containsKey(event.getOption("name").getAsString())))
             {
                 event.reply("A code for `" + event.getOption("name").getAsString() + "` is not registered.").setEphemeral(true).queue();
                 return;
             }
 
-            if(dataManager.removeCode(type, event.getGuild() == null ? null : event.getGuild().getSelfMember().getIdLong(), event.getOption("name").getAsString()))
+            if(dataManager.removeCode(type, event.getMember().getIdLong(), event.getOption("name").getAsString()))
                 event.reply("Removed the code for `" + event.getOption("name").getAsString() + "`").setEphemeral(true).queue();
             else
                 event.reply("Error whilst removing a code! Please contact a developer.").setEphemeral(true).queue();
         }
         else if (event.getOption("cmd").getAsString().equals("lookup"))
         {
-            Member member = event.getOption("user").getAsMember();
-            if(member == null)
-                return;
+            Member member;
+
+            try {
+                member = event.getOption("user").getAsMember();
+            } catch (Exception e) {
+                member = event.getMember();
+            }
 
             String flag = bot.getCore().getFlag(member.getUser().getIdLong());
             boolean hasFlag = !(flag.isEmpty());

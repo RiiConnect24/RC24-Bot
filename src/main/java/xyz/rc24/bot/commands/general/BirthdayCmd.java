@@ -24,18 +24,23 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.utils.SearcherUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Artuto
  */
 
-public class BirthdayCmd extends Command
+public class BirthdayCmd extends SlashCommand
 {
     private final Bot bot;
 
@@ -43,19 +48,24 @@ public class BirthdayCmd extends Command
     {
         this.bot = bot;
         this.name = "birthday";
-        this.help = "View the birthday of you/someone else.";
+        this.help = "View the birthday of you or someone else.";
         this.category = Categories.GENERAL;
+
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.USER, "user", "The user to look up for the birthday.").setRequired(true));
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        event.getChannel().sendTyping().queue();
-        event.async(() ->
-        {
-            Member target = SearcherUtil.findMember(event, event.getArgs());
-            if(target == null)
-                return;
+            Member target;
+
+            try {
+                target = event.getOption("user").getAsMember();
+            } catch (Exception e) {
+                target = event.getMember();
+            }
 
             String date = bot.getBirthdayDataManager().getBirthday(target.getUser().getIdLong());
 
@@ -63,19 +73,18 @@ public class BirthdayCmd extends Command
             {
                 if(target.equals(event.getMember()))
                 {
-                    event.replyError("You haven't have set your birthday!" +
-                            " Set it using  `" + bot.getPrefix(event.getGuild()) + "setbirthday`!");
+                    event.reply("You haven't have set your birthday!" +
+                            " Set it using  `/setbirthday`!").setEphemeral(true).queue();
                 }
                 else
-                    event.replyError("**" + target.getEffectiveName() + "** has not set their birthday!");
+                    event.reply("This user hasn't set their birthday!").setEphemeral(true).queue();
 
                 return;
             }
 
             if(target.equals(event.getMember()))
-                event.reply("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "** (date format: DD/MM)");
+                event.reply("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "** (date format: DD/MM)").queue();
             else
-                event.reply("<a:birthdaycake:576200303662071808> **" + target.getEffectiveName() + "**'s birthday is set to **" + date + "** (date format: DD/MM)");
-        });
+                event.reply("<a:birthdaycake:576200303662071808> **" + target.getEffectiveName() + "**'s birthday is set to **" + date + "** (date format: DD/MM)").queue();
     }
 }

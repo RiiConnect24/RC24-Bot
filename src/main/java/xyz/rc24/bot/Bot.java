@@ -50,10 +50,12 @@ import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Eval;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.general.BirthdayCmd;
+import xyz.rc24.bot.commands.general.CountCmd;
 import xyz.rc24.bot.commands.general.FlagCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.RiiTagCmd;
+import xyz.rc24.bot.commands.general.RuleCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
 import xyz.rc24.bot.commands.tools.DefaultAddCmd;
 import xyz.rc24.bot.commands.tools.PrefixCmd;
@@ -157,11 +159,18 @@ public class Bot extends ListenerAdapter
         List<SlashCommand> slashCommands = new ArrayList<>();
 
         slashCommands.add(new AddCmd(this));
+        slashCommands.add(new BirthdayCmd(this));
         slashCommands.add(new BlocksCmd());
         slashCommands.add(new CodeCmd(this));
+        slashCommands.add(new CountCmd(this));
         slashCommands.add(new DNS());
         slashCommands.add(new ErrorInfoCmd(this));
+        slashCommands.add(new InviteCmd());
         slashCommands.add(new RiiTagCmd(this));
+        slashCommands.add(new RuleCmd());
+        slashCommands.add(new SetBirthdayCmd(this));
+        slashCommands.add(new WadsCmd());
+        slashCommands.add(new WiiWare());
 
         // Setup Command Client
         CommandClientBuilder client = new CommandClientBuilder()
@@ -180,8 +189,8 @@ public class Bot extends ListenerAdapter
                         new Bash(), new Eval(this), new Shutdown(),
 
                         // General
-                        new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
-                        new PingCmd(), new RiiTagCmd(this), new SetBirthdayCmd(this),
+                        new BirthdayCmd(this), new CountCmd(this), new FlagCmd(this), new InviteCmd(),
+                        new PingCmd(), new RiiTagCmd(this), new RuleCmd(), new SetBirthdayCmd(this),
 
                         // Tools
                         new DefaultAddCmd(this), new PrefixCmd(getGuildSettingsDataManager()),

@@ -24,13 +24,18 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.core.entities.Flag;
 
-public class FlagCmd extends Command
+import java.util.ArrayList;
+import java.util.List;
+
+public class FlagCmd extends SlashCommand
 {
     private final Bot bot;
 
@@ -42,32 +47,29 @@ public class FlagCmd extends Command
         this.aliases = new String[]{"setflag", "setcountry", "country"};
         this.category = Categories.GENERAL;
         this.guildOnly = false;
+
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.STRING, "region", "The region to set your flag to.").setRequired(true));
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        long id = event.getAuthor().getIdLong();
-        String args = event.getArgs();
+        long id = event.getMember().getIdLong();
 
-        if(args.isEmpty())
-        {
-            event.replyError("You must provide a country!");
-            return;
-        }
-
-        Flag flag = Flag.fromName(args);
+        Flag flag = Flag.fromName(event.getOption("flag").getAsString());
         if(flag == Flag.UNKNOWN)
         {
-            event.replyError("Unknown country!");
+            event.reply("Unknown country!").setEphemeral(true).queue();
             return;
         }
 
         boolean success = bot.getCodeDataManager().setFlag(id, flag.getEmote());
 
         if(success)
-            event.replySuccess("Updated successfully!");
+            event.reply("Updated successfully!").setEphemeral(true).queue();
         else
-            event.replyError("Error whilst updating your flag! Please contact a developer.");
+            event.reply("Error updating your flag! Please contact a developer.").setEphemeral(true).queue();
     }
 }
