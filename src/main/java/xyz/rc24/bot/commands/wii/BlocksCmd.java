@@ -24,12 +24,17 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
 
-public class BlocksCmd extends Command
+import java.util.ArrayList;
+import java.util.List;
+
+public class BlocksCmd extends SlashCommand
 {
     public BlocksCmd()
     {
@@ -38,27 +43,31 @@ public class BlocksCmd extends Command
         this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
         this.guildOnly = false;
+
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.STRING, "num", "The number of blocks."));
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        if(event.getArgs().isEmpty())
+        if(event.getOption("num").getAsString().isEmpty())
         {
             event.reply("\u2139 1 block is 128kb\n" +
-                    "8 blocks are 1MB");
+                    "8 blocks are 1MB").queue();
             return;
         }
 
-        double blocks = parseNumber(event.getArgs());
+        double blocks = parseNumber(event.getOption("num").getAsString());
         if(blocks < 1)
         {
-            event.replyError("Invalid number!");
+            event.reply("Invalid number!").setEphemeral(true).queue();
             return;
         }
 
         double mb = blocks * 128 / 1024;
-        event.reply("\u2139 " + blocks + " block(s) are " + mb + "MB(s)");
+        event.reply("\u2139 " + blocks + " block(s) are " + mb + "MB(s)").queue();
     }
 
     private double parseNumber(String args)

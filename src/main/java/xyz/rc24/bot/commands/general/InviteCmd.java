@@ -24,26 +24,26 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import xyz.rc24.bot.commands.Categories;
 
 /**
  * @author Artuto
  */
 
-public class InviteCmd extends Command
+public class InviteCmd extends SlashCommand
 {
     public InviteCmd()
     {
         this.name = "invite";
         this.category = Categories.GENERAL;
-        this.help = "Invite me to your server?";
+        this.help = "Invite me to your server.";
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        event.reply("Aw, you want to invite me? <3\nInvite me here: " + event.getJDA().getInviteUrl());
+        event.reply("Aw, you want to invite me? <3\nInvite me here: " + event.getJDA().getInviteUrl()).queue();
     }
 }

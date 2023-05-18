@@ -24,28 +24,43 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Categories;
 
 /**
  * @author Artuto
  */
 
-public class PingCmd extends Command
+public class PingCmd extends SlashCommand
 {
-    public PingCmd()
-    {
+    public PingCmd() {
         this.name = "ping";
-        this.help = "Checks the bot's connection to Discord's servers.";
-        this.category = Categories.GENERAL;
-        this.ownerCommand = false;
+        this.help = "Ping the bot";
+        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.guildOnly = false;
     }
 
     @Override
-    protected void execute(CommandEvent event)
-    {
-        event.getJDA().getRestPing().queue(ping -> event.replyFormatted("Gateway Ping: %dms, Discord API Ping: %dms", event.getJDA().getGatewayPing(), ping));
+    protected void execute(SlashCommandEvent slashCommandEvent) {
+        // Has to be simpler due to interaction weirdness
+        slashCommandEvent.reply("Pong!").setEphemeral(true).queue();
+    }
+
+    @Override
+    protected void execute(CommandEvent commandEvent) {
+        // Get the timestamp of the ping message
+        long time = commandEvent.getMessage().getTimeCreated().toInstant().toEpochMilli();
+        // Send a "Checking ping" message and calculate the difference between this message and the %^ping message
+        commandEvent.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Checking ping..").build()).queue((msg) -> {
+            EmbedBuilder eb = new EmbedBuilder().setDescription(
+                "Ping is " + (msg.getTimeCreated().toInstant().toEpochMilli() - time) + "ms\n" +
+                "Gateway Ping is " + commandEvent.getJDA().getGatewayPing() + "ms\n"
+            );
+            msg.editMessageEmbeds(eb.build()).queue();
+        });
     }
 }

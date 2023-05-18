@@ -78,7 +78,7 @@ public class BirthdayManager
                 baseEmbed.setAuthor("It's " + member.getEffectiveName() + "'s birthday!",
                         "https://rc24.xyz/", member.getUser().getEffectiveAvatarUrl());
 
-                tc.sendMessage(baseEmbed.build()).queue();
+                tc.sendMessageEmbeds(baseEmbed.build()).queue();
             }
         }).onError(error ->
         {

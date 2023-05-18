@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Artuto
@@ -44,9 +45,9 @@ import java.util.Map;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Config
 {
-    private Map<String, Object> config;
-    private Map<String, Object> datadog;
-    private Map<String, Object> database;
+    private final Map<String, Object> config;
+    private final Map<String, Object> datadog;
+    private final Map<String, Object> database;
 
     @SuppressWarnings("unchecked")
     Config()
@@ -57,7 +58,7 @@ public class Config
         if(!(file.exists()))
         {
             try(InputStream is = Bot.class.getResourceAsStream("/config.yml"))
-            {Files.copy(is, file.toPath());}
+            {Files.copy(Objects.requireNonNull(is), file.toPath());}
             catch(IOException e)
             {
                 throw new RuntimeException(e);
@@ -110,21 +111,6 @@ public class Config
     public boolean isDebug()
     {
         return getBoolean("debug");
-    }
-
-    public boolean isMorpherEnabled()
-    {
-        return getBoolean("morpher_enabled");
-    }
-
-    public long getMorpherRoot()
-    {
-        return getLong("morpher_root");
-    }
-
-    public long getMorpherMirror()
-    {
-        return getLong("morpher_mirror");
     }
 
     public long getRootServer()

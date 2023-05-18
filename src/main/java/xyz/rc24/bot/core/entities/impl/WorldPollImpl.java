@@ -22,41 +22,18 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.database;
+package xyz.rc24.bot.core.entities.impl;
 
-import co.aikar.idb.DbRow;
-
-import java.util.Optional;
-
-/**
- * Data manager for Morpher
- *
- * @author Artuto
- */
-
-public class MorpherDataManager
+public class WorldPollImpl extends PollImpl
 {
-    private final Database db;
-
-    public MorpherDataManager(Database db)
+    public WorldPollImpl(String question, String response1, String response2)
     {
-        this.db = db;
+        super(question, response1, response2);
     }
 
-    public void setAssociation(long rootMsg, long mirrorMsg)
+    @Override
+    public String getCountryFlag()
     {
-        db.doInsert("INSERT INTO morpher VALUES(?, ?)", rootMsg, mirrorMsg);
-    }
-
-    public long getAssociation(long rootMsg)
-    {
-        Optional<DbRow> optRow = db.getRow("SELECT * FROM morpher WHERE root_msg_id = ?", rootMsg);
-
-        return optRow.map(dbRow -> dbRow.getLong("mirror_msg_id")).orElse(0L);
-    }
-
-    public void removeAssociation(long rootMsg)
-    {
-        db.doDelete("DELETE FROM morpher WHERE root_msg_id = ?", rootMsg);
+        return "\uD83C\uDF0E";
     }
 }

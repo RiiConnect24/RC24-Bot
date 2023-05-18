@@ -27,9 +27,11 @@ package xyz.rc24.bot.commands.wii;
 import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -47,6 +49,8 @@ import xyz.rc24.bot.commands.Categories;
 import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -58,7 +62,7 @@ import java.util.regex.Pattern;
  * @author Spotlight, Artuto
  */
 
-public class ErrorInfoCmd extends Command
+public class ErrorInfoCmd extends SlashCommand
 {
     private final boolean debug;
     private final OkHttpClient httpClient;
@@ -80,12 +84,16 @@ public class ErrorInfoCmd extends Command
         this.category = Categories.WII;
         this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
         this.guildOnly = false;
+
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.STRING, "code", "The error code."));
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
+    protected void execute(SlashCommandEvent event)
     {
-        Matcher channelCheck = CHANNEL.matcher(event.getArgs());
+        Matcher channelCheck = CHANNEL.matcher(event.getOption("code").getAsString());
 
         // Check for Fore/News
         if(channelCheck.find())
@@ -105,16 +113,16 @@ public class ErrorInfoCmd extends Command
             }
             catch(NumberFormatException ignored)
             {
-                event.replyError("Could not find the specified app error code.");
+                event.reply("Could not find the specified app error code.").queue();
                 return;
             }
 
-            EmbedBuilder builder = new EmbedBuilder();
+           EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle("Here's information about your error:");
             builder.setDescription(channelErrors.get(code));
             builder.setColor(Color.decode("#D32F2F"));
             builder.setFooter("All information provided by RC24 Developers.", null);
-            event.reply(builder.build());
+            event.replyEmbeds(builder.build()).setEphemeral(true).queue();
         }
         else
         {
@@ -122,7 +130,7 @@ public class ErrorInfoCmd extends Command
             try
             {
                 // Validate if it is a number.
-                Matcher codeCheck = CODE.matcher(event.getArgs());
+                Matcher codeCheck = CODE.matcher(event.getOption("code").getAsString());
                 if(!(codeCheck.find()))
 					throw new NumberFormatException();
 				
@@ -136,7 +144,7 @@ public class ErrorInfoCmd extends Command
             }
             catch(NumberFormatException ignored)
             {
-                event.replyError("Enter a valid error code!");
+                event.reply("Enter a valid error code!").setEphemeral(true).queue();
                 return;
             }
 
@@ -153,7 +161,7 @@ public class ErrorInfoCmd extends Command
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e)
                 {
-                    event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.");
+                    event.reply("Hm, something went wrong on our end. Check Wiimmfi's website is up?").setEphemeral(true).queue();;
                     logger.error("Something went wrong whilst checking error code '" + code +
                             "' with Wiimmfi: {}", e.getMessage(), e);
                 }
@@ -164,22 +172,24 @@ public class ErrorInfoCmd extends Command
                     if(!(response.isSuccessful()))
                     {
                         onFailure(call, new IOException("Not success response code: " + response.code()));
+                        response.close();
                         return;
                     }
 
                     success(event, response);
+                    response.close();
                 }
             });
         }
     }
 
     @SuppressWarnings("ConstantConditions") // Response body can't be null at this point of the execution
-    private void success(@NotNull CommandEvent event, @NotNull Response response)
+    private void success(@NotNull SlashCommandEvent event, @NotNull Response response)
     {
         JSONFormat json = gson.fromJson(new InputStreamReader(response.body().byteStream()), JSONFormat[].class)[0];
         if(!(json.found == 1))
         {
-            event.replyError("Could not find the specified error from Wiimmfi.");
+            event.reply("Could not find the specified error from Wiimmfi.").setEphemeral(true).queue();;
             return;
         }
 
@@ -213,7 +223,7 @@ public class ErrorInfoCmd extends Command
         }
 
         // Check for dev note
-        if(codeNotes.containsKey(json.error))
+        if(codeNotes.containsKey(json.error) && !codeNotes.containsKey(json.error))
             infoBuilder.append("Note from RiiConnect24: ").append(codeNotes.get(json.error));
 
         EmbedBuilder builder = new EmbedBuilder();
@@ -222,7 +232,7 @@ public class ErrorInfoCmd extends Command
         builder.setColor(Color.decode("#D32F2F"));
         builder.setFooter("All information is from Wiimmfi unless noted.", null);
 
-        event.reply(builder.build());
+        event.replyEmbeds(builder.build()).queue();
         response.close();
     }
 
@@ -246,51 +256,53 @@ public class ErrorInfoCmd extends Command
         String info;
     }
 
-    private final Map<Integer, String> channelErrors = new HashMap<Integer, String>()
+    private final Map<Integer, String> channelErrors = new HashMap<>()
     {{
-        put(1, "Can't open the VFF Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
-        put(2, "WiiConnect24 file problem.");
-        put(3, "VFF file corrupted. Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
-        put(4, "Unknown (it probably doesn't exist).");
-        put(5, "VFF processing error. Follow https://wii.guide/riiconnect24-troubleshooting to fix it.");
-        put(6, "Invalid data. If getting this on the **Forecast Channel**, try again in a few minutes. " +
-                "If you're still getting this error, follow https://wii.guide/riiconnect24-batteryfix " +
-                "and it might fix it.");
-        put(99, "Other error. Follow https://wii.guide/riiconnect24-troubleshooting to potentially fix it.");
+        put(1, "Can't open the VFF. Follow https://wii.guide/deleting-vffs to fix it.");
+        put(2, "Seems to happen when there is a problem with one of the files on the NAND. " + "If you're getting it after fixing NEWS/FORE000006, do a connection test to fix it.");
+        put(3, "VFF file corrupted. Follow https://wii.guide/deleting-vffs to fix it.");
+        put(4, "This error probably doesn't exist.");
+        put(5, "Seems to happen when there is a problem with the VFF. If you're getting this on the Wii," + "follow https://wii.guide/deleting-vffs to fix it." + "If you're getting this on Dolphin, make sure you're using the VFF Downloader and make sure that it's working.");
+        put(6, "Invalid data. If you're getting this on the **Forecast Channel**, try again in a few minutes. " + "If you're still getting this error, make sure your Wii's time is set correctly and wait a while." + "If you're getting this on the **News Channel**, follow https://wii.guide/news000006");
+        put(99, "Other error. Follow https://wii.guide/deleting-vffs to potentially fix it.");
     }};
 
-    private final Map<Integer, String> codeNotes = new HashMap<Integer, String>()
+    private final Map<Integer, String> codeNotes = new HashMap<>()
     {{
-        put(101409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-	put(102032, "The IOS the app/game uses is not patched for RiiConnect24.");
-        put(102409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-        put(103409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-        put(104409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-        put(105409, "If you are getting this problem while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly. https://bit.ly/2QUrsyD");
-        put(107006, "Are you getting this on the News Channel? If so, please tell Larsenv you're getting this error and tell him your country and language your Wii is set to.");
+        put(101409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
+        put(102032, "This error shouldn't happen anymore as we have implemented the challenge response that prevents the error from happening.");
+        put(102409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
+        put(103409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
+        put(104409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
+        put(105409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
+        put(107006, "If you are getting this on the News Channel, this error means that the total size of the news files on the server is more than the Wii can handle. If so, please tell Larsenv you're getting this error and tell him your country and language your Wii is set to.");
         put(107245, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them.");
-        put(107304, "This error can be caused by your ISP blocking custom DNS servers, or simply not having it entered. Make sure it is entered correctly, if you still get this error use https://github.com/RiiConnect24/DNS-Server to resolve it.");
+        put(107304, "This error can be caused by your ISP blocking custom DNS servers. Turn on Auto-obtain DNS in the Wii Settings, or use https://github.com/RiiConnect24/DNS-Server/releases/latest");
         put(107305, "Try again. If it still doesn't work, it might be a problem with your Internet or RiiConnect24's servers.");
-        put(110211, "If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
+        put(110211, "If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can re-register with the mail patcher.");
         put(110220, "Looks like the password your Wii uses isn't matching the one on the server. If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
         put(110230, "Looks like the password your Wii uses isn't matching the one on the server. If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
         put(110240, "Looks like the password your Wii uses isn't matching the one on the server. If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
         put(110250, "Looks like the password your Wii uses isn't matching the one on the server. If you're getting this, tell Larsenv or KcrPL your Wii Number and they will delete it from the database so you can reregister with the mail patcher.");
-        put(117403, "This is a 403 Forbidden error. If you're getting this, tell Larsenv where you're getting this error on.");
-        put(117404, "This is a 404 Not Found error. If you're getting this on the Everybody Votes Channel, what questions does this appear on?");
-        put(117500, "This is a 500 Internal Server error. If you're getting this, tell Larsenv where you're getting this error on.");
-        put(117503, "This is a 503 Service Unavailable error. If you're getting this, tell Larsenv where you're getting this error on.");
+        put(117400, "This is an HTTP 400 Bad Request error. If you're getting this, tell Larsenv where you're getting this error on.");
+        put(117403, "This is an HTTP 403 Forbidden error. If you're getting this, tell Larsenv where you're getting this error on.");
+        put(117404, "This is an HTTP 404 Not Found error. If you're getting this, tell Larsenv where you're getting this error on.");
+        put(117500, "This is an HTTP 500 Internal Server error. If you're getting this, tell Larsenv where you're getting this error on.");
+        put(117503, "This is an HTTP 503 Service Unavailable error. If you're getting this, tell Larsenv where you're getting this error on.");
         put(20103, "Delete DWC_AUTHDATA file stored in nand:/shared2/ using WiiXplorer.");
-        put(231000, "Restart the Channel or your Wii then try again. We hope to fix this error from happening in the future, sorry for the inconvenience!");
-        put(231401, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24-evc");
-        put(231409, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24-evc");
+        put(231000, "Restart the Channel or your Wii then try again.");
+        put(231401, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24");
+        put(231409, "You are not using the patched WAD for the Everybody Votes Channel. Please follow this tutorial: https://wii.guide/riiconnect24");
         put(239001, "Your IOS probably aren't patched. Go to https://wii.guide/riiconnect24 for instructions on how to patch them. Occasionally, this error can mean it downloaded invalid data.");
-	put(257607, "You do not have a registered MAC address. Post a Mii to the Posting Plaza and try again.");
-	put(258503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press ok");
-	put(258404, "This is a 404 Not Found error. If you are getting this on Nintendo Channel it means the item hasn't been added yet");
-        put(51330, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
-        put(51331, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
-        put(51332, "Try the suggestions found on Nintendo's site: https://bit.ly/2OoC0c2");
-	put(32007, "You are blocking System Menu updates using Priiloader. Disable them if you wish to update.");
+        put(258404, "This is a 404 Not Found error.");
+        put(268503, "This is a 503 Service Unavailable error. If you are getting this on Nintendo Channel, just ignore it and press OK.");
+        put(32007, "You can no longer do a system update on the Wii because the server hosting the update is no longer up. Use https://wii.guide/update instead.");
+        put(33020, "If you're getting this on the Check Mii Out Channel, please repatch the Channel using RiiConnect24 Patcher.");
+        put(51330, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(51331, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(51332, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(52030, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(52031, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
+        put(52032, "Try changing your router's settings to use 802.11 b/g/n. If that doesn't work, try the suggestions found on Nintendo's site. https://bit.ly/2OoC0c2");
     }};
 }

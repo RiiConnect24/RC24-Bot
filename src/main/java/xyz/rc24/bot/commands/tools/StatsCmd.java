@@ -29,6 +29,8 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -45,65 +47,77 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class StatsCmd extends Command
-{
-    private Logger LOG = LoggerFactory.getLogger("Stats Command");
-    private OkHttpClient httpClient;
+public class StatsCmd extends Command {
+    private final Logger logger = LoggerFactory.getLogger("Stats Command");
+    private final OkHttpClient httpClient;
 
-    public StatsCmd(Bot bot)
-    {
+    public StatsCmd(Bot bot) {
         this.name = "stats";
         this.help = "Shows stats for the RC24 services";
         this.category = Categories.TOOLS;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
+        this.botPermissions = new Permission[] { Permission.MESSAGE_EMBED_LINKS };
         this.ownerCommand = false;
-        this.guildOnly = true;
+        this.guildOnly = false;
+
         this.httpClient = bot.getHttpClient();
     }
 
     @Override
-    protected void execute(CommandEvent event)
-    {
+    protected void execute(CommandEvent event) {
         Request request = new Request.Builder()
                 .url("http://164.132.44.106/stats.json")
                 .addHeader("User-Agent", "RC24-Bot " + Const.VERSION)
                 .build();
 
-        try(Response response = httpClient.newCall(request).execute())
-        {
-            EmbedBuilder eb = new EmbedBuilder();
-            MessageBuilder mb = new MessageBuilder();
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                event.replyError("Could not contact the Stats API! Please ask a owner to check the console. " +
+                        "Error: ```\n" + e.getMessage() + "\n```");
+                logger.error("Exception while contacting the Stats API! ", e);
+            }
 
-            eb.setDescription(parseJSON(response));
-            eb.setColor(Color.decode("#29B7EB"));
+            @Override
+            public void onResponse(Call call, Response response) {
+                try (response) {
+                    if (!(response.isSuccessful()))
+                        throw new IOException("Unsuccessful response code: " + response.code());
 
-            mb.setContent("<:RC24:302470872201953280> Service statuses of RC24:").setEmbed(eb.build());
-            event.reply(mb.build());
-        }
-        catch(IOException e)
-        {
-            event.replyError("Could not contact the Stats API! Please ask a owner to check the console.");
-            LOG.error("Exception while contacting the Stats API! ", e);
-        }
+                    if (response.body() == null)
+                        throw new IOException("Response body is null!");
+
+                    EmbedBuilder eb = new EmbedBuilder();
+                    MessageBuilder mb = new MessageBuilder();
+
+                    eb.setDescription(parseJSON(response));
+                    eb.setColor(Color.decode("#29B7EB"));
+
+                    mb.setContent("<:RC24:302470872201953280> Service stats of RC24:").setEmbeds(eb.build());
+
+                    response.close();
+                    event.reply(mb.build());
+                } catch (Exception e) {
+                    onFailure(call, e instanceof IOException ? (IOException) e : new IOException(e));
+                    response.close();
+                }
+            }
+        });
     }
 
     @SuppressWarnings("ConstantConditions")
-    private String parseJSON(Response response)
-    {
+    private String parseJSON(Response response) {
         JSONObject json = new JSONObject(new JSONTokener(response.body().byteStream()));
         Set<String> keys = new TreeSet<>(json.keySet());
 
-        StringBuilder green = new StringBuilder("```diff\n");
-        StringBuilder yellow = new StringBuilder("```fix\n");
-        StringBuilder red = new StringBuilder("```diff\n");
+        StringBuilder green = new StringBuilder();
+        StringBuilder yellow = new StringBuilder();
+        StringBuilder red = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
-        keys.forEach(k ->
-        {
+        keys.forEach(k -> {
             String status = json.getString(k);
 
-            switch(status)
-            {
+            switch (status) {
                 case "green":
                     green.append("+ ").append(k).append("\n");
                     break;
@@ -115,7 +129,11 @@ public class StatsCmd extends Command
             }
         });
 
-        sb.append("Supported by RiiConnect24:\n").append(green).append("```\nIn progress...\n").append(yellow).append("```\nNot supported:\n").append(red).append("```");
+        sb.append("Supported by RiiConnect24:\n")
+                .append("```diff\n").append(green).append("```\nIn progress...\n")
+                .append("```fix\n").append(yellow.toString().isEmpty() ? "None!" : yellow)
+                .append("```\nNot supported:\n")
+                .append("```diff\n").append(red.toString().isEmpty() ? "None!" : red).append("\n```");
 
         return sb.toString();
     }

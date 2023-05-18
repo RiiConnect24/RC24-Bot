@@ -29,6 +29,7 @@ import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.mysql.cj.jdbc.Driver;
 import com.mysql.cj.jdbc.MysqlDataSource;
@@ -44,15 +45,17 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import okhttp3.OkHttpClient;
+import org.reflections.Reflections;
 import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Eval;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.general.BirthdayCmd;
+import xyz.rc24.bot.commands.general.CountCmd;
 import xyz.rc24.bot.commands.general.FlagCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
-import xyz.rc24.bot.commands.general.ReviveCmd;
 import xyz.rc24.bot.commands.general.RiiTagCmd;
+import xyz.rc24.bot.commands.general.RuleCmd;
 import xyz.rc24.bot.commands.general.SetBirthdayCmd;
 import xyz.rc24.bot.commands.tools.DefaultAddCmd;
 import xyz.rc24.bot.commands.tools.PrefixCmd;
@@ -70,15 +73,10 @@ import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.database.Database;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
-import xyz.rc24.bot.database.MorpherDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
-import xyz.rc24.bot.listeners.Morpher;
-import xyz.rc24.bot.listeners.PollListener;
 import xyz.rc24.bot.managers.BirthdayManager;
-import xyz.rc24.bot.managers.PollManager;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
@@ -88,6 +86,11 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Add all commands, and start all listeners.
@@ -108,38 +111,34 @@ public class Bot extends ListenerAdapter
     private BirthdayDataManager birthdayDataManager;
     private CodeDataManager codeDataManager;
     private GuildSettingsDataManager guildSettingsDataManager;
-    private MorpherDataManager morpherDataManager;
 
     // Managers
     private BirthdayManager birthdayManager;
-    private PollManager pollManager;
 
     private final Logger logger = RiiConnect24Bot.getLogger();
     private final OkHttpClient httpClient = new OkHttpClient();
     private final ScheduledExecutorService botScheduler = Executors.newScheduledThreadPool(5);
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    void run() throws LoginException, IOException
+    void run() throws LoginException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
     {
         RiiConnect24Bot.setInstance(this);
         this.config = new Config();
         this.core = new BotCoreImpl(this);
         this.waiter = new EventWaiter();
 
+        // Start Sentry (if enabled)
+        if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
+            Sentry.init(config.getSentryDSN());
+
         // Start database
         this.db = initDatabase();
         this.birthdayDataManager = new BirthdayDataManager(db);
         this.codeDataManager = new CodeDataManager(this);
         this.guildSettingsDataManager = new GuildSettingsDataManager(this);
-        this.morpherDataManager = new MorpherDataManager(db);
 
         // Start managers
         this.birthdayManager = new BirthdayManager(getBirthdayDataManager());
-        this.pollManager = new PollManager();
-
-        // Start Sentry (if enabled)
-        if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
-            Sentry.init(config.getSentryDSN());
 
         DataDogStatsListener dataDogStatsListener = null;
 
@@ -156,6 +155,22 @@ public class Bot extends ListenerAdapter
 
         for(int i = 0; i < owners.size(); i++)
             coOwners[i] = String.valueOf(owners.get(i));
+
+        List<SlashCommand> slashCommands = new ArrayList<>();
+
+        slashCommands.add(new AddCmd(this));
+        slashCommands.add(new BirthdayCmd(this));
+        slashCommands.add(new BlocksCmd());
+        slashCommands.add(new CodeCmd(this));
+        slashCommands.add(new CountCmd(this));
+        slashCommands.add(new DNS());
+        slashCommands.add(new ErrorInfoCmd(this));
+        slashCommands.add(new InviteCmd());
+        slashCommands.add(new RiiTagCmd(this));
+        slashCommands.add(new RuleCmd());
+        slashCommands.add(new SetBirthdayCmd(this));
+        slashCommands.add(new WadsCmd());
+        slashCommands.add(new WiiWare());
 
         // Setup Command Client
         CommandClientBuilder client = new CommandClientBuilder()
@@ -174,8 +189,8 @@ public class Bot extends ListenerAdapter
                         new Bash(), new Eval(this), new Shutdown(),
 
                         // General
-                        new BirthdayCmd(this), new FlagCmd(this), new InviteCmd(),
-                        new PingCmd(), new ReviveCmd(this), new RiiTagCmd(this), new SetBirthdayCmd(this),
+                        new BirthdayCmd(this), new CountCmd(this), new FlagCmd(this), new InviteCmd(),
+                        new PingCmd(), new RiiTagCmd(this), new RuleCmd(), new SetBirthdayCmd(this),
 
                         // Tools
                         new DefaultAddCmd(this), new PrefixCmd(getGuildSettingsDataManager()),
@@ -183,7 +198,8 @@ public class Bot extends ListenerAdapter
 
                         // Wii-related
                         new AddCmd(this), new CodeCmd(this), new BlocksCmd(),
-                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare());
+                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare())
+                .addSlashCommands(slashCommands.toArray(new SlashCommand[0]));
 
         if(!(dataDogStatsListener == null))
             client.setListener(dataDogStatsListener);
@@ -193,10 +209,8 @@ public class Bot extends ListenerAdapter
                 .setEnabledIntents(Const.INTENTS)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("Loading..."))
-                .addEventListeners(this, client.build(), waiter, new PollListener(getPollManager()));
+                .addEventListeners(this, client.build(), waiter);
 
-        if(config.isMorpherEnabled())
-            builder.addEventListeners(new Morpher(config, getMorpherDataManager()));
         if(!(dataDogStatsListener == null))
             builder.addEventListeners(dataDogStatsListener);
 
@@ -253,12 +267,12 @@ public class Bot extends ListenerAdapter
                 .dataSourceClassName(MysqlDataSource.class.getName() /*"com.mysql.cj.jdbc.MysqlDataSource"*/)
                 .build();
 
-        Map<String, Object> props = new HashMap<String, Object>()
+        Map<String, Object> props = new HashMap<>()
         {{
             put("useSSL", config.useSSL());
             put("verifyServerCertificate", config.verifyServerCertificate());
             put("autoReconnect", config.autoReconnect());
-            put("serverTimezone", "CST"); // Doesn't really matter
+            //put("serverTimezone", "CST"); // Doesn't really matter
             put("characterEncoding", "UTF-8");
         }};
 
@@ -318,20 +332,10 @@ public class Bot extends ListenerAdapter
         return guildSettingsDataManager;
     }
 
-    public MorpherDataManager getMorpherDataManager()
-    {
-        return morpherDataManager;
-    }
-
     // Managers
     public BirthdayManager getBirthdayManager()
     {
         return birthdayManager;
-    }
-
-    public PollManager getPollManager()
-    {
-        return pollManager;
     }
 
     // Other
@@ -344,4 +348,17 @@ public class Bot extends ListenerAdapter
 	{
 		return getCore().getGuildSettings(guild).getPrefix();
 	}
+
+    private static SlashCommand[] getSlashCommands() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
+    {
+        Reflections reflections = new Reflections("xyz.rc24.bot.commands");
+        Set<Class<? extends SlashCommand>> subTypes = reflections.getSubTypesOf(SlashCommand.class);
+        List<SlashCommand> commands = new ArrayList<>();
+
+        for (Class<? extends SlashCommand> theClass : subTypes) {
+            commands.add(theClass.getDeclaredConstructor().newInstance());
+        }
+
+        return commands.toArray(new SlashCommand[0]);
+    }
 }

@@ -25,13 +25,15 @@
 package xyz.rc24.bot.commands.general;
 
 import ch.qos.logback.classic.Logger;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -44,72 +46,87 @@ import xyz.rc24.bot.utils.SearcherUtil;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class RiiTagCmd extends Command
-{
+public class RiiTagCmd extends SlashCommand {
     private final Logger logger;
     private final OkHttpClient httpClient;
     private final String URL = "https://tag.rc24.xyz/%s/tag.max.png?randomizer=%f";
 
-    public RiiTagCmd(Bot bot)
-    {
+    public RiiTagCmd(Bot bot) {
         this.name = "riitag";
         this.help = "Gets a user's RiiTag";
         this.arguments = "[user]";
-        this.aliases = new String[]{"tag"};
+        this.aliases = new String[] { "tag" };
         this.category = Categories.GENERAL;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
+        this.botPermissions = new Permission[] { Permission.MESSAGE_EMBED_LINKS };
         this.logger = RiiConnect24Bot.getLogger(RiiTagCmd.class);
         this.httpClient = bot.getHttpClient();
+        this.guildOnly = false;
+
+        List<OptionData> data = new ArrayList<>();
+        data.add(new OptionData(OptionType.USER, "user", "The user to grab the RiiTag of.").setRequired(true));
+        this.options = data;
     }
 
     @Override
-    protected void execute(CommandEvent event)
-    {
-        Member member = SearcherUtil.findMember(event, event.getArgs());
-        if(member == null)
+    protected void execute(SlashCommandEvent event) {
+        Member member = event.getOption("user").getAsMember();
+        if (member == null)
             return;
 
         User user = member.getUser();
         Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
-        httpClient.newCall(request).enqueue(new Callback()
-        {
+        httpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
-                event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.\n" +
-                        "```" + e.getMessage() + "```");
-                logger.error("Something went wrong whilst checking if user {} has a RiiTag: {}", user.getId(),
-                        e.getMessage(), e);
+            public void onFailure(Call call, IOException e) {
+                /*
+                 * if(e instanceof SocketTimeoutException)
+                 * {
+                 */
+                event.reply("The RiiTag server did not respond.").setEphemeral(true).queue();
+                /*
+                 * return;
+                 * }
+                 * 
+                 * event.
+                 * replyError("Hm, something went wrong on our end. Ask a dev to check out my console.\n"
+                 * +
+                 * "```" + e.getMessage() + "```");
+                 * logger.
+                 * error("Something went wrong whilst checking if user {} has a RiiTag: {}",
+                 * user.getId(),
+                 * e.getMessage(), e);
+                 */
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                if(response.code() == 404)
-                {
-                    event.replyError("**" + user.getAsTag() + "** does not have a RiiTag!");
+            public void onResponse(Call call, Response response) {
+                if (response.code() == 404) {
+                    event.reply("**" + user.getAsTag() + "** does not have a RiiTag!").setEphemeral(true).queue();
+                    response.close();
                     return;
                 }
 
-                if(!(response.isSuccessful()))
-                {
+                if (!(response.isSuccessful())) {
                     onFailure(call, new IOException("Server error: HTTP Code " + response.code()));
+                    response.close();
                     return;
                 }
 
                 displayTag(event, user);
+                response.close();
             }
         });
     }
 
-    private void displayTag(CommandEvent event, User user)
-    {
+    private void displayTag(SlashCommandEvent event, User user) {
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setAuthor(user.getAsTag() + "'s RiiTag", null, user.getEffectiveAvatarUrl())
-                .setColor(event.isFromType(ChannelType.TEXT) ? event.getSelfMember().getColor() : Color.BLUE)
+                .setColor(event.getGuild() == null ? null : event.getGuild().getSelfMember().getColor())
                 .setImage(String.format(URL, user.getId(), Math.random()));
 
-        event.reply(embedBuilder.build());
+        event.replyEmbeds(embedBuilder.build()).queue();
     }
 }
