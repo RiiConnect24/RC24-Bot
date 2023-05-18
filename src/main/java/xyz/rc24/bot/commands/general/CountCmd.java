@@ -43,53 +43,46 @@ import java.io.IOException;
  * @author Larsenv
  */
 
-public class CountCmd extends SlashCommand
-{
+public class CountCmd extends SlashCommand {
     private final boolean debug;
     private final OkHttpClient httpClient;
 
     private final Logger logger = RiiConnect24Bot.getLogger(CountCmd.class);
 
-    public CountCmd(Bot bot)
-    {
+    public CountCmd(Bot bot) {
         this.debug = bot.getConfig().isDebug();
         this.httpClient = bot.getHttpClient();
         this.name = "count";
         this.help = "Looks up the number of Miis on the Check Mii Out Channel and Wiis registered to use Wii Mail.";
         this.category = Categories.WII;
-        this.guildOnly = true;
+        this.guildOnly = false;
     }
 
     @Override
-    protected void execute(SlashCommandEvent event)
-    {
+    protected void execute(SlashCommandEvent event) {
         String url = "https://miicontestp.wii.rc24.xyz/cgi-bin/count.cgi";
-        
-        if(debug)
+
+        if (debug)
             logger.info("Sending request to '{}'", url);
 
         Request request = new Request.Builder().url(url).build();
-        httpClient.newCall(request).enqueue(new Callback()
-        {
+        httpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e)
-            {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 event.reply("Hm, something went wrong on our end.").setEphemeral(true).queue();
-                logger.error("Something went wrong whilst checking the RiiConnect24 count stats: {}", e.getMessage(), e);
+                logger.error("Something went wrong whilst checking the RiiConnect24 count stats: {}", e.getMessage(),
+                        e);
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response)
-            {
-                if(!(response.isSuccessful()))
-                {
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                if (!(response.isSuccessful())) {
                     onFailure(call, new IOException("Not success response code: " + response.code()));
                     response.close();
                     return;
                 }
 
-                try
-                {
+                try {
                     event.reply(response.body().string()).queue();
                 } catch (Exception e) {
                     event.reply("Hm, something went wrong on our end.").setEphemeral(true).queue();

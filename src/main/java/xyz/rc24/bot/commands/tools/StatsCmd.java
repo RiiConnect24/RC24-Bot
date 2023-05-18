@@ -47,50 +47,43 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class StatsCmd extends Command
-{
+public class StatsCmd extends Command {
     private final Logger logger = LoggerFactory.getLogger("Stats Command");
     private final OkHttpClient httpClient;
 
-    public StatsCmd(Bot bot)
-    {
+    public StatsCmd(Bot bot) {
         this.name = "stats";
         this.help = "Shows stats for the RC24 services";
         this.category = Categories.TOOLS;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
+        this.botPermissions = new Permission[] { Permission.MESSAGE_EMBED_LINKS };
         this.ownerCommand = false;
-        this.guildOnly = true;
+        this.guildOnly = false;
 
         this.httpClient = bot.getHttpClient();
     }
 
     @Override
-    protected void execute(CommandEvent event)
-    {
+    protected void execute(CommandEvent event) {
         Request request = new Request.Builder()
                 .url("http://164.132.44.106/stats.json")
                 .addHeader("User-Agent", "RC24-Bot " + Const.VERSION)
                 .build();
 
-        httpClient.newCall(request).enqueue(new Callback()
-        {
+        httpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e)
-            {
+            public void onFailure(Call call, IOException e) {
                 event.replyError("Could not contact the Stats API! Please ask a owner to check the console. " +
                         "Error: ```\n" + e.getMessage() + "\n```");
                 logger.error("Exception while contacting the Stats API! ", e);
             }
 
             @Override
-            public void onResponse(Call call, Response response)
-            {
-                try(response)
-                {
-                    if(!(response.isSuccessful()))
+            public void onResponse(Call call, Response response) {
+                try (response) {
+                    if (!(response.isSuccessful()))
                         throw new IOException("Unsuccessful response code: " + response.code());
 
-                    if(response.body() == null)
+                    if (response.body() == null)
                         throw new IOException("Response body is null!");
 
                     EmbedBuilder eb = new EmbedBuilder();
@@ -103,9 +96,7 @@ public class StatsCmd extends Command
 
                     response.close();
                     event.reply(mb.build());
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     onFailure(call, e instanceof IOException ? (IOException) e : new IOException(e));
                     response.close();
                 }
@@ -114,8 +105,7 @@ public class StatsCmd extends Command
     }
 
     @SuppressWarnings("ConstantConditions")
-    private String parseJSON(Response response)
-    {
+    private String parseJSON(Response response) {
         JSONObject json = new JSONObject(new JSONTokener(response.body().byteStream()));
         Set<String> keys = new TreeSet<>(json.keySet());
 
@@ -124,12 +114,10 @@ public class StatsCmd extends Command
         StringBuilder red = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
-        keys.forEach(k ->
-        {
+        keys.forEach(k -> {
             String status = json.getString(k);
 
-            switch(status)
-            {
+            switch (status) {
                 case "green":
                     green.append("+ ").append(k).append("\n");
                     break;

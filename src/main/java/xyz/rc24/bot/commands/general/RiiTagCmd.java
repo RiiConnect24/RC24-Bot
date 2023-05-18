@@ -49,22 +49,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RiiTagCmd extends SlashCommand
-{
+public class RiiTagCmd extends SlashCommand {
     private final Logger logger;
     private final OkHttpClient httpClient;
     private final String URL = "https://tag.rc24.xyz/%s/tag.max.png?randomizer=%f";
 
-    public RiiTagCmd(Bot bot)
-    {
+    public RiiTagCmd(Bot bot) {
         this.name = "riitag";
         this.help = "Gets a user's RiiTag";
         this.arguments = "[user]";
-        this.aliases = new String[]{"tag"};
+        this.aliases = new String[] { "tag" };
         this.category = Categories.GENERAL;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
+        this.botPermissions = new Permission[] { Permission.MESSAGE_EMBED_LINKS };
         this.logger = RiiConnect24Bot.getLogger(RiiTagCmd.class);
         this.httpClient = bot.getHttpClient();
+        this.guildOnly = false;
 
         List<OptionData> data = new ArrayList<>();
         data.add(new OptionData(OptionType.USER, "user", "The user to grab the RiiTag of.").setRequired(true));
@@ -72,56 +71,57 @@ public class RiiTagCmd extends SlashCommand
     }
 
     @Override
-    protected void execute(SlashCommandEvent event)
-    {
-            Member member = event.getOption("user").getAsMember();
-            if(member == null)
-                return;
+    protected void execute(SlashCommandEvent event) {
+        Member member = event.getOption("user").getAsMember();
+        if (member == null)
+            return;
 
-            User user = member.getUser();
-            Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
-            httpClient.newCall(request).enqueue(new Callback()
-            {
-                @Override
-                public void onFailure(Call call, IOException e)
-                {
-                    /*if(e instanceof SocketTimeoutException)
-                    {*/
-                        event.reply("The RiiTag server did not respond.").setEphemeral(true).queue();
-                        /*return;
-                    }
+        User user = member.getUser();
+        Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                /*
+                 * if(e instanceof SocketTimeoutException)
+                 * {
+                 */
+                event.reply("The RiiTag server did not respond.").setEphemeral(true).queue();
+                /*
+                 * return;
+                 * }
+                 * 
+                 * event.
+                 * replyError("Hm, something went wrong on our end. Ask a dev to check out my console.\n"
+                 * +
+                 * "```" + e.getMessage() + "```");
+                 * logger.
+                 * error("Something went wrong whilst checking if user {} has a RiiTag: {}",
+                 * user.getId(),
+                 * e.getMessage(), e);
+                 */
+            }
 
-                    event.replyError("Hm, something went wrong on our end. Ask a dev to check out my console.\n" +
-                            "```" + e.getMessage() + "```");
-                    logger.error("Something went wrong whilst checking if user {} has a RiiTag: {}", user.getId(),
-                            e.getMessage(), e);*/
-                }
-
-                @Override
-                public void onResponse(Call call, Response response)
-                {
-                    if(response.code() == 404)
-                    {
-                        event.reply("**" + user.getAsTag() + "** does not have a RiiTag!").setEphemeral(true).queue();
-                        response.close();
-                        return;
-                    }
-
-                    if(!(response.isSuccessful()))
-                    {
-                        onFailure(call, new IOException("Server error: HTTP Code " + response.code()));
-                        response.close();
-                        return;
-                    }
-
-                    displayTag(event, user);
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (response.code() == 404) {
+                    event.reply("**" + user.getAsTag() + "** does not have a RiiTag!").setEphemeral(true).queue();
                     response.close();
+                    return;
                 }
-            });
+
+                if (!(response.isSuccessful())) {
+                    onFailure(call, new IOException("Server error: HTTP Code " + response.code()));
+                    response.close();
+                    return;
+                }
+
+                displayTag(event, user);
+                response.close();
+            }
+        });
     }
 
-    private void displayTag(SlashCommandEvent event, User user)
-    {
+    private void displayTag(SlashCommandEvent event, User user) {
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setAuthor(user.getAsTag() + "'s RiiTag", null, user.getEffectiveAvatarUrl())
                 .setColor(event.getGuild() == null ? null : event.getGuild().getSelfMember().getColor())
