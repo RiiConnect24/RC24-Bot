@@ -29,3 +29,13 @@ target/*
 .idea/*
 *.iml
 dependency-reduced-pom.xml
+gitignore
+polls_049.yml
+polls_110.yml
+
+# eclipse
+bin
+.settings
+.metadata
+.classpath
+.project
