@@ -25,17 +25,17 @@
 package xyz.rc24.bot.commands.general;
 
 import ch.qos.logback.classic.Logger;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
-import xyz.rc24.bot.Bot;
+
+import com.mojang.brigadier.CommandDispatcher;
+
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
 import java.io.IOException;
 
@@ -43,33 +43,30 @@ import java.io.IOException;
  * @author Larsenv
  */
 
-public class CountCmd extends SlashCommand {
-    private final boolean debug;
-    private final OkHttpClient httpClient;
+public class CountCmd {
 
     private final Logger logger = RiiConnect24Bot.getLogger(CountCmd.class);
-
-    public CountCmd(Bot bot) {
-        this.debug = bot.getConfig().isDebug();
-        this.httpClient = bot.getHttpClient();
-        this.name = "count";
-        this.help = "Looks up the number of Miis on the Check Mii Out Channel and Wiis registered to use Wii Mail.";
-        this.category = Categories.WII;
-        this.guildOnly = false;
+    
+    public void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("count")
+    		.executes((context) -> {
+    			execute(context.getSource());
+    			return 1;
+    		})
+    	);
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event) {
+   private void execute(CommandContext context) {
         String url = "https://miicontestp.wii.rc24.xyz/cgi-bin/count.cgi";
 
-        if (debug)
+        if (RiiConnect24Bot.getInstance().getConfig().isDebug())
             logger.info("Sending request to '{}'", url);
 
         Request request = new Request.Builder().url(url).build();
-        httpClient.newCall(request).enqueue(new Callback() {
+        RiiConnect24Bot.getInstance().getHttpClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                event.reply("Hm, something went wrong on our end.").setEphemeral(true).queue();
+                context.queueMessage("Hm, something went wrong on our end.", true, false);
                 logger.error("Something went wrong whilst checking the RiiConnect24 count stats: {}", e.getMessage(),
                         e);
             }
@@ -83,9 +80,9 @@ public class CountCmd extends SlashCommand {
                 }
 
                 try {
-                    event.reply(response.body().string()).queue();
+                    context.queueMessage(response.body().string());
                 } catch (Exception e) {
-                    event.reply("Hm, something went wrong on our end.").setEphemeral(true).queue();
+                    context.queueMessage("Hm, something went wrong on our end.", true, false);
                 }
 
                 response.close();

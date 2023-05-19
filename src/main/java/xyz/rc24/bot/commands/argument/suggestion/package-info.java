@@ -1,0 +1,1 @@
+package xyz.rc24.bot.commands.argument.suggestion;

@@ -24,26 +24,28 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import xyz.rc24.bot.commands.Categories;
+import com.mojang.brigadier.CommandDispatcher;
+
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
 /**
  * @author Artuto
  */
 
-public class InviteCmd extends SlashCommand
+public class InviteCmd 
 {
-    public InviteCmd()
-    {
-        this.name = "invite";
-        this.category = Categories.GENERAL;
-        this.help = "Invite me to your server.";
-    }
+	
+	public static void register(CommandDispatcher<CommandContext> dispatcher) {
+		dispatcher.register(Commands.global("invite")
+			.executes((context) -> {
+				execute(context.getSource());
+				return 1;
+			})
+		);
+	}
 
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        event.reply("Aw, you want to invite me? <3\nInvite me here: " + event.getJDA().getInviteUrl()).queue();
+    private static void execute(CommandContext context) {
+        context.queueMessage("Aw, you want to invite me? <3\nInvite me here: " + context.getAuthor().getJDA().getInviteUrl());
     }
 }

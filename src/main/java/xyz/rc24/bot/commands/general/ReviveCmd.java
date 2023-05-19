@@ -25,53 +25,64 @@
 package xyz.rc24.bot.commands.general;
 
 import com.jagrosh.jdautilities.command.SlashCommand;
+import com.mojang.brigadier.CommandDispatcher;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.core.entities.Poll;
 import xyz.rc24.bot.core.entities.impl.MiitomoPoll;
 import xyz.rc24.bot.managers.PollManager;
 
-public class ReviveCmd extends SlashCommand
+public class ReviveCmd 
 {
     private final PollManager manager;
 
-    public ReviveCmd(Bot bot)
-    {
-        this.name = "revive";
-        this.help = "Revives the chat by sending an Everybody Votes Channel or Miitomo poll for users to vote in.";
-        this.category = Categories.GENERAL;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
-        this.manager = bot.getPollManager();
+    public static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("revive")
+    		.executes(context -> {
+    			execute(context.getSource());
+    			return 1;
+    		})
+    	);
     }
-
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        // Get a random poll
-        Poll poll = manager.getRandomPoll();
-
-        // Now we need to build the embed
-        EmbedBuilder embed = new EmbedBuilder()
-        {{
-            setTitle("<:EverybodyVotesChannel:317090360449040388> " + poll.getQuestion());
-
-            if(!(poll instanceof MiitomoPoll))
-            {
-                setDescription("\uD83C\uDD70 " + poll.getResponse1() + "\n" +
-                        "_ _\n" + // Line separator
-                        "\uD83C\uDD71 " + poll.getResponse2());
-                setFooter("This question was from the " + poll.getCountryFlag() + " EVC", null);
-            }
-            else
-                setFooter("This question was from Miitomo");
-
-            // setColor(event.getSelfMember().getColor());
-        }};
-
-        // Send embed to chat
-        event.replyEmbeds(embed.build()).queue();
+    
+    //It appears the poll manager does not exist?
+    private static void execute(CommandContext context) {
+    	
+    	if(context.isDiscordContext()) {
+	        // Get a random poll
+	        Poll poll = RiiConnect24Bot.getInstance().getPollManager().getRandomPoll();
+	
+	        // Now we need to build the embed
+	        EmbedBuilder embed = context.getEmbed();
+	        {
+	            embed.setTitle("<:EverybodyVotesChannel:317090360449040388> " + poll.getQuestion());
+	
+	            if(!(poll instanceof MiitomoPoll))
+	            {
+	                embed.setDescription("\uD83C\uDD70 " + poll.getResponse1() + "\n" +
+	                        "_ _\n" + // Line separator
+	                        "\uD83C\uDD71 " + poll.getResponse2());
+	                embed.setFooter("This question was from the " + poll.getCountryFlag() + " EVC", null);
+	            }
+	            else
+	                embed.setFooter("This question was from Miitomo");
+	
+	            // setColor(event.getSelfMember().getColor());
+	        };
+	
+	        // Send embed to chat
+	        context.queueMessage(MessageCreateData.fromEmbeds(embed.build()));
+    	}
+    	else {
+    		context.replyDiscordOnlyCommand();
+    	}
     }
 }

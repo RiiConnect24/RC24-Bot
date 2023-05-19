@@ -49,7 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RiiTagCmd extends SlashCommand {
+public class RiiTagCmd {
     private final Logger logger;
     private final OkHttpClient httpClient;
     private final String URL = "https://tag.rc24.xyz/%s/tag.max.png?randomizer=%f";

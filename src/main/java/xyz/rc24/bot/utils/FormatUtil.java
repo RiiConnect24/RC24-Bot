@@ -25,8 +25,8 @@
 package xyz.rc24.bot.utils;
 
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import xyz.rc24.bot.core.entities.CodeType;
 
 import java.util.List;

@@ -24,33 +24,31 @@
 
 package xyz.rc24.bot.commands.botadm;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.Categories;
+import com.mojang.brigadier.CommandDispatcher;
 
-/**
- * @author Spotlight
- */
+import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
-public class Shutdown extends Command
-{
-    public Shutdown()
-    {
-        this.name = "shutdown";
-        this.help = "Turns the bot off.";
-        this.category = Categories.ADMIN;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.ownerCommand = true;
-        this.guildOnly = false;
-    }
-
-    @Override
-    protected void execute(CommandEvent event)
-    {
-        event.getTextChannel().sendMessage("Done! Cya \uD83D\uDC4B").complete();
-        event.getJDA().shutdown();
-        System.exit(0);
+public class Shutdown {
+	
+	public static void register(CommandDispatcher<CommandContext> dispatcher) {
+		dispatcher.register(Commands.literal("shutdown")
+			.executes(context -> {
+				shutdown(context.getSource());
+				return 1;
+			})
+		);
+	}
+    
+    private static void shutdown(CommandContext context) {
+    	if(!context.isConsoleMessage()) { //TODO: Permission system
+    		context.replyInsufficientPermissions();
+    	}
+    	else {
+            context.completeMessage("Done! Cya \uD83D\uDC4B");
+            RiiConnect24Bot.getInstance().getJDA().shutdown();
+            System.exit(0);
+    	}
     }
 }

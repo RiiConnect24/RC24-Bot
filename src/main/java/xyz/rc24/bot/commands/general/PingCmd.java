@@ -24,43 +24,25 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.Categories;
+import com.mojang.brigadier.CommandDispatcher;
+
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
 /**
  * @author Artuto
  */
 
-public class PingCmd extends SlashCommand
+public class PingCmd 
 {
-    public PingCmd() {
-        this.name = "ping";
-        this.help = "Ping the bot";
-        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
-        this.guildOnly = false;
-    }
+		
+	public static void register(CommandDispatcher<CommandContext> dispatcher) {
+		dispatcher.register(Commands.global("ping")
+			.executes((context) -> {
+				context.getSource().queueMessage("pong!");
+				return 1;
+			})
+		);
+	}
 
-    @Override
-    protected void execute(SlashCommandEvent slashCommandEvent) {
-        // Has to be simpler due to interaction weirdness
-        slashCommandEvent.reply("Pong!").setEphemeral(true).queue();
-    }
-
-    @Override
-    protected void execute(CommandEvent commandEvent) {
-        // Get the timestamp of the ping message
-        long time = commandEvent.getMessage().getTimeCreated().toInstant().toEpochMilli();
-        // Send a "Checking ping" message and calculate the difference between this message and the %^ping message
-        commandEvent.getChannel().sendMessageEmbeds(new EmbedBuilder().setDescription("Checking ping..").build()).queue((msg) -> {
-            EmbedBuilder eb = new EmbedBuilder().setDescription(
-                "Ping is " + (msg.getTimeCreated().toInstant().toEpochMilli() - time) + "ms\n" +
-                "Gateway Ping is " + commandEvent.getJDA().getGatewayPing() + "ms\n"
-            );
-            msg.editMessageEmbeds(eb.build()).queue();
-        });
-    }
 }

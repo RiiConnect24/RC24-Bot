@@ -25,10 +25,12 @@
 package xyz.rc24.bot.commands.botadm;
 
 import ch.qos.logback.classic.Logger;
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+
 import org.slf4j.LoggerFactory;
-import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,24 +41,30 @@ import java.io.InputStreamReader;
  *
  * @author Spotlight
  */
-public class Bash extends Command
-{
+public class Bash {
     private static Logger logger = (Logger) LoggerFactory.getLogger(Bash.class);
-
-    public Bash()
-    {
-        this.name = "bash";
-        this.help = "Runs a bash command.";
-        this.category = Categories.ADMIN;
-        this.ownerCommand = true;
+    
+    @SuppressWarnings("rawtypes")
+	public static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.literal("bash")
+    		.then(Commands.argument("command", StringArgumentType.greedyString())
+    			.executes(context -> {
+    				runBashCommand(context.getSource(), context.getArgument("command", String.class));
+    				return 1;
+    			})
+    		)
+    	);
     }
-
-    @Override
-    protected void execute(CommandEvent event)
+    
+    protected static void runBashCommand(CommandContext context, String bashCommand)
     {
-        if(event.getArgs().isEmpty())
+    	if(!context.isConsoleMessage()) { //todo: permissions? Currently this can only be executed from the console
+    		context.queueMessage("You do not have permission to execute that command");
+    		return;
+    	}
+        if(bashCommand.isEmpty())
         {
-            event.replyError("Cannot execute a empty command!");
+            context.queueMessage("Cannot execute a empty command!");
             return;
         }
 
@@ -64,7 +72,7 @@ public class Bash extends Command
         String finalOutput;
         try
         {
-            ProcessBuilder builder = new ProcessBuilder(event.getArgs().split(" "));
+            ProcessBuilder builder = new ProcessBuilder(bashCommand.split(" "));
             Process p = builder.start();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -75,7 +83,7 @@ public class Bash extends Command
 
             if(output.toString().isEmpty())
             {
-                event.replySuccess("Done, with no output!");
+                context.queueMessage("Done, with no output!");
                 return;
             }
 
@@ -85,17 +93,17 @@ public class Bash extends Command
         }
         catch(IOException e)
         {
-            event.replyError("I wasn't able to find the command `" + event.getArgs() + "`!");
+            context.queueMessage("I wasn't able to find the command `" + bashCommand + "`!");
             return;
         }
         catch(Exception e)
         {
             logger.warn("An unknown error occurred!");
             e.printStackTrace();
-            event.replyError("An unknown error occurred! Check the bot console.");
+            context.queueMessage("An unknown error occurred! Check the bot console.");
             return;
         }
 
-        event.replySuccess("Input: ```\n" + event.getArgs() + "``` Output: \n```\n" + finalOutput + "```");
+        context.queueMessage("Input: ```\n" + bashCommand + "``` Output: \n```\n" + finalOutput + "```");
     }
 }

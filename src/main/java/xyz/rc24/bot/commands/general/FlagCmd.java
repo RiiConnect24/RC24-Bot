@@ -24,52 +24,47 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import xyz.rc24.bot.Bot;
-import xyz.rc24.bot.commands.Categories;
+import com.mojang.brigadier.CommandDispatcher;
+
+import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.argument.FlagArgumentType;
 import xyz.rc24.bot.core.entities.Flag;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class FlagCmd extends SlashCommand
+public class FlagCmd 
 {
-    private final Bot bot;
 
-    public FlagCmd(Bot bot)
-    {
-        this.bot = bot;
-        this.name = "flag";
-        this.help = "Sets your flag to show in your code lookup.";
-        this.aliases = new String[]{"setflag", "setcountry", "country"};
-        this.category = Categories.GENERAL;
-        this.guildOnly = false;
-
-        List<OptionData> data = new ArrayList<>();
-        data.add(new OptionData(OptionType.STRING, "region", "The region to set your flag to.").setRequired(true));
-        this.options = data;
+    public static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("flag")
+    		.then(Commands.argument("flag", FlagArgumentType.KNOWN_FLAGS)
+    			.executes((context) -> {
+    				execute(context.getSource(), context.getArgument("flag", Flag.class));
+    				return 1;
+    			})
+    		)
+    	);
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        long id = event.getMember().getIdLong();
-
-        Flag flag = Flag.fromName(event.getOption("flag").getAsString());
-        if(flag == Flag.UNKNOWN)
-        {
-            event.reply("Unknown country!").setEphemeral(true).queue();
-            return;
-        }
-
-        boolean success = bot.getCodeDataManager().setFlag(id, flag.getEmote());
-
-        if(success)
-            event.reply("Updated successfully!").setEphemeral(true).queue();
-        else
-            event.reply("Error updating your flag! Please contact a developer.").setEphemeral(true).queue();
+    private static void execute(CommandContext context, Flag flag) {
+    	if(context.isDiscordContext()) {
+	        if(flag == Flag.UNKNOWN)
+	        {
+	            context.queueMessage("Unknown country!", true, false);
+	            return;
+	        }
+	
+	        boolean success = RiiConnect24Bot.getInstance().getCodeDataManager().setFlag(context.getAuthor().getIdLong(), flag.getEmote());
+	
+	        if(success) {
+	            context.queueMessage("Updated successfully!", true, false);
+	        }
+	        else {
+	            context.queueMessage("Error updating your flag! Please contact a developer.", true, false);
+	        }
+    	}
+    	else {
+    		context.replyDiscordOnlyCommand();
+    	}
     }
 }

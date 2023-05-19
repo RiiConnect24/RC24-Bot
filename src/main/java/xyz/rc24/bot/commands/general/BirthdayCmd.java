@@ -24,67 +24,112 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import xyz.rc24.bot.Bot;
-import xyz.rc24.bot.commands.Categories;
-import xyz.rc24.bot.utils.SearcherUtil;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.mojang.brigadier.CommandDispatcher;
+
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+
+import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.argument.DiscordUserArgumentType;
 
 /**
- * @author Artuto
+ * @author Artuto, Gamebuster
  */
 
-public class BirthdayCmd extends SlashCommand
+public class BirthdayCmd
 {
-    private final Bot bot;
+	
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
+    
+    @SuppressWarnings("unused")
+	private static final void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("birthday")
+    		.then(Commands.suggestableString("set")
+    			.then(Commands.anyString("DD/MM")
+    				.executes((context) -> {
+    					
+    					return 1;
+    				}
+    			))
+    		)
+    		
+    		.then(Commands.argument("user", new DiscordUserArgumentType())
+    			.executes(context -> {
+    				getBirthday(context.getSource(), context.getArgument("user", User.class));
+    				return 1;
+    			})
+    		)	
+    	);
+    }
+    
+    private static void setBirthday(CommandContext context, String date) {
+        long id = context.getAuthor().getIdLong();
+        LocalDate dateTime = parseDate(date);
 
-    public BirthdayCmd(Bot bot)
-    {
-        this.bot = bot;
-        this.name = "birthday";
-        this.help = "View the birthday of you or someone else.";
-        this.category = Categories.GENERAL;
+        if(dateTime == null)
+        {
+            context.queueMessage("I couldn't parse your date.\n" +
+                    "Try something like: `setbirthday 25/12` (date format: DD/MM).", true, false);
+            return;
+        }
 
-        List<OptionData> data = new ArrayList<>();
-        data.add(new OptionData(OptionType.USER, "user", "The user to look up for the birthday.").setRequired(true));
-        this.options = data;
+        boolean success = RiiConnect24Bot.getInstance().getBirthdayDataManager().setBirthday(id, dateTime.getDayOfMonth() + "/" + dateTime.getMonthValue());
+
+        if(success) {
+            context.queueMessage("Updated successfully!", true, false);
+        }
+        else {
+            context.queueMessage("There was an error updating your birthday! Please contact a developer.", true, false);
+        }
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-            Member target;
+    private static void getBirthday(CommandContext context, User user) {
 
-            try {
-                target = event.getOption("user").getAsMember();
-            } catch (Exception e) {
-                target = event.getMember();
-            }
-
-            String date = bot.getBirthdayDataManager().getBirthday(target.getUser().getIdLong());
+            String date = RiiConnect24Bot.getInstance().getBirthdayDataManager().getBirthday(user.getIdLong());
 
             if(date == null)
             {
-                if(target.equals(event.getMember()))
+                if(user.equals(context.getAuthor()))
                 {
-                    event.reply("You haven't have set your birthday!" +
-                            " Set it using  `/setbirthday`!").setEphemeral(true).queue();
+                    context.queueMessage("You haven't have set your birthday!" +
+                            " Set it using  `/birthday set <MM/DD>`!", true, false);
                 }
                 else
-                    event.reply("This user hasn't set their birthday!").setEphemeral(true).queue();
+                    context.queueMessage("This user hasn't set their birthday!", true, false);
 
                 return;
             }
 
-            if(target.equals(event.getMember()))
-                event.reply("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "** (date format: DD/MM)").queue();
-            else
-                event.reply("<a:birthdaycake:576200303662071808> **" + target.getEffectiveName() + "**'s birthday is set to **" + date + "** (date format: DD/MM)").queue();
+            if(user.equals(context.getAuthor())) {
+                context.queueMessage("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "** (date format: DD/MM)");
+            }
+            else {
+            	String effectiveName;
+            	Guild guild = context.getServer();
+            	if(guild == null) {
+            		effectiveName = user.getName();
+            	}
+            	else {
+            		effectiveName = guild.getMember(user).getEffectiveName();
+            	}
+                context.queueMessage("<a:birthdaycake:576200303662071808> **" + effectiveName + "**'s birthday is set to **" + date + "** (date format: DD/MM)");
+            }
+    }
+    
+    private static LocalDate parseDate(String args)
+    {
+        try
+        {
+            return args.endsWith("/\\d{4}/") ? LocalDate.parse(args, formatter) : LocalDate.parse(args + "/2019", formatter);
+        }
+        catch(DateTimeParseException ignored) {}
+
+        return null;
     }
 }
