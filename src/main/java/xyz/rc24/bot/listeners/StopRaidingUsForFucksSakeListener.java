@@ -33,6 +33,7 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Seriously, stop.
@@ -84,8 +85,8 @@ public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
 
     private void ban(Member member)
     {
-        // We set double reason because one is AuditLog reason and other ban reason (really dumb #Discord)
-        member.ban(1, "[AutoBan]").reason("[AutoBan]").queue(null, e -> {});
+    	//not sure if it shows up in the audit log... we will need to check
+    	member.ban(1, TimeUnit.DAYS).reason("[AutoBan]").queue();
 
         allowed.add(member.getUser().getIdLong());
     }

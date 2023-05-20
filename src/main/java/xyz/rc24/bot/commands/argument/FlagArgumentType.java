@@ -11,8 +11,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.CommandUtils;
+import xyz.rc24.bot.commands.exception.ParseExceptions;
 import xyz.rc24.bot.core.entities.Flag;
 
 public class FlagArgumentType implements ArgumentType<Flag> {
@@ -50,12 +50,17 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 		if(flags.contains(flag)) {
 			return flag;
 		}
-		return Flag.UNKNOWN;
+		
+		if(flag == Flag.UNKNOWN) {
+			throw ParseExceptions.NONEXISTANT.create("Flag", text);
+		}
+		else {
+			throw ParseExceptions.NOT_VALID.create("Flag", text);
+		}
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(com.mojang.brigadier.context.CommandContext<S> context, SuggestionsBuilder builder) {
-		CommandContext<?> c = (CommandContext<?>) context.getSource();
 		String flagText = CommandUtils.lastArgOf(builder.getInput());
 		for(Flag f : flags) {
 			if(f.getEmote().equals(flagText)) {

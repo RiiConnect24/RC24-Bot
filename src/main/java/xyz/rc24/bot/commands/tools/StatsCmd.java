@@ -24,55 +24,52 @@
 
 package xyz.rc24.bot.commands.tools;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.mojang.brigadier.CommandDispatcher;
+
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.rc24.bot.Bot;
+
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
 import java.awt.Color;
 import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class StatsCmd extends Command {
-    private final Logger logger = LoggerFactory.getLogger("Stats Command");
-    private final OkHttpClient httpClient;
-
-    public StatsCmd(Bot bot) {
-        this.name = "stats";
-        this.help = "Shows stats for the RC24 services";
-        this.category = Categories.TOOLS;
-        this.botPermissions = new Permission[] { Permission.MESSAGE_EMBED_LINKS };
-        this.ownerCommand = false;
-        this.guildOnly = false;
-
-        this.httpClient = bot.getHttpClient();
+public class StatsCmd {
+    private static final Logger logger = LoggerFactory.getLogger("Stats Command");
+    
+    private static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("status")
+    		.executes((context) -> {
+    			execute(context.getSource());
+    			return 1;
+    		})	
+    	);
     }
 
-    @Override
-    protected void execute(CommandEvent event) {
+    private static void execute(CommandContext context) {
         Request request = new Request.Builder()
                 .url("http://164.132.44.106/stats.json")
                 .addHeader("User-Agent", "RC24-Bot " + Const.VERSION)
                 .build();
 
-        httpClient.newCall(request).enqueue(new Callback() {
+        context.getBot().getHttpClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                event.replyError("Could not contact the Stats API! Please ask a owner to check the console. " +
+                context.queueMessage("Could not contact the Stats API! Please ask a owner to check the console. " +
                         "Error: ```\n" + e.getMessage() + "\n```");
                 logger.error("Exception while contacting the Stats API! ", e);
             }
@@ -86,8 +83,8 @@ public class StatsCmd extends Command {
                     if (response.body() == null)
                         throw new IOException("Response body is null!");
 
-                    EmbedBuilder eb = new EmbedBuilder();
-                    MessageBuilder mb = new MessageBuilder();
+                    EmbedBuilder eb = context.getEmbed();
+                    MessageCreateBuilder mb = new MessageCreateBuilder();
 
                     eb.setDescription(parseJSON(response));
                     eb.setColor(Color.decode("#29B7EB"));
@@ -95,7 +92,7 @@ public class StatsCmd extends Command {
                     mb.setContent("<:RC24:302470872201953280> Service stats of RC24:").setEmbeds(eb.build());
 
                     response.close();
-                    event.reply(mb.build());
+                    context.queueMessage(mb.build());
                 } catch (Exception e) {
                     onFailure(call, e instanceof IOException ? (IOException) e : new IOException(e));
                     response.close();
@@ -105,7 +102,7 @@ public class StatsCmd extends Command {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private String parseJSON(Response response) {
+    private static String parseJSON(Response response) {
         JSONObject json = new JSONObject(new JSONTokener(response.body().byteStream()));
         Set<String> keys = new TreeSet<>(json.keySet());
 

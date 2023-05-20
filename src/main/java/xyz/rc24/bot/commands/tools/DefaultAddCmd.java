@@ -24,45 +24,50 @@
 
 package xyz.rc24.bot.commands.tools;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.mojang.brigadier.CommandDispatcher;
+
 import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.Bot;
-import xyz.rc24.bot.commands.Categories;
+
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.argument.CodeTypeArgumentType;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
-import xyz.rc24.bot.utils.FormatUtil;
 
 /**
  * @author Artuto
  */
 
-public class DefaultAddCmd extends Command
-{
+public class DefaultAddCmd {
     private GuildSettingsDataManager dataManager;
-
-    public DefaultAddCmd(Bot bot)
-    {
-        this.dataManager = bot.getGuildSettingsDataManager();
-        this.name = "defaultadd";
-        this.help = "Changes the default `add` command's type.";
-        this.category = Categories.TOOLS;
-        this.userPermissions = new Permission[]{Permission.MANAGE_SERVER};
+    
+    public static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.literal("defaultAdd")
+    		.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES)
+    			.executes((context) -> {
+    				execute(context.getSource(), context.getArgument("type", CodeType.class));
+    				return 1;
+    			})
+    		)
+    	);
     }
 
-    @Override
-    protected void execute(CommandEvent event)
-    {
-        CodeType type = CodeType.fromCode(event.getArgs());
-        if(type == CodeType.UNKNOWN)
-        {
-            event.replyError(FormatUtil.getCodeTypes());
-            return;
-        }
-
-        if(dataManager.setDefaultAddType(type, event.getGuild().getIdLong()))
-            event.replySuccess("Successfully set `" + type.getName() + "` as default `add` type!");
-        else
-            event.replyError("Error whilst updating the default add type! Please contact a developer.");
+    private static void execute(CommandContext context, CodeType type) {
+    	if(context.hasPermission(Permission.MANAGE_SERVER)) {
+    		if(context.isDiscordContext()) {
+		        if(context.getBot().getGuildSettingsDataManager().setDefaultAddType(type, context.getServer().getIdLong())) {
+		            context.queueMessage("Successfully set `" + type.getName() + "` as default `add` type!");
+		        }
+		        else {
+		            context.queueMessage("Error whilst updating the default add type! Please contact a developer.", true, false);
+		        }
+    		}
+    		else {
+    			context.replyDiscordOnlyCommand();
+    		}
+    	}
+    	else {
+    		context.replyInsufficientPermissions();
+    	}
     }
 }

@@ -24,67 +24,81 @@
 
 package xyz.rc24.bot.commands.tools;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
+import com.mojang.brigadier.CommandDispatcher;
+
 import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.Categories;
+
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
 
-/**
- * @author Artuto
- */
-
-public class PrefixCmd extends Command
-{
-    private final GuildSettingsDataManager dataManager;
-
-    public PrefixCmd(GuildSettingsDataManager dataManager)
-    {
-        this.dataManager = dataManager;
-        this.name = "prefix";
-        this.help = "Set and display the bot's prefixes.";
-        this.userPermissions = new Permission[]{Permission.MANAGE_SERVER};
-        this.category = Categories.TOOLS;
+public class PrefixCmd {
+    
+    private static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(
+    		Commands.global("prefix").executes((context) -> { //NO ARGS
+    			replyPrefix(context.getSource());
+    				return 1;
+    			})
+	    		.then(Commands.anyString("prefix")
+	    			.executes((context) -> {
+	    				setPrefix(context.getSource(), context.getArgument("prefix", String.class));
+	    				return 1;
+	    			})
+	    		)
+	    		.then(Commands.suggestableString("none")
+	    			.executes((context) -> {
+	    				setPrefix(context.getSource(), null);
+	    				return 1;
+	    			})
+	    		)
+    	);
+    }
+    
+    private static void replyPrefix(CommandContext context) {
+    	if(context.isDiscordContext()) {
+    		if(context.isGuildContext()) {
+    	    	GuildSettings gs = context.getBot().getGuildSettingsDataManager().getSettings(context.getServer());
+    	    	context.queueMessage("ℹ The prefix in this server is: " + gs.getPrefix());
+    		}
+    		else {
+    			context.replyServerOnlyCommand();
+    		}
+    	}
+    	else {
+    		context.replyDiscordOnlyCommand();
+    	}
+    }
+    
+    private static void setPrefix(CommandContext context, String prefix) {
+    	if(context.isDiscordContext()) {
+    		if(context.isGuildContext()) {
+    			if(context.hasPermission(Permission.MANAGE_SERVER)) {
+        			if(prefix != null && prefix.length() > 5) {
+        				context.queueMessage("The prefix length may not be longer than 5 characters!");
+        			}
+        			else {
+        				GuildSettingsDataManager dataManager = context.getBot().getGuildSettingsDataManager();
+        	            if(dataManager.setPrefix(context.getServer().getIdLong(), null)) {
+        	                context.queueMessage("Successfully disabled the custom prefix!");
+        	            }
+        	            else {
+        	                context.queueMessage("Error whilst disabling the custom prefix! Please contact a developer.");
+        	            }
+        			}
+    			}
+    			else {
+    				context.replyInsufficientPermissions();
+    			}
+    		}
+    		else {
+    			context.replyDiscordOnlyCommand();
+    		}
+    	}
+    	else {
+    		context.replyDiscordOnlyCommand();
+    	}
     }
 
-    @Override
-    protected void execute(CommandEvent event)
-    {
-        GuildSettings gs = event.getClient().getSettingsFor(event.getGuild());
-        String args = event.getArgs();
-
-        if(args.isEmpty())
-        {
-            event.reply("ℹ The prefix in this server is: " + gs.getPrefix());
-            return;
-        }
-
-        if(args.length() > 5)
-        {
-            event.replyError("The prefix length may not be longer than 5 characters!");
-            return;
-        }
-
-        if(args.equals("none"))
-        {
-            if(dataManager.setPrefix(event.getGuild().getIdLong(), null))
-                event.replySuccess("Successfully disabled the custom prefix!");
-            else
-                event.replyError("Error whilst disabling the custom prefix! Please contact a developer.");
-
-            return;
-        }
-
-        if(gs.getPrefix().equals(args))
-        {
-            event.replyError("This prefix is already in use!");
-            return;
-        }
-
-        if(dataManager.setPrefix(event.getGuild().getIdLong(), args))
-            event.replySuccess("Successfully set `" + args + "` as the prefix!");
-        else
-            event.replyError("Error whilst setting the prefix! Please contact a developer.");
-    }
 }

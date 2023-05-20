@@ -24,12 +24,10 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
@@ -42,7 +40,6 @@ import xyz.rc24.bot.managers.PollManager;
 
 public class ReviveCmd 
 {
-    private final PollManager manager;
 
     public static void register(CommandDispatcher<CommandContext> dispatcher) {
     	dispatcher.register(Commands.global("revive")
@@ -58,7 +55,7 @@ public class ReviveCmd
     	
     	if(context.isDiscordContext()) {
 	        // Get a random poll
-	        Poll poll = RiiConnect24Bot.getInstance().getPollManager().getRandomPoll();
+	        Poll poll = context.getBot().getPollManager().getRandomPoll();
 	
 	        // Now we need to build the embed
 	        EmbedBuilder embed = context.getEmbed();

@@ -3,10 +3,12 @@ package xyz.rc24.bot.commands;
 import java.time.Instant;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -18,6 +20,8 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.user.ConsoleUser;
 
 public class CommandContext<E> {
@@ -32,6 +36,10 @@ public class CommandContext<E> {
 		else {
 			throw new IllegalArgumentException(e.getClass().getCanonicalName());
 		}
+	}
+	
+	public Bot getBot() {
+		return RiiConnect24Bot.getInstance();
 	}
 
 	public User getAuthor() {
@@ -53,6 +61,29 @@ public class CommandContext<E> {
 			return (T)event;
 		}
 		throw new ClassCastException(event + " cannot be cast to " + type.getCanonicalName());
+	}
+	
+	/**
+	 * Checks if the user has all specified permissions in the current discord server
+	 * 
+	 * if the context is the console user, returns true
+	 * 
+	 * if the context is otherwise null for some reason does not contain a server, returns false
+	 * 
+	 * @param permissions the permissions to check
+	 */
+	public boolean hasPermission(Permission... permissions) {
+		User user = getAuthor();
+		Guild guild = getServer();
+		if(user instanceof ConsoleUser) {
+			return true;
+		}
+		if(user == null || guild == null) {
+			return false;
+		}
+		
+		return guild.getMember(user).hasPermission(permissions);
+		
 	}
 	
 	public boolean isDiscordContext() {
@@ -160,6 +191,10 @@ public class CommandContext<E> {
 		queueMessage("This command can only be executed in Discord.");
 	}
 	
+	public void replyServerOnlyCommand() {
+		queueMessage("This command must be executed in a server!");
+	}
+	
 	public void sendThrowable(Throwable t) {
 		IReplyCallback callback = (IReplyCallback) event;
 		if(!callback.isAcknowledged()) {
@@ -204,7 +239,15 @@ public class CommandContext<E> {
 		return null;
 	}
 	
-	public boolean isConsoleMessage() {
+	public boolean isGuildContext() {
+		return getChannel() instanceof GuildChannel;
+	}
+	
+	public boolean isPrivateContext() {
+		return getChannel() instanceof PrivateChannel;
+	}
+	
+	public boolean isConsoleContext() {
 		return event instanceof ConsoleUser;
 	}
 

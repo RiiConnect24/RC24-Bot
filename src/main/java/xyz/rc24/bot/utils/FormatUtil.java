@@ -24,12 +24,8 @@
 
 package xyz.rc24.bot.utils;
 
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import xyz.rc24.bot.core.entities.CodeType;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,52 +34,6 @@ import java.util.Map;
 
 public class FormatUtil
 {
-    public static String listOfMembers(List<Member> list, String query)
-    {
-        StringBuilder out = new StringBuilder("Multiple members found matching \"" + query + "\":");
-        for(int i = 0; i < 6 && i < list.size(); i++)
-        {
-            out.append("\n - ").append(list.get(i).getUser().getName()).append("#")
-                    .append(list.get(i).getUser().getDiscriminator()).append(" (ID:")
-                    .append(list.get(i).getUser().getId()).append(")");
-        }
-
-        if(list.size() > 6)
-            out.append("\n**And ").append(list.size() - 6).append(" more...**");
-
-        return out.toString();
-    }
-
-    public static String listOfTcChannels(List<TextChannel> list, String query)
-    {
-        StringBuilder out = new StringBuilder("Multiple text channels found matching \"" + query + "\":");
-        for(int i = 0; i < 6 && i < list.size(); i++)
-        {
-            out.append("\n - ").append(list.get(i).getName()).append(" (ID:")
-                    .append(list.get(i).getId()).append(")");
-        }
-
-        if(list.size() > 6)
-            out.append("\n**And ").append(list.size() - 6).append(" more...**");
-
-        return out.toString();
-    }
-
-    public static String listOfUsers(List<User> list, String query)
-    {
-        StringBuilder out = new StringBuilder("Multiple users found matching \"" + query + "\":");
-        for(int i = 0; i < 6 && i < list.size(); i++)
-        {
-            out.append("\n - ").append(list.get(i).getName()).append("#")
-                    .append(list.get(i).getDiscriminator()).append(" (ID:")
-                    .append(list.get(i).getId()).append(")");
-        }
-
-        if(list.size() > 6)
-            out.append("\n**And ").append(list.size() - 6).append(" more...**");
-
-        return out.toString();
-    }
 
     public static String getCodeTypes()
     {
@@ -110,14 +60,4 @@ public class FormatUtil
         return codesString.toString();
     }
 
-    public static String getCodeLayout(String name, String code)
-    {
-        return "`" + name + "`:\n" + code;
-    }
-
-    public static String sanitize(String msg)
-    {
-        return msg.replace("@everyone", "@\u0435veryone")
-                .replace("@here", "@h\u0435re");
-    }
 }

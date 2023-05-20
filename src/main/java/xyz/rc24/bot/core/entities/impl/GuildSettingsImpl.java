@@ -24,7 +24,6 @@
 
 package xyz.rc24.bot.core.entities.impl;
 
-import com.jagrosh.jdautilities.command.GuildSettingsProvider;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
@@ -33,7 +32,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 
-public class GuildSettingsImpl implements GuildSettings, GuildSettingsProvider
+public class GuildSettingsImpl implements GuildSettings
 {
     private CodeType defaultAddType;
     private long guildId;
@@ -65,7 +64,6 @@ public class GuildSettingsImpl implements GuildSettings, GuildSettingsProvider
     }
 
     @Nullable
-    @Override
     public Collection<String> getPrefixes()
     {
         return Collections.singleton(getPrefix());

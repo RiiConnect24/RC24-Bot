@@ -28,7 +28,7 @@ import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.database.BirthdayDataManager;
 
