@@ -27,6 +27,6 @@ Check out the following steps:
 4. It's time to start building... Run `./gradlew shadowJar`! And... tada! That's it. You can find JAR(s) created in `/lib`. Easy!
 5. For running, make sure you have MySQL installed on whatever machine.
 
-If you need support for the bot, head on over to [the bot's official support server](https://discord.gg/PVsh4jP) or DM `Artuto#0424 | 264499432538505217` in Discord.
+If you need support for the bot, head on over to [the bot's official support server](https://discord.gg/PVsh4jP).
 
 For more infos about JDA, [click here](https://github.com/DV8FromTheWorld/JDA).
