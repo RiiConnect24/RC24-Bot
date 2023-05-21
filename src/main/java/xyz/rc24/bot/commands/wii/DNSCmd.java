@@ -24,37 +24,31 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import xyz.rc24.bot.commands.Categories;
-import java.util.ArrayList;
-import java.util.List;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
+
+import com.mojang.brigadier.CommandDispatcher;
 
 /**
- * @author Spotlight
+ * @author Gamebuster
  */
 
-public class DNS extends SlashCommand
-{
-    public DNS()
-    {
-        this.name = "dns";
-        this.help = "Lets you know the current DNS settings.";
-        this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.guildOnly = false;
-
-        List<OptionData> data = new ArrayList<>();
-        this.options = data;
+public class DNSCmd {
+	
+	private static final String PRIMARY_DNS = "167.86.108.126";
+	private static final String SECONDARY_DNS = "1.1.1.1";
+    
+    private static final void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("dns")
+    		.executes((context) -> {
+    			sendDNSInfo(context.getSource());
+    			return 1;
+    		})	
+    	);
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        event.reply("`167.86.108.126` should be your primary DNS.\n" + "`1.1.1.1` should be your secondary DNS.").setEphemeral(true).queue();;
+    private static final void sendDNSInfo(CommandContext context) {
+        context.queueMessage("`" + PRIMARY_DNS + "` should be your primary DNS.\n`" + SECONDARY_DNS + "` should be your secondary DNS.", context.hasPermission(Permission.MESSAGE_SEND), false);
     }
 }

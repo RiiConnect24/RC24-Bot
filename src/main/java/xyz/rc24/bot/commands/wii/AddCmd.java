@@ -24,17 +24,10 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.SlashCommand;
 import com.mojang.brigadier.CommandDispatcher;
 
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import xyz.rc24.bot.Bot;
-import xyz.rc24.bot.commands.Categories;
+
 import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.commands.argument.DiscordUserArgumentType;
@@ -43,30 +36,14 @@ import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.user.ConsoleUser;
 import xyz.rc24.bot.utils.FormatUtil;
-import xyz.rc24.bot.utils.SearcherUtil;
 
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * @author Artuto
+ * @author Artuto, Gamebuster
  */
 
 public class AddCmd {
-
-
-    public AddCmd(Bot bot)
-    {
-        this.core = bot.getCore();
-        this.name = "add";
-        this.help = "Sends your friend code to another user.";
-        this.category = Categories.WII;
-
-        List<OptionData> data = new ArrayList<>();
-        data.add(new OptionData(OptionType.USER, "user", "The user you want to add."));
-        this.options = data;
-    }
     
     private static void register(CommandDispatcher<CommandContext> dispatcher) {
     	dispatcher.register(Commands.global("add")
@@ -79,60 +56,72 @@ public class AddCmd {
     	);
     }
 
-    private static void execute(CommandContext context, User friend) {
-            Member member = event.getOption("user").getAsMember();
-            if(member == null)
-                return;
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private static void execute(CommandContext context, User friend) {
 
-            GuildSettings gs = getClient().getSettingsFor(event.getGuild());
-            CodeType defaultAddType = gs.getDefaultAddType();
+    		if(!context.isDiscordContext()) {
+    			context.replyDiscordOnlyCommand();
+    			return;
+    		}
+    	
+    		BotCore core = context.getBot().getCore();
+    		CodeType codeType = CodeType.WII;
+    		
+    		if(context.isGuildContext()) {
+    			GuildSettings gs = context.getBot().getGuildSettingsDataManager().getSettings(context.getServer());
+    			codeType = gs.getDefaultAddType();
+    		}
 
             if(friend instanceof ConsoleUser || friend.isSystem()) { 
-            	context.queueMessage("what the fuck", true, false);
+            	context.queueMessage("You cannot add a system user!", true, false);
             	return;
             }
             if(friend.equals(context.getAuthor())) {
                 context.queueMessage("You can't add yourself!", true, false);
                 return;
             }
-            if(member.getUser().isBot()) {
+            if(friend.isBot()) {
                 context.queueMessage("You can't add bots!", true, false);
                 return;
             }
 
-            Map<String, String> authorTypeCodes = core.getCodesForType(defaultAddType, event.getGuild() == null ? null : event.getGuild().getSelfMember().getIdLong());
+            Map<String, String> authorTypeCodes = core.getCodesForType(codeType, context.getAuthor().getIdLong());
             if(authorTypeCodes.isEmpty())
             {
-                event.reply("**" + event.getMember().getEffectiveName() + "** has not added any friend codes!").setEphemeral(true).queue();
+                context.queueMessage("**" + context.getEffectiveName() + "** has not added any friend codes!", true, false);
                 return;
             }
 
-            Map<String, String> targetTypeCodes = core.getCodesForType(defaultAddType, member.getUser().getIdLong());
+            Map<String, String> targetTypeCodes = core.getCodesForType(codeType, friend.getIdLong());
             if(targetTypeCodes.isEmpty())
             {
-                event.reply("**" + member.getEffectiveName() + "** has not added any friend codes!").setEphemeral(true).queue();
+            	context.queueMessage("**" + context.getEffectiveNameOf(friend) + "** has not added any friend codes!", true, false);
                 return;
             }
 
+            
+            CommandContext privateContext = context.getPrivateContext();
+            CommandContext friendPrivateContext = new CommandContext(friend);
+            
             // Send target's code to author
-            event.reply(getAddMessageHeader(defaultAddType, event.getMember(),
-                    false) + "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes))
-                    .queue(null, (failure) -> event.reply("Hey, " + member.getAsMention() +
-                    ": I couldn't DM you. Make sure your DMs are enabled.").setEphemeral(true));
+            privateContext.queueMessage(getAddMessageHeader(codeType, context,
+                    false) + "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes),
+                    false, false, (failure) -> context.getChannel().sendMessage("Hey, " + context.getAuthor().getAsMention() +
+                    ": I couldn't DM you. Make sure your DMs are enabled."));
 
             // Send author's code to target
-            member.getUser().openPrivateChannel().queue(pc ->
-                    pc.sendMessage(getAddMessageHeader(defaultAddType, event.getMember(),
-                            false) + "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes))
-                            .queue(null, (failure) -> event.reply("Hey, " + member.getAsMention() +
-                            ": I couldn't DM you. Make sure your DMs are enabled.").setEphemeral(true)));
+            friendPrivateContext.queueMessage(getAddMessageHeader(codeType, context,
+                        false) + "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes),
+                        false, false, (failure) -> context.getChannel().sendMessage("Hey, " + friend.getAsMention() +
+                        ": I couldn't DM you. Make sure your DMs are enabled."));
     }
 
-    private String getAddMessageHeader(CodeType type, Member member, boolean isCommandRunner)
-    {
+    @SuppressWarnings("rawtypes")
+	private static String getAddMessageHeader(CodeType type, CommandContext context, boolean isCommandRunner) {
         if(!(isCommandRunner))
-            return "**" + member.getEffectiveName() + "** has requested to add your " + type.getDisplayName() + " friend code(s)!";
+        	//use tag because the recipient may not share the same server the command was executed on, causing it to appear like unknown user was requesting
+            return "**" + context.getAuthor().getAsTag() + "** has requested to add your " + type.getDisplayName() + " friend code(s)!";
         else
-            return "You have requested to add **" + member.getEffectiveName() + "**'s " + type.getDisplayName() + " friend code(s).";
+            return "You have requested to add **" + context.getEffectiveName()+ "**'s " + type.getDisplayName() + " friend code(s).";
     }
 }

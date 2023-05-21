@@ -68,6 +68,7 @@ import xyz.rc24.bot.commands.wii.ErrorInfoCmd;
 import xyz.rc24.bot.commands.wii.WadsCmd;
 import xyz.rc24.bot.commands.wii.WiiWare;
 import xyz.rc24.bot.core.BotCore;
+import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.database.CodeDataManager;
@@ -330,6 +331,14 @@ public class Bot extends ListenerAdapter
     public GuildSettingsDataManager getGuildSettingsDataManager()
     {
         return guildSettingsDataManager;
+    }
+    
+    public GuildSettings getGuildSettings(long snowflakeID) {
+    	return getGuildSettingsDataManager().getGuildSettings(snowflakeID);
+    }
+    
+    public GuildSettings getGuildSettings(Guild guild) {
+    	return getGuildSettingsDataManager().getSettings(guild);
     }
 
     // Managers

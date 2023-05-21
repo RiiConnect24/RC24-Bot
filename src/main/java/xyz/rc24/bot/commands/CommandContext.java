@@ -1,6 +1,7 @@
 package xyz.rc24.bot.commands;
 
 import java.time.Instant;
+import java.util.function.Consumer;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -114,6 +115,26 @@ public class CommandContext<E> {
 		}
 	}
 	
+	public void queueMessage(MessageCreateData messageData, boolean ephemeral, boolean silent, Consumer<? super Throwable> onFailure) {
+		if(event instanceof IReplyCallback) {
+			((IReplyCallback) event).reply(messageData).setEphemeral(ephemeral).setSuppressedNotifications(silent).queue();
+		}
+		else if(event instanceof MessageReceivedEvent) {
+			((MessageReceivedEvent) event).getChannel().sendMessage(messageData).queue();
+		}
+		else if(event instanceof User) {
+			if(event instanceof ConsoleUser) {
+				System.out.println(messageData.getContent());
+			}
+			else {
+				((User)event).openPrivateChannel().queue((att) -> {((PrivateChannel)att).sendMessage(messageData).queue();});
+			}
+		}
+		else {
+			throw new UnsupportedOperationException("Cannot reply to a " + event.getClass().getCanonicalName());
+		}
+	}
+	
 	public void queueMessage(String message) {
 		message = trim(message);
 		queueMessage(new MessageCreateBuilder().setContent(message).build(), false, false);
@@ -122,6 +143,11 @@ public class CommandContext<E> {
 	public void queueMessage(String message, boolean ephemeral, boolean silent) {
 		message = trim(message);
 		queueMessage(new MessageCreateBuilder().setContent(message).build(), ephemeral, silent);
+	}
+	
+	public void queueMessage(String message, boolean ephemeral, boolean silent, Consumer<? super Throwable> onFailure) {
+		message = trim(message);
+		queueMessage(new MessageCreateBuilder().setContent(message).build(), ephemeral, silent, onFailure);
 	}
 	
 	public InteractionHook completeMessage(MessageCreateData messageData) {
@@ -225,6 +251,17 @@ public class CommandContext<E> {
 		return null;
 	}
 	
+	public String getEffectiveName() {
+		return getEffectiveNameOf(getAuthor());
+	}
+	
+	public String getEffectiveNameOf(User user) {
+		if(isGuildContext()) {
+			return getServer().getMember(user).getEffectiveName();
+		}
+		return user.getName();
+	}
+	
 	public EmbedBuilder getEmbed() {
 		return embedBuilder;
 	}
@@ -245,6 +282,28 @@ public class CommandContext<E> {
 	
 	public boolean isPrivateContext() {
 		return getChannel() instanceof PrivateChannel;
+	}
+	
+	/**
+	 * @return a new context in a private message channel with
+	 * the current author.
+	 * 
+	 * If the author has no private context, returns this;
+	 * 
+	 * If you need to check if the context is a user context, just 
+	 * call isPrivateContext() on the returned context
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public CommandContext getPrivateContext() {
+		if(getAuthor() == null || !getAuthor().hasPrivateChannel()) {
+			return this;
+		}
+		try {
+			return new CommandContext(getAuthor());
+		}
+		catch(UnsupportedOperationException e) {
+			return this; //just in case
+		}
 	}
 	
 	public boolean isConsoleContext() {

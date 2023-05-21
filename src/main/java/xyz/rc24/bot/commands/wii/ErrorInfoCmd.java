@@ -59,7 +59,7 @@ import java.util.regex.Pattern;
 /**
  * Looks up errors using the Wiimmfi API.
  *
- * @author Spotlight, Artuto
+ * @author Spotlight, Artuto, Gamebuster
  */
 
 public class ErrorInfoCmd extends SlashCommand

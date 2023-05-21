@@ -24,55 +24,38 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.Categories;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 
-import java.util.ArrayList;
-import java.util.List;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
-public class BlocksCmd extends SlashCommand
+public class BlocksCmd
 {
-    public BlocksCmd()
-    {
-        this.name = "blocks";
-        this.help = "Convert between Nintendo blocks and MBs.";
-        this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS};
-        this.guildOnly = false;
-
-        List<OptionData> data = new ArrayList<>();
-        data.add(new OptionData(OptionType.STRING, "num", "The number of blocks."));
-        this.options = data;
+    
+    private static final void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("blocks")
+    		.executes((context) -> {
+    			convert(context.getSource(), 0d);
+    			return 1;
+    		})
+    		.then(Commands.argument("amount", DoubleArgumentType.doubleArg())
+    			.executes((context) -> {
+    				convert(context.getSource(), context.getArgument("amount", Double.class));
+    				return 1;
+    			})	
+    		)	
+    	);
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        if(event.getOption("num").getAsString().isEmpty())
-        {
-            event.reply("\u2139 1 block is 128kb\n" +
-                    "8 blocks are 1MB").queue();
-            return;
-        }
-
-        double blocks = parseNumber(event.getOption("num").getAsString());
-        if(blocks < 1)
-        {
-            event.reply("Invalid number!").setEphemeral(true).queue();
+    private static final void convert(CommandContext context, Double blocks) {
+        if(blocks == 0d){
+            context.queueMessage("\u2139 1 block is 128kb\n8 blocks are 1MB");
             return;
         }
 
         double mb = blocks * 128 / 1024;
-        event.reply("\u2139 " + blocks + " block(s) are " + mb + "MB(s)").queue();
+        context.queueMessage("\u2139 " + blocks + " block(s) are " + mb + "MB(s)");
     }
 
-    private double parseNumber(String args)
-    {
-        try {return Double.parseDouble(args);}
-        catch(NumberFormatException e) {return -1.0;}
-    }
 }
