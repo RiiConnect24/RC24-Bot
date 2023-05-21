@@ -33,7 +33,7 @@ dependencies {
     shadow 'com.thegamecommunity:brigadier:TGC-1.3.0.0'
     implementation 'com.thegamecommunity:brigadier:TGC-1.3.0.0'
     shadow ('net.dv8tion:JDA:5.0.0-beta.9')
-    shadow 'ch.qos.logback:logback-core:1.2.3'
+    shadow 'ch.qos.logback:logback-core:1.4.7'
     shadow 'io.sentry:sentry-logback:1.7.3'
     shadow 'org.codehaus.groovy:groovy-jsr223:3.0.8'
     shadow 'org.jsoup:jsoup:1.10.3'
