@@ -24,7 +24,7 @@ Check out the following steps:
 1. You'll need to have MySQL installed.
 2. We'll create the Redis structures as we go, so no need to set anything up.
 3. `git clone` the repo somewhere and `cd` into it.
-4. It's time to start building... Run `./gradlew shadowJar`! And... tada! That's it. You can find JAR(s) created in `/build/lib`. Easy!
+4. It's time to start building... Run `./gradlew shadowJar`! And... tada! That's it. You can find JAR(s) created in `/build/libs`. Easy!
 5. For running, make sure you have MySQL installed on whatever machine.
 
 If you need support for the bot, head on over to [the bot's official support server](https://discord.gg/PVsh4jP).
