@@ -67,7 +67,7 @@ public class CodeCmd
 			"**Adding a user's Wii**\n" + "`/add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
 	
 	@SuppressWarnings("unused")
-	private static void register(CommandDispatcher<CommandContext> dispatcher) {
+	public static void register(CommandDispatcher<CommandContext> dispatcher) {
 		dispatcher.register(Commands.global("code")
 			.then(Commands.suggestableString("add")
 				.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES)

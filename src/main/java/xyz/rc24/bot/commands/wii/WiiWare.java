@@ -24,30 +24,24 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.Categories;
+import com.mojang.brigadier.CommandDispatcher;
+
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
 /**
  * @author Artuto
  */
 
-public class WiiWare extends SlashCommand
-{
-    public WiiWare()
-    {
-        this.name = "wiiware";
-        this.help = "Lets you know the URL to the WiiWare patcher.";
-        this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.guildOnly = false;
+public class WiiWare {
+    
+    public static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("wads")
+    		.executes((context) -> {
+    			context.getSource().queueMessage("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases");
+    			return 1;
+    		})	
+    	);
     }
 
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        event.reply("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases").queue();
-    }
 }

@@ -24,27 +24,20 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import xyz.rc24.bot.commands.Categories;
+import com.mojang.brigadier.CommandDispatcher;
 
-/**
- * @author Artuto
- */
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
-public class WadsCmd extends SlashCommand
-{
-    public WadsCmd()
-    {
-        this.name = "wads";
-        this.help = "Lets you know the URL to the RiiConnect24 Patcher.";
-        this.category = Categories.WII;
-        this.guildOnly = false;
+public class WadsCmd {
+    
+    public static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("wads")
+    		.executes((context) -> {
+    			context.getSource().queueMessage("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest");
+    			return 1;
+    		})	
+    	);
     }
-
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        event.reply("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest").queue();
-    }
+    
 }

@@ -31,7 +31,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.Categories;
 import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.core.entities.Poll;
@@ -52,7 +51,9 @@ public class ReviveCmd
     
     //It appears the poll manager does not exist?
     private static void execute(CommandContext context) {
+    	return;
     	
+    	/*
     	if(context.isDiscordContext()) {
 	        // Get a random poll
 	        Poll poll = context.getBot().getPollManager().getRandomPoll();
@@ -81,5 +82,6 @@ public class ReviveCmd
     	else {
     		context.replyDiscordOnlyCommand();
     	}
+    	*/
     }
 }

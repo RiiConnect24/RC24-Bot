@@ -45,7 +45,7 @@ import java.util.Map;
 
 public class AddCmd {
     
-    private static void register(CommandDispatcher<CommandContext> dispatcher) {
+    public static void register(CommandDispatcher<CommandContext> dispatcher) {
     	dispatcher.register(Commands.global("add")
     		.then(Commands.argument("friend", new DiscordUserArgumentType())
     			.executes((context) -> {

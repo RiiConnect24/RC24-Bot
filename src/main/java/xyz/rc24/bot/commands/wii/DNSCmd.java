@@ -39,7 +39,7 @@ public class DNSCmd {
 	private static final String PRIMARY_DNS = "167.86.108.126";
 	private static final String SECONDARY_DNS = "1.1.1.1";
     
-    private static final void register(CommandDispatcher<CommandContext> dispatcher) {
+    public static final void register(CommandDispatcher<CommandContext> dispatcher) {
     	dispatcher.register(Commands.global("dns")
     		.executes((context) -> {
     			sendDNSInfo(context.getSource());

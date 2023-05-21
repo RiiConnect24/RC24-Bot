@@ -262,6 +262,10 @@ public class CommandContext<E> {
 		return user.getName();
 	}
 	
+	public IReplyCallback getReplyCallback() {
+		return (IReplyCallback)event;
+	}
+	
 	public EmbedBuilder getEmbed() {
 		return embedBuilder;
 	}

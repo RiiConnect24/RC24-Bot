@@ -48,7 +48,7 @@ public class BirthdayCmd
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
     
     @SuppressWarnings("unused")
-	private static final void register(CommandDispatcher<CommandContext> dispatcher) {
+	public static final void register(CommandDispatcher<CommandContext> dispatcher) {
     	dispatcher.register(Commands.global("birthday")
     		.then(Commands.suggestableString("set")
     			.then(Commands.anyString("DD/MM")

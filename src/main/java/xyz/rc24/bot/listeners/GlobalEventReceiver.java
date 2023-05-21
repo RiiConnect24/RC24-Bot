@@ -1,6 +1,5 @@
 package xyz.rc24.bot.listeners;
 
-import java.sql.SQLNonTransientConnectionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -8,20 +7,12 @@ import java.util.concurrent.ExecutionException;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
-import com.mysql.cj.exceptions.CJCommunicationsException;
-import com.mysql.cj.exceptions.ConnectionIsClosedException;
-import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -33,14 +24,16 @@ import xyz.rc24.bot.commands.argument.GlobalNode;
 
 public class GlobalEventReceiver extends ListenerAdapter {
 
+	private static final boolean debug = true;
+	
 	private final Sub sub = new Sub();
 	
-	GlobalEventReceiver(){}
+	public GlobalEventReceiver(){}
 	
 	@Override
-	public void onGenericEvent(GenericEvent ge) { //Used so events actually fire in the correct order
+	public void onGenericEvent(GenericEvent ge) {
 		
-		//can do some logic here before the event is processed if necessary (ex: logging)
+		//we can do some logic here if necessary before the event is processed if necessary (ex: logging)
 		sub.onEvent(ge);
 	}
 	
@@ -54,7 +47,7 @@ public class GlobalEventReceiver extends ListenerAdapter {
 			}
 			CommandContext context = new CommandContext(e);
 			try {
-				Commands.DISPATCHER.execute(c.toString() , context);
+				Commands.DISPATCHER.getSlashDispatcher().execute(c.toString() , context);
 			} catch (Throwable t) {
 				if(t.getMessage() != null && !t.getMessage().isBlank()) {
 					context.sendThrowable(t);
@@ -68,6 +61,8 @@ public class GlobalEventReceiver extends ListenerAdapter {
 			}
 		}
 		
+		/* not used for this bot yet
+		
 		@Override
 		public void onButtonInteraction(ButtonInteractionEvent e) {
 			try {
@@ -75,34 +70,6 @@ public class GlobalEventReceiver extends ListenerAdapter {
 			} catch (CommandSyntaxException e1) {
 				e1.printStackTrace();
 			}
-		}
-		
-		@Override
-		public void onGuildReady(GuildReadyEvent e) {
-			List<CommandData> commands = new ArrayList<>();
-			Commands.DISPATCHER.getSlashDispatcher().getRoot().getChildren().forEach((command) -> {
-				if(!Main.discordBot.isDev()) {
-					if(command instanceof GlobalNode) {
-						return; //Don't register global commands as guild commands if we're not in a dev environment
-					}
-				}
-				SlashCommandData data = net.dv8tion.jda.api.interactions.commands.build.Commands.slash(command.getName(), command.getUsageText());
-				
-				if(command.getChildren().size() > 0) {
-					if(command.getChildren().size() == 1) {
-						
-					}
-					else {
-						data.addOption(OptionType.STRING, "arguments", "arguments", true, true);
-					}
-				}
-				
-				commands.add(data);
-				System.out.println(command.getUsageText());
-			});
-			Interactions.DISPATCHER.getSlashDispatcher(); //initialize interactions
-			
-			e.getGuild().updateCommands().addCommands(commands).queue();
 		}
 		
 		@Override
@@ -123,13 +90,40 @@ public class GlobalEventReceiver extends ListenerAdapter {
 			}
 		}
 		
+		*/
+		
+		@Override
+		public void onGuildReady(GuildReadyEvent e) { //for development
+			List<CommandData> commands = new ArrayList<>();
+			Commands.DISPATCHER.getSlashDispatcher().getRoot().getChildren().forEach((command) -> {
+				if(!debug) {
+					if(command instanceof GlobalNode) {
+						return; //Don't register global commands as guild commands if we're not in a dev environment
+					}
+				}
+				SlashCommandData data = net.dv8tion.jda.api.interactions.commands.build.Commands.slash(command.getName(), command.getUsageText());
+				
+				if(command.getChildren().size() > 0) {
+					if(command.getChildren().size() == 1) {
+						
+					}
+					else {
+						data.addOption(OptionType.STRING, "arguments", "arguments", true, true);
+					}
+				}
+				
+				commands.add(data);
+			});
+			
+			e.getGuild().updateCommands().addCommands(commands).queue();
+		}
+		
 		@Override
 		public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent e) {
 			
 			String command = e.getName() + " " + e.getFocusedOption().getValue();
 			final String arguments = e.getFocusedOption().getValue();
 			String fixedArguments = e.getFocusedOption().getValue();
-			System.err.println(command + "-----");
 			
 			boolean spaceAdded = false;
 			

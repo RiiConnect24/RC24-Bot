@@ -45,9 +45,9 @@ import java.io.IOException;
 
 public class CountCmd {
 
-    private final Logger logger = RiiConnect24Bot.getLogger(CountCmd.class);
+    private static final Logger logger = RiiConnect24Bot.getLogger(CountCmd.class);
     
-    public void register(CommandDispatcher<CommandContext> dispatcher) {
+    public static void register(CommandDispatcher<CommandContext> dispatcher) {
     	dispatcher.register(Commands.global("count")
     		.executes((context) -> {
     			execute(context.getSource());
@@ -56,7 +56,7 @@ public class CountCmd {
     	);
     }
 
-   private void execute(CommandContext context) {
+   private static void execute(CommandContext context) {
         String url = "https://miicontestp.wii.rc24.xyz/cgi-bin/count.cgi";
 
         if (RiiConnect24Bot.getInstance().getConfig().isDebug())

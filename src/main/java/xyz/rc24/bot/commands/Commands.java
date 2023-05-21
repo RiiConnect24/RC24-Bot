@@ -11,6 +11,18 @@ import xyz.rc24.bot.commands.argument.LiteralArgument;
 import xyz.rc24.bot.commands.argument.suggestion.AnyStringSuggestionProvider;
 import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Shutdown;
+import xyz.rc24.bot.commands.general.BirthdayCmd;
+import xyz.rc24.bot.commands.general.CountCmd;
+import xyz.rc24.bot.commands.general.InviteCmd;
+import xyz.rc24.bot.commands.general.RiiTagCmd;
+import xyz.rc24.bot.commands.general.RuleCmd;
+import xyz.rc24.bot.commands.wii.AddCmd;
+import xyz.rc24.bot.commands.wii.BlocksCmd;
+import xyz.rc24.bot.commands.wii.CodeCmd;
+import xyz.rc24.bot.commands.wii.DNSCmd;
+import xyz.rc24.bot.commands.wii.ErrorInfoCmd;
+import xyz.rc24.bot.commands.wii.WadsCmd;
+import xyz.rc24.bot.commands.wii.WiiWare;
 
 @SuppressWarnings("rawtypes")
 public class Commands {
@@ -19,7 +31,22 @@ public class Commands {
 	public static final Commands DISPATCHER = new Commands();
 	
 	public Commands() {
-		//HelpCommand.register(dispatcher);
+		
+		/**
+		 * SLASH COMMANDS
+		 */
+		AddCmd.register(slashDispatcher);
+		BirthdayCmd.register(slashDispatcher);
+		BlocksCmd.register(slashDispatcher);
+		CodeCmd.register(slashDispatcher);
+		CountCmd.register(slashDispatcher);
+		DNSCmd.register(slashDispatcher);
+		ErrorInfoCmd.register(slashDispatcher);
+		InviteCmd.register(slashDispatcher);
+		RiiTagCmd.register(slashDispatcher); //this cmd might still be broken
+		RuleCmd.register(slashDispatcher);
+		WadsCmd.register(slashDispatcher);
+		WiiWare.register(slashDispatcher);
 		
 		/**
 		 * NON SLASH COMMANDS

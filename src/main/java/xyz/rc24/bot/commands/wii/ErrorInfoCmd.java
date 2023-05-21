@@ -27,34 +27,38 @@ package xyz.rc24.bot.commands.wii;
 import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.jagrosh.jdautilities.command.SlashCommand;
+import com.mojang.brigadier.CommandDispatcher;
+
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import xyz.rc24.bot.Bot;
+
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 
 import java.awt.Color;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 /**
  * Looks up errors using the Wiimmfi API.
@@ -62,44 +66,37 @@ import java.util.regex.Pattern;
  * @author Spotlight, Artuto, Gamebuster
  */
 
-public class ErrorInfoCmd extends SlashCommand
-{
-    private final boolean debug;
-    private final OkHttpClient httpClient;
+public class ErrorInfoCmd {
+    private static final boolean debug = RiiConnect24Bot.getInstance().getConfig().isDebug();
+    private static final OkHttpClient httpClient = RiiConnect24Bot.getInstance().getHttpClient();
 	
-	private final Pattern CHANNEL = Pattern.compile("(NEWS|FORE)0{4}\\d{2}", Pattern.CASE_INSENSITIVE);
-	private final Pattern CHANNEL_CODE = Pattern.compile("0{4}\\d{2}");
+	private static final Pattern CHANNEL = Pattern.compile("(NEWS|FORE)0{4}\\d{2}", Pattern.CASE_INSENSITIVE);
+	private static final Pattern CHANNEL_CODE = Pattern.compile("0{4}\\d{2}");
 	
-	private final Pattern CODE = Pattern.compile("\\d{1,6}");
+	private static final Pattern CODE = Pattern.compile("\\d{1,6}");
 
-	private final Gson gson = new Gson();
-	private final Logger logger = RiiConnect24Bot.getLogger(ErrorInfoCmd.class);
-
-    public ErrorInfoCmd(Bot bot)
-    {
-        this.debug = bot.getConfig().isDebug();
-        this.httpClient = bot.getHttpClient();
-        this.name = "error";
-        this.help = "Looks up errors using the Wiimmfi API.";
-        this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_EMBED_LINKS};
-        this.guildOnly = false;
-
-        List<OptionData> data = new ArrayList<>();
-        data.add(new OptionData(OptionType.STRING, "code", "The error code."));
-        this.options = data;
+	private static final Gson gson = new Gson();
+	private static final Logger logger = RiiConnect24Bot.getLogger(ErrorInfoCmd.class);
+    
+    public static void register(CommandDispatcher<CommandContext> dispatcher) {
+    	dispatcher.register(Commands.global("error")
+    		.then(Commands.anyString("code")
+    			.executes((context) -> {
+    				sendResponse(context.getSource(), context.getArgument("code", String.class));
+    				return 1;
+    			})
+    		)
+    	);
     }
-
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        Matcher channelCheck = CHANNEL.matcher(event.getOption("code").getAsString());
+    
+    private static void sendResponse(CommandContext context, final String code) {
+        Matcher channelCheck = CHANNEL.matcher(code);
 
         // Check for Fore/News
         if(channelCheck.find())
         {
             // First match will be the type, then second our actual code.
-            int code;
+            int codeNum;
             try
             {
                 // Make sure the code's actually a code.
@@ -107,35 +104,44 @@ public class ErrorInfoCmd extends SlashCommand
                 if(!(codeCheck.find()))
 					throw new NumberFormatException();
 
-                code = Integer.parseInt(codeCheck.group(0));
-                if(channelErrors.get(code) == null)
+                codeNum = Integer.parseInt(codeCheck.group(0));
+                if(channelErrors.get(codeNum) == null)
 					throw new NumberFormatException();
             }
             catch(NumberFormatException ignored)
             {
-                event.reply("Could not find the specified app error code.").queue();
+                context.queueMessage("Could not find the specified app error code.");
                 return;
             }
+            
+            String title = "Here's information about your error:";
+            String description = channelErrors.get(code);
+            String footer = "All information provided by RC24 Developers.";
 
-           EmbedBuilder builder = new EmbedBuilder();
-            builder.setTitle("Here's information about your error:");
-            builder.setDescription(channelErrors.get(code));
-            builder.setColor(Color.decode("#D32F2F"));
-            builder.setFooter("All information provided by RC24 Developers.", null);
-            event.replyEmbeds(builder.build()).setEphemeral(true).queue();
+            if(context.isDiscordContext()) {
+                EmbedBuilder builder = context.getEmbed();
+                builder.setTitle(title);
+                builder.setDescription(description);
+                builder.setColor(Color.decode("#D32F2F"));
+                builder.setFooter(footer, null);
+                context.completeMessage(MessageCreateData.fromEmbeds(builder.build()));
+            }
+            else {
+            	context.queueMessage(title + "\n\n" + description + "\n\n" + footer);
+            }
         }
         else
         {
-            int code;
+            int codeNum;
             try
             {
                 // Validate if it is a number.
-                Matcher codeCheck = CODE.matcher(event.getOption("code").getAsString());
+                Matcher codeCheck = CODE.matcher(code);
                 if(!(codeCheck.find()))
 					throw new NumberFormatException();
 				
-                code = Integer.parseInt(codeCheck.group(0));
-                if(code == 0)
+                codeNum = Integer.parseInt(codeCheck.group(0));
+                if(codeNum == 0)
 				{
                     // 0 returns an empty array (see https://forum.wii-homebrew.com/index.php/Thread/57051-Wiimmfi-Error-API-has-an-error/?postID=680936)
                     // We'll just treat it as an error.
@@ -144,10 +150,12 @@ public class ErrorInfoCmd extends SlashCommand
             }
             catch(NumberFormatException ignored)
             {
-                event.reply("Enter a valid error code!").setEphemeral(true).queue();
+                context.queueMessage("Enter a valid error code!", true, false);
                 return;
             }
 
+            final ReplyCallbackAction replyAction = context.isDiscordContext() ? context.getReplyCallback().deferReply() : null;
+            
             // Get method
             String method = (debug ? "t=" : "e=") + code;
             String url = "https://wiimmfi.de/error?" + method + "&m=json";
@@ -161,7 +169,13 @@ public class ErrorInfoCmd extends SlashCommand
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e)
                 {
-                    event.reply("Hm, something went wrong on our end. Check Wiimmfi's website is up?").setEphemeral(true).queue();;
+                	String reply = "Hm, something went wrong on our end. Check Wiimmfi's website is up?";
+                	if(context.isDiscordContext()) {
+                		replyAction.setContent(reply).queue();
+                	}
+                	else {
+                		context.queueMessage(reply);
+                	}
                     logger.error("Something went wrong whilst checking error code '" + code +
                             "' with Wiimmfi: {}", e.getMessage(), e);
                 }
@@ -176,7 +190,7 @@ public class ErrorInfoCmd extends SlashCommand
                         return;
                     }
 
-                    success(event, response);
+                    success(context, replyAction, response);
                     response.close();
                 }
             });
@@ -184,59 +198,81 @@ public class ErrorInfoCmd extends SlashCommand
     }
 
     @SuppressWarnings("ConstantConditions") // Response body can't be null at this point of the execution
-    private void success(@NotNull SlashCommandEvent event, @NotNull Response response)
+    private static void success(@NotNull CommandContext context, @Nullable ReplyCallbackAction replyAction, @NotNull Response response)
     {
-        JSONFormat json = gson.fromJson(new InputStreamReader(response.body().byteStream()), JSONFormat[].class)[0];
-        if(!(json.found == 1))
-        {
-            event.reply("Could not find the specified error from Wiimmfi.").setEphemeral(true).queue();;
-            return;
-        }
-
-        StringBuilder infoBuilder = new StringBuilder();
-        for(InfoListFormat format : json.infolists)
-        {
-            String htmlToMarkdown = format.info;
-            Document infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
-
-            // Replace links with markdown format
-            for(Element hRef : infoSegment.select("a[href]"))
-            {
-                // So, we have to transform &amp; back to &.
-                // It's funny, the same issue happened with Nokogiri and Ruby.
-                String realOuterHTML = hRef.outerHtml();
-                realOuterHTML = realOuterHTML.replace("&amp;", "&");
-                htmlToMarkdown = htmlToMarkdown.replace(realOuterHTML, "[" + hRef.text() + "](" + hRef.attr("href") + ")");
-            }
-
-            // Parse again to handle updates
-            infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
-            for(Element bold : infoSegment.select("b"))
-                htmlToMarkdown = htmlToMarkdown.replace(bold.outerHtml(), "**" + bold.text() + "**");
-
-            // ...and parse, once more.
-            infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
-            for(Element italics : infoSegment.select("i"))
-                htmlToMarkdown = htmlToMarkdown.replace(italics.outerHtml(), "*" + italics.text() + "*");
-
-            infoBuilder.append(format.type).append(" for error ").append(format.name).append(": ").append(htmlToMarkdown).append("\n");
-        }
-
-        // Check for dev note
-        if(codeNotes.containsKey(json.error) && !codeNotes.containsKey(json.error))
-            infoBuilder.append("Note from RiiConnect24: ").append(codeNotes.get(json.error));
-
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle("Here's information about your error:");
-        builder.setDescription(infoBuilder.toString());
-        builder.setColor(Color.decode("#D32F2F"));
-        builder.setFooter("All information is from Wiimmfi unless noted.", null);
-
-        event.replyEmbeds(builder.build()).queue();
-        response.close();
+    	try(response) {
+	    	String description = null;
+	        JSONFormat json = gson.fromJson(new InputStreamReader(response.body().byteStream()), JSONFormat[].class)[0];
+	        if(!(json.found == 1))
+	        {
+	            description = "Could not find the specified error from Wiimmfi.";
+	            if(context.isDiscordContext()) {
+		            replyAction.setContent(description).queue();
+		            response.close();
+	            }
+	            else {
+	            	context.queueMessage(description);
+	            }
+	        }
+	
+	        if(description == null) {
+		        StringBuilder infoBuilder = new StringBuilder();
+		        for(InfoListFormat format : json.infolists)
+		        {
+		            String htmlToMarkdown = format.info;
+		            Document infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
+		
+		            // Replace links with markdown format
+		            for(Element hRef : infoSegment.select("a[href]"))
+		            {
+		                // So, we have to transform &amp; back to &.
+		                // It's funny, the same issue happened with Nokogiri and Ruby.
+		                String realOuterHTML = hRef.outerHtml();
+		                realOuterHTML = realOuterHTML.replace("&amp;", "&");
+		                htmlToMarkdown = htmlToMarkdown.replace(realOuterHTML, "[" + hRef.text() + "](" + hRef.attr("href") + ")");
+		            }
+		
+		            // Parse again to handle updates
+		            infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
+		            for(Element bold : infoSegment.select("b"))
+		                htmlToMarkdown = htmlToMarkdown.replace(bold.outerHtml(), "**" + bold.text() + "**");
+		
+		            // ...and parse, once more.
+		            infoSegment = Jsoup.parseBodyFragment(htmlToMarkdown);
+		            for(Element italics : infoSegment.select("i"))
+		                htmlToMarkdown = htmlToMarkdown.replace(italics.outerHtml(), "*" + italics.text() + "*");
+		
+		            infoBuilder.append(format.type).append(" for error ").append(format.name).append(": ").append(htmlToMarkdown).append("\n");
+		        }
+		
+		        // Check for dev note
+		        if(codeNotes.containsKey(json.error) && !codeNotes.containsKey(json.error))
+		            infoBuilder.append("Note from RiiConnect24: ").append(codeNotes.get(json.error));
+		
+	            String title = "Here's information about your error:";
+	            description = infoBuilder.toString();
+	            String footer = "All information is from Wiimmfi unless noted.";
+		        
+	            if(context.isDiscordContext()) {
+			        EmbedBuilder builder = new EmbedBuilder();
+			        builder.setTitle(title);
+			        builder.setDescription(description);
+			        builder.setColor(Color.decode("#D32F2F"));
+			        builder.setFooter(footer, null);
+			
+			        replyAction.setContent("").addEmbeds(builder.build()).queue();
+	            }
+	            else {
+	            	context.queueMessage(title + "\n\n" + description + "\n\n" + footer);
+	            }
+	        }
+    	}
+    	finally {
+    		response.close();
+    	}
     }
 
-    private class JSONFormat
+    private static final class JSONFormat
     {
         @SerializedName("error")
         int error;
@@ -246,7 +282,7 @@ public class ErrorInfoCmd extends SlashCommand
         InfoListFormat[] infolists;
     }
 
-    private class InfoListFormat
+    private static final class InfoListFormat
     {
         @SerializedName("type")
         String type;
@@ -256,7 +292,7 @@ public class ErrorInfoCmd extends SlashCommand
         String info;
     }
 
-    private final Map<Integer, String> channelErrors = new HashMap<>()
+    private static final Map<Integer, String> channelErrors = new HashMap<>()
     {{
         put(1, "Can't open the VFF. Follow https://wii.guide/deleting-vffs to fix it.");
         put(2, "Seems to happen when there is a problem with one of the files on the NAND. " + "If you're getting it after fixing NEWS/FORE000006, do a connection test to fix it.");
@@ -267,7 +303,7 @@ public class ErrorInfoCmd extends SlashCommand
         put(99, "Other error. Follow https://wii.guide/deleting-vffs to potentially fix it.");
     }};
 
-    private final Map<Integer, String> codeNotes = new HashMap<>()
+    private static final Map<Integer, String> codeNotes = new HashMap<>()
     {{
         put(101409, "If you are getting this error while doing something with Wii Mail, check if you patched the nwc24msg.cfg correctly using the Mail-Patcher. https://bit.ly/2QUrsyD");
         put(102032, "This error shouldn't happen anymore as we have implemented the challenge response that prevents the error from happening.");

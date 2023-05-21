@@ -6,6 +6,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'eclipse'
+    id 'com.github.johnrengelman.shadow' version "8.1.1"
 }
 
 repositories {
@@ -29,20 +30,33 @@ repositories {
 }
 
 dependencies {
+    shadow 'com.thegamecommunity:brigadier:TGC-1.3.0.0'
     implementation 'com.thegamecommunity:brigadier:TGC-1.3.0.0'
-    implementation ('net.dv8tion:JDA:5.0.0-beta.9')
-    implementation 'ch.qos.logback:logback-core:1.2.3'
-    implementation 'io.sentry:sentry-logback:1.7.3'
-    implementation 'org.codehaus.groovy:groovy-jsr223:3.0.8'
-    implementation 'org.jsoup:jsoup:1.10.3'
-    implementation 'mysql:mysql-connector-java:8.0.28'
-    implementation 'co.aikar:idb-core:1.0.0-SNAPSHOT'
-    implementation 'com.zaxxer:HikariCP:2.6.0'
-    implementation 'org.yaml:snakeyaml:1.29'
-    implementation 'com.google.code.gson:gson:2.8.9'
-    implementation 'com.google.guava:guava:30.1.1-jre'
-    implementation 'com.datadoghq:java-dogstatsd-client:2.8'
-    implementation 'org.json:json:20230227'
+    shadow ('net.dv8tion:JDA:5.0.0-beta.9')
+    shadow 'ch.qos.logback:logback-core:1.2.3'
+    shadow 'io.sentry:sentry-logback:1.7.3'
+    shadow 'org.codehaus.groovy:groovy-jsr223:3.0.8'
+    shadow 'org.jsoup:jsoup:1.10.3'
+    shadow 'mysql:mysql-connector-java:8.0.28'
+    shadow 'co.aikar:idb-core:1.0.0-SNAPSHOT'
+    shadow 'com.zaxxer:HikariCP:2.6.0'
+    shadow 'org.yaml:snakeyaml:1.29'
+    shadow 'com.google.code.gson:gson:2.8.9'
+    shadow 'com.google.guava:guava:30.1.1-jre'
+    shadow 'com.datadoghq:java-dogstatsd-client:2.8'
+    shadow 'org.json:json:20230227'
+}
+
+shadowJar {
+	mergeServiceFiles()
+	configurations = [project.configurations.shadow]
+	exclude 'META-INF/LICENSE'
+	exclude 'META-INF/LICENSE.txt'
+	exclude 'META-INF/LICENSsE.txt'
+	exclude 'META-INF/NOTICE'
+	exclude 'META-INF/NOTICE.txt'
+	exclude 'META-INF/DEPENDENCIES'
+	exclude 'LICENSE.txt'
 }
 
 group = 'xyz.rc24.bot'
@@ -50,14 +64,21 @@ version = '5.3.4'
 description = 'RC24-Bot'
 java.sourceCompatibility = JavaVersion.VERSION_19
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
+jar {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	manifest {
+		attributes(
+			'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' '),
+			'MixinConfigs': 'mixins.json',
+			'Main-Class': 'xyz.rc24.bot.RiiConnect24Bot',
+			'Specification-Version': 8.0,
+			'Multi-Release': 'true'
+		)
+	}
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	} {
+		exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+	}
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}

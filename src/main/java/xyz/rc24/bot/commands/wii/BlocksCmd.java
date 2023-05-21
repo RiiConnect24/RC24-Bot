@@ -33,7 +33,7 @@ import xyz.rc24.bot.commands.Commands;
 public class BlocksCmd
 {
     
-    private static final void register(CommandDispatcher<CommandContext> dispatcher) {
+    public static final void register(CommandDispatcher<CommandContext> dispatcher) {
     	dispatcher.register(Commands.global("blocks")
     		.executes((context) -> {
     			convert(context.getSource(), 0d);
