@@ -58,8 +58,8 @@ public class Bash {
     
     protected static void runBashCommand(CommandContext context, String bashCommand)
     {
-    	if(!context.isConsoleContext()) { //todo: permissions? Currently this can only be executed from the console
-    		context.queueMessage("You do not have permission to execute that command");
+    	if(!context.isConsoleContext() && !context.isOwnerContext()) { //todo: permissions? Currently this can only be executed from the console
+    		context.replyInsufficientPermissions();
     		return;
     	}
         if(bashCommand.isEmpty())
