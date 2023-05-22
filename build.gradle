@@ -42,7 +42,7 @@ dependencies {
     shadow 'com.zaxxer:HikariCP:5.0.1'
     shadow 'org.yaml:snakeyaml:1.29'
     shadow 'com.google.code.gson:gson:2.8.9'
-    shadow 'com.google.guava:guava:30.1.1-jre'
+    shadow 'com.google.guava:guava:31.1-jre'
     shadow 'com.datadoghq:java-dogstatsd-client:2.8'
     shadow 'org.json:json:20230227'
 }
