@@ -24,7 +24,6 @@
 
 package xyz.rc24.bot.managers;
 
-import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -37,6 +36,8 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
+
+import org.slf4j.Logger;
 
 import static xyz.rc24.bot.Const.ERROR_E;
 

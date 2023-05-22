@@ -24,7 +24,6 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.mojang.brigadier.CommandDispatcher;
@@ -43,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
 
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.CommandContext;
