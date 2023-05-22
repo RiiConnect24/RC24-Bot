@@ -28,6 +28,8 @@ import ch.qos.logback.classic.Logger;
 import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
+
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mysql.cj.jdbc.Driver;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import com.timgroup.statsd.NonBlockingStatsDClient;
@@ -45,7 +47,8 @@ import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import okhttp3.OkHttpClient;
-
+import xyz.rc24.bot.commands.CommandContext;
+import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
@@ -56,6 +59,7 @@ import xyz.rc24.bot.database.GuildSettingsDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
 import xyz.rc24.bot.listeners.GlobalEventReceiver;
 import xyz.rc24.bot.managers.BirthdayManager;
+import xyz.rc24.bot.user.ConsoleUser;
 
 import javax.security.auth.login.LoginException;
 
@@ -65,6 +69,8 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -96,6 +102,7 @@ public class Bot extends ListenerAdapter
     private final OkHttpClient httpClient = new OkHttpClient();
     private final ScheduledExecutorService botScheduler = Executors.newScheduledThreadPool(5);
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
+	private final ConcurrentLinkedDeque<String> consoleCommandsAwaitingProcessing = new ConcurrentLinkedDeque<String>();
 
     void run() throws LoginException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
     {
@@ -142,7 +149,9 @@ public class Bot extends ListenerAdapter
         if(!(dataDogStatsListener == null))
             builder.addEventListeners(dataDogStatsListener);
 
+        startConsole();
         builder.build();
+
     }
 
     @Override
@@ -280,4 +289,42 @@ public class Bot extends ListenerAdapter
 		return getCore().getGuildSettings(guild).getPrefix();
 	}
 
+	private void startConsole() {
+		{
+			Thread consoleReaderThread = new Thread() {
+				@Override
+				public void run() {
+					Scanner scanner = new Scanner(System.in);
+					while(scanner.hasNextLine()) {
+						consoleCommandsAwaitingProcessing.addFirst(scanner.nextLine());
+					}
+					System.out.println("Console reader closed!");
+				}
+			};
+			consoleReaderThread.setName("consoleReader");
+			consoleReaderThread.setDaemon(true);
+			consoleReaderThread.start();
+		}
+		{
+			Thread consoleExecutorThread = new Thread() {
+				@Override
+				public void run() {
+					while(true) {
+						for(String s : consoleCommandsAwaitingProcessing) {
+							try {
+								Commands.DISPATCHER.getSlashDispatcher().execute(s, new CommandContext(ConsoleUser.INSTANCE));
+							} catch (CommandSyntaxException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			};
+			
+			consoleExecutorThread.setName("consoleExecutor");
+			consoleExecutorThread.setDaemon(true);
+			consoleExecutorThread.start();
+		}
+	}
+	
 }
