@@ -35,7 +35,7 @@ dependencies {
     shadow ('net.dv8tion:JDA:5.0.0-beta.9')
     shadow 'ch.qos.logback:logback-core:1.4.7'
     shadow 'io.sentry:sentry-logback:6.19.1'
-    shadow 'org.codehaus.groovy:groovy-jsr223:3.0.8'
+    shadow 'org.codehaus.groovy:groovy-jsr223:3.0.17'
     shadow 'org.jsoup:jsoup:1.16.1'
     shadow 'mysql:mysql-connector-java:8.0.33'
     shadow 'co.aikar:idb-core:1.0.0-SNAPSHOT'
