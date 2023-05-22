@@ -40,7 +40,7 @@ dependencies {
     shadow 'mysql:mysql-connector-java:8.0.33'
     shadow 'co.aikar:idb-core:1.0.0-SNAPSHOT'
     shadow 'com.zaxxer:HikariCP:5.0.1'
-    shadow 'org.yaml:snakeyaml:1.29'
+    shadow 'org.yaml:snakeyaml:2.0'
     shadow 'com.google.code.gson:gson:2.10.1'
     shadow 'com.google.guava:guava:31.1-jre'
     shadow 'com.datadoghq:java-dogstatsd-client:2.8'
