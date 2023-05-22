@@ -24,10 +24,10 @@
 
 package xyz.rc24.bot.commands.botadm;
 
-import ch.qos.logback.classic.Logger;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
@@ -58,8 +58,8 @@ public class Bash {
     
     protected static void runBashCommand(CommandContext context, String bashCommand)
     {
-    	if(!context.isConsoleContext()) { //todo: permissions? Currently this can only be executed from the console
-    		context.queueMessage("You do not have permission to execute that command");
+    	if(!context.isConsoleContext() && !context.isOwnerContext()) { //todo: permissions? Currently this can only be executed from the console
+    		context.replyInsufficientPermissions();
     		return;
     	}
         if(bashCommand.isEmpty())

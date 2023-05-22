@@ -24,8 +24,9 @@
 
 package xyz.rc24.bot;
 
-import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.api.requests.RestAction;
+
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.login.LoginException;

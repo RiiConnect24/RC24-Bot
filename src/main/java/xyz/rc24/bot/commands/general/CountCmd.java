@@ -24,12 +24,12 @@
 
 package xyz.rc24.bot.commands.general;
 
-import ch.qos.logback.classic.Logger;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import com.mojang.brigadier.CommandDispatcher;
 

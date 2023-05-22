@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.Config;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.user.ConsoleUser;
 
@@ -278,6 +279,15 @@ public class CommandContext<E> {
 			return ((MessageReceivedEvent) event).getGuild();
 		}
 		return null;
+	}
+	
+	public boolean isOwnerContext() {
+		User user = getAuthor();
+		if(user != null) {
+			Config config = this.getBot().getConfig();
+			return config.getPrimaryOwner() == user.getIdLong() || config.getSecondaryOwners().contains(user.getIdLong());
+		}
+		return false;
 	}
 	
 	public boolean isGuildContext() {
