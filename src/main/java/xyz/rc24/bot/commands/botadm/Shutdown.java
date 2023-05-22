@@ -42,7 +42,7 @@ public class Shutdown {
 	}
     
     private static void shutdown(CommandContext context) {
-    	if(!context.isConsoleContext()) { //TODO: Permission system
+    	if(!context.isConsoleContext() && !context.isOwnerContext()) {
     		context.replyInsufficientPermissions();
     	}
     	else {
