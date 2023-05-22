@@ -1,5 +1,6 @@
 package xyz.rc24.bot.commands.argument;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,7 +21,7 @@ public class CodeTypeArgumentType implements ArgumentType<CodeType> {
 	public static final CodeTypeArgumentType ANY_CODE = of(CodeType.values());
 	public static final CodeTypeArgumentType KNOWN_CODES;
 	static {
-		List<CodeType> types = Arrays.asList(CodeType.values());
+		List<CodeType> types = new ArrayList<>(Arrays.asList(CodeType.values()));
 		types.remove(CodeType.UNKNOWN);
 		KNOWN_CODES = of(types.toArray(new CodeType[]{}));
 	}
