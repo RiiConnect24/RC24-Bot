@@ -24,10 +24,11 @@
 
 package xyz.rc24.bot.database;
 
-import ch.qos.logback.classic.Logger;
 import co.aikar.idb.DB;
 import co.aikar.idb.DbRow;
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
+
 import xyz.rc24.bot.RiiConnect24Bot;
 
 import java.util.List;

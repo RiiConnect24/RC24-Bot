@@ -24,10 +24,10 @@
 
 package xyz.rc24.bot.commands.botadm;
 
-import ch.qos.logback.classic.Logger;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;

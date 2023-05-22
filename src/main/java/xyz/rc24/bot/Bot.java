@@ -24,7 +24,6 @@
 
 package xyz.rc24.bot;
 
-import ch.qos.logback.classic.Logger;
 import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
@@ -62,6 +61,8 @@ import xyz.rc24.bot.managers.BirthdayManager;
 import xyz.rc24.bot.user.ConsoleUser;
 
 import javax.security.auth.login.LoginException;
+
+import org.slf4j.Logger;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
