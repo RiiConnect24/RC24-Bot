@@ -13,6 +13,7 @@ import xyz.rc24.bot.commands.botadm.Bash;
 import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.general.BirthdayCmd;
 import xyz.rc24.bot.commands.general.CountCmd;
+import xyz.rc24.bot.commands.general.FlagCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
 import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.RiiTagCmd;
@@ -48,6 +49,8 @@ public class Commands {
 		RuleCmd.register(dispatcher);
 		WadsCmd.register(dispatcher);
 		WiiWare.register(dispatcher);
+		
+		FlagCmd.register(dispatcher);
 		
 
 		/**
