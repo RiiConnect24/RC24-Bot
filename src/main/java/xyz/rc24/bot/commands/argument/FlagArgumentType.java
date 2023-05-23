@@ -2,7 +2,6 @@ package xyz.rc24.bot.commands.argument;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -37,7 +36,7 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 	}
 	 
 	
-	private final LinkedHashSet<Flag> flags = new LinkedHashSet<Flag>();
+	private final ArrayList<Flag> flags = new ArrayList<Flag>();
 	
 	private FlagArgumentType(Flag... flags) {
 		this.flags.addAll(Arrays.asList(flags));
@@ -80,7 +79,12 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 				return builder.buildFuture();
 			}
 			if(f.getName().toLowerCase().startsWith(flagText.toLowerCase())) {
-				builder.suggest(f.getEmote() + ":" + f.getName());
+				if(f.getName().indexOf(' ') > -1) {
+					builder.suggest("\"" + f.getEmote() + ":" + f.getName() + "\"");
+				}
+				else {
+					builder.suggest(f.getEmote() + ":" + f.getName());
+				}
 			}
 		}
 		return builder.buildFuture();
