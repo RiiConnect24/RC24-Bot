@@ -57,7 +57,7 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 			text = CommandUtils.readString(reader);
 		}
 		
-		Flag flag = Flag.fromName(text);
+		Flag flag = Flag.fromSuggestion(text);
 		if(flags.contains(flag)) {
 			return flag;
 		}
@@ -66,7 +66,8 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 			throw ParseExceptions.NONEXISTANT.create("Flag", text);
 		}
 		else {
-			throw ParseExceptions.NOT_VALID.create("Flag", text);
+			throw ParseExceptions.INVALID_CHOICE_CNT.create(flags);
+
 		}
 	}
 
@@ -75,11 +76,11 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 		String flagText = CommandUtils.lastArgOf(builder.getInput());
 		for(Flag f : flags) {
 			if(f.getEmote().equals(flagText)) {
-				builder.suggest(f.getEmote());
+				builder.suggest(f.getEmote() + ":" + f.getName());
 				return builder.buildFuture();
 			}
 			if(f.getName().toLowerCase().startsWith(flagText.toLowerCase())) {
-				builder.suggest(f.getName());
+				builder.suggest(f.getEmote() + ":" + f.getName());
 			}
 		}
 		return builder.buildFuture();

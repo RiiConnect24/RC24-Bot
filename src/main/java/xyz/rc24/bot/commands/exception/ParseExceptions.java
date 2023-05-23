@@ -16,6 +16,7 @@ public interface ParseExceptions {
 	public Dynamic2CommandExceptionType NONEXISTANT = new Dynamic2CommandExceptionType((type, value) -> new LiteralMessage(type + " `" + value + "` does not exist or could not be found."));
 	
 	public DynamicCommandExceptionType INVALID_CHOICE = new DynamicCommandExceptionType((value) -> new LiteralMessage("Invalid choice, must choose from one of the following: `" + Arrays.toString(((Collection<?>)value).toArray()) + "`"));
+	public DynamicCommandExceptionType INVALID_CHOICE_CNT = new DynamicCommandExceptionType((value) -> new LiteralMessage("Invalid choice, must choose from one of the  `" + ((Collection<?>)value).size() + "` valid choices"));
 	
 	public DynamicCommandExceptionType DISCORD_NOT_FOUND = new DynamicCommandExceptionType(input -> new LiteralMessage("Could not find a discord user using the input `" + input + "`"));
 	public Dynamic2CommandExceptionType DISCORD_AMBIGUITY = new Dynamic2CommandExceptionType((input, found) -> new LiteralMessage("`" + input + "` matches " + ((User[])found).length + " users, supply a discriminator or specify an ID"));

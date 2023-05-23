@@ -327,4 +327,20 @@ public enum Flag
 
         return UNKNOWN;
     }
+    
+    public static Flag fromSuggestion(String suggestion) {
+    	for(Flag flag : values()) {
+    		if(flag.getName() == null) {
+    			continue;
+    		}
+    		if(suggestion.startsWith(flag.getEmote())) {
+    			return flag;
+    		}
+    		else if (suggestion.toLowerCase().equals(flag.getName().toLowerCase())) {
+    			return flag;
+    		}
+    	}
+    	
+    	return UNKNOWN;
+    }
 }

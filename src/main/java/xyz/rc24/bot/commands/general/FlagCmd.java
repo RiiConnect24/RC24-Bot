@@ -37,7 +37,7 @@ public class FlagCmd
 
     public static void register(CommandDispatcher<CommandContext> dispatcher) {
     	dispatcher.register(Commands.global("flag")
-    		.then(Commands.argument("flag", FlagArgumentType.KNOWN_FLAGS)
+    		.then(Commands.argument("flag", FlagArgumentType.COUNTRIES)
     			.executes((context) -> {
     				execute(context.getSource(), context.getArgument("flag", Flag.class));
     				return 1;
