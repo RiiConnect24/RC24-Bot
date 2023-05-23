@@ -113,7 +113,7 @@ public class GlobalEventReceiver extends ListenerAdapter {
 						data.addOption(OptionType.STRING, "arguments", "arguments", base == null, true); //todo: regular discord args?
 					}
 					else {
-						data.addOption(OptionType.STRING, "arguments", "arguments", base != null, true);
+						data.addOption(OptionType.STRING, "arguments", "arguments", base == null, true);
 					}
 					
 					/*
