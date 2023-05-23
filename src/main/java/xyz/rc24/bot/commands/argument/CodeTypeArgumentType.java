@@ -56,7 +56,7 @@ public class CodeTypeArgumentType implements ArgumentType<CodeType> {
 	public <S> CompletableFuture<Suggestions> listSuggestions(com.mojang.brigadier.context.CommandContext<S> context, SuggestionsBuilder builder) {
 		String typeText = CommandUtils.lastArgOf(builder.getInput());
 		for(CodeType t : types) {
-			if(t.getName().startsWith(typeText)) {
+			if(t.getName().toLowerCase().startsWith(typeText.toLowerCase())) {
 				builder.suggest(t.getName());
 			}
 		}
