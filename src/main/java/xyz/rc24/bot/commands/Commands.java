@@ -14,6 +14,7 @@ import xyz.rc24.bot.commands.botadm.Shutdown;
 import xyz.rc24.bot.commands.general.BirthdayCmd;
 import xyz.rc24.bot.commands.general.CountCmd;
 import xyz.rc24.bot.commands.general.InviteCmd;
+import xyz.rc24.bot.commands.general.PingCmd;
 import xyz.rc24.bot.commands.general.RiiTagCmd;
 import xyz.rc24.bot.commands.general.RuleCmd;
 import xyz.rc24.bot.commands.wii.AddCmd;
@@ -42,7 +43,8 @@ public class Commands {
 		DNSCmd.register(dispatcher);
 		ErrorInfoCmd.register(dispatcher);
 		InviteCmd.register(dispatcher);
-		RiiTagCmd.register(dispatcher); //this cmd might still be broken
+		PingCmd.register(dispatcher);
+		RiiTagCmd.register(dispatcher);
 		RuleCmd.register(dispatcher);
 		WadsCmd.register(dispatcher);
 		WiiWare.register(dispatcher);
