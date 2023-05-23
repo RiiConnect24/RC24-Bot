@@ -263,7 +263,7 @@ public class CommandContext<E> {
 	public void sendThrowable(Throwable t) {
 		IReplyCallback callback = (IReplyCallback) event;
 		if(!callback.isAcknowledged()) {
-			callback.deferReply().queue();;
+			callback.deferReply().queue();
 		}
 		callback.getHook().editOriginal(t.toString()).queue();
 	}
