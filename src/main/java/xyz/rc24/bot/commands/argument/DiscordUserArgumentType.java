@@ -47,7 +47,6 @@ public class DiscordUserArgumentType implements ArgumentType<User>{
 	public <S> CompletableFuture<Suggestions> listSuggestions(com.mojang.brigadier.context.CommandContext<S> context, SuggestionsBuilder builder) {
 		CommandContext<?> c = (CommandContext<?>) context.getSource();
 		Guild server = c.getServer();
-		System.err.println(CommandUtils.lastArgOf(builder.getInput()));
 		
 		Thread searchThread = new Thread(() -> {
 			Thread t = Thread.currentThread();
@@ -61,7 +60,6 @@ public class DiscordUserArgumentType implements ArgumentType<User>{
 				}).onSuccess((foundMembers) -> {
 					for(Member member : foundMembers) {
 						builder.suggest(toSuggestionString(member.getUser()));
-						System.out.println("Found " + member);
 					}
 					synchronized(t) {
 						t.notifyAll();
