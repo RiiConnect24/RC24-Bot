@@ -2,6 +2,7 @@ package xyz.rc24.bot.listeners;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.mojang.brigadier.ParseResults;
@@ -120,41 +121,43 @@ public class GlobalEventReceiver extends ListenerAdapter {
 		
 		@Override
 		public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent e) {
-			
-			String command = e.getName() + " " + e.getFocusedOption().getValue();
-			final String arguments = e.getFocusedOption().getValue();
-			String fixedArguments = e.getFocusedOption().getValue();
-			
-			boolean spaceAdded = false;
-			
-			if(fixedArguments.indexOf(' ') != -1) {
-				fixedArguments = fixedArguments.substring(0, fixedArguments.lastIndexOf(' '));
-			}
-			else {
-				fixedArguments = "";
-			}
-			ParseResults<CommandContext> parseResults = Commands.DISPATCHER.getSlashDispatcher().parse(command, new CommandContext<CommandAutoCompleteInteractionEvent>(e));
-			List<Suggestion> suggestions;
-			List<String> returnedSuggestions = new ArrayList<String>();
-			try {
-				suggestions = Commands.DISPATCHER.getSlashDispatcher().getCompletionSuggestions(parseResults, command.length()).get().getList();
-			} catch (InterruptedException | ExecutionException ex) {
-				ex.printStackTrace();
-				return;
-			}
-			if(suggestions.size() > 25) {
-				suggestions = suggestions.subList(0, 25);
-			}
-			System.out.println("Arguments:" + arguments);
-			for(Suggestion suggestion : suggestions) {
-				if(!spaceAdded) {
-					returnedSuggestions.add(fixedArguments + " " + suggestion.getText());
+			CompletableFuture.runAsync(() -> {
+				String command = e.getName() + " " + e.getFocusedOption().getValue();
+				final String arguments = e.getFocusedOption().getValue();
+				String fixedArguments = e.getFocusedOption().getValue();
+				
+				boolean spaceAdded = false;
+				
+				if(fixedArguments.indexOf(' ') != -1) {
+					fixedArguments = fixedArguments.substring(0, fixedArguments.lastIndexOf(' '));
 				}
 				else {
-					returnedSuggestions.add(fixedArguments + arguments + " " + suggestion.getText());
+					fixedArguments = "";
 				}
-			}
-			e.replyChoiceStrings(returnedSuggestions).queue();
+				ParseResults<CommandContext> parseResults = Commands.DISPATCHER.getDispatcher().parse(command, new CommandContext<CommandAutoCompleteInteractionEvent>(e));
+				List<Suggestion> suggestions;
+				List<String> returnedSuggestions = new ArrayList<String>();
+				try {
+					suggestions = Commands.DISPATCHER.getDispatcher().getCompletionSuggestions(parseResults, command.length()).get().getList();
+				} catch (InterruptedException | ExecutionException ex) {
+					ex.printStackTrace();
+					return;
+				}
+				if(suggestions.size() > 25) {
+					suggestions = suggestions.subList(0, 25);
+				}
+				System.out.println("Arguments:" + arguments);
+				for(Suggestion suggestion : suggestions) {
+					System.out.println("SUGGESTION: " + suggestion.getText());
+					if(!spaceAdded) {
+						returnedSuggestions.add(fixedArguments + " " + suggestion.getText());
+					}
+					else {
+						returnedSuggestions.add(fixedArguments + arguments + " " + suggestion.getText());
+					}
+				}
+				e.replyChoiceStrings(returnedSuggestions).queue();
+			});
 		}
 	}
 	
