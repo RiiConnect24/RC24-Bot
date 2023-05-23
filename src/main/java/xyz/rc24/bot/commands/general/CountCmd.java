@@ -38,6 +38,7 @@ import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Larsenv
@@ -56,37 +57,44 @@ public class CountCmd {
     	);
     }
 
-   private static void execute(CommandContext context) {
+   private static void execute(CommandContext<?> context) {
+	    
         String url = "https://miicontestp.wii.rc24.xyz/cgi-bin/count.cgi";
+        
+        CommandContext<?> ctx = context.defer(true);
 
-        if (RiiConnect24Bot.getInstance().getConfig().isDebug())
-            logger.info("Sending request to '{}'", url);
+        CompletableFuture.runAsync(() -> {
+            if (RiiConnect24Bot.getInstance().getConfig().isDebug())
+                logger.info("Sending request to '{}'", url);
 
-        Request request = new Request.Builder().url(url).build();
-        RiiConnect24Bot.getInstance().getHttpClient().newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                context.queueMessage("Hm, something went wrong on our end.", true, false);
-                logger.error("Something went wrong whilst checking the RiiConnect24 count stats: {}", e.getMessage(),
-                        e);
-            }
+            Request request = new Request.Builder().url(url).build();
+            RiiConnect24Bot.getInstance().getHttpClient().newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                	ctx.queueMessage("Hm, something went wrong on our end.", true, false);
+                    logger.error("Something went wrong whilst checking the RiiConnect24 count stats: {}", e.getMessage(),
+                            e);
+                }
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
-                if (!(response.isSuccessful())) {
-                    onFailure(call, new IOException("Not success response code: " + response.code()));
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) {
+                    if (!(response.isSuccessful())) {
+                        onFailure(call, new IOException("Not success response code: " + response.code()));
+                        response.close();
+                        return;
+                    }
+
+                    try {
+                        ctx.queueMessage(response.body().string());
+                    } catch (Exception e) {
+                        ctx.queueMessage("Hm, something went wrong on our end.", true, false);
+                    }
+
                     response.close();
-                    return;
                 }
-
-                try {
-                    context.queueMessage(response.body().string());
-                } catch (Exception e) {
-                    context.queueMessage("Hm, something went wrong on our end.", true, false);
-                }
-
-                response.close();
-            }
+            });
         });
+        
+
     }
 }

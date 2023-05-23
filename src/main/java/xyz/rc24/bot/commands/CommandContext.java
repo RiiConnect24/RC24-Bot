@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -32,7 +33,7 @@ public class CommandContext<E> {
 	private EmbedBuilder embedBuilder;
 	
 	public CommandContext(E e) {
-		if(e instanceof MessageReceivedEvent || e instanceof Interaction || e instanceof GuildReadyEvent || e instanceof User) {
+		if(e instanceof MessageReceivedEvent || e instanceof Interaction || e instanceof GuildReadyEvent || e instanceof User || e instanceof InteractionHook) {
 			this.event = e;
 		}
 		else {
@@ -53,6 +54,19 @@ public class CommandContext<E> {
 		}
 		if(event instanceof User) {
 			return (User) event;
+		}
+		if(event instanceof InteractionHook) {
+			return ((InteractionHook) event).getInteraction().getUser();
+		}
+		return null;
+	}
+	
+	public Interaction getInteraction() {
+		if(event instanceof Interaction) {
+			return (Interaction) event;
+		}
+		if(event instanceof InteractionHook) {
+			return ((InteractionHook) event).getInteraction();
 		}
 		return null;
 	}
@@ -111,9 +125,26 @@ public class CommandContext<E> {
 				((User)event).openPrivateChannel().queue((att) -> {((PrivateChannel)att).sendMessage(messageData).queue();});
 			}
 		}
+		else if (event instanceof InteractionHook) {
+			((InteractionHook) event).editOriginal(MessageEditData.fromCreateData(messageData)).queue();
+		}
 		else {
 			throw new UnsupportedOperationException("Cannot reply to a " + event.getClass().getCanonicalName());
 		}
+	}
+	
+	/**
+	 * 
+	 * @param ephemeral whether the deferred message should be ephemral. Has no effect if this context does not have in interaction hook.
+	 * @return a new CommandContext based on this context's interaction hook, or this if the context does not have an interaction hook.
+	 */
+	public CommandContext defer(boolean ephemeral) {
+		Interaction interaction = getInteraction();
+		if(interaction != null) {
+			((IReplyCallback) interaction).deferReply(ephemeral).queue();
+			return new CommandContext<InteractionHook>(((IDeferrableCallback) interaction).getHook());
+		}
+		return this;
 	}
 	
 	public void queueMessage(MessageCreateData messageData, boolean ephemeral, boolean silent, Consumer<? super Throwable> onFailure) {
@@ -130,6 +161,9 @@ public class CommandContext<E> {
 			else {
 				((User)event).openPrivateChannel().queue((att) -> {((PrivateChannel)att).sendMessage(messageData).queue();});
 			}
+		}
+		else if (event instanceof InteractionHook) {
+			((InteractionHook) event).editOriginal(MessageEditData.fromCreateData(messageData)).queue();
 		}
 		else {
 			throw new UnsupportedOperationException("Cannot reply to a " + event.getClass().getCanonicalName());
@@ -172,6 +206,10 @@ public class CommandContext<E> {
 				channel.sendMessage(messageData).complete();
 			}
 			return null;
+		}
+		else if (event instanceof InteractionHook) {
+			((InteractionHook) event).editOriginal(MessageEditData.fromCreateData(messageData)).complete();
+			return (InteractionHook) event;
 		}
 		else {
 			throw new UnsupportedOperationException("Cannot reply to a " + event.getClass().getCanonicalName());
@@ -248,6 +286,9 @@ public class CommandContext<E> {
 		}
 		else if (event instanceof MessageReceivedEvent) {
 			return ((MessageReceivedEvent) event).getChannel();
+		}
+		else if (event instanceof InteractionHook) {
+			return getInteraction().getMessageChannel();
 		}
 		return null;
 	}
