@@ -47,24 +47,22 @@ public class FlagCmd
     }
 
     private static void execute(CommandContext context, Flag flag) {
-    	if(context.isDiscordContext()) {
-	        if(flag == Flag.UNKNOWN)
-	        {
-	            context.queueMessage("Unknown country!", true, false);
-	            return;
-	        }
-	
-	        boolean success = RiiConnect24Bot.getInstance().getCodeDataManager().setFlag(context.getAuthor().getIdLong(), flag.getEmote());
-	
-	        if(success) {
-	            context.queueMessage("Updated successfully!", true, false);
-	        }
-	        else {
-	            context.queueMessage("Error updating your flag! Please contact a developer.", true, false);
-	        }
-    	}
-    	else {
+    	if(!context.isDiscordContext()) {
     		context.replyDiscordOnlyCommand();
     	}
+        if(flag == Flag.UNKNOWN)
+        {
+            context.queueMessage("Unknown country!", true, false);
+            return;
+        }
+
+        boolean success = RiiConnect24Bot.getInstance().getCodeDataManager().setFlag(context.getAuthor().getIdLong(), flag.getEmote());
+
+        if(success) {
+            context.queueMessage("Updated successfully!", true, false);
+        }
+        else {
+            context.queueMessage("Error updating your flag! Please contact a developer.", true, false);
+        }
     }
 }

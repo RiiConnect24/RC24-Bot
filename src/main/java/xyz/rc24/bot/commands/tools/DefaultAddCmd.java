@@ -53,21 +53,22 @@ public class DefaultAddCmd {
     }
 
     private static void execute(CommandContext context, CodeType type) {
-    	if(context.hasPermission(Permission.MANAGE_SERVER)) {
-    		if(context.isDiscordContext()) {
-		        if(context.getBot().getGuildSettingsDataManager().setDefaultAddType(type, context.getServer().getIdLong())) {
-		            context.queueMessage("Successfully set `" + type.getName() + "` as default `add` type!");
-		        }
-		        else {
-		            context.queueMessage("Error whilst updating the default add type! Please contact a developer.", true, false);
-		        }
-    		}
-    		else {
-    			context.replyDiscordOnlyCommand();
-    		}
-    	}
-    	else {
+    	
+    	if(!context.hasPermission(Permission.MANAGE_SERVER)) {
     		context.replyInsufficientPermissions();
+    		return;
     	}
+    	if(!context.isDiscordContext()) {
+    		context.replyDiscordOnlyCommand();
+    		return;
+    	}
+    	
+        if(context.getBot().getGuildSettingsDataManager().setDefaultAddType(type, context.getServer().getIdLong())) {
+            context.queueMessage("Successfully set `" + type.getName() + "` as default `add` type!");
+        }
+        else {
+            context.queueMessage("Error whilst updating the default add type! Please contact a developer.", true, false);
+        }
+
     }
 }

@@ -72,33 +72,34 @@ public class PrefixCmd {
     }
     
     private static void setPrefix(CommandContext context, String prefix) {
-    	if(context.isDiscordContext()) {
-    		if(context.isGuildContext()) {
-    			if(context.hasPermission(Permission.MANAGE_SERVER)) {
-        			if(prefix != null && prefix.length() > 5) {
-        				context.queueMessage("The prefix length may not be longer than 5 characters!");
-        			}
-        			else {
-        				GuildSettingsDataManager dataManager = context.getBot().getGuildSettingsDataManager();
-        	            if(dataManager.setPrefix(context.getServer().getIdLong(), null)) {
-        	                context.queueMessage("Successfully disabled the custom prefix!");
-        	            }
-        	            else {
-        	                context.queueMessage("Error whilst disabling the custom prefix! Please contact a developer.");
-        	            }
-        			}
-    			}
-    			else {
-    				context.replyInsufficientPermissions();
-    			}
-    		}
-    		else {
-    			context.replyDiscordOnlyCommand();
-    		}
-    	}
-    	else {
+    	
+    	if(!context.isDiscordContext()) {
     		context.replyDiscordOnlyCommand();
+    		return;
     	}
+    	
+    	if(!context.isGuildContext()) {
+    		context.replyServerOnlyCommand();
+    		return;
+    	}
+    	
+    	if(!context.hasPermission(Permission.MANAGE_SERVER)) {
+    		context.replyInsufficientPermissions();
+    		return;
+    	}
+    	
+		if(prefix != null && prefix.length() > 5) {
+			context.queueMessage("The prefix length may not be longer than 5 characters!");
+		}
+		else {
+			GuildSettingsDataManager dataManager = context.getBot().getGuildSettingsDataManager();
+            if(dataManager.setPrefix(context.getServer().getIdLong(), null)) {
+                context.queueMessage("Successfully disabled the custom prefix!");
+            }
+            else {
+                context.queueMessage("Error whilst disabling the custom prefix! Please contact a developer.");
+            }
+		}
     }
 
 }
