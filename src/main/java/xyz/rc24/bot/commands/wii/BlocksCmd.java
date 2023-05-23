@@ -50,12 +50,12 @@ public class BlocksCmd
 
     private static final void convert(CommandContext context, Double blocks) {
         if(blocks == 0d){
-            context.queueMessage("\u2139 1 block is 128kb\n8 blocks are 1MB");
+            context.queueMessage("\u2139 1 block is 128kb\n8 blocks is 1MB");
             return;
         }
 
-        double mb = blocks * 128 / 1024;
-        context.queueMessage("\u2139 " + blocks + " block(s) are " + mb + "MB(s)");
+        double mb = blocks * 128d / 1024d;
+        context.queueMessage("\u2139 " + blocks + " block(s) is " + mb + "MB(s)");
     }
 
 }
