@@ -311,7 +311,8 @@ public class Bot extends ListenerAdapter
 				@Override
 				public void run() {
 					while(true) {
-						for(String s : consoleCommandsAwaitingProcessing) {
+						String cmd;
+						while(null != (cmd = consoleCommandsAwaitingProcessing.poll())) {
 							try {
 								Commands.DISPATCHER.getSlashDispatcher().execute(s, new CommandContext(ConsoleUser.INSTANCE));
 							} catch (CommandSyntaxException e) {
