@@ -44,6 +44,7 @@ dependencies {
     shadow 'com.google.guava:guava:31.1-jre'
     shadow 'com.datadoghq:java-dogstatsd-client:2.8'
     shadow 'org.json:json:20230227'
+    shadow group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
 }
 
 shadowJar {

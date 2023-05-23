@@ -25,8 +25,6 @@
 package xyz.rc24.bot.commands.botadm;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.commands.CommandContext;
@@ -46,10 +44,10 @@ public class Bash {
     
     @SuppressWarnings("rawtypes")
 	public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.literal("bash")
-    		.then(Commands.argument("command", StringArgumentType.greedyString())
+    	dispatcher.register(Commands.global("bash")
+    		.then(Commands.anyStringGreedy("bashCommand")
     			.executes(context -> {
-    				runBashCommand(context.getSource(), context.getArgument("command", String.class));
+    				runBashCommand(context.getSource(), context.getArgument("bashCommand", String.class));
     				return 1;
     			})
     		)
