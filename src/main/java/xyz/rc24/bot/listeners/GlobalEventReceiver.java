@@ -156,9 +156,9 @@ public class GlobalEventReceiver extends ListenerAdapter {
 				if(suggestions.size() > 25) {
 					suggestions = suggestions.subList(0, 25);
 				}
-				System.out.println("Arguments:" + arguments);
+
 				for(Suggestion suggestion : suggestions) {
-					System.out.println("SUGGESTION: " + suggestion.getText());
+
 					if(!spaceAdded) {
 						returnedSuggestions.add(fixedArguments + " " + suggestion.getText());
 					}
