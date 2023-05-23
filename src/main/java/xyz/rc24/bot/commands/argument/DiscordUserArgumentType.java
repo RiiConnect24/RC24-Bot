@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -19,6 +20,8 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.CommandUtils;
+import xyz.rc24.bot.commands.argument.suggestion.DiscordUserSuggestion;
+import xyz.rc24.bot.commands.argument.suggestion.builder.RiiSuggestionsBuilder;
 import xyz.rc24.bot.commands.exception.ParseExceptions;
 
 public class DiscordUserArgumentType implements ArgumentType<User>{
@@ -43,6 +46,7 @@ public class DiscordUserArgumentType implements ArgumentType<User>{
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(com.mojang.brigadier.context.CommandContext<S> context, SuggestionsBuilder builder) {
 		CommandContext<?> c = (CommandContext<?>) context.getSource();
+		RiiSuggestionsBuilder b = new RiiSuggestionsBuilder(builder);
 		Guild server = c.getServer();
 		
 		Thread searchThread = new Thread(() -> {
@@ -56,7 +60,7 @@ public class DiscordUserArgumentType implements ArgumentType<User>{
 					);
 				}).onSuccess((foundMembers) -> {
 					for(Member member : foundMembers) {
-						builder.suggest(toSuggestionString(member.getUser()));
+						b.suggest(new DiscordUserSuggestion(StringRange.between(b.getStart(), b.getInput().length()), member));
 					}
 					synchronized(t) {
 						t.notifyAll();
@@ -80,7 +84,7 @@ public class DiscordUserArgumentType implements ArgumentType<User>{
 			System.out.println(suggestion.getText());
 		}
 		
-		return builder.buildFuture();
+		return b.buildFuture();
 	}
 	
 	@Nullable

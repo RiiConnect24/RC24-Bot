@@ -8,7 +8,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import xyz.rc24.bot.commands.argument.suggestion.builder.ExciteSuggestionsBuilder;
+import xyz.rc24.bot.commands.argument.suggestion.builder.RiiSuggestionsBuilder;
 
 public class AnyStringSuggestionProvider<S> implements SuggestionProvider<S> {
 	
@@ -27,7 +27,7 @@ public class AnyStringSuggestionProvider<S> implements SuggestionProvider<S> {
 	@Override
 	public CompletableFuture<Suggestions> getSuggestions(CommandContext<S> context, SuggestionsBuilder builder) throws CommandSyntaxException {
 		int i = context.getNodes().size() - 1 ;
-		ExciteSuggestionsBuilder b = new ExciteSuggestionsBuilder(builder);
+		RiiSuggestionsBuilder b = new RiiSuggestionsBuilder(builder);
 		String arg = builder.getRemaining();
 		if(builder.getRemaining().isBlank()) {
 			b.suggestAnyString(name);

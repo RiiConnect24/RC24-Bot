@@ -8,30 +8,30 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import xyz.rc24.bot.commands.argument.suggestion.AnyStringSuggestion;
 import xyz.rc24.bot.commands.argument.suggestion.MatchingStringSuggestion;
 
-public class ExciteSuggestionsBuilder extends SuggestionsBuilder {
+public class RiiSuggestionsBuilder extends SuggestionsBuilder {
 
-	public ExciteSuggestionsBuilder(SuggestionsBuilder builder) {
+	public RiiSuggestionsBuilder(SuggestionsBuilder builder) {
 		this(builder.getInput(), builder.getStart());
 	}
 	
-	public ExciteSuggestionsBuilder(String input, int start) {
+	public RiiSuggestionsBuilder(String input, int start) {
 		super(input, start);
 	}
 	
 	@Override
-	public ExciteSuggestionsBuilder suggest(final Suggestion suggestion) {
-		return (ExciteSuggestionsBuilder) super.suggest(suggestion); //super always returns this
+	public RiiSuggestionsBuilder suggest(final Suggestion suggestion) {
+		return (RiiSuggestionsBuilder) super.suggest(suggestion); //super always returns this
 	}
 	
-	public <S> ExciteSuggestionsBuilder suggestAnyString(String name) {
+	public <S> RiiSuggestionsBuilder suggestAnyString(String name) {
 		return suggest(new AnyStringSuggestion(getDefaultRange(), "<" + name + ">"));
 	}
 	
-	public <S> ExciteSuggestionsBuilder suggestAnyString(String name, Message tooltip) {
+	public <S> RiiSuggestionsBuilder suggestAnyString(String name, Message tooltip) {
 		return suggest(new AnyStringSuggestion(getDefaultRange(), "<" + name + ">", tooltip));
 	}
 	
-	public <S> ExciteSuggestionsBuilder suggestAsMatchable(String text) {
+	public <S> RiiSuggestionsBuilder suggestAsMatchable(String text) {
 		return suggest(new MatchingStringSuggestion(getDefaultRange(), text));
 	}
 	
