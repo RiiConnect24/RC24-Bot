@@ -26,8 +26,7 @@ import xyz.rc24.bot.commands.wii.WiiWare;
 
 @SuppressWarnings("rawtypes")
 public class Commands {
-	private final CommandDispatcher<CommandContext> slashDispatcher = new Dispatcher();
-	private final CommandDispatcher<CommandContext> nonSlashDispatcher = new Dispatcher();
+	private final CommandDispatcher<CommandContext> dispatcher = new Dispatcher();
 	public static final Commands DISPATCHER = new Commands();
 	
 	public Commands() {
@@ -35,24 +34,25 @@ public class Commands {
 		/**
 		 * SLASH COMMANDS
 		 */
-		AddCmd.register(slashDispatcher);
-		BirthdayCmd.register(slashDispatcher);
-		BlocksCmd.register(slashDispatcher);
-		CodeCmd.register(slashDispatcher);
-		CountCmd.register(slashDispatcher);
-		DNSCmd.register(slashDispatcher);
-		ErrorInfoCmd.register(slashDispatcher);
-		InviteCmd.register(slashDispatcher);
-		RiiTagCmd.register(slashDispatcher); //this cmd might still be broken
-		RuleCmd.register(slashDispatcher);
-		WadsCmd.register(slashDispatcher);
-		WiiWare.register(slashDispatcher);
+		AddCmd.register(dispatcher);
+		BirthdayCmd.register(dispatcher);
+		BlocksCmd.register(dispatcher);
+		CodeCmd.register(dispatcher);
+		CountCmd.register(dispatcher);
+		DNSCmd.register(dispatcher);
+		ErrorInfoCmd.register(dispatcher);
+		InviteCmd.register(dispatcher);
+		RiiTagCmd.register(dispatcher); //this cmd might still be broken
+		RuleCmd.register(dispatcher);
+		WadsCmd.register(dispatcher);
+		WiiWare.register(dispatcher);
 		
+
 		/**
-		 * NON SLASH COMMANDS
+		 * OWNER COMMANDS
 		 */
-		Bash.register(nonSlashDispatcher);
-		Shutdown.register(nonSlashDispatcher);
+		Bash.register(dispatcher);
+		Shutdown.register(dispatcher);
 	}
 	
 	@Deprecated
@@ -77,15 +77,11 @@ public class Commands {
 	}
 	
 	public static RequiredArgumentBuilder<CommandContext, String> anyStringGreedy(String name) {
-		return argument(name, StringArgumentType.greedyString()).suggests(new AnyStringSuggestionProvider<>(name));
+		return argument(name, StringArgumentType.greedyString()).suggests(new AnyStringSuggestionProvider<>(name, true));
 	}
 	
-	public CommandDispatcher<CommandContext> getSlashDispatcher() {
-		return this.nonSlashDispatcher;
-	}
-	
-	public CommandDispatcher<CommandContext> getNonSlashDispatcher() {
-		return this.nonSlashDispatcher;
+	public CommandDispatcher<CommandContext> getDispatcher() {
+		return dispatcher;
 	}
 	
 }

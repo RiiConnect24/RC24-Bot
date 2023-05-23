@@ -314,7 +314,7 @@ public class Bot extends ListenerAdapter
 						String cmd;
 						while(null != (cmd = consoleCommandsAwaitingProcessing.poll())) {
 							try {
-								Commands.DISPATCHER.getSlashDispatcher().execute(s, new CommandContext(ConsoleUser.INSTANCE));
+								Commands.DISPATCHER.getDispatcher().execute(cmd, new CommandContext(ConsoleUser.INSTANCE));
 							} catch (CommandSyntaxException e) {
 								e.printStackTrace();
 							}

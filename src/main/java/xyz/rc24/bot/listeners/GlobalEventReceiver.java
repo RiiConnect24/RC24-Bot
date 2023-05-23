@@ -48,7 +48,7 @@ public class GlobalEventReceiver extends ListenerAdapter {
 			}
 			CommandContext context = new CommandContext(e);
 			try {
-				Commands.DISPATCHER.getSlashDispatcher().execute(c.toString() , context);
+				Commands.DISPATCHER.getDispatcher().execute(c.toString() , context);
 			} catch (Throwable t) {
 				if(t.getMessage() != null && !t.getMessage().isBlank()) {
 					context.sendThrowable(t);
@@ -96,7 +96,7 @@ public class GlobalEventReceiver extends ListenerAdapter {
 		@Override
 		public void onGuildReady(GuildReadyEvent e) { //for development
 			List<CommandData> commands = new ArrayList<>();
-			Commands.DISPATCHER.getSlashDispatcher().getRoot().getChildren().forEach((command) -> {
+			Commands.DISPATCHER.getDispatcher().getRoot().getChildren().forEach((command) -> {
 				if(!debug) {
 					if(command instanceof GlobalNode) {
 						return; //Don't register global commands as guild commands if we're not in a dev environment
@@ -106,7 +106,7 @@ public class GlobalEventReceiver extends ListenerAdapter {
 				
 				if(command.getChildren().size() > 0) {
 					if(command.getChildren().size() == 1) {
-						
+						data.addOption(OptionType.STRING, "arguments", "arguments", true, true); //todo: regular discord args
 					}
 					else {
 						data.addOption(OptionType.STRING, "arguments", "arguments", true, true);
