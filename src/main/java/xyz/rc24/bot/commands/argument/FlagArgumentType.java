@@ -15,15 +15,25 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import xyz.rc24.bot.commands.CommandUtils;
 import xyz.rc24.bot.commands.exception.ParseExceptions;
 import xyz.rc24.bot.core.entities.Flag;
+import static xyz.rc24.bot.core.entities.Flag.*;
 
 public class FlagArgumentType implements ArgumentType<Flag> {
 
 	public static final FlagArgumentType ANY_FLAG = of(Flag.values());
 	public static final FlagArgumentType KNOWN_FLAGS;
+	public static final FlagArgumentType NON_COUNTRIES;
+	public static final FlagArgumentType COUNTRIES;
 	static {
-		List<Flag> flags = new ArrayList<>(Arrays.asList(Flag.values()));
-		flags.remove(Flag.UNKNOWN);
-		KNOWN_FLAGS = of(flags.toArray(new Flag[]{}));
+		List<Flag> knownFlags = new ArrayList<>(Arrays.asList(Flag.values()));
+		knownFlags.remove(Flag.UNKNOWN);
+		KNOWN_FLAGS = of(knownFlags.toArray(new Flag[]{}));
+		
+		Flag[] nonCountries = new Flag[] {ANTARCTICA, EUROPEAN_UNION, PIRATE_FLAG, RAINBOW_FLAG, TRANSGENDER_FLAG, UNITED_NATIONS};
+		NON_COUNTRIES = of(nonCountries);
+		
+		List<Flag> countries = new ArrayList<>(knownFlags);
+		countries.removeAll(Arrays.asList(nonCountries));
+		COUNTRIES = of(countries.toArray(new Flag[]{}));
 	}
 	 
 	
