@@ -68,7 +68,7 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 				builder.suggest(f.getEmote());
 				return builder.buildFuture();
 			}
-			if(f.getName().startsWith(flagText)) {
+			if(f.getName().toLowerCase().startsWith(flagText.toLowerCase())) {
 				builder.suggest(f.getName());
 			}
 		}
