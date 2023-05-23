@@ -33,7 +33,12 @@ public class AnyStringSuggestionProvider<S> implements SuggestionProvider<S> {
 			b.suggestAnyString(name);
 		}
 		else {
-			b.suggestAsMatchable(b.getRemaining());
+			if(!greedy) {
+				b.suggestAsMatchable(b.getRemaining());
+			}
+			else {
+				//NO-OP
+			}
 		}
 
 		builder.add(b);

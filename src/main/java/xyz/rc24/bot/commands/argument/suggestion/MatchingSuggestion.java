@@ -9,10 +9,12 @@ public abstract class MatchingSuggestion<T> extends Suggestion {
 	
 	public MatchingSuggestion(StringRange range, T val) {
 		super(range, val.toString());
+		this.val = val;
 	}
 	
 	public MatchingSuggestion(StringRange range, T val, Message tooltip) {
 		super(range, val.toString(), tooltip);
+		this.val = val;
 	}
 	
 	@Override
@@ -21,6 +23,8 @@ public abstract class MatchingSuggestion<T> extends Suggestion {
 	public final T getValue() {
 		return val;
 	}
+	
+	@SuppressWarnings("unchecked")
 	public final Class<T> getMatchingType() {
 		return (Class<T>) val.getClass();
 	}
