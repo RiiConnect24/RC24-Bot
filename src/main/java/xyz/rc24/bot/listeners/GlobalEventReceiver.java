@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.tree.CommandNode;
 
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -104,13 +106,21 @@ public class GlobalEventReceiver extends ListenerAdapter {
 				}
 				SlashCommandData data = net.dv8tion.jda.api.interactions.commands.build.Commands.slash(command.getName(), command.getUsageText());
 				
+				Command<CommandContext> base = command.getCommand();
+				
 				if(command.getChildren().size() > 0) {
 					if(command.getChildren().size() == 1) {
-						data.addOption(OptionType.STRING, "arguments", "arguments", true, true); //todo: regular discord args
+						data.addOption(OptionType.STRING, "arguments", "arguments", base == null, true); //todo: regular discord args?
 					}
 					else {
-						data.addOption(OptionType.STRING, "arguments", "arguments", true, true);
+						data.addOption(OptionType.STRING, "arguments", "arguments", base != null, true);
 					}
+					
+					/*
+					for(CommandNode node : command.getChildren()) {
+						System.out.println(node);
+					}
+					*/
 				}
 				
 				commands.add(data);
