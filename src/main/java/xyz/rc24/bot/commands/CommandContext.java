@@ -30,7 +30,7 @@ import xyz.rc24.bot.user.ConsoleUser;
 public class CommandContext<E> {
 	
 	private E event;
-	private EmbedBuilder embedBuilder;
+	private EmbedBuilder embedBuilder = new EmbedBuilder();
 	
 	public CommandContext(E e) {
 		if(e instanceof MessageReceivedEvent || e instanceof Interaction || e instanceof GuildReadyEvent || e instanceof User || e instanceof InteractionHook) {
@@ -103,7 +103,7 @@ public class CommandContext<E> {
 	}
 	
 	public boolean isDiscordContext() {
-		return event instanceof ISnowflake;
+		return (event instanceof ISnowflake || event instanceof InteractionHook) && !(event instanceof ConsoleUser);
 	}
 	
 	public void queueMessage(MessageCreateData messageData) {
