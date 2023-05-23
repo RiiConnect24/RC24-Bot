@@ -29,7 +29,6 @@ import com.google.gson.annotations.SerializedName;
 import com.mojang.brigadier.CommandDispatcher;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import okhttp3.Call;
@@ -57,8 +56,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 /**
  * Looks up errors using the Wiimmfi API.
@@ -90,6 +87,9 @@ public class ErrorInfoCmd {
     }
     
     private static void sendResponse(CommandContext context, final String code) {
+    	
+    	CommandContext ctx = context.defer(false);
+    	
         Matcher channelCheck = CHANNEL.matcher(code);
 
         // Check for Fore/News
@@ -110,7 +110,7 @@ public class ErrorInfoCmd {
             }
             catch(NumberFormatException ignored)
             {
-                context.queueMessage("Could not find the specified app error code.");
+                ctx.queueMessage("Could not find the specified app error code.");
                 return;
             }
             
@@ -118,16 +118,16 @@ public class ErrorInfoCmd {
             String description = channelErrors.get(code);
             String footer = "All information provided by RC24 Developers.";
 
-            if(context.isDiscordContext()) {
-                EmbedBuilder builder = context.getEmbed();
+            if(ctx.isDiscordContext()) {
+                EmbedBuilder builder = ctx.getEmbed();
                 builder.setTitle(title);
                 builder.setDescription(description);
                 builder.setColor(Color.decode("#D32F2F"));
                 builder.setFooter(footer, null);
-                context.completeMessage(MessageCreateData.fromEmbeds(builder.build()));
+                ctx.completeMessage(MessageCreateData.fromEmbeds(builder.build()));
             }
             else {
-            	context.queueMessage(title + "\n\n" + description + "\n\n" + footer);
+            	ctx.queueMessage(title + "\n\n" + description + "\n\n" + footer);
             }
         }
         else
@@ -150,11 +150,9 @@ public class ErrorInfoCmd {
             }
             catch(NumberFormatException ignored)
             {
-                context.queueMessage("Enter a valid error code!", true, false);
+                ctx.queueMessage("Enter a valid error code!", true, false);
                 return;
             }
-
-            final ReplyCallbackAction replyAction = context.isDiscordContext() ? context.getReplyCallback().deferReply() : null;
             
             // Get method
             String method = (debug ? "t=" : "e=") + code;
@@ -170,12 +168,7 @@ public class ErrorInfoCmd {
                 public void onFailure(@NotNull Call call, @NotNull IOException e)
                 {
                 	String reply = "Hm, something went wrong on our end. Check Wiimmfi's website is up?";
-                	if(context.isDiscordContext()) {
-                		replyAction.setContent(reply).queue();
-                	}
-                	else {
-                		context.queueMessage(reply);
-                	}
+                	context.queueMessage(reply);
                     logger.error("Something went wrong whilst checking error code '" + code +
                             "' with Wiimmfi: {}", e.getMessage(), e);
                 }
@@ -190,7 +183,7 @@ public class ErrorInfoCmd {
                         return;
                     }
 
-                    success(context, replyAction, response);
+                    success(ctx, response);
                     response.close();
                 }
             });
@@ -198,17 +191,19 @@ public class ErrorInfoCmd {
     }
 
     @SuppressWarnings("ConstantConditions") // Response body can't be null at this point of the execution
-    private static void success(@NotNull CommandContext context, @Nullable ReplyCallbackAction replyAction, @NotNull Response response)
+    private static void success(@NotNull CommandContext context, @NotNull Response response)
     {
     	try(response) {
 	    	String description = null;
 	        JSONFormat json = gson.fromJson(new InputStreamReader(response.body().byteStream()), JSONFormat[].class)[0];
+	        
+	        EmbedBuilder embed = context.getEmbed();
 	        if(!(json.found == 1))
 	        {
 	            description = "Could not find the specified error from Wiimmfi.";
 	            if(context.isDiscordContext()) {
-		            replyAction.setContent(description).queue();
-		            response.close();
+		            embed.setDescription(description);
+		            context.queueMessage(MessageCreateData.fromEmbeds(embed.build()));
 	            }
 	            else {
 	            	context.queueMessage(description);
@@ -254,13 +249,12 @@ public class ErrorInfoCmd {
 	            String footer = "All information is from Wiimmfi unless noted.";
 		        
 	            if(context.isDiscordContext()) {
-			        EmbedBuilder builder = new EmbedBuilder();
-			        builder.setTitle(title);
-			        builder.setDescription(description);
-			        builder.setColor(Color.decode("#D32F2F"));
-			        builder.setFooter(footer, null);
+			        embed.setTitle(title);
+			        embed.setDescription(description);
+			        embed.setColor(Color.decode("#D32F2F"));
+			        embed.setFooter(footer, null);
 			
-			        replyAction.setContent("").addEmbeds(builder.build()).queue();
+			        context.queueMessage(MessageCreateData.fromEmbeds(embed.build()));;
 	            }
 	            else {
 	            	context.queueMessage(title + "\n\n" + description + "\n\n" + footer);
