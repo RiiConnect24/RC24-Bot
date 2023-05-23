@@ -1,5 +1,6 @@
 package xyz.rc24.bot.commands.argument;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,7 +21,7 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 	public static final FlagArgumentType ANY_FLAG = of(Flag.values());
 	public static final FlagArgumentType KNOWN_FLAGS;
 	static {
-		List<Flag> flags = Arrays.asList(Flag.values());
+		List<Flag> flags = new ArrayList<>(Arrays.asList(Flag.values()));
 		flags.remove(Flag.UNKNOWN);
 		KNOWN_FLAGS = of(flags.toArray(new Flag[]{}));
 	}
