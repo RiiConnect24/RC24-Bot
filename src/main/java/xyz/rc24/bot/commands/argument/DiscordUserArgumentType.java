@@ -1,9 +1,6 @@
 package xyz.rc24.bot.commands.argument;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +15,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.utils.concurrent.Task;
+
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.CommandUtils;

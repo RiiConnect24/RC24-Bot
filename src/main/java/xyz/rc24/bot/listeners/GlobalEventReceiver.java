@@ -121,7 +121,7 @@ public class GlobalEventReceiver extends ListenerAdapter {
 		
 		@Override
 		public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent e) {
-			CompletableFuture.runAsync(() -> {
+			CompletableFuture.runAsync(() -> { //needed so discord user suggestions don't break, can't run on JDA even thread
 				String command = e.getName() + " " + e.getFocusedOption().getValue();
 				final String arguments = e.getFocusedOption().getValue();
 				String fixedArguments = e.getFocusedOption().getValue();
