@@ -1,0 +1,17 @@
+# For more information, read https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/about-dependabot-version-updates
+
+version: 2
+updates:
+  # Enable version updates for Maven
+  # Since the bot relies on it, check daily for updates
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Enable version updates for Actions
+  # Since Actions is secondary, only check for updates weekly
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
