@@ -49,6 +49,7 @@ target/*
 dependency-reduced-pom.xml
 polls_049.yml
 polls_110.yml
+.DS_Store
 
 # eclipse
 bin
