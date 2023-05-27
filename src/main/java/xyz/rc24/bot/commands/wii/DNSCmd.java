@@ -25,10 +25,9 @@
 package xyz.rc24.bot.commands.wii;
 
 import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
-
-import com.mojang.brigadier.CommandDispatcher;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 /**
  * @author Gamebuster
@@ -39,8 +38,8 @@ public class DNSCmd {
 	private static final String PRIMARY_DNS = "167.86.108.126";
 	private static final String SECONDARY_DNS = "1.1.1.1";
     
-    public static final void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("dns")
+    public static final void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("dns")
     		.executes((context) -> {
     			sendDNSInfo(context.getSource());
     			return 1;
@@ -48,7 +47,7 @@ public class DNSCmd {
     	);
     }
 
-    private static final void sendDNSInfo(CommandContext context) {
+    private static final void sendDNSInfo(RiiContext context) {
         context.queueMessage("`" + PRIMARY_DNS + "` should be your primary DNS.\n`" + SECONDARY_DNS + "` should be your secondary DNS.", context.hasPermission(Permission.MESSAGE_SEND), false);
     }
 }

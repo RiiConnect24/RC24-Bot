@@ -24,12 +24,11 @@
 
 package xyz.rc24.bot.commands.botadm;
 
-import com.mojang.brigadier.CommandDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
-
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,9 +41,8 @@ import java.io.InputStreamReader;
 public class Bash {
     private static Logger logger = (Logger) LoggerFactory.getLogger(Bash.class);
     
-    @SuppressWarnings("rawtypes")
-	public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("bash")
+	public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("bash", "Executes a bash command", null)
     		.then(Commands.anyStringGreedy("bashCommand")
     			.executes(context -> {
     				runBashCommand(context.getSource(), context.getArgument("bashCommand", String.class));
@@ -54,7 +52,7 @@ public class Bash {
     	);
     }
     
-    protected static void runBashCommand(CommandContext context, String bashCommand)
+    protected static void runBashCommand(RiiContext context, String bashCommand)
     {
     	if(!context.isConsoleContext() && !context.isOwnerContext()) {
     		context.replyInsufficientPermissions();

@@ -26,7 +26,6 @@ package xyz.rc24.bot.commands.wii;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.mojang.brigadier.CommandDispatcher;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -44,8 +43,9 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 import java.awt.Color;
 
@@ -75,8 +75,8 @@ public class ErrorInfoCmd {
 	private static final Gson gson = new Gson();
 	private static final Logger logger = RiiConnect24Bot.getLogger(ErrorInfoCmd.class);
     
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("error")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("error")
     		.then(Commands.anyString("code")
     			.executes((context) -> {
     				sendResponse(context.getSource(), context.getArgument("code", String.class));
@@ -86,9 +86,9 @@ public class ErrorInfoCmd {
     	);
     }
     
-    private static void sendResponse(CommandContext context, final String code) {
+    private static void sendResponse(RiiContext context, final String code) {
     	
-    	CommandContext ctx = context.defer(false);
+    	RiiContext ctx = context.defer(false);
     	
         Matcher channelCheck = CHANNEL.matcher(code);
 
@@ -191,7 +191,7 @@ public class ErrorInfoCmd {
     }
 
     @SuppressWarnings("ConstantConditions") // Response body can't be null at this point of the execution
-    private static void success(@NotNull CommandContext context, @NotNull Response response)
+    private static void success(@NotNull RiiContext context, @NotNull Response response)
     {
     	try(response) {
 	    	String description = null;

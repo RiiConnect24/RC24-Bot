@@ -24,20 +24,19 @@
 
 package xyz.rc24.bot.commands.tools;
 
-import com.mojang.brigadier.CommandDispatcher;
-
 import net.dv8tion.jda.api.Permission;
 
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
 
 public class PrefixCmd {
     
-    private static void register(CommandDispatcher<CommandContext> dispatcher) {
+    private static void register(Dispatcher dispatcher) {
     	dispatcher.register(
-    		Commands.global("prefix").executes((context) -> { //NO ARGS
+    		Commands.base("prefix").executes((context) -> { //NO ARGS
     			replyPrefix(context.getSource());
     				return 1;
     			})
@@ -56,7 +55,7 @@ public class PrefixCmd {
     	);
     }
     
-    private static void replyPrefix(CommandContext context) {
+    private static void replyPrefix(RiiContext context) {
     	if(context.isDiscordContext()) {
     		if(context.isGuildContext()) {
     	    	GuildSettings gs = context.getBot().getGuildSettingsDataManager().getSettings(context.getServer());
@@ -71,7 +70,7 @@ public class PrefixCmd {
     	}
     }
     
-    private static void setPrefix(CommandContext context, String prefix) {
+    private static void setPrefix(RiiContext context, String prefix) {
     	
     	if(!context.isDiscordContext()) {
     		context.replyDiscordOnlyCommand();

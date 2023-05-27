@@ -24,7 +24,7 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.thegamecommunity.discord.command.argument.DiscordUserArgumentType;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -34,10 +34,10 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.commands.argument.CodeTypeArgumentType;
-import xyz.rc24.bot.commands.argument.DiscordUserArgumentType;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.database.CodeDataManager;
@@ -67,8 +67,8 @@ public class CodeCmd
 			"**Adding a user's Wii**\n" + "`/add @user`\n" + "This will send you their wii, and then DM them your Wii/game wii.";
 	
 	@SuppressWarnings("unused")
-	public static void register(CommandDispatcher<CommandContext> dispatcher) {
-		dispatcher.register(Commands.global("code")
+	public static void register(Dispatcher dispatcher) {
+		dispatcher.register(Commands.base("code")
 			.then(Commands.suggestableString("add")
 				.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES)
 					.then(Commands.anyString("name")
@@ -128,7 +128,7 @@ public class CodeCmd
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private static void addCode(CommandContext context, CodeType type, String name, String code) {
+	private static void addCode(RiiContext context, CodeType type, String name, String code) {
 		if(!context.isDiscordContext()) {
 			context.replyDiscordOnlyCommand();
 			return;
@@ -148,7 +148,7 @@ public class CodeCmd
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private static void editCode(CommandContext context, CodeType type, String name, String newCode) {
+	private static void editCode(RiiContext context, CodeType type, String name, String newCode) {
 		if(!context.isDiscordContext()) {
 			context.replyDiscordOnlyCommand();
 			return;
@@ -169,7 +169,7 @@ public class CodeCmd
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static void deleteCode(CommandContext context, CodeType type, String name) {
+	private static void deleteCode(RiiContext context, CodeType type, String name) {
 		if(!context.isDiscordContext()) {
 			context.replyDiscordOnlyCommand();
 			return;
@@ -190,7 +190,7 @@ public class CodeCmd
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private static void lookupCodes(CommandContext context, User user) {
+	private static void lookupCodes(RiiContext context, User user) {
 		String flag = CORE.getFlag(user.getIdLong());
 		boolean hasFlag = !(flag.isEmpty());
 		
@@ -239,7 +239,7 @@ public class CodeCmd
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private static void sendHelp(CommandContext context) {
+	private static void sendHelp(RiiContext context) {
 		context.queueMessage(HELP, true, false);
 	}
 	

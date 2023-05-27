@@ -24,19 +24,18 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.mojang.brigadier.CommandDispatcher;
-
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.commands.argument.FlagArgumentType;
 import xyz.rc24.bot.core.entities.Flag;
 
 public class FlagCmd 
 {
 
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("flag")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("flag", "Sets the flag in your code lookup", null)
     		.then(Commands.argument("flag", FlagArgumentType.COUNTRIES)
     			.executes((context) -> {
     				execute(context.getSource(), context.getArgument("flag", Flag.class));
@@ -46,7 +45,7 @@ public class FlagCmd
     	);
     }
 
-    private static void execute(CommandContext context, Flag flag) {
+    private static void execute(RiiContext context, Flag flag) {
     	if(!context.isDiscordContext()) {
     		context.replyDiscordOnlyCommand();
     	}

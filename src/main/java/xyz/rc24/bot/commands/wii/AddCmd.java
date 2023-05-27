@@ -24,17 +24,17 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.thegamecommunity.discord.command.argument.DiscordUserArgumentType;
+import com.thegamecommunity.discord.user.ConsoleUser;
 
 import net.dv8tion.jda.api.entities.User;
 
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.argument.DiscordUserArgumentType;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.GuildSettings;
-import xyz.rc24.bot.user.ConsoleUser;
 import xyz.rc24.bot.utils.FormatUtil;
 
 import java.util.Map;
@@ -45,8 +45,8 @@ import java.util.Map;
 
 public class AddCmd {
     
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("add")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("add")
     		.then(Commands.argument("friend", new DiscordUserArgumentType())
     			.executes((context) -> {
     				execute(context.getSource(), context.getArgument("friend", User.class));
@@ -57,7 +57,7 @@ public class AddCmd {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	private static void execute(CommandContext context, User friend) {
+	private static void execute(RiiContext context, User friend) {
 
     		if(!context.isDiscordContext()) {
     			context.replyDiscordOnlyCommand();
@@ -100,8 +100,8 @@ public class AddCmd {
             }
 
             
-            CommandContext privateContext = context.getPrivateContext();
-            CommandContext friendPrivateContext = new CommandContext(friend);
+            RiiContext privateContext = context.getPrivateContext();
+            RiiContext friendPrivateContext = new RiiContext(friend);
             
             // Send target's code to author
             privateContext.queueMessage(getAddMessageHeader(codeType, context,
@@ -117,7 +117,7 @@ public class AddCmd {
     }
 
     @SuppressWarnings("rawtypes")
-	private static String getAddMessageHeader(CodeType type, CommandContext context, boolean isCommandRunner) {
+	private static String getAddMessageHeader(CodeType type, RiiContext context, boolean isCommandRunner) {
         if(!(isCommandRunner))
         	//use tag because the recipient may not share the same server the command was executed on, causing it to appear like unknown user was requesting
             return "**" + context.getAuthor().getAsTag() + "** has requested to add your " + type.getDisplayName() + " friend code(s)!";

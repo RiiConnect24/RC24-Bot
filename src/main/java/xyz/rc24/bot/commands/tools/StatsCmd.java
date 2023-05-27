@@ -24,8 +24,6 @@
 
 package xyz.rc24.bot.commands.tools;
 
-import com.mojang.brigadier.CommandDispatcher;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
@@ -40,8 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xyz.rc24.bot.Const;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -51,8 +50,8 @@ import java.util.TreeSet;
 public class StatsCmd {
     private static final Logger logger = LoggerFactory.getLogger("Stats Command");
     
-    private static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("status")
+    private static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("status")
     		.executes((context) -> {
     			execute(context.getSource());
     			return 1;
@@ -60,7 +59,7 @@ public class StatsCmd {
     	);
     }
 
-    private static void execute(CommandContext context) {
+    private static void execute(RiiContext context) {
         Request request = new Request.Builder()
                 .url("http://164.132.44.106/stats.json")
                 .addHeader("User-Agent", "RC24-Bot " + Const.VERSION)

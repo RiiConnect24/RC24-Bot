@@ -11,9 +11,9 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.thegamecommunity.brigadier.command.CommandUtils;
+import com.thegamecommunity.brigadier.command.exception.ParseExceptions;
 
-import xyz.rc24.bot.commands.CommandUtils;
-import xyz.rc24.bot.commands.exception.ParseExceptions;
 import xyz.rc24.bot.core.entities.CodeType;
 
 public class CodeTypeArgumentType implements ArgumentType<CodeType> {

@@ -24,24 +24,15 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.mojang.brigadier.CommandDispatcher;
-
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import xyz.rc24.bot.Bot;
-import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.core.entities.Poll;
-import xyz.rc24.bot.core.entities.impl.MiitomoPoll;
-import xyz.rc24.bot.managers.PollManager;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 public class ReviveCmd 
 {
 
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("revive")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("revive")
     		.executes(context -> {
     			execute(context.getSource());
     			return 1;
@@ -50,7 +41,7 @@ public class ReviveCmd
     }
     
     //It appears the poll manager does not exist?
-    private static void execute(CommandContext context) {
+    private static void execute(RiiContext context) {
     	return;
     	
     	/*

@@ -24,17 +24,17 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 public class BlocksCmd
 {
     
-    public static final void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("blocks")
+    public static final void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("blocks")
     		.executes((context) -> {
     			convert(context.getSource(), 0d);
     			return 1;
@@ -48,7 +48,7 @@ public class BlocksCmd
     	);
     }
 
-    private static final void convert(CommandContext context, Double blocks) {
+    private static final void convert(RiiContext context, Double blocks) {
         if(blocks == 0d){
             context.queueMessage("\u2139 1 block is 128kb\n8 blocks is 1MB");
             return;

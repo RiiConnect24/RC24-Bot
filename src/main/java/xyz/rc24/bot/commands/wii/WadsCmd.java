@@ -24,15 +24,13 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.mojang.brigadier.CommandDispatcher;
-
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
 
 public class WadsCmd {
     
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("wads")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("wads")
     		.executes((context) -> {
     			context.getSource().queueMessage("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest");
     			return 1;

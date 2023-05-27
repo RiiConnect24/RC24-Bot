@@ -24,19 +24,17 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.mojang.brigadier.CommandDispatcher;
-
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
 
 /**
- * @author Artuto
+ * @author Gamebuster
  */
 
 public class WiiWare {
     
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("wads")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("wads")
     		.executes((context) -> {
     			context.getSource().queueMessage("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases");
     			return 1;

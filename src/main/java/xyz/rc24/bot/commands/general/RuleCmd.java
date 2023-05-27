@@ -24,17 +24,17 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Larsenv
+ * @author Larsenv, Gamebuster
  */
 
 public class RuleCmd {
@@ -63,8 +63,8 @@ public class RuleCmd {
         }
     };
     
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("rules")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("rules")
     		.then(Commands.argument("rule", IntegerArgumentType.integer(1))
     			.executes(context -> {
     				replyRule(context.getSource(), context.getArgument("rule", Integer.class));
@@ -74,7 +74,7 @@ public class RuleCmd {
     	);
     }
 
-    private static void replyRule(CommandContext context, Integer rule) {
+    private static void replyRule(RiiContext context, Integer rule) {
         if (RULES.containsKey(rule)) {
             context.queueMessage("**Rule " + rule + "**: " + RULES.get(rule));
         } else {

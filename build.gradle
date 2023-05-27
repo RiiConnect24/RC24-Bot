@@ -30,8 +30,8 @@ repositories {
 }
 
 dependencies {
-    shadow 'com.thegamecommunity:brigadier:TGC-1.3.0.0'
-    implementation 'com.thegamecommunity:brigadier:TGC-1.3.0.0'
+    shadow 'com.thegamecommunity:BrigadierDiscordExtension:0.2.0.0'
+    implementation 'com.thegamecommunity:BrigadierDiscordExtension:0.2.0.0'
     shadow ('net.dv8tion:JDA:5.0.0-beta.9')
     shadow 'io.sentry:sentry-logback:6.19.1'
     shadow 'org.codehaus.groovy:groovy-jsr223:3.0.17'

@@ -24,25 +24,24 @@
 
 package xyz.rc24.bot.commands.tools;
 
-import com.mojang.brigadier.CommandDispatcher;
-
 import net.dv8tion.jda.api.Permission;
 
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.commands.argument.CodeTypeArgumentType;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
 
 /**
- * @author Artuto
+ * @author Artuto, Gamebuster
  */
 
 public class DefaultAddCmd {
     private GuildSettingsDataManager dataManager;
     
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.literal("defaultAdd")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("defaultAdd")
     		.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES)
     			.executes((context) -> {
     				execute(context.getSource(), context.getArgument("type", CodeType.class));
@@ -52,7 +51,7 @@ public class DefaultAddCmd {
     	);
     }
 
-    private static void execute(CommandContext context, CodeType type) {
+    private static void execute(RiiContext context, CodeType type) {
     	
     	if(!context.hasPermission(Permission.MANAGE_SERVER)) {
     		context.replyInsufficientPermissions();

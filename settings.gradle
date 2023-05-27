@@ -5,7 +5,7 @@
 rootProject.name = 'RC24-Bot'
 
 sourceControl {
-	gitRepository('https://github.com/TheGameCommunity/brigadier.git') {
-		producesModule('com.thegamecommunity:brigadier')
+	gitRepository('https://github.com/TheGameCommunity/BrigadierDiscordExtension.git') {
+		producesModule('com.thegamecommunity:BrigadierDiscordExtension')
 	}
 }

@@ -24,16 +24,16 @@
 
 package xyz.rc24.bot.commands.botadm;
 
-import com.mojang.brigadier.CommandDispatcher;
-
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 public class Shutdown {
 	
-	public static void register(CommandDispatcher<CommandContext> dispatcher) {
-		dispatcher.register(Commands.literal("shutdown")
+	public static void register(Dispatcher dispatcher) {
+		dispatcher.register(Commands.base("shutdown", "Shuts down the bot", null)
+		.requires((context) -> {return context.isOwnerContext() || context.isConsoleContext();}, "You do not have permission to execute this command")
 			.executes(context -> {
 				shutdown(context.getSource());
 				return 1;
@@ -41,14 +41,9 @@ public class Shutdown {
 		);
 	}
     
-    private static void shutdown(CommandContext context) {
-    	if(!context.isConsoleContext() && !context.isOwnerContext()) {
-    		context.replyInsufficientPermissions();
-    	}
-    	else {
-            context.completeMessage("Done! Cya \uD83D\uDC4B");
-            RiiConnect24Bot.getInstance().getJDA().shutdown();
-            System.exit(0);
-    	}
+    private static void shutdown(RiiContext context) {
+        context.completeMessage("Done! Cya \uD83D\uDC4B");
+        RiiConnect24Bot.getInstance().getJDA().shutdown();
+        System.exit(0);
     }
 }

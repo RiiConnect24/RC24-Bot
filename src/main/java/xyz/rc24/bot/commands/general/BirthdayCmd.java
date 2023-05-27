@@ -28,15 +28,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.thegamecommunity.discord.command.argument.DiscordUserArgumentType;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.argument.DiscordUserArgumentType;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 /**
  * @author Artuto, Gamebuster
@@ -48,8 +48,8 @@ public class BirthdayCmd
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
     
     @SuppressWarnings("unused")
-	public static final void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("birthday")
+	public static final void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("birthday", "View the birthday of yourself or someone else", null)
     		.then(Commands.suggestableString("set")
     			.then(Commands.anyString("DD/MM")
     				.executes((context) -> {
@@ -68,7 +68,7 @@ public class BirthdayCmd
     	);
     }
     
-    private static void setBirthday(CommandContext context, String date) {
+    private static void setBirthday(RiiContext context, String date) {
         long id = context.getAuthor().getIdLong();
         LocalDate dateTime = parseDate(date);
 
@@ -89,7 +89,7 @@ public class BirthdayCmd
         }
     }
 
-    private static void getBirthday(CommandContext context, User user) {
+    private static void getBirthday(RiiContext context, User user) {
 
             String date = RiiConnect24Bot.getInstance().getBirthdayDataManager().getBirthday(user.getIdLong());
 

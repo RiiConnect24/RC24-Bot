@@ -24,20 +24,19 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.mojang.brigadier.CommandDispatcher;
-
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 /**
- * @author Artuto
+ * @author Gamebuster
  */
 
 public class InviteCmd 
 {
 	
-	public static void register(CommandDispatcher<CommandContext> dispatcher) {
-		dispatcher.register(Commands.global("invite")
+	public static void register(Dispatcher dispatcher) {
+		dispatcher.register(Commands.base("invite")
 			.executes((context) -> {
 				execute(context.getSource());
 				return 1;
@@ -45,7 +44,7 @@ public class InviteCmd
 		);
 	}
 
-    private static void execute(CommandContext context) {
+    private static void execute(RiiContext context) {
         context.queueMessage("Aw, you want to invite me? <3\nInvite me here: " + context.getAuthor().getJDA().getInviteUrl());
     }
 }

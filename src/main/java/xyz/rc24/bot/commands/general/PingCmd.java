@@ -24,16 +24,14 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.mojang.brigadier.CommandDispatcher;
-
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
 
 public class PingCmd 
 {
 		
-	public static void register(CommandDispatcher<CommandContext> dispatcher) {
-		dispatcher.register(Commands.global("ping")
+	public static void register(Dispatcher dispatcher) {
+		dispatcher.register(Commands.base("ping")
 			.executes((context) -> {
 				context.getSource().queueMessage("pong!", true, true);
 				return 1;

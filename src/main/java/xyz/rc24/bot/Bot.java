@@ -31,6 +31,8 @@ import co.aikar.idb.PooledDatabaseOptions;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mysql.cj.jdbc.Driver;
 import com.mysql.cj.jdbc.MysqlDataSource;
+import com.thegamecommunity.discord.DiscordExtension;
+import com.thegamecommunity.discord.user.ConsoleUser;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 
@@ -45,8 +47,8 @@ import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import okhttp3.OkHttpClient;
-import xyz.rc24.bot.commands.CommandContext;
-import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
@@ -57,7 +59,6 @@ import xyz.rc24.bot.database.GuildSettingsDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
 import xyz.rc24.bot.listeners.GlobalEventReceiver;
 import xyz.rc24.bot.managers.BirthdayManager;
-import xyz.rc24.bot.user.ConsoleUser;
 
 import javax.security.auth.login.LoginException;
 
@@ -103,6 +104,7 @@ public class Bot extends ListenerAdapter
     private final ScheduledExecutorService botScheduler = Executors.newScheduledThreadPool(5);
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
 	private final ConcurrentLinkedDeque<String> consoleCommandsAwaitingProcessing = new ConcurrentLinkedDeque<String>();
+	private final Dispatcher commandDispatcher = new Dispatcher();
 
     void run() throws LoginException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
     {
@@ -144,7 +146,7 @@ public class Bot extends ListenerAdapter
                 .setEnabledIntents(Const.INTENTS)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setActivity(Activity.playing("Loading..."))
-                .addEventListeners(this, new GlobalEventReceiver());
+                .addEventListeners(this, new GlobalEventReceiver(commandDispatcher));
 
         if(!(dataDogStatsListener == null))
             builder.addEventListeners(dataDogStatsListener);
@@ -158,6 +160,7 @@ public class Bot extends ListenerAdapter
     public void onReady(ReadyEvent event)
     {
         this.jda = event.getJDA();
+        DiscordExtension.init(jda);
         logger.info("Done loading!");
 
         // Check if we need to set a game
@@ -313,7 +316,7 @@ public class Bot extends ListenerAdapter
 						String cmd;
 						while(null != (cmd = consoleCommandsAwaitingProcessing.poll())) {
 							try {
-								Commands.DISPATCHER.getDispatcher().execute(cmd, new CommandContext(ConsoleUser.INSTANCE));
+								commandDispatcher.execute(cmd, new RiiContext(ConsoleUser.INSTANCE));
 							} catch (CommandSyntaxException e) {
 								e.printStackTrace();
 							}

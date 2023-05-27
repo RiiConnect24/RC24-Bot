@@ -24,7 +24,7 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.mojang.brigadier.CommandDispatcher;
+import com.thegamecommunity.discord.command.argument.DiscordUserArgumentType;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
@@ -35,17 +35,17 @@ import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.argument.DiscordUserArgumentType;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 import java.io.IOException;
 
 public class RiiTagCmd {
     private static final String URL = "https://tag.rc24.xyz/%s/tag.max.png?randomizer=%f";
 
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("riitag")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("riitag")
     		.then(Commands.argument("user", new DiscordUserArgumentType())
     			.executes(context -> {
     				execute(context.getSource(), context.getArgument("user", User.class));
@@ -55,7 +55,7 @@ public class RiiTagCmd {
     	);
     }
 
-    private static void execute(CommandContext context, User user) {
+    private static void execute(RiiContext context, User user) {
     	
         Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
         context.getBot().getHttpClient().newCall(request).enqueue(new Callback() {
@@ -84,7 +84,7 @@ public class RiiTagCmd {
         });
     }
 
-    private static void displayTag(CommandContext context, User user) {
+    private static void displayTag(RiiContext context, User user) {
     	
     	//TEMPORARILY NOT WORKING DUE TO https://github.com/discord/discord-api-docs/issues/6171
     	

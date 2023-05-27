@@ -31,11 +31,10 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import com.mojang.brigadier.CommandDispatcher;
-
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.CommandContext;
 import xyz.rc24.bot.commands.Commands;
+import xyz.rc24.bot.commands.Dispatcher;
+import xyz.rc24.bot.commands.RiiContext;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -48,8 +47,8 @@ public class CountCmd {
 
     private static final Logger logger = RiiConnect24Bot.getLogger(CountCmd.class);
     
-    public static void register(CommandDispatcher<CommandContext> dispatcher) {
-    	dispatcher.register(Commands.global("count")
+    public static void register(Dispatcher dispatcher) {
+    	dispatcher.register(Commands.base("count", "Looks up the number of Miis on the Check Mii Out Channel and Wiis registered to use Wii Mail.", null)
     		.executes((context) -> {
     			execute(context.getSource());
     			return 1;
@@ -57,11 +56,11 @@ public class CountCmd {
     	);
     }
 
-   private static void execute(CommandContext<?> context) {
+   private static void execute(RiiContext context) {
 	    
         String url = "https://miicontestp.wii.rc24.xyz/cgi-bin/count.cgi";
         
-        CommandContext<?> ctx = context.defer(true);
+        RiiContext<?> ctx = context.defer(true);
 
         CompletableFuture.runAsync(() -> {
             if (RiiConnect24Bot.getInstance().getConfig().isDebug())
