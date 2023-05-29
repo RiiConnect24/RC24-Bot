@@ -54,16 +54,6 @@ public class DefaultAddCmd {
     }
 
     private static void execute(RiiContext context, CodeType type) {
-    	
-    	if(!context.hasPermission(Permission.MANAGE_SERVER)) {
-    		context.replyInsufficientPermissions();
-    		return;
-    	}
-    	if(!context.isDiscordContext()) {
-    		context.replyDiscordOnlyCommand();
-    		return;
-    	}
-    	
         if(context.getBot().getGuildSettingsDataManager().setDefaultAddType(type, context.getServer().getIdLong())) {
             context.queueMessage("Successfully set `" + type.getName() + "` as default `add` type!");
         }

@@ -129,10 +129,6 @@ public class CodeCmd
 	
 	@SuppressWarnings("rawtypes")
 	private static void addCode(RiiContext context, CodeType type, String name, String code) {
-		if(!context.isDiscordContext()) {
-			context.replyDiscordOnlyCommand();
-			return;
-		}
 		final long author = context.getUser().getIdLong();
 		
 		Map<String, String> codeTypes = CORE.getCodesForType(type, author);
@@ -149,10 +145,6 @@ public class CodeCmd
 	
 	@SuppressWarnings("rawtypes")
 	private static void editCode(RiiContext context, CodeType type, String name, String newCode) {
-		if(!context.isDiscordContext()) {
-			context.replyDiscordOnlyCommand();
-			return;
-		}
 		final long author = context.getUser().getIdLong();
 		
 		Map<String, String> codeTypes = CORE.getCodesForType(type, author);
@@ -170,10 +162,6 @@ public class CodeCmd
 
 	@SuppressWarnings("rawtypes")
 	private static void deleteCode(RiiContext context, CodeType type, String name) {
-		if(!context.isDiscordContext()) {
-			context.replyDiscordOnlyCommand();
-			return;
-		}
 		final long author = context.getUser().getIdLong();
 
 		Map<String, String> codeTypes = CORE.getCodesForType(type, author);

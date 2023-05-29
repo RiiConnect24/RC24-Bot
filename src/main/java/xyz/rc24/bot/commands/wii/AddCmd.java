@@ -58,12 +58,6 @@ public class AddCmd {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void execute(RiiContext context, User friend) {
-
-    		if(!context.isDiscordContext()) {
-    			context.replyDiscordOnlyCommand();
-    			return;
-    		}
-    	
     		BotCore core = context.getBot().getCore();
     		CodeType codeType = CodeType.WII;
     		

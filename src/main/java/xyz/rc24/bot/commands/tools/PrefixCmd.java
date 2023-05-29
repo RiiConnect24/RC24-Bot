@@ -58,36 +58,11 @@ public class PrefixCmd {
     }
     
     private static void replyPrefix(RiiContext context) {
-    	if(context.isDiscordContext()) {
-    		if(context.isGuildContext()) {
-    	    	GuildSettings gs = context.getBot().getGuildSettingsDataManager().getSettings(context.getServer());
-    	    	context.queueMessage("ℹ The prefix in this server is: " + gs.getPrefix());
-    		}
-    		else {
-    			context.replyServerOnlyCommand();
-    		}
-    	}
-    	else {
-    		context.replyDiscordOnlyCommand();
-    	}
+    	GuildSettings gs = context.getBot().getGuildSettingsDataManager().getSettings(context.getServer());
+    	context.queueMessage("ℹ The prefix in this server is: " + gs.getPrefix());
     }
     
     private static void setPrefix(RiiContext context, String prefix) {
-    	
-    	if(!context.isDiscordContext()) {
-    		context.replyDiscordOnlyCommand();
-    		return;
-    	}
-    	
-    	if(!context.isGuildContext()) {
-    		context.replyServerOnlyCommand();
-    		return;
-    	}
-    	
-    	if(!context.hasPermission(Permission.MANAGE_SERVER)) {
-    		context.replyInsufficientPermissions();
-    		return;
-    	}
     	
 		if(prefix != null && prefix.length() > 5) {
 			context.queueMessage("The prefix length may not be longer than 5 characters!");
