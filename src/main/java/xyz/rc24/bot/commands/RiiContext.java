@@ -46,11 +46,11 @@ public class RiiContext<E> extends DiscordContext<E> {
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public RiiContext getPrivateContext() {
-		if(getAuthor() == null || !getAuthor().hasPrivateChannel()) {
+		if(getUser() == null || !getUser().hasPrivateChannel()) {
 			return this;
 		}
 		try {
-			return new RiiContext(getAuthor());
+			return new RiiContext(getUser());
 		}
 		catch(UnsupportedOperationException e) {
 			return this; //just in case
@@ -58,8 +58,8 @@ public class RiiContext<E> extends DiscordContext<E> {
 	}
 	
 	public boolean isOwnerContext() {
-		if(getAuthor() != null) {
-			Long id = getAuthor().getIdLong();
+		if(getUser() != null) {
+			Long id = getUser().getIdLong();
 			Config config = getBot().getConfig();
 			return config.getPrimaryOwner() == id || config.getSecondaryOwners().contains(id);
 		}

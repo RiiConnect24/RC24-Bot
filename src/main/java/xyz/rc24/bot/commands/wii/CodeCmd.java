@@ -108,7 +108,7 @@ public class CodeCmd
 			)
 			.then(Commands.suggestableString("lookup")
 				.executes((context) -> {
-					lookupCodes(context.getSource(), context.getSource().getAuthor());
+					lookupCodes(context.getSource(), context.getSource().getUser());
 					return 1;
 				})
 				.then(Commands.argument("user", new DiscordUserArgumentType())
@@ -133,7 +133,7 @@ public class CodeCmd
 			context.replyDiscordOnlyCommand();
 			return;
 		}
-		final long author = context.getAuthor().getIdLong();
+		final long author = context.getUser().getIdLong();
 		
 		Map<String, String> codeTypes = CORE.getCodesForType(type, author);
 		if(codeTypes.containsKey(code)) {
@@ -141,7 +141,7 @@ public class CodeCmd
 			return;
 		}
 
-		if(CODE_MANAGER.addCode(type, context.getAuthor().getIdLong(), code, name))
+		if(CODE_MANAGER.addCode(type, context.getUser().getIdLong(), code, name))
 			context.queueMessage("Added a code for " + type.getDisplayName() + ". \n\nName:" + name + "\nCode:`" + code + "`", true, false);
 		else
 			context.queueMessage("Error whilst adding a code! Please contact a developer.", true, false);
@@ -153,7 +153,7 @@ public class CodeCmd
 			context.replyDiscordOnlyCommand();
 			return;
 		}
-		final long author = context.getAuthor().getIdLong();
+		final long author = context.getUser().getIdLong();
 		
 		Map<String, String> codeTypes = CORE.getCodesForType(type, author);
 		if(!(codeTypes.containsKey(name)))
@@ -174,7 +174,7 @@ public class CodeCmd
 			context.replyDiscordOnlyCommand();
 			return;
 		}
-		final long author = context.getAuthor().getIdLong();
+		final long author = context.getUser().getIdLong();
 
 		Map<String, String> codeTypes = CORE.getCodesForType(type, author);
 		if(!(codeTypes.containsKey(name)))

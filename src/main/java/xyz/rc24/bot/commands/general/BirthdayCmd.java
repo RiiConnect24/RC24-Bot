@@ -69,7 +69,7 @@ public class BirthdayCmd
     }
     
     private static void setBirthday(RiiContext context, String date) {
-        long id = context.getAuthor().getIdLong();
+        long id = context.getUser().getIdLong();
         LocalDate dateTime = parseDate(date);
 
         if(dateTime == null)
@@ -95,7 +95,7 @@ public class BirthdayCmd
 
             if(date == null)
             {
-                if(user.equals(context.getAuthor()))
+                if(user.equals(context.getUser()))
                 {
                     context.queueMessage("You haven't have set your birthday!" +
                             " Set it using  `/birthday set <MM/DD>`!", true, false);
@@ -106,7 +106,7 @@ public class BirthdayCmd
                 return;
             }
 
-            if(user.equals(context.getAuthor())) {
+            if(user.equals(context.getUser())) {
                 context.queueMessage("<a:birthdaycake:576200303662071808> Your birthday is set to **" + date + "** (date format: DD/MM)");
             }
             else {

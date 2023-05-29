@@ -55,7 +55,7 @@ public class FlagCmd
             return;
         }
 
-        boolean success = RiiConnect24Bot.getInstance().getCodeDataManager().setFlag(context.getAuthor().getIdLong(), flag.getEmote());
+        boolean success = RiiConnect24Bot.getInstance().getCodeDataManager().setFlag(context.getUser().getIdLong(), flag.getEmote());
 
         if(success) {
             context.queueMessage("Updated successfully!", true, false);

@@ -45,6 +45,6 @@ public class InviteCmd
 	}
 
     private static void execute(RiiContext context) {
-        context.queueMessage("Aw, you want to invite me? <3\nInvite me here: " + context.getAuthor().getJDA().getInviteUrl());
+        context.queueMessage("Aw, you want to invite me? <3\nInvite me here: " + context.getUser().getJDA().getInviteUrl());
     }
 }

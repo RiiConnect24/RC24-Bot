@@ -76,7 +76,7 @@ public class AddCmd {
             	context.queueMessage("You cannot add a system user!", true, false);
             	return;
             }
-            if(friend.equals(context.getAuthor())) {
+            if(friend.equals(context.getUser())) {
                 context.queueMessage("You can't add yourself!", true, false);
                 return;
             }
@@ -85,7 +85,7 @@ public class AddCmd {
                 return;
             }
 
-            Map<String, String> authorTypeCodes = core.getCodesForType(codeType, context.getAuthor().getIdLong());
+            Map<String, String> authorTypeCodes = core.getCodesForType(codeType, context.getUser().getIdLong());
             if(authorTypeCodes.isEmpty())
             {
                 context.queueMessage("**" + context.getEffectiveName() + "** has not added any friend codes!", true, false);
@@ -106,7 +106,7 @@ public class AddCmd {
             // Send target's code to author
             privateContext.queueMessage(getAddMessageHeader(codeType, context,
                     false) + "\n\n" + FormatUtil.getCodeLayout(authorTypeCodes),
-                    false, false, (failure) -> context.getChannel().sendMessage("Hey, " + context.getAuthor().getAsMention() +
+                    false, false, (failure) -> context.getChannel().sendMessage("Hey, " + context.getUser().getAsMention() +
                     ": I couldn't DM you. Make sure your DMs are enabled."));
 
             // Send author's code to target
@@ -120,7 +120,7 @@ public class AddCmd {
 	private static String getAddMessageHeader(CodeType type, RiiContext context, boolean isCommandRunner) {
         if(!(isCommandRunner))
         	//use tag because the recipient may not share the same server the command was executed on, causing it to appear like unknown user was requesting
-            return "**" + context.getAuthor().getAsTag() + "** has requested to add your " + type.getDisplayName() + " friend code(s)!";
+            return "**" + context.getUser().getAsTag() + "** has requested to add your " + type.getDisplayName() + " friend code(s)!";
         else
             return "You have requested to add **" + context.getEffectiveName()+ "**'s " + type.getDisplayName() + " friend code(s).";
     }
