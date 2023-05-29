@@ -42,7 +42,9 @@ public class DefaultAddCmd {
     
     public static void register(Dispatcher dispatcher) {
     	dispatcher.register(Commands.base("defaultAdd")
-    		.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES).requires(Permission.MANAGE_SERVER)
+    		.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES)
+    				.requires(Permission.MANAGE_SERVER)
+    				.requires((context) -> context.isGuildContext(), RiiContext.requiresServerContext)
     			.executes((context) -> {
     				execute(context.getSource(), context.getArgument("type", CodeType.class));
     				return 1;

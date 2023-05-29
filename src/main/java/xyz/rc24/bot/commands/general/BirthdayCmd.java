@@ -50,10 +50,10 @@ public class BirthdayCmd
     @SuppressWarnings("unused")
 	public static final void register(Dispatcher dispatcher) {
     	dispatcher.register(Commands.base("birthday", "View the birthday of yourself or someone else", null)
-    		.then(Commands.suggestableString("set")
+    		.then(Commands.suggestableString("set").requires((context) -> context.isDiscordContext(), RiiContext.requiresDiscordContext)
     			.then(Commands.anyString("DD/MM")
     				.executes((context) -> {
-    					
+    					setBirthday(context.getSource(), context.getArgument("DD/MM", String.class));
     					return 1;
     				}
     			))

@@ -37,7 +37,8 @@ public class PrefixCmd {
     
     private static void register(Dispatcher dispatcher) {
     	dispatcher.register(
-    		Commands.base("prefix").executes((context) -> { //NO ARGS
+    		Commands.base("prefix").requires((context) -> context.isGuildContext(), RiiContext.requiresServerContext)
+    			.executes((context) -> { //NO ARGS
     			replyPrefix(context.getSource());
     				return 1;
     			})

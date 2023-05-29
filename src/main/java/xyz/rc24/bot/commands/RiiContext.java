@@ -1,5 +1,7 @@
 package xyz.rc24.bot.commands;
 
+import java.util.function.Consumer;
+
 import com.thegamecommunity.discord.command.DiscordContext;
 
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -65,5 +67,9 @@ public class RiiContext<E> extends DiscordContext<E> {
 		}
 		return false;
 	}
+	
+	public static Consumer<RiiContext> requiresServerContext = (context) -> context.replyServerOnlyCommand();
+	
+	public static Consumer<RiiContext> requiresDiscordContext = (context) -> context.replyDiscordOnlyCommand();
 	
 }

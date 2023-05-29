@@ -68,7 +68,7 @@ public class CodeCmd
 	
 	@SuppressWarnings("unused")
 	public static void register(Dispatcher dispatcher) {
-		dispatcher.register(Commands.base("code", "Manages your friend codes.", null)
+		dispatcher.register(Commands.base("code", "Manages your friend codes.", null).requires((context) -> context.isDiscordContext(), RiiContext.requiresDiscordContext)
 			.then(Commands.suggestableString("add")
 				.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES)
 					.then(Commands.anyString("name")

@@ -35,7 +35,7 @@ public class FlagCmd
 {
 
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("flag", "Sets the flag in your code lookup", null)
+    	dispatcher.register(Commands.base("flag", "Sets the flag in your code lookup", null).requires((context) -> context.isDiscordContext(), RiiContext.requiresDiscordContext)
     		.then(Commands.argument("flag", FlagArgumentType.COUNTRIES)
     			.executes((context) -> {
     				execute(context.getSource(), context.getArgument("flag", Flag.class));
