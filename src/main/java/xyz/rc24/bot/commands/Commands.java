@@ -4,7 +4,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.thegamecommunity.brigadier.command.argument.LiteralArgument;
 import com.thegamecommunity.brigadier.command.argument.suggestion.AnyStringSuggestionProvider;
-import com.thegamecommunity.brigadier.command.tree.BetterRequiredArgumentBuilder;
 import com.thegamecommunity.discord.command.brigadier.tree.DiscordArgumentBuilder;
 import com.thegamecommunity.discord.command.brigadier.tree.DiscordBaseCommandNodeBuilder;
 
@@ -37,6 +36,7 @@ public class Commands {
 		AddCmd.register(dispatcher);
 		BirthdayCmd.register(dispatcher);
 		BlocksCmd.register(dispatcher);
+		
 		CodeCmd.register(dispatcher);
 		CountCmd.register(dispatcher);
 		DNSCmd.register(dispatcher);
@@ -58,6 +58,10 @@ public class Commands {
 		Shutdown.register(dispatcher);
 	}
 	
+	public Dispatcher getDispatcher() {
+		return dispatcher;
+	}
+	
 	public static DiscordArgumentBuilder<RiiContext, String> suggestableString(String name) {
 		return argument(name, LiteralArgument.of(name));
 	}
@@ -74,11 +78,11 @@ public class Commands {
 		return DiscordArgumentBuilder.arg(name, type);
 	}
 	
-	public static BetterRequiredArgumentBuilder<RiiContext, String> anyString(String name) {
+	public static DiscordArgumentBuilder<RiiContext, String> anyString(String name) {
 		return argument(name, StringArgumentType.string()).suggests(new AnyStringSuggestionProvider<>(name));
 	}
 	
-	public static BetterRequiredArgumentBuilder<RiiContext, String> anyStringGreedy(String name) {
+	public static DiscordArgumentBuilder<RiiContext, String> anyStringGreedy(String name) {
 		return argument(name, StringArgumentType.greedyString()).suggests(new AnyStringSuggestionProvider<>(name, true));
 	}
 	

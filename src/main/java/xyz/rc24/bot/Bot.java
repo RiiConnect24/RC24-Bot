@@ -47,6 +47,7 @@ import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import okhttp3.OkHttpClient;
+import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.commands.Dispatcher;
 import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.core.BotCore;
@@ -67,6 +68,7 @@ import org.slf4j.Logger;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,11 +106,10 @@ public class Bot extends ListenerAdapter
     private final ScheduledExecutorService botScheduler = Executors.newScheduledThreadPool(5);
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
 	private final ConcurrentLinkedDeque<String> consoleCommandsAwaitingProcessing = new ConcurrentLinkedDeque<String>();
-	private final Dispatcher commandDispatcher = new Dispatcher();
-
-    void run() throws LoginException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
-    {
-        RiiConnect24Bot.setInstance(this);
+	private Commands commands;
+	private Dispatcher commandDispatcher;
+	
+	JDABuilder initialize() {
         this.config = new Config();
         this.core = new BotCoreImpl(this);
 
@@ -145,15 +146,24 @@ public class Bot extends ListenerAdapter
         JDABuilder builder = JDABuilder.createLight(config.getToken())
                 .setEnabledIntents(Const.INTENTS)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .setActivity(Activity.playing("Loading..."))
-                .addEventListeners(this, new GlobalEventReceiver(commandDispatcher));
+                .setActivity(Activity.playing("Loading..."));
+
 
         if(!(dataDogStatsListener == null))
             builder.addEventListeners(dataDogStatsListener);
+        
+        return builder;
+	}
 
+    void run() throws LoginException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
+    {
+    	JDABuilder jdaBuilder = initialize();
+    	commands = new Commands();
+    	commandDispatcher = commands.getDispatcher();
+        jdaBuilder.addEventListeners(this, new GlobalEventReceiver(commandDispatcher));
         startConsole();
-        builder.build();
-
+        System.out.println(Arrays.toString(commandDispatcher.getAllUsage(commandDispatcher.getRoot(), new RiiContext(ConsoleUser.INSTANCE), false)));
+        jdaBuilder.build();
     }
 
     @Override

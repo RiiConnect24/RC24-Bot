@@ -5,6 +5,8 @@ import com.thegamecommunity.discord.command.DiscordDispatcher;
 @SuppressWarnings("rawtypes")
 public class Dispatcher extends DiscordDispatcher<RiiContext> {
 
+	Dispatcher() {}
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public RiiContext newContext(Object o) {

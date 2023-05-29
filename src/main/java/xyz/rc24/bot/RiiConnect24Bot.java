@@ -57,7 +57,9 @@ public class RiiConnect24Bot
 
         getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
 
-        new Bot().run();
+        instance = new Bot();
+        
+        instance.run();
     }
 
     public static Bot getInstance()
@@ -76,10 +78,5 @@ public class RiiConnect24Bot
     public static Logger getLogger(Class clazz)
     {
         return (Logger) LoggerFactory.getLogger(clazz);
-    }
-
-    static void setInstance(Bot instance)
-    {
-        RiiConnect24Bot.instance = instance;
     }
 }
