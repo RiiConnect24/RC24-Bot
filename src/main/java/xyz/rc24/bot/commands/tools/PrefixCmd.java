@@ -32,6 +32,7 @@ import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
 
+@Deprecated(forRemoval = true)
 public class PrefixCmd {
     
     private static void register(Dispatcher dispatcher) {
@@ -40,13 +41,13 @@ public class PrefixCmd {
     			replyPrefix(context.getSource());
     				return 1;
     			})
-	    		.then(Commands.anyString("prefix")
+	    		.then(Commands.anyString("prefix").requires(Permission.MANAGE_SERVER)
 	    			.executes((context) -> {
 	    				setPrefix(context.getSource(), context.getArgument("prefix", String.class));
 	    				return 1;
 	    			})
 	    		)
-	    		.then(Commands.suggestableString("none")
+	    		.then(Commands.suggestableString("none").requires(Permission.MANAGE_SERVER)
 	    			.executes((context) -> {
 	    				setPrefix(context.getSource(), null);
 	    				return 1;

@@ -68,7 +68,7 @@ public class CodeCmd
 	
 	@SuppressWarnings("unused")
 	public static void register(Dispatcher dispatcher) {
-		dispatcher.register(Commands.base("code")
+		dispatcher.register(Commands.base("code", "Manages your friend codes.", null)
 			.then(Commands.suggestableString("add")
 				.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES)
 					.then(Commands.anyString("name")

@@ -42,7 +42,7 @@ public class Bash {
     private static Logger logger = (Logger) LoggerFactory.getLogger(Bash.class);
     
 	public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("bash", "Executes a bash command", null)
+    	dispatcher.register(Commands.base("bash", "Executes a bash command", null).requires((context) -> context.isOwnerContext() || context.isConsoleContext(), "You cannot execute that command. Reason: Insufficient Permisions")
     		.then(Commands.anyStringGreedy("bashCommand")
     			.executes(context -> {
     				runBashCommand(context.getSource(), context.getArgument("bashCommand", String.class));
@@ -54,10 +54,6 @@ public class Bash {
     
     protected static void runBashCommand(RiiContext context, String bashCommand)
     {
-    	if(!context.isConsoleContext() && !context.isOwnerContext()) {
-    		context.replyInsufficientPermissions();
-    		return;
-    	}
         if(bashCommand.isEmpty())
         {
             context.queueMessage("Cannot execute a empty command!");

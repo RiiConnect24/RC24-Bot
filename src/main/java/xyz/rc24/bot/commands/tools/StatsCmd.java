@@ -25,6 +25,7 @@
 package xyz.rc24.bot.commands.tools;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 import okhttp3.Call;
@@ -51,7 +52,7 @@ public class StatsCmd {
     private static final Logger logger = LoggerFactory.getLogger("Stats Command");
     
     private static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("status")
+    	dispatcher.register(Commands.base("status").botRequires(Permission.MESSAGE_EMBED_LINKS)
     		.executes((context) -> {
     			execute(context.getSource());
     			return 1;

@@ -32,7 +32,7 @@ public class ReviveCmd
 {
 
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("revive")
+    	dispatcher.register(Commands.base("revive", "doesn't do shit", null)
     		.executes(context -> {
     			execute(context.getSource());
     			return 1;

@@ -27,6 +27,7 @@ package xyz.rc24.bot.commands.general;
 import com.thegamecommunity.discord.command.argument.DiscordUserArgumentType;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
@@ -45,7 +46,7 @@ public class RiiTagCmd {
     private static final String URL = "https://tag.rc24.xyz/%s/tag.max.png?randomizer=%f";
 
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("riitag")
+    	dispatcher.register(Commands.base("riitag", "Gets the user's Riitag", null).botRequires(Permission.MESSAGE_EMBED_LINKS)
     		.then(Commands.argument("user", new DiscordUserArgumentType())
     			.executes(context -> {
     				execute(context.getSource(), context.getArgument("user", User.class));

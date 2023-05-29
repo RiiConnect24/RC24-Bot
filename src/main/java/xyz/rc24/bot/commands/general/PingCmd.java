@@ -24,6 +24,14 @@
 
 package xyz.rc24.bot.commands.general;
 
+import java.time.Duration;
+import java.time.Instant;
+
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.commands.Dispatcher;
 
@@ -31,9 +39,22 @@ public class PingCmd
 {
 		
 	public static void register(Dispatcher dispatcher) {
-		dispatcher.register(Commands.base("ping")
+		dispatcher.register(Commands.base("ping", "Ping the bot", null).botRequires(Permission.MESSAGE_EMBED_LINKS)
 			.executes((context) -> {
-				context.getSource().queueMessage("pong!", true, true);
+				EmbedBuilder builder = context.getSource().getEmbed().setDescription("Checking ping...");
+				MessageEmbed embed = builder.build();
+				MessageCreateData data = MessageCreateData.fromEmbeds(embed);
+				Instant before = Instant.now();
+				InteractionHook hook = context.getSource().completeMessage(data);
+				Instant after = Instant.now();
+				try {
+					builder.setDescription("Ping is `" + Duration.between(before, after).toMillis() + "ms`\n\n" +
+							"Gateway ping is `" + context.getSource().getJDA().getGatewayPing() + "ms`\n\n");
+				}
+				catch (ArithmeticException e) {
+					builder.setDescription("Ping is *very high*!");
+				}
+				hook.editOriginalEmbeds(builder.build()).queue();
 				return 1;
 			})
 		);

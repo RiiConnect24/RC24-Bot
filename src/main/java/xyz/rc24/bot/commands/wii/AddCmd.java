@@ -46,7 +46,7 @@ import java.util.Map;
 public class AddCmd {
     
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("add")
+    	dispatcher.register(Commands.base("add", "Send your friend code to another user.", null)
     		.then(Commands.argument("friend", new DiscordUserArgumentType())
     			.executes((context) -> {
     				execute(context.getSource(), context.getArgument("friend", User.class));

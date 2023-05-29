@@ -39,7 +39,7 @@ public class DNSCmd {
 	private static final String SECONDARY_DNS = "1.1.1.1";
     
     public static final void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("dns")
+    	dispatcher.register(Commands.base("dns").botRequires(Permission.MESSAGE_SEND).requires(Permission.MESSAGE_SEND)
     		.executes((context) -> {
     			sendDNSInfo(context.getSource());
     			return 1;

@@ -42,7 +42,7 @@ public class DefaultAddCmd {
     
     public static void register(Dispatcher dispatcher) {
     	dispatcher.register(Commands.base("defaultAdd")
-    		.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES)
+    		.then(Commands.argument("type", CodeTypeArgumentType.KNOWN_CODES).requires(Permission.MANAGE_SERVER)
     			.executes((context) -> {
     				execute(context.getSource(), context.getArgument("type", CodeType.class));
     				return 1;

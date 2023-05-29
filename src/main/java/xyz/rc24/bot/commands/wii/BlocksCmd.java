@@ -26,6 +26,7 @@ package xyz.rc24.bot.commands.wii;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 
+import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.commands.Dispatcher;
 import xyz.rc24.bot.commands.RiiContext;
@@ -34,7 +35,7 @@ public class BlocksCmd
 {
     
     public static final void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("blocks")
+    	dispatcher.register(Commands.base("blocks").botRequires(Permission.MESSAGE_SEND, Permission.MESSAGE_EMBED_LINKS)
     		.executes((context) -> {
     			convert(context.getSource(), 0d);
     			return 1;

@@ -24,6 +24,7 @@
 
 package xyz.rc24.bot.commands.wii;
 
+import net.dv8tion.jda.api.Permission;
 import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.commands.Dispatcher;
 
@@ -34,7 +35,7 @@ import xyz.rc24.bot.commands.Dispatcher;
 public class WiiWare {
     
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("wads")
+    	dispatcher.register(Commands.base("wads").botRequires(Permission.MESSAGE_SEND).requires(Permission.MESSAGE_SEND)
     		.executes((context) -> {
     			context.getSource().queueMessage("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases");
     			return 1;

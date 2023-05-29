@@ -32,8 +32,7 @@ import xyz.rc24.bot.commands.RiiContext;
 public class Shutdown {
 	
 	public static void register(Dispatcher dispatcher) {
-		dispatcher.register(Commands.base("shutdown", "Shuts down the bot", null)
-		.requires((context) -> {return context.isOwnerContext() || context.isConsoleContext();}, "You do not have permission to execute this command")
+		dispatcher.register(Commands.base("shutdown", "Shuts down the bot", null).requires((context) -> context.isOwnerContext() || context.isConsoleContext(), "You cannot execute that command. Reason: Insufficient Permisions")
 			.executes(context -> {
 				shutdown(context.getSource());
 				return 1;
