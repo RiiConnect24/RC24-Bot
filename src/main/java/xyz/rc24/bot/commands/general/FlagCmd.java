@@ -45,10 +45,10 @@ public class FlagCmd
 	    		)
 	    	)
     		.then(Commands.suggestableString("clear")
-        			.executes((context) -> {
-        				clearFlag(context.getSource());
-        				return 1;
-        			})
+    			.executes((context) -> {
+    				clearFlag(context.getSource());
+    				return 1;
+    			})
         	)
     	);
     }
