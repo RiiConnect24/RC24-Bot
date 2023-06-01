@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -37,6 +38,10 @@ public class FlagArgumentType implements ArgumentType<Flag> {
 	 
 	
 	private final ArrayList<Flag> flags = new ArrayList<Flag>();
+	
+	public List<Flag> getFlags() {
+		return ImmutableList.copyOf(flags);
+	}
 	
 	private FlagArgumentType(Flag... flags) {
 		this.flags.addAll(Arrays.asList(flags));

@@ -38,8 +38,10 @@ import xyz.rc24.bot.commands.Commands;
 import xyz.rc24.bot.commands.Dispatcher;
 import xyz.rc24.bot.commands.RiiContext;
 import xyz.rc24.bot.commands.argument.CodeTypeArgumentType;
+import xyz.rc24.bot.commands.argument.FlagArgumentType;
 import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.entities.CodeType;
+import xyz.rc24.bot.core.entities.Flag;
 import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.utils.FormatUtil;
 
@@ -179,8 +181,8 @@ public class CodeCmd
 	
 	@SuppressWarnings("rawtypes")
 	private static void lookupCodes(RiiContext context, User user) {
-		String flag = CORE.getFlag(user.getIdLong());
-		boolean hasFlag = !(flag.isEmpty());
+		Flag flag = CORE.getFlag(user.getIdLong());
+		boolean hasFlag = flag != Flag.UNKNOWN && FlagArgumentType.COUNTRIES.getFlags().contains(flag);
 		
 		Member member = null;
 		String name = user.getAsTag();
@@ -207,7 +209,7 @@ public class CodeCmd
 		if(hasFlag)
 			embed.setTitle("Country: " + flag);
 
-		Map<CodeType, Map<String, String>> userCodes = CORE.getAllCodes(member.getUser().getIdLong());
+		Map<CodeType, Map<String, String>> userCodes = CORE.getAllCodes(user.getIdLong());
 		for(Map.Entry<CodeType, Map<String, String>> typeData : userCodes.entrySet())
 		{
 			Map<String, String> codes = typeData.getValue();
@@ -221,7 +223,7 @@ public class CodeCmd
 			}
 		}
 		if(embed.getFields().isEmpty())
-			context.queueMessage("**" + member.getEffectiveName() + "** has not added any codes!", true, false);
+			context.queueMessage("**" + name + "** has not added any codes!", true, false);
 		else if (context.isDiscordContext()) //do not try to send embed to the console
 			context.queueMessage(MessageCreateData.fromEmbeds(embed.build()));
 	}

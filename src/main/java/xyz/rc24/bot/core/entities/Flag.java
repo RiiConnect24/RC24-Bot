@@ -315,6 +315,18 @@ public enum Flag
     {
         return name;
     }
+    
+    @NotNull
+    public static Flag fromEmoji(String emote) {
+    	if(emote != null) {
+	    	for(Flag flag : values()) {
+	    		if(emote.equals(flag.emote)) {
+	    			return flag;
+	    		}
+	    	}
+    	}
+    	return UNKNOWN;
+    }
 
     @NotNull
     public static Flag fromName(@NotNull String name)
@@ -342,5 +354,9 @@ public enum Flag
     	}
     	
     	return UNKNOWN;
+    }
+    
+    public String toString() {
+    	return emote + " " + name;
     }
 }

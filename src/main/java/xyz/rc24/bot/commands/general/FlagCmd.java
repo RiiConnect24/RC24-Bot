@@ -36,19 +36,35 @@ public class FlagCmd
 
     public static void register(Dispatcher dispatcher) {
     	dispatcher.register(Commands.base("flag", "Sets the flag in your code lookup", null).requires((context) -> context.isDiscordContext(), RiiContext.requiresDiscordContext)
-    		.then(Commands.argument("flag", FlagArgumentType.COUNTRIES)
-    			.executes((context) -> {
-    				execute(context.getSource(), context.getArgument("flag", Flag.class));
-    				return 1;
-    			})
-    		)
+    		.then(Commands.suggestableString("set")
+	    		.then(Commands.argument("flag", FlagArgumentType.COUNTRIES)
+	    			.executes((context) -> {
+	    				setFlag(context.getSource(), context.getArgument("flag", Flag.class));
+	    				return 1;
+	    			})
+	    		)
+	    	)
+    		.then(Commands.suggestableString("clear")
+        			.executes((context) -> {
+        				clearFlag(context.getSource());
+        				return 1;
+        			})
+        	)
     	);
     }
-
-    private static void execute(RiiContext context, Flag flag) {
-    	if(!context.isDiscordContext()) {
-    		context.replyDiscordOnlyCommand();
+    
+    private static void clearFlag(RiiContext context) {
+    	boolean success = RiiConnect24Bot.getInstance().getCodeDataManager().setFlag(context.getUser().getIdLong(), null);
+    	
+    	if(success) {
+    		context.queueMessage("Updated successfully!");
     	}
+    	else {
+    		context.queueMessage("Error clearing your flag! Please contact a developer.", true, false);
+    	}
+    }
+
+    private static void setFlag(RiiContext context, Flag flag) {
         if(flag == Flag.UNKNOWN)
         {
             context.queueMessage("Unknown country!", true, false);
