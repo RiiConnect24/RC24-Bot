@@ -29,7 +29,7 @@ import com.thegamecommunity.discord.command.argument.DiscordUserArgumentType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -89,16 +89,15 @@ public class RiiTagCmd {
 
     private static void displayTag(RiiContext context, User user) {
     	
-    	//TEMPORARILY NOT WORKING DUE TO https://github.com/discord/discord-api-docs/issues/6171
-    	
-    	ReplyCallbackAction replyAction = context.getReplyCallback().deferReply();
+    	InteractionHook hook = context.getReplyCallback().deferReply().complete();
     	
         EmbedBuilder embedBuilder = context.getEmbed()
                 .setAuthor(user.getAsTag() + "'s RiiTag", null, user.getEffectiveAvatarUrl())
                 .setColor(context.getServer() == null ? null : context.getServer().getSelfMember().getColor())
                 .setImage(String.format(URL, user.getId(), Math.random()));
+        
+        hook.sendMessageEmbeds(embedBuilder.build()).queue();
 
-        replyAction.addEmbeds(embedBuilder.build()).queue();
 
     }
 }
