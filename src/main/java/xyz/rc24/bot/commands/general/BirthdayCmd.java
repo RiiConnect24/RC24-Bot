@@ -47,7 +47,6 @@ public class BirthdayCmd
 	
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM[/yyyy]");
     
-    @SuppressWarnings("unused")
 	public static final void register(Dispatcher dispatcher) {
     	dispatcher.register(Commands.base("birthday", "View the birthday of yourself or someone else", null)
     		.then(Commands.suggestableString("set").requires((context) -> context.isDiscordContext(), RiiContext.requiresDiscordContext)
