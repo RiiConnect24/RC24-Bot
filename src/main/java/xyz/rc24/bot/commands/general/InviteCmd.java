@@ -36,7 +36,7 @@ public class InviteCmd
 {
 	
 	public static void register(Dispatcher dispatcher) {
-		dispatcher.register(Commands.base("invite")
+		dispatcher.register(Commands.base("invite", "Invite me to your server!", null)
 			.executes((context) -> {
 				execute(context.getSource());
 				return 1;

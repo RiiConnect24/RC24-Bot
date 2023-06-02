@@ -30,7 +30,7 @@ import xyz.rc24.bot.commands.Dispatcher;
 public class WadsCmd {
     
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("wads")
+    	dispatcher.register(Commands.base("wads", "Lets you know the URL to the RiiConnect24 Patcher.", null)
     		.executes((context) -> {
     			context.getSource().queueMessage("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest");
     			return 1;

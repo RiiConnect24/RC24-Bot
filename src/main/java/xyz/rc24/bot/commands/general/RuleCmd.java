@@ -64,7 +64,7 @@ public class RuleCmd {
     };
     
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("rules")
+    	dispatcher.register(Commands.base("rules", "Provides information about specific rules.", "")
     		.then(Commands.argument("rule", IntegerArgumentType.integer(1))
     			.executes(context -> {
     				replyRule(context.getSource(), context.getArgument("rule", Integer.class));

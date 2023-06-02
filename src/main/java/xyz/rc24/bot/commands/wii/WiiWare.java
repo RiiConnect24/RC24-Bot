@@ -35,7 +35,7 @@ import xyz.rc24.bot.commands.Dispatcher;
 public class WiiWare {
     
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("wads").botRequires(Permission.MESSAGE_SEND).requires(Permission.MESSAGE_SEND)
+    	dispatcher.register(Commands.base("wiiware", "Lets you know the URL to the WiiWare patcher.", "").botRequires(Permission.MESSAGE_SEND).requires(Permission.MESSAGE_SEND)
     		.executes((context) -> {
     			context.getSource().queueMessage("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases");
     			return 1;

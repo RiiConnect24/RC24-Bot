@@ -77,7 +77,7 @@ public class ErrorInfoCmd {
 	private static final Logger logger = RiiConnect24Bot.getLogger(ErrorInfoCmd.class);
     
     public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("error").botRequires(Permission.MESSAGE_EMBED_LINKS)
+    	dispatcher.register(Commands.base("error", "Provides information about Wii error codes using the Wiimmfi API.", null).botRequires(Permission.MESSAGE_EMBED_LINKS)
     		.then(Commands.anyString("code")
     			.executes((context) -> {
     				sendResponse(context.getSource(), context.getArgument("code", String.class));
