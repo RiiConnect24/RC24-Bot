@@ -33,7 +33,7 @@ import com.mysql.cj.jdbc.Driver;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import com.thegamecommunity.discord.DiscordExtension;
 import com.thegamecommunity.discord.user.ConsoleUser;
-import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.NonBlockingStatsDClientBuilder;
 import com.timgroup.statsd.StatsDClient;
 
 import io.sentry.Sentry;
@@ -130,8 +130,11 @@ public class Bot extends ListenerAdapter
 
         if(config.isDatadogEnabled())
         {
-            StatsDClient statsd = new NonBlockingStatsDClient(config.getDatadogPrefix(),
-                    config.getDatadogHost(), config.getDatadogPort());
+        	NonBlockingStatsDClientBuilder dataDogBuilder = new NonBlockingStatsDClientBuilder()
+        		.prefix(config.getDatadogPrefix())
+        		.hostname(config.getDatabaseHost())
+        		.port(config.getDatadogPort());
+            StatsDClient statsd = dataDogBuilder.build();
             dataDogStatsListener = new DataDogStatsListener(statsd);
         }
 
