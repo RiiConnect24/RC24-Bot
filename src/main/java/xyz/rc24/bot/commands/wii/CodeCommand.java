@@ -25,7 +25,7 @@
 package xyz.rc24.bot.commands.wii;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -41,7 +41,6 @@ import xyz.rc24.bot.core.entities.Flag;
 import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.utils.FormatUtil;
 
-import java.awt.*;
 import java.util.Map;
 
 /**
@@ -62,15 +61,13 @@ public class CodeCommand implements Command {
 		if (subcommandGroup == null) {
 			if (event.getSubcommandName().equals("lookup")) {
 
-				Member user = event.getOption("user").getAsMember();
+				User user = event.getOption("user").getAsUser();
 				Flag flag = CORE.getFlag(user.getIdLong());
 				boolean hasFlag = flag != null;
 				String name = user.getEffectiveName();
-				Color color = user.getColor();
 
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.setAuthor("Profile for " + name, null, user.getEffectiveAvatarUrl());
-				embed.setColor(color);
 
 				if (hasFlag) embed.setTitle("Country: " + flag);
 

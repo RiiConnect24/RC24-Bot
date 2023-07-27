@@ -25,7 +25,7 @@
 package xyz.rc24.bot.commands.general;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -47,7 +47,7 @@ public class RiiTagCommand implements Command {
     @Override
     public void onCommand(SlashCommandInteractionEvent event) {
 
-        Member member = event.getOption("user").getAsMember();
+        User member = event.getOption("user").getAsUser();
         Request request = new Request.Builder().url(String.format(URL, member.getId(), 0D)).build();
         Bot bot = RiiConnect24Bot.getInstance();
 
