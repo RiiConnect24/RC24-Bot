@@ -39,7 +39,7 @@ dependencies {
     shadow 'com.zaxxer:HikariCP:5.0.1'
     shadow 'org.yaml:snakeyaml:2.0'
     shadow 'com.google.code.gson:gson:2.10.1'
-    shadow 'com.google.guava:guava:32.0.0-jre'
+    shadow 'com.google.guava:guava:32.1.1-jre'
     shadow 'com.datadoghq:java-dogstatsd-client:4.2.0'
     shadow 'org.json:json:20230618'
     shadow group: 'org.apache.commons', name: 'commons-text', version: '1.10.0'
