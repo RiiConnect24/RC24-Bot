@@ -135,12 +135,12 @@ public class Bot extends ListenerAdapter {
         // JDA Connection
         JDABuilder builder = JDABuilder.createLight(config.getToken())
                 .setEnabledIntents(RiiConnect24Bot.INTENTS)
-                .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .setStatus(OnlineStatus.ONLINE)
                 .addEventListeners(new RaidListener(config.useRaidProtection()))
                 .addEventListeners(commandManager)
                 .addEventListeners(this)
                 .addEventListeners(new CommandAutoCompletion())
-                .setActivity(Activity.listening("Slash commands"));
+                .setStatus("I've been updated to perform nicer and run faster.");
 
 
         if (!(dataDogStatsListener == null))
