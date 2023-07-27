@@ -140,7 +140,7 @@ public class Bot extends ListenerAdapter {
                 .addEventListeners(commandManager)
                 .addEventListeners(this)
                 .addEventListeners(new CommandAutoCompletion())
-                .setStatus("I've been updated to perform nicer and run faster.");
+                .setActivity(Activity.playing("I've been updated to perform nicer and run faster."));
 
 
         if (!(dataDogStatsListener == null))
