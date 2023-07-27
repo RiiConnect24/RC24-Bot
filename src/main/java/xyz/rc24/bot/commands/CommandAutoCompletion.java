@@ -20,7 +20,7 @@ public class CommandAutoCompletion extends ListenerAdapter {
                 Flag[] flags = Flag.values();
                 List<Command.Choice> choices = Stream.of(flags)
                         .filter(flag -> flag.getName().startsWith(event.getFocusedOption().getValue()))
-                        .map(flag -> new Command.Choice(flag.getEmote() + " " + flag.getName(), flag.getName()))
+                        .map(flag -> new Command.Choice(flag.getName(), flag.getName()))
                         .toList();
                 event.replyChoices(choices.size() > 25 ? List.of(new Command.Choice("Please be more specific", "no value")) : choices).queue();
             }

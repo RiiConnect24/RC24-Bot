@@ -86,8 +86,6 @@ public class CodeCommand implements Command {
 					return;
 				}
 
-				System.out.println(flag);
-				System.out.println(hasFlag);
 				event.replyEmbeds(embed.build()).setEphemeral(true).queue();
 
 			}
