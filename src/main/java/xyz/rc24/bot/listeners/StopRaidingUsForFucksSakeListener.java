@@ -33,7 +33,6 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Seriously, stop.
@@ -41,12 +40,12 @@ import java.util.concurrent.TimeUnit;
  * @author Artuto
  */
 
-public class RaidListener extends ListenerAdapter
+public class StopRaidingUsForFucksSakeListener extends ListenerAdapter
 {
     private boolean enabled;
     private final List<Long> allowed = new ArrayList<>();
 
-    public RaidListener(boolean enabled)
+    public StopRaidingUsForFucksSakeListener(boolean enabled)
     {
         this.enabled = enabled;
     }
@@ -77,15 +76,16 @@ public class RaidListener extends ListenerAdapter
                     "Cheers,\n" +
                     "RiiConnect24 Staff";
 
-            member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(dm).queue(s -> ban(member), e -> ban(member)));
+            member.getUser().openPrivateChannel().queue(pc -> pc.sendMessage(dm)
+                    .queue(s -> ban(member), e -> ban(member)));
         }
         catch(Exception ignored) {}
     }
 
     private void ban(Member member)
     {
-    	//not sure if it shows up in the audit log... we will need to check
-    	member.ban(1, TimeUnit.DAYS).reason("[AutoBan]").queue();
+        // We set double reason because one is AuditLog reason and other ban reason (really dumb #Discord)
+        member.ban(1, "[AutoBan]").reason("[AutoBan]").queue(null, e -> {});
 
         allowed.add(member.getUser().getIdLong());
     }

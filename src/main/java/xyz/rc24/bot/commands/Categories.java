@@ -22,31 +22,20 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.wii;
+package xyz.rc24.bot.commands;
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import xyz.rc24.bot.commands.Command;
+import com.jagrosh.jdautilities.command.Command.Category;
 
-public class BlocksCommand implements Command {
+/**
+ * Command categories
+ *
+ * @author Artuto
+ */
 
-	@Override
-	public void onCommand(SlashCommandInteractionEvent event) {
-		OptionMapping amountOption = event.getOption("amount");
-		int blocks = amountOption == null ? 1 : amountOption.getAsInt();
-		event.reply("ℹ " + blocks + " blocks are " + convertBlocks(blocks) + " MB").queue();
-	}
-
-	private float convertBlocks(float blocks) {
-		return (blocks * 128) / 1024;
-	}
-
-	@Override
-	public SlashCommandData getCommandData() {
-		return Commands.slash("blocks", "Convert blocks to MB")
-				.addOption(OptionType.NUMBER, "amount", "Amount of blocks");
-	}
+public class Categories
+{
+    public static final Category ADMIN = new Category("Bot Administration");
+    public static final Category GENERAL = new Category("General");
+    public static final Category TOOLS = new Category("Tools");
+    public static final Category WII = new Category("Wii-related");
 }

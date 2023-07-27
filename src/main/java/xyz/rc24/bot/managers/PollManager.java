@@ -49,28 +49,30 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class PollManager {
+public class PollManager
+{
     private final Set<Long> current;
     private final List<Poll> polls;
     private final Random random;
     private final ScheduledExecutorService threadPool;
 
-    public PollManager() throws IOException {
+    public PollManager() throws IOException
+    {
         File miitomoFile = new File("miitomo_questions.yml");
         File usFile = new File("polls_049.yml");
         File ukFile = new File("polls_110.yml");
         File worldFile = new File("polls_world.yml");
 
-        if (!(miitomoFile.exists()))
+        if(!(miitomoFile.exists()))
             downloadFile(MIITOMO_FILE, miitomoFile);
 
-        if (!(usFile.exists()))
+        if(!(usFile.exists()))
             downloadFile(US_FILE, usFile);
 
-        if (!(ukFile.exists()))
+        if(!(ukFile.exists()))
             downloadFile(UK_FILE, ukFile);
 
-        if (!(worldFile.exists()))
+        if(!(worldFile.exists()))
             downloadFile(WORLD_FILE, worldFile);
 
         Yaml yaml = new Yaml();
@@ -88,28 +90,34 @@ public class PollManager {
         this.threadPool = Executors.newScheduledThreadPool(2);
     }
 
-    public Poll getRandomPoll() {
+    public Poll getRandomPoll()
+    {
         return polls.get(random.nextInt(polls.size()));
     }
 
-    public void trackId(long id) {
+    public void trackId(long id)
+    {
         current.add(id);
         threadPool.schedule(() -> unTrackId(id), 10, TimeUnit.MINUTES);
     }
 
-    public void unTrackId(long id) {
+    public void unTrackId(long id)
+    {
         current.remove(id);
     }
 
-    public boolean isTracked(long id) {
+    public boolean isTracked(long id)
+    {
         return current.contains(id);
     }
 
-    public ScheduledExecutorService getThreadPool() {
+    public ScheduledExecutorService getThreadPool()
+    {
         return threadPool;
     }
 
-    private void downloadFile(String downloadUrl, File file) throws IOException {
+    private void downloadFile(String downloadUrl, File file) throws IOException
+    {
         URL url = new URL(downloadUrl);
         ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
         FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -119,13 +127,16 @@ public class PollManager {
 
     @SuppressWarnings("unchecked")
     private void populateList(List<Map<String, Object>> miitomo, List<Map<String, Object>> us,
-                              List<Map<String, Object>> uk, List<Map<String, Object>> world) {
-        for (Map<String, Object> data : miitomo) {
+                              List<Map<String, Object>> uk, List<Map<String, Object>> world)
+    {
+        for(Map<String, Object> data : miitomo)
+        {
             Map<String, Object> section = (Map<String, Object>) data.get("question");
             polls.add(new MiitomoPoll((String) section.get("english")));
         }
 
-        for (Map<String, Object> data : us) {
+        for(Map<String, Object> data : us)
+        {
             Map<String, Object> section = (Map<String, Object>) data.get("poll");
             polls.add(new USPollImpl(
                     getPart(section, "question"),
@@ -133,7 +144,8 @@ public class PollManager {
                     getPart(section, "response_2")));
         }
 
-        for (Map<String, Object> data : uk) {
+        for(Map<String, Object> data : uk)
+        {
             Map<String, Object> section = (Map<String, Object>) data.get("poll");
             polls.add(new UKPollImpl(
                     getPart(section, "question"),
@@ -141,7 +153,8 @@ public class PollManager {
                     getPart(section, "response_2")));
         }
 
-        for (Map<String, Object> data : world) {
+        for(Map<String, Object> data : world)
+        {
             Map<String, Object> section = (Map<String, Object>) data.get("poll");
             polls.add(new WorldPollImpl(
                     getPart(section, "question"),
@@ -151,7 +164,8 @@ public class PollManager {
     }
 
     @SuppressWarnings("unchecked")
-    private String getPart(Map<String, Object> poll, String key) {
+    private String getPart(Map<String, Object> poll, String key)
+    {
         return (String) ((Map<String, Object>) poll.get(key)).get("english");
     }
 
@@ -163,5 +177,4 @@ public class PollManager {
             "_data/votes/results_049.yml";
     private final String WORLD_FILE = "https://raw.githubusercontent.com/RiiConnect24/Site/master/" +
             "_data/votes/results_world.yml";
-
 }

@@ -24,12 +24,16 @@
 
 package xyz.rc24.bot;
 
+import ch.qos.logback.classic.Logger;
 import co.aikar.idb.DB;
 import co.aikar.idb.DatabaseOptions;
 import co.aikar.idb.PooledDatabaseOptions;
+import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.command.SlashCommand;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.mysql.cj.jdbc.Driver;
 import com.mysql.cj.jdbc.MysqlDataSource;
-import com.timgroup.statsd.NonBlockingStatsDClientBuilder;
+import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
@@ -37,34 +41,56 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.session.ReadyEvent;
-import net.dv8tion.jda.api.events.session.ShutdownEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import okhttp3.OkHttpClient;
-import org.slf4j.Logger;
-import xyz.rc24.bot.commands.CommandAutoCompletion;
-import xyz.rc24.bot.commands.CommandManager;
+import org.reflections.Reflections;
+import xyz.rc24.bot.commands.botadm.Bash;
+import xyz.rc24.bot.commands.botadm.Eval;
+import xyz.rc24.bot.commands.botadm.Shutdown;
+import xyz.rc24.bot.commands.general.BirthdayCmd;
+import xyz.rc24.bot.commands.general.CountCmd;
+import xyz.rc24.bot.commands.general.FlagCmd;
+import xyz.rc24.bot.commands.general.InviteCmd;
+import xyz.rc24.bot.commands.general.PingCmd;
+import xyz.rc24.bot.commands.general.RiiTagCmd;
+import xyz.rc24.bot.commands.general.RuleCmd;
+import xyz.rc24.bot.commands.general.SetBirthdayCmd;
+import xyz.rc24.bot.commands.tools.DefaultAddCmd;
+import xyz.rc24.bot.commands.tools.PrefixCmd;
+import xyz.rc24.bot.commands.tools.StatsCmd;
+import xyz.rc24.bot.commands.wii.AddCmd;
+import xyz.rc24.bot.commands.wii.BlocksCmd;
+import xyz.rc24.bot.commands.wii.CodeCmd;
+import xyz.rc24.bot.commands.wii.DNS;
+import xyz.rc24.bot.commands.wii.ErrorInfoCmd;
+import xyz.rc24.bot.commands.wii.WadsCmd;
+import xyz.rc24.bot.commands.wii.WiiWare;
 import xyz.rc24.bot.core.BotCore;
-import xyz.rc24.bot.core.entities.GuildSettings;
 import xyz.rc24.bot.core.entities.impl.BotCoreImpl;
 import xyz.rc24.bot.database.BirthdayDataManager;
 import xyz.rc24.bot.database.CodeDataManager;
 import xyz.rc24.bot.database.Database;
 import xyz.rc24.bot.database.GuildSettingsDataManager;
 import xyz.rc24.bot.listeners.DataDogStatsListener;
-import xyz.rc24.bot.listeners.RaidListener;
 import xyz.rc24.bot.managers.BirthdayManager;
 
+import javax.security.auth.login.LoginException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Add all commands, and start all listeners.
@@ -72,13 +98,15 @@ import java.util.concurrent.TimeUnit;
  * @author Spotlight and Artuto
  */
 
-public class Bot extends ListenerAdapter {
-
+@SuppressWarnings({"unused", "WeakerAccess"})
+public class Bot extends ListenerAdapter
+{
     public BotCore core;
     public Config config;
+    public EventWaiter waiter;
     public JDA jda;
 
-    // Database & Data Managers
+    // Database & Data managers
     private Database db;
     private BirthdayDataManager birthdayDataManager;
     private CodeDataManager codeDataManager;
@@ -91,16 +119,16 @@ public class Bot extends ListenerAdapter {
     private final OkHttpClient httpClient = new OkHttpClient();
     private final ScheduledExecutorService botScheduler = Executors.newScheduledThreadPool(5);
     private final ScheduledExecutorService birthdaysScheduler = Executors.newSingleThreadScheduledExecutor();
-    private final ConcurrentLinkedDeque<String> consoleCommandsAwaitingProcessing = new ConcurrentLinkedDeque<>();
 
-    private CommandManager commandManager;
-
-    JDABuilder initialize() {
+    void run() throws LoginException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
+    {
+        RiiConnect24Bot.setInstance(this);
         this.config = new Config();
         this.core = new BotCoreImpl(this);
+        this.waiter = new EventWaiter();
 
         // Start Sentry (if enabled)
-        if (config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
+        if(config.isSentryEnabled() && !(config.getSentryDSN().isEmpty()))
             Sentry.init(config.getSentryDSN());
 
         // Start database
@@ -112,16 +140,12 @@ public class Bot extends ListenerAdapter {
         // Start managers
         this.birthdayManager = new BirthdayManager(getBirthdayDataManager());
 
-        commandManager = new CommandManager();
-
         DataDogStatsListener dataDogStatsListener = null;
 
-        if (config.isDatadogEnabled()) {
-            NonBlockingStatsDClientBuilder dataDogBuilder = new NonBlockingStatsDClientBuilder()
-                    .prefix(config.getDatadogPrefix())
-                    .hostname(config.getDatabaseHost())
-                    .port(config.getDatadogPort());
-            StatsDClient statsd = dataDogBuilder.build();
+        if(config.isDatadogEnabled())
+        {
+            StatsDClient statsd = new NonBlockingStatsDClient(config.getDatadogPrefix(),
+                    config.getDatadogHost(), config.getDatadogPort());
             dataDogStatsListener = new DataDogStatsListener(statsd);
         }
 
@@ -129,43 +153,88 @@ public class Bot extends ListenerAdapter {
         List<Long> owners = config.getSecondaryOwners();
         String[] coOwners = new String[owners.size()];
 
-        for (int i = 0; i < owners.size(); i++)
+        for(int i = 0; i < owners.size(); i++)
             coOwners[i] = String.valueOf(owners.get(i));
+
+        List<SlashCommand> slashCommands = new ArrayList<>();
+
+        slashCommands.add(new AddCmd(this));
+        slashCommands.add(new BirthdayCmd(this));
+        slashCommands.add(new BlocksCmd());
+        slashCommands.add(new CodeCmd(this));
+        slashCommands.add(new CountCmd(this));
+        slashCommands.add(new DNS());
+        slashCommands.add(new ErrorInfoCmd(this));
+        slashCommands.add(new InviteCmd());
+        slashCommands.add(new RiiTagCmd(this));
+        slashCommands.add(new RuleCmd());
+        slashCommands.add(new SetBirthdayCmd(this));
+        slashCommands.add(new WadsCmd());
+        slashCommands.add(new WiiWare());
+
+        // Setup Command Client
+        CommandClientBuilder client = new CommandClientBuilder()
+                .setActivity(Activity.playing(config.getPlaying()))
+                .setStatus(config.getStatus())
+                .setEmojis(Const.SUCCESS_E, Const.WARN_E, Const.ERROR_E)
+                .setLinkedCacheSize(40)
+                .setOwnerId(String.valueOf(config.getPrimaryOwner()))
+                .setPrefix("@mention")
+                .setServerInvite("https://discord.gg/5rw6Tur")
+                .setGuildSettingsManager(getGuildSettingsDataManager())
+                .setCoOwnerIds(coOwners)
+                .setScheduleExecutor(botScheduler)
+                .addCommands(
+                        // Bot administration
+                        new Bash(), new Eval(this), new Shutdown(),
+
+                        // General
+                        new BirthdayCmd(this), new CountCmd(this), new FlagCmd(this), new InviteCmd(),
+                        new PingCmd(), new RiiTagCmd(this), new RuleCmd(), new SetBirthdayCmd(this),
+
+                        // Tools
+                        new DefaultAddCmd(this), new PrefixCmd(getGuildSettingsDataManager()),
+                        new StatsCmd(this),
+
+                        // Wii-related
+                        new AddCmd(this), new CodeCmd(this), new BlocksCmd(),
+                        new ErrorInfoCmd(this), new DNS(), new WadsCmd(), new WiiWare())
+                .addSlashCommands(slashCommands.toArray(new SlashCommand[0]));
+
+        if(!(dataDogStatsListener == null))
+            client.setListener(dataDogStatsListener);
 
         // JDA Connection
         JDABuilder builder = JDABuilder.createLight(config.getToken())
-                .setEnabledIntents(RiiConnect24Bot.INTENTS)
+                .setEnabledIntents(Const.INTENTS)
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .addEventListeners(new RaidListener(config.useRaidProtection()))
-                .addEventListeners(commandManager)
-                .addEventListeners(this)
-                .addEventListeners(new CommandAutoCompletion())
-                .setActivity(Activity.listening("Slash commands"));
+                .setActivity(Activity.playing("Loading..."))
+                .addEventListeners(this, client.build(), waiter);
 
-
-        if (!(dataDogStatsListener == null))
+        if(!(dataDogStatsListener == null))
             builder.addEventListeners(dataDogStatsListener);
 
-        return builder;
-    }
-
-    void run() {
-        JDABuilder jdaBuilder = initialize();
-        this.jda = jdaBuilder.build();
-        jda.updateCommands().addCommands(commandManager.getCommandDataList()).queue();
+        builder.build();
     }
 
     @Override
-    public void onReady(ReadyEvent event) {
+    public void onReady(ReadyEvent event)
+    {
+        this.jda = event.getJDA();
         logger.info("Done loading!");
+
+        // Check if we need to set a game
+        if(config.getPlaying().isEmpty())
+            event.getJDA().getPresence().setActivity(Activity.playing("Type " + config.getPrefix() + "help"));
 
         ZonedDateTime zonedNow = OffsetDateTime.now().toZonedDateTime();
         ZonedDateTime zonedNext;
 
-        if (config.areBirthdaysEnabled()) {
+        if(config.areBirthdaysEnabled())
+        {
             // Every day at 8AM
             zonedNext = zonedNow.withHour(8).withMinute(0).withSecond(0);
-            if (zonedNow.compareTo(zonedNext) > 0)
+            if(zonedNow.compareTo(zonedNext) > 0)
                 zonedNext = zonedNext.plusDays(1);
 
             Duration duration = Duration.between(zonedNow, zonedNext);
@@ -178,14 +247,17 @@ public class Bot extends ListenerAdapter {
     }
 
     @Override
-    public void onShutdown(ShutdownEvent event) {
+    public void onShutdown(ShutdownEvent event)
+    {
         birthdaysScheduler.shutdown();
         DB.close();
     }
 
-    private Database initDatabase() {
-        if (config.getDatabaseUser().isEmpty() || config.getDatabasePassword().isEmpty() ||
-                config.getDatabase().isEmpty() || config.getDatabaseHost().isEmpty()) {
+    private Database initDatabase()
+    {
+        if(config.getDatabaseUser().isEmpty() || config.getDatabasePassword().isEmpty() ||
+                config.getDatabase().isEmpty() || config.getDatabaseHost().isEmpty())
+        {
             throw new IllegalStateException("You haven't configured database details in the config file!");
         }
 
@@ -195,10 +267,12 @@ public class Bot extends ListenerAdapter {
                 .dataSourceClassName(MysqlDataSource.class.getName() /*"com.mysql.cj.jdbc.MysqlDataSource"*/)
                 .build();
 
-        Map<String, Object> props = new HashMap<>() {{
+        Map<String, Object> props = new HashMap<>()
+        {{
             put("useSSL", config.useSSL());
             put("verifyServerCertificate", config.verifyServerCertificate());
             put("autoReconnect", config.autoReconnect());
+            //put("serverTimezone", "CST"); // Doesn't really matter
             put("characterEncoding", "UTF-8");
         }};
 
@@ -212,56 +286,79 @@ public class Bot extends ListenerAdapter {
         return new Database();
     }
 
-    public BotCore getCore() {
+    public BotCore getCore()
+    {
         return core;
     }
 
-    public Config getConfig() {
+    public Config getConfig()
+    {
         return config;
     }
 
-    public Database getDatabase() {
+    public Database getDatabase()
+    {
         return db;
     }
 
-    public JDA getJDA() {
+    public EventWaiter getWaiter()
+    {
+        return waiter;
+    }
+
+    public JDA getJDA()
+    {
         return jda;
     }
 
-    public ScheduledExecutorService getBotScheduler() {
+    public ScheduledExecutorService getBotScheduler()
+    {
         return botScheduler;
     }
 
-    public BirthdayDataManager getBirthdayDataManager() {
+    // Data managers
+    public BirthdayDataManager getBirthdayDataManager()
+    {
         return birthdayDataManager;
     }
 
-    public CodeDataManager getCodeDataManager() {
+    public CodeDataManager getCodeDataManager()
+    {
         return codeDataManager;
     }
 
-    public GuildSettingsDataManager getGuildSettingsDataManager() {
+    public GuildSettingsDataManager getGuildSettingsDataManager()
+    {
         return guildSettingsDataManager;
     }
 
-    public GuildSettings getGuildSettings(long snowflakeID) {
-        return getGuildSettingsDataManager().getGuildSettings(snowflakeID);
-    }
-
-    public GuildSettings getGuildSettings(Guild guild) {
-        return getGuildSettingsDataManager().getSettings(guild);
-    }
-
-    public BirthdayManager getBirthdayManager() {
+    // Managers
+    public BirthdayManager getBirthdayManager()
+    {
         return birthdayManager;
     }
 
-    public OkHttpClient getHttpClient() {
+    // Other
+    public OkHttpClient getHttpClient()
+    {
         return httpClient;
     }
 
-    public String getPrefix(Guild guild) {
-        return getCore().getGuildSettings(guild).getPrefix();
-    }
+	public String getPrefix(Guild guild)
+	{
+		return getCore().getGuildSettings(guild).getPrefix();
+	}
 
+    private static SlashCommand[] getSlashCommands() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
+    {
+        Reflections reflections = new Reflections("xyz.rc24.bot.commands");
+        Set<Class<? extends SlashCommand>> subTypes = reflections.getSubTypesOf(SlashCommand.class);
+        List<SlashCommand> commands = new ArrayList<>();
+
+        for (Class<? extends SlashCommand> theClass : subTypes) {
+            commands.add(theClass.getDeclaredConstructor().newInstance());
+        }
+
+        return commands.toArray(new SlashCommand[0]);
+    }
 }

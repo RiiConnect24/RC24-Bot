@@ -22,26 +22,36 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.botadm;
+package xyz.rc24.bot.utils;
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import xyz.rc24.bot.commands.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
+import net.dv8tion.jda.api.entities.Member;
 
-public class ShutdownCommand implements Command {
+import java.util.List;
 
-	@Override
-	public void onCommand(SlashCommandInteractionEvent event) {
-		event.reply("Shutting down bot...").queue();
-		event.getJDA().shutdown();
-		System.exit(0);
-	}
+/**
+ * @author Artuto
+ */
 
-	@Override
-	public SlashCommandData getCommandData() {
-		return Commands.slash("shutdown", "Shuts down the bot").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
-	}
+public class SearcherUtil
+{
+    public static Member findMember(CommandEvent event, String args)
+    {
+        if(args.isEmpty())
+            return event.getMember();
+
+        List<Member> found = FinderUtil.findMembers(args, event.getGuild());
+        if(found.isEmpty())
+        {
+            event.replyWarning("No members found matching \"" + args + "\"");
+            return null;
+        }
+        else if(found.size() > 1)
+        {
+            event.replyWarning(FormatUtil.listOfMembers(found, args));
+            return null;
+        }
+
+        return found.get(0);
+    }
 }

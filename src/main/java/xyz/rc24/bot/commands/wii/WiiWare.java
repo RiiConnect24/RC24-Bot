@@ -22,13 +22,32 @@
  * SOFTWARE.
  */
 
-create table birthdays
-(
-  user_id bigint     not null,
-  day     varchar(5) null,
-  constraint birthdays_user_id_uindex
-    unique (user_id)
-);
+package xyz.rc24.bot.commands.wii;
 
-alter table birthdays
-  add primary key (user_id);
+import com.jagrosh.jdautilities.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.Permission;
+import xyz.rc24.bot.commands.Categories;
+
+/**
+ * @author Artuto
+ */
+
+public class WiiWare extends SlashCommand
+{
+    public WiiWare()
+    {
+        this.name = "wiiware";
+        this.help = "Lets you know the URL to the WiiWare patcher.";
+        this.category = Categories.WII;
+        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
+        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
+        this.guildOnly = false;
+    }
+
+    @Override
+    protected void execute(SlashCommandEvent event)
+    {
+        event.reply("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases").queue();
+    }
+}

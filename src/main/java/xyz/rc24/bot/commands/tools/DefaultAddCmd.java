@@ -22,40 +22,47 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.listeners;
+package xyz.rc24.bot.commands.tools;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jdautilities.command.CommandListener;
-import com.timgroup.statsd.StatsDClient;
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.Permission;
+import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.commands.Categories;
+import xyz.rc24.bot.core.entities.CodeType;
+import xyz.rc24.bot.database.GuildSettingsDataManager;
+import xyz.rc24.bot.utils.FormatUtil;
 
-public class DataDogStatsListener extends ListenerAdapter implements CommandListener
+/**
+ * @author Artuto
+ */
+
+public class DefaultAddCmd extends Command
 {
-    private final StatsDClient statsd;
+    private GuildSettingsDataManager dataManager;
 
-    public DataDogStatsListener(StatsDClient statsd)
+    public DefaultAddCmd(Bot bot)
     {
-        this.statsd = statsd;
+        this.dataManager = bot.getGuildSettingsDataManager();
+        this.name = "defaultadd";
+        this.help = "Changes the default `add` command's type.";
+        this.category = Categories.TOOLS;
+        this.userPermissions = new Permission[]{Permission.MANAGE_SERVER};
     }
 
     @Override
-    public void onGuildJoin(GuildJoinEvent event)
+    protected void execute(CommandEvent event)
     {
-        statsd.recordGaugeValue("guilds", event.getJDA().getGuildCache().size());
-    }
+        CodeType type = CodeType.fromCode(event.getArgs());
+        if(type == CodeType.UNKNOWN)
+        {
+            event.replyError(FormatUtil.getCodeTypes());
+            return;
+        }
 
-    @Override
-    public void onGuildLeave(GuildLeaveEvent event)
-    {
-        statsd.recordGaugeValue("guilds", event.getJDA().getGuildCache().size());
-    }
-
-    @Override
-    public void onCommand(CommandEvent event, Command command)
-    {
-        statsd.incrementCounter("commands");
+        if(dataManager.setDefaultAddType(type, event.getGuild().getIdLong()))
+            event.replySuccess("Successfully set `" + type.getName() + "` as default `add` type!");
+        else
+            event.replyError("Error whilst updating the default add type! Please contact a developer.");
     }
 }

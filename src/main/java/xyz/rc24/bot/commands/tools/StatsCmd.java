@@ -24,13 +24,14 @@
 
 package xyz.rc24.bot.commands.tools;
 
+import com.jagrosh.jdautilities.command.Command;
+import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONObject;
@@ -38,78 +39,76 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.rc24.bot.Bot;
-import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.Command;
+import xyz.rc24.bot.Const;
+import xyz.rc24.bot.commands.Categories;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class StatsCommand implements Command {
+public class StatsCmd extends Command {
+    private final Logger logger = LoggerFactory.getLogger("Stats Command");
+    private final OkHttpClient httpClient;
 
-    private static final Logger logger = LoggerFactory.getLogger(StatsCommand.class);
+    public StatsCmd(Bot bot) {
+        this.name = "stats";
+        this.help = "Shows stats for the RC24 services";
+        this.category = Categories.TOOLS;
+        this.botPermissions = new Permission[] { Permission.MESSAGE_EMBED_LINKS };
+        this.ownerCommand = false;
+        this.guildOnly = false;
+
+        this.httpClient = bot.getHttpClient();
+    }
 
     @Override
-    public void onCommand(SlashCommandInteractionEvent event) {
-
-        Bot bot = RiiConnect24Bot.getInstance();
-
+    protected void execute(CommandEvent event) {
         Request request = new Request.Builder()
                 .url("http://164.132.44.106/stats.json")
-                .addHeader("User-Agent", "RC24-Bot " + RiiConnect24Bot.VERSION)
+                .addHeader("User-Agent", "RC24-Bot " + Const.VERSION)
                 .build();
 
-        bot.getHttpClient().newCall(request).enqueue(new Callback() {
-
+        httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                event.reply("Could not contact the Stats API! Please ask a owner to check the console. Error: ```" + e.getMessage() + "```").setEphemeral(true).queue();
+                event.replyError("Could not contact the Stats API! Please ask a owner to check the console. " +
+                        "Error: ```\n" + e.getMessage() + "\n```");
                 logger.error("Exception while contacting the Stats API! ", e);
             }
 
             @Override
             public void onResponse(Call call, Response response) {
-
                 try (response) {
+                    if (!(response.isSuccessful()))
+                        throw new IOException("Unsuccessful response code: " + response.code());
 
-                    if (!(response.isSuccessful())) {
-                        event.reply("An error occurred: " + response.code()).setEphemeral(true).queue();
-                        return;
-                    }
-
-                    if (response.body() == null) {
-                        event.reply("An error occurred: Response body is null!").setEphemeral(true).queue();
-                        return;
-                    }
+                    if (response.body() == null)
+                        throw new IOException("Response body is null!");
 
                     EmbedBuilder eb = new EmbedBuilder();
-                    MessageCreateBuilder mb = new MessageCreateBuilder();
+                    MessageBuilder mb = new MessageBuilder();
+
                     eb.setDescription(parseJSON(response));
                     eb.setColor(Color.decode("#29B7EB"));
-                    mb.setContent("<:RC24:302470872201953280> Service stats of RC24:").setEmbeds(eb.build());
-                    mb.addEmbeds(eb.build());
-                    event.reply(mb.build()).queue();
 
-                } catch (Exception e) {
-                    onFailure(call, new IOException(e));
+                    mb.setContent("<:RC24:302470872201953280> Service stats of RC24:").setEmbeds(eb.build());
+
                     response.close();
-                } finally {
+                    event.reply(mb.build());
+                } catch (Exception e) {
+                    onFailure(call, e instanceof IOException ? (IOException) e : new IOException(e));
                     response.close();
                 }
             }
         });
     }
 
-    @Override
-    public SlashCommandData getCommandData() {
-        return Commands.slash("stats", "Retrieve the RC24 Stats");
-    }
-
-    private static String parseJSON(Response response) {
-
+    @SuppressWarnings("ConstantConditions")
+    private String parseJSON(Response response) {
         JSONObject json = new JSONObject(new JSONTokener(response.body().byteStream()));
         Set<String> keys = new TreeSet<>(json.keySet());
+
         StringBuilder green = new StringBuilder();
         StringBuilder yellow = new StringBuilder();
         StringBuilder red = new StringBuilder();
@@ -117,10 +116,16 @@ public class StatsCommand implements Command {
 
         keys.forEach(k -> {
             String status = json.getString(k);
+
             switch (status) {
-                case "green" -> green.append("+ ").append(k).append("\n");
-                case "yellow" -> yellow.append("* ").append(k).append("\n");
-                default -> red.append("- ").append(k).append("\n");
+                case "green":
+                    green.append("+ ").append(k).append("\n");
+                    break;
+                case "yellow":
+                    yellow.append("* ").append(k).append("\n");
+                    break;
+                default:
+                    red.append("- ").append(k).append("\n");
             }
         });
 

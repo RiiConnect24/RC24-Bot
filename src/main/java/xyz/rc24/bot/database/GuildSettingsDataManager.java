@@ -25,6 +25,7 @@
 package xyz.rc24.bot.database;
 
 import co.aikar.idb.DbRow;
+import com.jagrosh.jdautilities.command.GuildSettingsManager;
 import net.dv8tion.jda.api.entities.Guild;
 import xyz.rc24.bot.Bot;
 import xyz.rc24.bot.RiiConnect24Bot;
@@ -44,7 +45,8 @@ import java.util.Optional;
  * @author Artuto
  */
 
-public class GuildSettingsDataManager {
+public class GuildSettingsDataManager implements GuildSettingsManager<GuildSettings>
+{
     private Bot bot;
 
     private final EntityBuilder entityBuilder;
@@ -56,12 +58,14 @@ public class GuildSettingsDataManager {
         this.entityBuilder = ((BotCoreImpl) bot.getCore()).getEntityBuilder();
     }
 
+    @Override
     public void init()
     {
         this.bot = RiiConnect24Bot.getInstance();
     }
 
     @Nullable
+    @Override
     public GuildSettings getSettings(Guild guild)
     {
         return getSettings(guild.getIdLong());
@@ -76,6 +80,8 @@ public class GuildSettingsDataManager {
 
     public boolean setDefaultAddType(CodeType type, long id)
     {
+        ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setDefaultAddType(type);
+
         return db.doInsert("INSERT INTO settings (guild_id, default_add)" +
                 "VALUES(?, ?) ON DUPLICATE KEY UPDATE default_add = ?", id, type.getId(), type.getId());
     }
