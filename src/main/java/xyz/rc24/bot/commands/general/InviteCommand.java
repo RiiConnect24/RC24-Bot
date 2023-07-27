@@ -22,39 +22,25 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.wii;
+package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import xyz.rc24.bot.commands.Categories;
-import java.util.ArrayList;
-import java.util.List;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
 /**
- * @author Spotlight
+ * @author Gamebuster
  */
+public class InviteCommand implements Command {
 
-public class DNS extends SlashCommand
-{
-    public DNS()
-    {
-        this.name = "dns";
-        this.help = "Lets you know the current DNS settings.";
-        this.category = Categories.WII;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.guildOnly = false;
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		event.reply("Aw, you want to invite me? <3\nInvite me here: " + event.getJDA().getInviteUrl()).queue();
+	}
 
-        List<OptionData> data = new ArrayList<>();
-        this.options = data;
-    }
-
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        event.reply("`167.86.108.126` should be your primary DNS.\n" + "`1.1.1.1` should be your secondary DNS.").setEphemeral(true).queue();;
-    }
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("invite", "Invite me to your server!");
+	}
 }

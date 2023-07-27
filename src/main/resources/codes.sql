@@ -24,13 +24,14 @@
 
 create table codes
 (
-  user_id bigint     not null,
+  user_id bigint     not null primary key,
   games   mediumtext null,
   nnid    mediumtext null,
   switch  mediumtext null,
   threeds mediumtext null,
   wii     mediumtext null,
   psn     mediumtext null,
+  flag    mediumtext null,
   constraint codes_user_id_uindex
     unique (user_id)
 );

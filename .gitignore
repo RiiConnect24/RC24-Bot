@@ -7,11 +7,29 @@
 # BlueJ files
 *.ctxt
 
+# eclipse
+bin
+*.launch
+.metadata
+.classpath
+.project
+/.settings
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files
-*.jar
 *.war
 *.ear
 *.zip
@@ -29,3 +47,13 @@ target/*
 .idea/*
 *.iml
 dependency-reduced-pom.xml
+polls_049.yml
+polls_110.yml
+.DS_Store
+
+# eclipse
+bin
+.settings
+.metadata
+.classpath
+.project

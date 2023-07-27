@@ -24,45 +24,22 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import xyz.rc24.bot.commands.Categories;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Larsenv
+ * @author Larsenv, Gamebuster
  */
 
-public class RuleCmd extends SlashCommand {
-    public RuleCmd() {
-        this.name = "rule";
-        this.help = "Looks up a rule in the RiiConnect24 Discord server.";
-        this.category = Categories.WII;
-        this.guildOnly = false;
-
-        List<OptionData> data = new ArrayList<>();
-        data.add(new OptionData(OptionType.STRING, "num", "The rule number to look up."));
-        this.options = data;
-    }
-
-    @Override
-    protected void execute(SlashCommandEvent event) {
-        int ruleNum = Integer.parseInt(event.getOption("num").getAsString());
-
-        if (ruleList.containsKey(ruleNum)) {
-            event.reply("**Rule " + event.getOption("num").getAsString() + "**: " + ruleList.get(ruleNum)).queue();
-        } else {
-            event.reply("Rule not found.").setEphemeral(true).queue();
-        }
-    }
-
-    private final Map<Integer, String> ruleList = new HashMap<>() {
+public class RuleCommand implements Command {
+	
+    private static final Map<Integer, String> RULES = new HashMap<>() {
         {
             put(1, "Staff members will use common sense when acting in an official capacity and may apply sanctions as they see fit, including in cases not explicitly covered by these rules - just be excellent to each other.");
             put(2, "Don’t harass or bother people, this includes repeated @mentions, trolling, and in Direct Messages. Don’t attack users on this server - examples of behavior that we consider to be a violation of this include racism, sexism, ableism, religious discrimination, homophobia/transphobia, or anything someone may find to be offensive - be nice! If someone is harassing you, please tell a staff member and they will take appropriate action.");
@@ -82,6 +59,25 @@ public class RuleCmd extends SlashCommand {
             put(34, "( ͡° ͜ʖ ͡°)");
             put(69, "( ͡° ͜ʖ ͡°)");
             put(420, "( ͡° ͜ʖ ͡°)");
+            put(621, "C₅H₈NO₄Na ( ͡° ͜ʖ ͡°)");
         }
     };
+
+    @Override
+    public void onCommand(SlashCommandInteractionEvent event) {
+
+        int rule = event.getOption("index").getAsInt();
+
+        if (RULES.containsKey(rule)) {
+            event.reply("**Rule " + rule + "**: " + RULES.get(rule)).queue();
+        } else {
+            event.reply("Rule not found.").setEphemeral(true).queue();
+        }
+    }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash("rule", "Provides information about specific rules.")
+                .addOption(OptionType.INTEGER, "index", "Rule Index", true);
+    }
 }

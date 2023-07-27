@@ -26,6 +26,7 @@ package xyz.rc24.bot.core;
 
 import net.dv8tion.jda.api.entities.Guild;
 import xyz.rc24.bot.core.entities.CodeType;
+import xyz.rc24.bot.core.entities.Flag;
 import xyz.rc24.bot.core.entities.GuildSettings;
 
 import java.util.Map;
@@ -41,5 +42,5 @@ public interface BotCore
 
     Map<String, String> getCodesForType(CodeType type, long user);
 
-    String getFlag(long user);
+    Flag getFlag(long user);
 }

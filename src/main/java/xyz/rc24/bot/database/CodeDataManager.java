@@ -64,7 +64,7 @@ public class CodeDataManager
 
         for(CodeType type : CodeType.values())
         {
-            if(type == CodeType.UNKNOWN)
+            if(type == null)
                 continue;
 
             Map<String, String> typeMap = gson.fromJson(row.getString(type.getColumn(), ""), Map.class);
@@ -115,7 +115,7 @@ public class CodeDataManager
 
     public String getFlag(long user)
     {
-        Optional<DbRow> optRow = db.getRow("SELECT * FROM codes WHERE user_id = ?", user);
+        Optional<DbRow> optRow = db.getRow("SELECT flag FROM codes WHERE user_id = ?", user);
 
         return optRow.map(dbRow -> dbRow.getString("flag")).orElse("");
     }

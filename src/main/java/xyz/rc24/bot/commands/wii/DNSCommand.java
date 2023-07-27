@@ -22,35 +22,29 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.botadm;
+package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.Command;
-import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.Categories;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
 /**
- * @author Spotlight
+ * @author Gamebuster
  */
 
-public class Shutdown extends Command
-{
-    public Shutdown()
-    {
-        this.name = "shutdown";
-        this.help = "Turns the bot off.";
-        this.category = Categories.ADMIN;
-        this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.userPermissions = new Permission[]{Permission.MESSAGE_WRITE};
-        this.ownerCommand = true;
-        this.guildOnly = false;
-    }
+public class DNSCommand implements Command {
+	
+	private static final String PRIMARY_DNS = "167.86.108.126";
+	private static final String SECONDARY_DNS = "1.1.1.1";
 
-    @Override
-    protected void execute(CommandEvent event)
-    {
-        event.getTextChannel().sendMessage("Done! Cya \uD83D\uDC4B").complete();
-        event.getJDA().shutdown();
-        System.exit(0);
-    }
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		event.replyFormat("`%s` should be your primary DNS.\n`%s` should be your secondary DNS.", PRIMARY_DNS, SECONDARY_DNS).queue();
+	}
+
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("dns", "Lets you know the current DNS settings required to use RiiConnect24.");
+	}
 }

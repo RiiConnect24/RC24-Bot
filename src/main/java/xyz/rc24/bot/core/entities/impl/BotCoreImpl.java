@@ -32,6 +32,7 @@ import xyz.rc24.bot.core.BotCore;
 import xyz.rc24.bot.core.SimpleCacheBuilder;
 import xyz.rc24.bot.core.entities.CodeType;
 import xyz.rc24.bot.core.entities.EntityBuilder;
+import xyz.rc24.bot.core.entities.Flag;
 import xyz.rc24.bot.core.entities.GuildSettings;
 
 import java.util.Collections;
@@ -111,17 +112,17 @@ public class BotCoreImpl implements BotCore
     }
 
     @Override
-    public String getFlag(long user)
+    public Flag getFlag(long user)
     {
         try
         {
-            return flagCache.get(user, () -> bot.getCodeDataManager().getFlag(user));
+            return Flag.fromName(flagCache.get(user, () -> bot.getCodeDataManager().getFlag(user)));
         }
         catch(ExecutionException e)
         {
             RiiConnect24Bot.getLogger().error("Error whilst getting flag for User {}: {}",
                     user, e.getMessage(), e);
-            return "";
+            return null;
         }
     }
 

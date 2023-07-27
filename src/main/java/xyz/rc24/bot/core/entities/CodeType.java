@@ -37,9 +37,7 @@ public enum CodeType
     PSN(2, "psn", "PlayStation Network", "545097818319224832", "**PlayStation Network ID**", "psn"),
     SWITCH(3, "switch", "Switch", "287652338791874560", "**Switch**", "switch"),
     THREEDS(4, "threeds", "3DS", "287651327763283968", "**3DS**", "3ds"),
-    WII(5, "wii", "Wii", "259081748007223296", "**Wii**", "wii"),
-
-    UNKNOWN(-1, null, null, null, null, null);
+    WII(5, "wii", "Wii", "259081748007223296", "**Wii**", "wii");
 
     private final int id;
     private final String column, displayName, emote, formattedName, name;
@@ -92,7 +90,7 @@ public enum CodeType
                 return type;
         }
 
-        return UNKNOWN;
+        return null;
     }
 
     public static CodeType fromEmote(String emote)
@@ -103,7 +101,7 @@ public enum CodeType
                 return type;
         }
 
-        return UNKNOWN;
+        return null;
     }
 
     public static CodeType fromId(int id)
@@ -114,6 +112,6 @@ public enum CodeType
                 return type;
         }
 
-        return UNKNOWN;
+        return null;
     }
 }

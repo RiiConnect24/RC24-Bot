@@ -22,32 +22,22 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot;
+package xyz.rc24.bot.commands.wii;
 
-import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
-import java.util.EnumSet;
+public class WadsCommand implements Command {
 
-import static net.dv8tion.jda.api.requests.GatewayIntent.DIRECT_MESSAGES;
-import static net.dv8tion.jda.api.requests.GatewayIntent.DIRECT_MESSAGE_REACTIONS;
-import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MESSAGES;
-import static net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MESSAGE_REACTIONS;
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		event.reply("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest").queue();
+	}
 
-/**
- * Constants for the bot
- *
- * @author Artuto
- */
-
-public class Const
-{
-    public static final String VERSION = Const.class.getPackage().getImplementationVersion() == null ? "DEV" :
-            Const.class.getPackage().getImplementationVersion();
-    public static final String PATCHING_URL = "http://mtw.rc24.xyz/patch";
-    public static final String SUCCESS_E = "✅";
-    public static final String WARN_E = "⚠";
-    public static final String ERROR_E = "❌";
-
-    public static final EnumSet<GatewayIntent> INTENTS = EnumSet.of(GUILD_MESSAGES,
-            GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGES, DIRECT_MESSAGE_REACTIONS);
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("wads", "Lets you know the URL to the RiiConnect24 Patcher.");
+	}
 }

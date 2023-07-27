@@ -22,28 +22,22 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.general;
+package xyz.rc24.bot.commands.wii;
 
-import com.jagrosh.jdautilities.command.SlashCommand;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import xyz.rc24.bot.commands.Categories;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
-/**
- * @author Artuto
- */
+public class WiiWareCommand implements Command {
 
-public class InviteCmd extends SlashCommand
-{
-    public InviteCmd()
-    {
-        this.name = "invite";
-        this.category = Categories.GENERAL;
-        this.help = "Invite me to your server.";
-    }
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		event.reply("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases").queue();
+	}
 
-    @Override
-    protected void execute(SlashCommandEvent event)
-    {
-        event.reply("Aw, you want to invite me? <3\nInvite me here: " + event.getJDA().getInviteUrl()).queue();
-    }
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("wiiware", "Lets you know the URL to the WiiWare patcher.");
+	}
 }

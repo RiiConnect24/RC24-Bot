@@ -25,10 +25,8 @@
 package xyz.rc24.bot.core.entities;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public enum Flag
-{
+public enum Flag {
     AFGHANISTAN("\uD83C\uDDE6\uD83C\uDDEB", "Afghanistan"),
     ALAND_ISLANDS("\uD83C\uDDE6\uD83C\uDDFD", "Aland Islands"),
     ALBANIA("\uD83C\uDDE6\uD83C\uDDF1", "Albania"),
@@ -292,39 +290,44 @@ public enum Flag
     WESTERN_SAHARA("\uD83C\uDDEA\uD83C\uDDED", "Western Sahara"),
     YEMEN("\uD83C\uDDFE\uD83C\uDDEA", "Yemen"),
     ZAMBIA("\uD83C\uDDFF\uD83C\uDDF2", "Zambia"),
-    ZIMBABWE("\uD83C\uDDFF\uD83C\uDDFC", "Zimbabwe"),
-
-    UNKNOWN(null, null);
+    ZIMBABWE("\uD83C\uDDFF\uD83C\uDDFC", "Zimbabwe");
 
     private final String emote, name;
 
-    Flag(String emote, String name)
-    {
+    Flag(String emote, String name) {
         this.emote = emote;
         this.name = name;
     }
 
-    @Nullable
-    public String getEmote()
-    {
+    public String getEmote() {
         return emote;
     }
 
-    @Nullable
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    @NotNull
-    public static Flag fromName(@NotNull String name)
-    {
-        for(Flag flag : values())
-        {
-            if(!(flag.getName() == null) && name.toLowerCase().equals(flag.getName().toLowerCase()))
+    public static Flag fromEmoji(String emote) {
+        if (emote != null) {
+            for (Flag flag : values()) {
+                if (emote.equals(flag.emote)) {
+                    return flag;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Flag fromName(@NotNull String name) {
+        for (Flag flag : values()) {
+            if (!(flag.getName() == null) && name.toLowerCase().equals(flag.getName().toLowerCase()))
                 return flag;
         }
 
-        return UNKNOWN;
+        return null;
+    }
+
+    public String toString() {
+        return emote + " " + name;
     }
 }
