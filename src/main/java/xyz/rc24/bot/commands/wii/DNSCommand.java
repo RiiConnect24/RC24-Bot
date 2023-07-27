@@ -24,39 +24,27 @@
 
 package xyz.rc24.bot.commands.wii;
 
-import com.mojang.brigadier.arguments.DoubleArgumentType;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
-import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.Dispatcher;
-import xyz.rc24.bot.commands.RiiContext;
+/**
+ * @author Gamebuster
+ */
 
-public class BlocksCmd
-{
-    
-    public static final void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("blocks").botRequires(Permission.MESSAGE_SEND, Permission.MESSAGE_EMBED_LINKS)
-    		.executes((context) -> {
-    			convert(context.getSource(), 0d);
-    			return 1;
-    		})
-    		.then(Commands.argument("amount", DoubleArgumentType.doubleArg())
-    			.executes((context) -> {
-    				convert(context.getSource(), context.getArgument("amount", Double.class));
-    				return 1;
-    			})	
-    		)	
-    	);
-    }
+public class DNSCommand implements Command {
+	
+	private static final String PRIMARY_DNS = "167.86.108.126";
+	private static final String SECONDARY_DNS = "1.1.1.1";
 
-    private static final void convert(RiiContext context, Double blocks) {
-        if(blocks == 0d){
-            context.queueMessage("\u2139 1 block is 128kb\n8 blocks is 1MB");
-            return;
-        }
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		event.replyFormat("`%s` should be your primary DNS.\n`%s` should be your secondary DNS.", PRIMARY_DNS, SECONDARY_DNS).queue();
+	}
 
-        double mb = blocks * 128d / 1024d;
-        context.queueMessage("\u2139 " + blocks + " block(s) is " + mb + "MB(s)");
-    }
-
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("dns", "Lets you know the current DNS settings required to use RiiConnect24.");
+	}
 }

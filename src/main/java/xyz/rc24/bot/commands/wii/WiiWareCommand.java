@@ -22,27 +22,22 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.botadm;
+package xyz.rc24.bot.commands.wii;
 
-import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.Dispatcher;
-import xyz.rc24.bot.commands.RiiContext;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
-public class Shutdown {
-	
-	public static void register(Dispatcher dispatcher) {
-		dispatcher.register(Commands.base("shutdown", "Shuts down the bot", null).requires((context) -> context.isOwnerContext() || context.isConsoleContext(), "You cannot execute that command. Reason: Insufficient Permisions")
-			.executes(context -> {
-				shutdown(context.getSource());
-				return 1;
-			})
-		);
+public class WiiWareCommand implements Command {
+
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		event.reply("Check out the patcher here: https://github.com/RiiConnect24/auto-wiiware-patcher/releases").queue();
 	}
-    
-    private static void shutdown(RiiContext context) {
-        context.completeMessage("Done! Cya \uD83D\uDC4B");
-        RiiConnect24Bot.getInstance().getJDA().shutdown();
-        System.exit(0);
-    }
+
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("wiiware", "Lets you know the URL to the WiiWare patcher.");
+	}
 }

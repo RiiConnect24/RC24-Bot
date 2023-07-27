@@ -24,17 +24,17 @@
 
 package xyz.rc24.bot.commands.general;
 
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-
 import xyz.rc24.bot.RiiConnect24Bot;
-import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.Dispatcher;
-import xyz.rc24.bot.commands.RiiContext;
+import xyz.rc24.bot.commands.Command;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -43,40 +43,32 @@ import java.util.concurrent.CompletableFuture;
  * @author Larsenv
  */
 
-public class CountCmd {
+public class CountCommand implements Command {
 
-    private static final Logger logger = RiiConnect24Bot.getLogger(CountCmd.class);
-    
-    public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("count", "Looks up the number of Miis on the Check Mii Out Channel and Wiis registered to use Wii Mail.", null)
-    		.executes((context) -> {
-    			execute(context.getSource());
-    			return 1;
-    		})
-    	);
-    }
+    private static final Logger logger = RiiConnect24Bot.getLogger(CountCommand.class);
 
-   private static void execute(RiiContext context) {
-	    
+    @Override
+    public void onCommand(SlashCommandInteractionEvent event) {
+
         String url = "https://miicontestp.wii.rc24.xyz/cgi-bin/count.cgi";
-        
-        RiiContext<?> ctx = context.defer(true);
 
         CompletableFuture.runAsync(() -> {
-            if (RiiConnect24Bot.getInstance().getConfig().isDebug())
-                logger.info("Sending request to '{}'", url);
+
+            if (RiiConnect24Bot.getInstance().getConfig().isDebug()) logger.info("Sending request to '{}'", url);
 
             Request request = new Request.Builder().url(url).build();
+
             RiiConnect24Bot.getInstance().getHttpClient().newCall(request).enqueue(new Callback() {
+
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                	ctx.queueMessage("Hm, something went wrong on our end.", true, false);
-                    logger.error("Something went wrong whilst checking the RiiConnect24 count stats: {}", e.getMessage(),
-                            e);
+                    event.reply("Hm, something went wrong on our end.").setEphemeral(true).queue();
+                    logger.error("Something went wrong whilst checking the RiiConnect24 count stats", e);
                 }
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) {
+
                     if (!(response.isSuccessful())) {
                         onFailure(call, new IOException("Not success response code: " + response.code()));
                         response.close();
@@ -84,16 +76,21 @@ public class CountCmd {
                     }
 
                     try {
-                        ctx.queueMessage(response.body().string());
+                        event.reply(response.body().string()).queue();
                     } catch (Exception e) {
-                        ctx.queueMessage("Hm, something went wrong on our end.", true, false);
+                        event.reply("Hm, something went wrong on our end.").setEphemeral(true).queue();
                     }
 
                     response.close();
                 }
             });
         });
-        
 
     }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash("count", "Looks up the number of Miis on the Check Mii Out Channel and Wiis registered to use Wii Mail.");
+    }
+
 }

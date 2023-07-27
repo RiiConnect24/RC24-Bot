@@ -24,14 +24,13 @@
 
 package xyz.rc24.bot;
 
-import net.dv8tion.jda.api.requests.RestAction;
-
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.login.LoginException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.util.EnumSet;
+
+import static net.dv8tion.jda.api.requests.GatewayIntent.*;
 
 /**
  * Bot entry point.
@@ -39,44 +38,37 @@ import java.lang.reflect.InvocationTargetException;
  * @author Artuto
  */
 
-public class RiiConnect24Bot
-{
+public class RiiConnect24Bot {
+
+    public static final String VERSION = RiiConnect24Bot.class.getPackage().getImplementationVersion() == null ? "DEV" : RiiConnect24Bot.class.getPackage().getImplementationVersion();
+    public static final String PATCHING_URL = "http://mtw.rc24.xyz/patch";
+    public static final String SUCCESS_E = "✅";
+    public static final String WARN_E = "⚠";
+    public static final String ERROR_E = "❌";
+    public static final EnumSet<GatewayIntent> INTENTS = EnumSet.of(GUILD_MESSAGES, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGES, DIRECT_MESSAGE_REACTIONS);
+
     private static Bot instance;
+    private static final Logger logger = LoggerFactory.getLogger("RiiConnect24 Bot");
 
-    private static final Logger logger = (Logger) LoggerFactory.getLogger("RiiConnect24 Bot");
-
-    public static void main(String[] args) throws LoginException, IOException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException
-    {
+    public static void main(String[] args) {
         // Sentry
         System.setProperty("sentry.stacktrace.app.packages", "xyz.rc24.bot");
-        System.setProperty("sentry.release", Const.VERSION);
-
-        // JDA
-        RestAction.setPassContext(true); // enable context by default
-        RestAction.setDefaultFailure(Throwable::printStackTrace);
-
-        getLogger().info("Starting RiiConnect24 Bot - {}", Const.VERSION);
-
+        System.setProperty("sentry.release", VERSION);
+        logger.info("Starting RiiConnect24 Bot - {}", VERSION);
         instance = new Bot();
-        
         instance.run();
     }
 
-    public static Bot getInstance()
-    {
-        if(instance == null)
-            throw new IllegalStateException("The bot is not initialized!");
-
+    public static Bot getInstance() {
+        if (instance == null) throw new IllegalStateException("The bot is not initialized!");
         return instance;
     }
 
-    public static Logger getLogger()
-    {
+    public static Logger getLogger() {
         return logger;
     }
 
-    public static Logger getLogger(Class clazz)
-    {
-        return (Logger) LoggerFactory.getLogger(clazz);
+    public static Logger getLogger(Class<?> clazz) {
+        return LoggerFactory.getLogger(clazz);
     }
 }

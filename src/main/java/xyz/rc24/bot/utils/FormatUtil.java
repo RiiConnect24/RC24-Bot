@@ -40,7 +40,7 @@ public class FormatUtil
         StringBuilder response = new StringBuilder("Invalid type! Valid types:\n");
         for(CodeType type : CodeType.values())
         {
-            if(type == CodeType.UNKNOWN)
+            if(type == null)
                 continue;
 
             response.append("`").append(type.getName()).append("`, ");

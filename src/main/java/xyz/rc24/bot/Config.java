@@ -41,8 +41,6 @@ import java.util.Objects;
 /**
  * @author Artuto
  */
-
-@SuppressWarnings({"WeakerAccess", "unused"})
 public class Config
 {
     private final Map<String, Object> config;
@@ -193,6 +191,10 @@ public class Config
     boolean autoReconnect()
     {
         return getBoolean("autoReconnect", database);
+    }
+
+    boolean useRaidProtection() {
+        return getBoolean("raid_prevention", config);
     }
 
     // Util methods

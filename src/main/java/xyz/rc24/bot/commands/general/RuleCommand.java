@@ -24,11 +24,11 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-
-import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.Dispatcher;
-import xyz.rc24.bot.commands.RiiContext;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ import java.util.Map;
  * @author Larsenv, Gamebuster
  */
 
-public class RuleCmd {
+public class RuleCommand implements Command {
 	
     private static final Map<Integer, String> RULES = new HashMap<>() {
         {
@@ -59,26 +59,25 @@ public class RuleCmd {
             put(34, "( ͡° ͜ʖ ͡°)");
             put(69, "( ͡° ͜ʖ ͡°)");
             put(420, "( ͡° ͜ʖ ͡°)");
-            put(621, "C\u2085H\u2088NO\u2084Na ( ͡° ͜ʖ ͡°)");
+            put(621, "C₅H₈NO₄Na ( ͡° ͜ʖ ͡°)");
         }
     };
-    
-    public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("rules", "Provides information about specific rules.", "")
-    		.then(Commands.argument("rule", IntegerArgumentType.integer(1))
-    			.executes(context -> {
-    				replyRule(context.getSource(), context.getArgument("rule", Integer.class));
-    				return 1;
-    			})
-    		)
-    	);
+
+    @Override
+    public void onCommand(SlashCommandInteractionEvent event) {
+
+        int rule = event.getOption("index").getAsInt();
+
+        if (RULES.containsKey(rule)) {
+            event.reply("**Rule " + rule + "**: " + RULES.get(rule)).queue();
+        } else {
+            event.reply("Rule not found.").setEphemeral(true).queue();
+        }
     }
 
-    private static void replyRule(RiiContext context, Integer rule) {
-        if (RULES.containsKey(rule)) {
-            context.queueMessage("**Rule " + rule + "**: " + RULES.get(rule));
-        } else {
-            context.queueMessage("Rule not found.", true, false);
-        }
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash("rule", "Provides information about specific rules.")
+                .addOption(OptionType.INTEGER, "index", "Rule Index", true);
     }
 }

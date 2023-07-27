@@ -22,29 +22,31 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.general;
+package xyz.rc24.bot.commands.wii;
 
-import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.Dispatcher;
-import xyz.rc24.bot.commands.RiiContext;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
-/**
- * @author Gamebuster
- */
+public class BlocksCommand implements Command {
 
-public class InviteCmd 
-{
-	
-	public static void register(Dispatcher dispatcher) {
-		dispatcher.register(Commands.base("invite", "Invite me to your server!", null)
-			.executes((context) -> {
-				execute(context.getSource());
-				return 1;
-			})
-		);
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		OptionMapping amountOption = event.getOption("amount");
+		int blocks = amountOption == null ? 1 : amountOption.getAsInt();
+		event.reply("ℹ " + blocks + " blocks are " + convertBlocks(blocks) + " MB").queue();
 	}
 
-    private static void execute(RiiContext context) {
-        context.queueMessage("Aw, you want to invite me? <3\nInvite me here: " + context.getUser().getJDA().getInviteUrl());
-    }
+	private float convertBlocks(float blocks) {
+		return (blocks * 128) / 1024;
+	}
+
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("blocks", "Convert blocks to MB")
+				.addOption(OptionType.NUMBER, "amount", "Amount of blocks");
+	}
 }

@@ -29,24 +29,20 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class DataDogStatsListener extends ListenerAdapter 
-{
+public class DataDogStatsListener extends ListenerAdapter {
     private final StatsDClient statsd;
 
-    public DataDogStatsListener(StatsDClient statsd)
-    {
+    public DataDogStatsListener(StatsDClient statsd) {
         this.statsd = statsd;
     }
 
     @Override
-    public void onGuildJoin(GuildJoinEvent event)
-    {
+    public void onGuildJoin(GuildJoinEvent event) {
         statsd.recordGaugeValue("guilds", event.getJDA().getGuildCache().size());
     }
 
     @Override
-    public void onGuildLeave(GuildLeaveEvent event)
-    {
+    public void onGuildLeave(GuildLeaveEvent event) {
         statsd.recordGaugeValue("guilds", event.getJDA().getGuildCache().size());
     }
 

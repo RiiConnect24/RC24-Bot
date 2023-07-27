@@ -22,32 +22,26 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.wii;
+package xyz.rc24.bot.commands.botadm;
 
 import net.dv8tion.jda.api.Permission;
-import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.Dispatcher;
-import xyz.rc24.bot.commands.RiiContext;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
-/**
- * @author Gamebuster
- */
+public class ShutdownCommand implements Command {
 
-public class DNSCmd {
-	
-	private static final String PRIMARY_DNS = "167.86.108.126";
-	private static final String SECONDARY_DNS = "1.1.1.1";
-    
-    public static final void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("dns", "Lets you know the current DNS settings required to use RiiConnect24. (" + PRIMARY_DNS + ")", null).botRequires(Permission.MESSAGE_SEND).requires(Permission.MESSAGE_SEND)
-    		.executes((context) -> {
-    			sendDNSInfo(context.getSource());
-    			return 1;
-    		})	
-    	);
-    }
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		event.reply("Shutting down bot...").queue();
+		event.getJDA().shutdown();
+		System.exit(0);
+	}
 
-    private static final void sendDNSInfo(RiiContext context) {
-        context.queueMessage("`" + PRIMARY_DNS + "` should be your primary DNS.\n`" + SECONDARY_DNS + "` should be your secondary DNS.", context.hasPermission(Permission.MESSAGE_SEND), false);
-    }
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("shutdown", "Shuts down the bot").setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR));
+	}
 }

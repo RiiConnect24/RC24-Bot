@@ -22,20 +22,25 @@
  * SOFTWARE.
  */
 
-package xyz.rc24.bot.commands.wii;
+package xyz.rc24.bot.commands.general;
 
-import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.Dispatcher;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.commands.Command;
 
-public class WadsCmd {
-    
-    public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("wads", "Lets you know the URL to the RiiConnect24 Patcher.", null)
-    		.executes((context) -> {
-    			context.getSource().queueMessage("Check out the patcher here: https://github.com/RiiConnect24/RiiConnect24-Patcher/releases/latest");
-    			return 1;
-    		})	
-    	);
-    }
-    
+/**
+ * @author Gamebuster
+ */
+public class InviteCommand implements Command {
+
+	@Override
+	public void onCommand(SlashCommandInteractionEvent event) {
+		event.reply("Aw, you want to invite me? <3\nInvite me here: " + event.getJDA().getInviteUrl()).queue();
+	}
+
+	@Override
+	public SlashCommandData getCommandData() {
+		return Commands.slash("invite", "Invite me to your server!");
+	}
 }

@@ -76,8 +76,6 @@ public class GuildSettingsDataManager {
 
     public boolean setDefaultAddType(CodeType type, long id)
     {
-        ((GuildSettingsImpl) Objects.requireNonNull(getSettings(id))).setDefaultAddType(type);
-
         return db.doInsert("INSERT INTO settings (guild_id, default_add)" +
                 "VALUES(?, ?) ON DUPLICATE KEY UPDATE default_add = ?", id, type.getId(), type.getId());
     }

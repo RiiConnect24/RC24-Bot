@@ -24,53 +24,45 @@
 
 package xyz.rc24.bot.commands.general;
 
-import com.thegamecommunity.discord.command.argument.DiscordUserArgumentType;
-
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.InteractionHook;
-
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import xyz.rc24.bot.commands.Commands;
-import xyz.rc24.bot.commands.Dispatcher;
-import xyz.rc24.bot.commands.RiiContext;
+import xyz.rc24.bot.Bot;
+import xyz.rc24.bot.RiiConnect24Bot;
+import xyz.rc24.bot.commands.Command;
 
 import java.io.IOException;
 
-public class RiiTagCmd {
+public class RiiTagCommand implements Command {
+
     private static final String URL = "https://tag.rc24.xyz/%s/tag.max.png?randomizer=%f";
 
-    public static void register(Dispatcher dispatcher) {
-    	dispatcher.register(Commands.base("riitag", "Gets the user's Riitag", null)
-    			.botRequires(Permission.MESSAGE_EMBED_LINKS)
-    			.requires((context) -> context.isDiscordContext(), RiiContext.requiresDiscordContext)
-    		.then(Commands.argument("user", new DiscordUserArgumentType())
-    			.executes(context -> {
-    				execute(context.getSource(), context.getArgument("user", User.class));
-    				return 1;
-    			})	
-    		)	
-    	);
-    }
+    @Override
+    public void onCommand(SlashCommandInteractionEvent event) {
 
-    private static void execute(RiiContext context, User user) {
-    	
-        Request request = new Request.Builder().url(String.format(URL, user.getId(), 0D)).build();
-        context.getBot().getHttpClient().newCall(request).enqueue(new Callback() {
+        Member member = event.getOption("user").getAsMember();
+        Request request = new Request.Builder().url(String.format(URL, member.getId(), 0D)).build();
+        Bot bot = RiiConnect24Bot.getInstance();
+
+        bot.getHttpClient().newCall(request).enqueue(new Callback() {
+
             @Override
             public void onFailure(Call call, IOException e) {
-                context.queueMessage("The RiiTag server did not respond.", true, false);
+                event.reply("The RiiTag server did not respond.").setEphemeral(true).queue();
             }
 
             @Override
             public void onResponse(Call call, Response response) {
+
                 if (response.code() == 404) {
-                    context.queueMessage("**" + user.getAsTag() + "** does not have a RiiTag!", true, false);
+                    event.reply(member.getAsMention() + " does not have a RiiTag!").setEphemeral(true).queue();
                     response.close();
                     return;
                 }
@@ -81,23 +73,21 @@ public class RiiTagCmd {
                     return;
                 }
 
-                displayTag(context, user);
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setAuthor(member.getEffectiveName() + "'s RiiTag", null, member.getEffectiveAvatarUrl())
+                        .setColor(event.getGuild().getSelfMember().getColor())
+                        .setImage(String.format(URL, member.getId(), Math.random()));
+
+                event.replyEmbeds(embedBuilder.build()).queue();
                 response.close();
             }
         });
-    }
-
-    private static void displayTag(RiiContext context, User user) {
-    	
-    	InteractionHook hook = context.getReplyCallback().deferReply().complete();
-    	
-        EmbedBuilder embedBuilder = context.getEmbed()
-                .setAuthor(user.getAsTag() + "'s RiiTag", null, user.getEffectiveAvatarUrl())
-                .setColor(context.getServer() == null ? null : context.getServer().getSelfMember().getColor())
-                .setImage(String.format(URL, user.getId(), Math.random()));
-        
-        hook.sendMessageEmbeds(embedBuilder.build()).queue();
-
 
     }
+
+    @Override
+    public SlashCommandData getCommandData() {
+        return Commands.slash("riitag", "Gets the user's Riitag").addOption(OptionType.USER, "user", "User", true);
+    }
+
 }

@@ -28,18 +28,17 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.slf4j.Logger;
 import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.database.BirthdayDataManager;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-import org.slf4j.Logger;
-
-import static xyz.rc24.bot.Const.ERROR_E;
+import static xyz.rc24.bot.RiiConnect24Bot.ERROR_E;
 
 /**
  * Manager for birthdays.

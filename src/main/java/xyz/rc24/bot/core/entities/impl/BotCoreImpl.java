@@ -116,13 +116,13 @@ public class BotCoreImpl implements BotCore
     {
         try
         {
-            return Flag.fromEmoji(flagCache.get(user, () -> bot.getCodeDataManager().getFlag(user)));
+            return Flag.fromName(flagCache.get(user, () -> bot.getCodeDataManager().getFlag(user)));
         }
         catch(ExecutionException e)
         {
             RiiConnect24Bot.getLogger().error("Error whilst getting flag for User {}: {}",
                     user, e.getMessage(), e);
-            return Flag.UNKNOWN;
+            return null;
         }
     }
 
