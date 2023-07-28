@@ -49,47 +49,11 @@ public class BashCommand implements Command {
 
     @Override
     public void onCommand(SlashCommandInteractionEvent event) {
-
         String bashCommand = event.getOption("command").getAsString();
 
-        if (bashCommand.isEmpty()) {
-            event.reply("Command cannot be empty!").setEphemeral(true).queue();
-            return;
-        }
 
-        StringBuilder output = new StringBuilder();
-        String finalOutput;
-
-        try {
-
-            ProcessBuilder builder = new ProcessBuilder(bashCommand.split(" "));
-            Process process = builder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String runningLineOutput;
-
-            while (!((runningLineOutput = reader.readLine()) == null)) {
-                output.append(runningLineOutput).append("\n");
-            }
-
-            if (output.toString().isEmpty()) {
-                event.reply("Executed command without output!").queue();
-                return;
-            }
-
-            // Remove linebreak
-            finalOutput = output.substring(0, output.length() - 1);
-            reader.close();
-
-        } catch (IOException e) {
-            event.reply("I wasn't able to find the command `" + bashCommand + "`!").setEphemeral(true).queue();
-            return;
-        } catch (Exception e) {
-            logger.error("An error occurred", e);
-            event.replyFormat("An error occurred: %s - Check the bot console.", e.getMessage()).setEphemeral(true).queue();
-            return;
-        }
-
-        event.replyFormat("Input:\n```%s```\nOutput:\n```%s```", bashCommand, finalOutput).queue();
+        
+        return;
     }
 
     @Override
@@ -98,4 +62,33 @@ public class BashCommand implements Command {
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
                 .addOption(OptionType.STRING, "command", "Bash command to run", true);
     }
-}
+}             
+
+            
+
+            
+                    
+
+            
+
+            
+                    
+
+            
+
+            
+                    
+
+            
+
+            
+                    
+
+
+
+
+            
+
+
+            
+                    
