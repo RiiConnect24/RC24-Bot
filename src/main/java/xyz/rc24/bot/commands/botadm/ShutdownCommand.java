@@ -29,12 +29,20 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Command;
 
 public class ShutdownCommand implements Command {
 
 	@Override
 	public void onCommand(SlashCommandInteractionEvent event) {
+
+		// Allow usage only on config-defined root server
+		if (event.getGuild().getIdLong() != RiiConnect24Bot.getInstance().config.getRootServer()) {
+			event.reply("This command is private.").setEphemeral(true).queue();
+			return;
+		}
+
 		event.reply("Shutting down bot...").queue();
 		event.getJDA().shutdown();
 		System.exit(0);
