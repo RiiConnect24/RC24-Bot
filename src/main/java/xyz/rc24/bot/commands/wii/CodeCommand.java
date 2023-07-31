@@ -83,7 +83,7 @@ public class CodeCommand implements Command {
 					return;
 				}
 
-				event.replyEmbeds(embed.build()).queue();
+				event.replyEmbeds(embed.build()).setEphemeral(true).queue();
 
 			}
 			return;

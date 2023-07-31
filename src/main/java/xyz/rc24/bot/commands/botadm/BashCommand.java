@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.rc24.bot.RiiConnect24Bot;
 import xyz.rc24.bot.commands.Command;
 
 import java.io.BufferedReader;
@@ -50,53 +49,11 @@ public class BashCommand implements Command {
 
     @Override
     public void onCommand(SlashCommandInteractionEvent event) {
-
-        // Allow usage only on config-defined root server
-        if (event.getGuild().getIdLong() != RiiConnect24Bot.getInstance().config.getRootServer()) {
-            event.reply("This command is private.").setEphemeral(true).queue();
-            return;
-        }
-
         String bashCommand = event.getOption("command").getAsString();
 
-        if (bashCommand.isEmpty()) {
-            event.reply("Command cannot be empty!").setEphemeral(true).queue();
-            return;
-        }
 
-        StringBuilder output = new StringBuilder();
-        String finalOutput;
-
-        try {
-
-            ProcessBuilder builder = new ProcessBuilder(bashCommand.split(" "));
-            Process process = builder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String runningLineOutput;
-
-            while (!((runningLineOutput = reader.readLine()) == null)) {
-                output.append(runningLineOutput).append("\n");
-            }
-
-            if (output.toString().isEmpty()) {
-                event.reply("Executed command without output!").queue();
-                return;
-            }
-
-            // Remove linebreak
-            finalOutput = output.substring(0, output.length() - 1);
-            reader.close();
-
-        } catch (IOException e) {
-            event.reply("I wasn't able to find the command `" + bashCommand + "`!").setEphemeral(true).queue();
-            return;
-        } catch (Exception e) {
-            logger.error("An error occurred", e);
-            event.replyFormat("An error occurred: %s - Check the bot console.", e.getMessage()).setEphemeral(true).queue();
-            return;
-        }
-
-        event.replyFormat("Input:\n```%s```\nOutput:\n```%s```", bashCommand, finalOutput).queue();
+        
+        return;
     }
 
     @Override
