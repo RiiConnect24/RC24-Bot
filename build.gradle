@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    shadow 'net.dv8tion:JDA:5.0.0-beta.12'
+    shadow 'net.dv8tion:JDA:5.0.0-beta.15'
     shadow 'io.sentry:sentry-logback:6.21.0'
     shadow 'org.codehaus.groovy:groovy-jsr223:3.0.18'
     shadow 'org.jsoup:jsoup:1.16.1'
